@@ -1,0 +1,22 @@
+---
+description: PO live files — CL app CSV path
+alwaysApply: false
+globs: "Purchase Order Generator/**"
+---
+
+# Live files
+
+App root: `Purchase Order Generator/`. (Docs may say “Plain Orders.”)
+
+| Path | Role |
+|---|---|
+| `Run_GUI.bat` / `scripts/run_script_gui.py` | Live GUI |
+| `data/Database.xlsx` | Product lookup for slips |
+| `../Custom Label Database/Custom_Label_Database.csv` | Custom Label → BTC SKU stock fallback |
+| `data/archive/Custom Label Database.csv` | Archived former local copy |
+| `data/ProductExport.csv` (+ sync scripts) | Catalog sync helpers |
+| Stock CSV under `data/` (FTP) | BTC free stock |
+| `output/` | Tag run folders |
+| `config.py` | Credentials — do not paste into docs |
+
+SKU match for CL fallback: `shared/cl_sku_match.py`. Code maps `BTC SKU` (accepts legacy `BTC Stock ID` header).

@@ -1,0 +1,17 @@
+---
+description: How new mock rows are generated from the mocks guide
+alwaysApply: false
+globs: "Custom Label Database/**"
+---
+
+# Mocks generator
+
+`scripts/generate_from_mocks.py` + `support/Mocks Databse.csv` (filename spelling is real) + Product Export:
+
+- Custom Label = `{Pasting Mocks ID}-{UID}` (e.g. `M260-214332`)
+- Fill **only** seed columns; skip if any cannot be filled
+- Skip mock IDs already in the DB
+- Gender Apparel = `{Brand Code} {Description}` (flatten `Men's` → `Mens`); no `™` / `&` in seed cols
+- Then `fill_from_seeds.py` for the rest
+
+Script defaults may still name old `ProductExport.xlsx` / `14-01-Mocks Database Guide(…).csv`. Pass current `support/` CSV paths if those 404. Dry-run first.

@@ -1,0 +1,15 @@
+---
+description: Apparel Image blanks-only; never rewrite existing names
+alwaysApply: false
+globs: "Custom Label Database/**"
+---
+
+# Apparel Image
+
+Fill **blank** cells only. **Never rewrite** an existing Apparel Image name.
+
+Slug (Maker style): `(Gender Apparel)-(Colour)`, spaces → `-`, letters/digits/dash only, collapse `--`.
+
+A past bulk pass rewrote ~34,755 names. The true pre-change backup is **gone**. Fallback restore used `support/Workbook.xlsx` `Picture Name` — not a perfect undo. Do not run another whole-file rename.
+
+Downloads: `Custom Label Database Maker/download_apparel_images.py` saves PE `colour image 01` as the **exact** DB filename. Legacy `download-images.ps1` does not match DB names. No UID → no PE image (iron-on stickers).

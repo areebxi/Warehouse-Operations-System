@@ -1,0 +1,15 @@
+---
+description: Universal Custom Label SKU match order for all warehouse apps
+alwaysApply: false
+globs: "{Custom Label Database,Order Packing List Generator,Production Design Queue Manager,Purchase Order Generator,Shipping Label Generator,Shared Inbox,shared}/**"
+---
+
+# Universal CL SKU match
+
+Against **Custom Label** (entire cell, casefold), try in order and stop on first hit:
+
+1. Whole Item SKU
+2. After first `-`
+3. Till last dash (everything before the last `-`)
+
+Implementation: `shared/cl_sku_match.py`. Do not invent a different order per app.

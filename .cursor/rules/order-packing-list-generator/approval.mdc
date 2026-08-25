@@ -1,0 +1,11 @@
+---
+description: Approval before packing pipeline runs that write Output
+alwaysApply: false
+globs: "Order Packing List Generator/**"
+---
+
+# Approval
+
+Do not run the packing pipeline (or missing-run / preflight writes the supervisor did not ask for) against live Input/Output unless they already said **yes / do it / fill / run**.
+
+Propose settings (date, shift, workbook, image dirs) first when unclear. Do not invent CL matches for unmatched SKUs without approval.

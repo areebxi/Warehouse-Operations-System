@@ -1,0 +1,114 @@
+ # =============================================================================
+ #  shipping_config.yaml
+ #  All tuneable settings live here.
+ #
+ #  EDIT THIS FILE to customise behaviour.
+ #  DO NOT put API keys here — use .env instead.
+ # =============================================================================
+ 
+concurrency:
+  max_workers: 20
+  # Retry policy (call_with_retries): each wrapped API call retries up to max_retries times total.
+  #   429 → sleep Retry-After else rate_limit.fallback_wait_sec; timeout/connection/5xx → exponential backoff
+  #   (retry_min_wait_sec * 2^n capped by retry_max_wait_sec); other 4xx → fail. Optional retry_jitter_pct on backoff only.
+  # Timeouts: request_timeout_sec for lookup/list; label_timeout_sec for fetch_label + create_label (longer POST/label work).
+  # Suggested max_retries: 2–3. If 429s are frequent, lower max_workers (or add rate_limit.requests_per_sec) first.
+  # If ShipStation returns frequent 429s, lower this (e.g. 15 → 10) before adding pacing below.
+  # Caps how many "process groups" run in parallel (prevents bursty traffic).
+  max_process_groups: 1
+  request_timeout_sec: 20
+  label_timeout_sec: 55
+  max_retries: 3
+  retry_min_wait_sec: 1
+  retry_max_wait_sec: 8
+  # Randomizes retry sleeps by ± this fraction (e.g. 0.25 => 75%-125%).
+  retry_jitter_pct: 0.25
+
+rate_limit:
+  fallback_wait_sec: 30
+  # If you run multiple copies of the app, shared_across_processes/state_file are reserved for future use (no cross-process cooldown in RealProvider today).
+  shared_across_processes: false
+  # Shared limiter state file (relative to logs_dir unless absolute).
+  state_file: "rate_limit_state.json"
+  # Retries on 429: sleep Retry-After when present, else fallback_wait_sec, then retry.
+  # Occasional 429s are normal (stay fast). Frequent 429s: lower concurrency.max_workers and/or
+  # uncomment requests_per_sec for a soft cap (e.g. 0.6–0.8) to smooth traffic.
+  # Optional soft cap: fixed spacing between outbound requests (same average RPS).
+  # Omit, null, or 0 to disable in-process pacing — use max_workers + ShipStation 429 / Retry-After.
+  # requests_per_sec: 0.55
+  # 429 / transient retries are capped by concurrency.max_retries only (no separate rate-limit timer).
+  # Not currently used by code (kept for future wiring)
+  warn_threshold_pct: 20
+
+paths:
+  output_dir: output
+  logs_dir: logs
+  reports_dir: Reports
+  desfiles_dir: "DTF Des Files"
+  orders_csv: "Order Numbers.csv"
+  void_csv: "void label input/void_labels.csv"
+
+manual_print:
+  input_csv: "Manual Print Input/Order Numbers.csv"
+
+logging:
+  format: json
+  level: INFO
+  redact_keys:
+    - labelData
+    - Authorization
+    - apiKey
+    - apiSecret
+
+batch:
+  notes: CreateAndProcessBatchByOrderIds
+  processed_by: Automated
+  ship_from: Dudley
+
+security:
+  # Restrict output/ folder to owner-only on POSIX systems
+  restrict_output_permissions: true
+  # Never write API response bodies to logs at DEBUG level
+  suppress_response_bodies: true
+
+weight:
+  ounce_carriers:
+    - royal_mail
+    - stamps_com
+
+# Service code mapping
+#   key  = substring to match in requestedShippingService (case-insensitive)
+#   val  = ShipStation serviceCode
+#
+# Order matters: more-specific patterns must come FIRST
+
+service_map:
+  royal_mail:
+    - match: "nextday uk next"
+      code: "rm_tracked_48_tps"
+    - match: "tracked 48 tps"
+      code: "rm_tracked_48_tps"
+    - match: "tracked 48 letterbox"
+      code: "rm_tracked_48_letterbox"
+    - match: "tracked 48"
+      code: "rm_tracked_48"
+    - match: "tracked 24 tps"
+      code: "rm_tracked_24_tps"
+    - match: "tracked 24 letterbox"
+      code: "rm_tracked_24_letterbox"
+    - match: "tracked 24"
+      code: "rm_tracked_24"
+    - match: "special delivery"
+      code: "rm_special_delivery_9am"
+    - match: "1st class"
+      code: "rm_first_class"
+    - match: "2nd class"
+      code: "rm_second_class"
+
+provider:
+  default_carrier: "royal_mail"
+  default_package: "large_letter"
+  test_label: false
+  label_format: PDF
+  label_layout: 4x6
+  label_download_type: inline

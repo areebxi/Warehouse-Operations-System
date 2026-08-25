@@ -1,0 +1,12 @@
+---
+description: Shared Inbox DTF Des ownership — packing writes, Queue consumes
+alwaysApply: false
+globs: "Shared Inbox/**"
+---
+
+# Shared Inbox
+
+- Packing dual-writes `DTF Des-P*.xlsx` into `Shared Inbox/DTF Des/{date}/{shift}/`.
+- Queue Missing Logo auto-watcher processes those files (no approval) and moves them to `Processed/` or `Failed/`.
+- Do not delete live inbox files while packing or the watcher may be writing.
+- Shipping does not auto-read this folder yet.

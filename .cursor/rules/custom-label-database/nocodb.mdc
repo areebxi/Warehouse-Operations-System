@@ -1,0 +1,13 @@
+---
+description: NocoDB round-trip; no column-name normalization
+alwaysApply: false
+globs: "Custom Label Database/**"
+---
+
+# NocoDB
+
+- Table `Custom_Label_Database` ↔ `Custom_Label_Database.csv`.
+- Keep the `id` column. Blank `id` = insert.
+- `db_update.py` has `DELETE_ROWS_MISSING_FROM_CSV = True` (mass-delete safety ~50%). Confirm before a destructive sync.
+- **Do not** add or maintain NocoDB **column-name normalization** helpers. The supervisor uploads and maps columns manually. A prior attempt was reverted; do not repeat it.
+- Credentials stay in the scripts. Do not paste them into docs or chat.

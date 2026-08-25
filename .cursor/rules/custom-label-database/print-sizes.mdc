@@ -1,0 +1,24 @@
+---
+description: How to fill shirt vs other print Width/Height
+alwaysApply: false
+globs: "Custom Label Database/**"
+---
+
+# Print sizes — all shirts
+
+SKU source = always `Custom Label`. Helpers: `support/Shirts Print Sizes.csv`, `support/Size References.csv`, `support/BTC Product Export.csv` (under `Custom Label Database/`).
+
+**All kinds of shirts** (t-shirt, tee, polo, hoodie, sweatshirt, tank — and any row whose `Size` maps to the shirt table: Small/Medium/Large/YXS/12-13 Years, …), unless Gender Apparel is clearly not a shirt (bag, tote, apron, beanie, hat, cap, iron-on, romper, sticker, mug, mask):
+
+1. **Shirts Print Sizes.csv first** (Standard A4 for Front/Back; missing paper → A4). Size = DB `Size`, else PE `Size` via UID. Women use the men band.
+2. **Then Size References.csv** if the band does not map, or for extra positions / paper / an **exact** `M## (UID)` row.
+
+Pocket = 80×100 (kids F8 `-K-` = 65×80). Front and Back share the same mm. Position names come from DB `Print Positions`, not Size Ref suffixes.
+
+**Not shirts:** Size References only. **Never** use a generic mock prefix (`M96` without this UID) — that wrongly gave `M96-138334` 318×450 instead of 250×353.
+
+Fill **blank** Width/Height only, unless asked to correct wrong mm.
+
+```text
+python scripts/fill_from_seeds.py --steps print --shirts-only --w1-blank
+```

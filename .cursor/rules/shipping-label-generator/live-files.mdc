@@ -1,0 +1,20 @@
+---
+description: Shipping Label Generator — live paths and flows
+alwaysApply: false
+globs: "Shipping Label Generator/**"
+---
+
+# Live files
+
+App root: `Shipping Label Generator/`.
+
+| Path | Role |
+|------|------|
+| `python -m scripts.app.main` | convert / print / void |
+| `DTF Des Files/` | Input desfiles (DTF Des–shaped Excel/CSV) |
+| `DTF Des Files - Processed/` | Archived inputs |
+| `shipping_config.yaml` | Tuneables |
+| `.env` | Secrets (never commit or paste into docs) |
+| `output/` | Labels and batch PDFs |
+
+Reads DTF Des inputs (`Order - Number`, `Process Num`, …). Does **not** read packing Orders Details.

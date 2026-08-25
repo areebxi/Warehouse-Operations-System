@@ -1,0 +1,19 @@
+---
+description: Log resolved packing issues to this app issue-log
+alwaysApply: false
+globs: "Order Packing List Generator/**"
+---
+
+# Issue logging
+
+When a packing bug/error/issue is resolved (or a clear workaround is agreed), append to `Order Packing List Generator/.cursor/issue-log.md` (newest first).
+
+Do not log routine how-tos. Same turn as the resolution. Format:
+
+```markdown
+## YYYY-MM-DD HH:MM
+
+**Issue:** One sentence.
+
+**Resolution:** What fixed it or was concluded.
+```

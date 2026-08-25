@@ -1,0 +1,89 @@
+# --- Secrets (never commit) ---
+.env
+.env.*
+!.env.example
+**/API KEY.txt
+**/api_key*.txt
+**/api-key*.txt
+Purchase Order Generator/config.py
+
+# --- Python / tooling ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*~
+.vscode/
+*.code-workspace
+
+# --- Live catalog (sync via OneDrive / share, not Git) ---
+Custom Label Database/Custom_Label_Database.csv
+Custom Label Database/backups/
+Custom Label Database/support/*.csv
+Custom Label Database/support/*.xlsx
+Custom Label Database/docs/chats/
+Custom Label Database/Custom Label Database Maker/Apparel Images/
+Custom Label Database/Custom Label Database Maker/*.csv
+Custom Label Database/Custom Label Database Maker/ProductExport/
+
+# --- Shared Inbox payload (keep README) ---
+Shared Inbox/DTF Des/**
+
+# --- Run artifacts (all apps) ---
+**/Output/
+**/output/
+**/Input/
+**/Logs/
+**/logs/
+**/*.log
+
+# Packing
+Order Packing List Generator/Missing Input/
+Order Packing List Generator/Missing Logo Files/
+Order Packing List Generator/Preflight Issues/
+Order Packing List Generator/Data/
+
+# Queue — machine-local paths + live size/pocket workbook
+Production Design Queue Manager/config/queue_app_settings.json
+Production Design Queue Manager/config/Configuration Workbook.xlsx
+Production Design Queue Manager/Missing Size Reference/
+Production Design Queue Manager/Input/
+
+# PO live data / stock / product image library (sync separately)
+Purchase Order Generator/data/
+Purchase Order Generator/assets/
+
+# Shipping working folders
+Shipping Label Generator/DTF Des Files/
+Shipping Label Generator/DTF Des Files - Processed/
+Shipping Label Generator/DTF Des Files -Processed/
+Shipping Label Generator/Error and Failures/
+Shipping Label Generator/Manual Print Input/
+Shipping Label Generator/Reports/
+Shipping Label Generator/void label input/
+
+# --- Old snapshot trees (Git replaces these going forward) ---
+**/Versions/
+
+# --- Large binary dumps often dropped in-tree ---
+*.zip
+*.7z
+*.rar
+*.tmp
+~$*

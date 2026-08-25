@@ -1,0 +1,21 @@
+---
+description: Always tell the user exactly what changed in any CL CSV
+alwaysApply: false
+globs: "Custom Label Database/**/*.csv"
+---
+
+# Report CSV Changes
+
+Whenever you create, edit, fill, restore, or otherwise change any CSV under Custom Label Database, always tell the user what changed. Do not skip this even if the change is small.
+
+Include, as applicable:
+
+- Which CSV file(s) were changed (file name/path)
+- What was done (rows added, updated, deleted, columns filled, values replaced, backup created, etc.)
+- Which rows, SKUs, styles, or records were affected
+- Which columns/fields changed
+- Before vs after values when specific cells were updated
+- How many rows/records were affected
+- Any backup file created as part of the change
+
+Give this summary in the reply to the user. Do not only leave it in comments, commit messages, or tool output.

@@ -1,0 +1,15 @@
+---
+description: Copy chat transcripts into Custom Label Database docs/chats
+alwaysApply: false
+globs: "Custom Label Database/**"
+---
+
+# Save chats into the folder too
+
+Cursor stores live chats **outside** this repo (`%USERPROFILE%\.cursor\projects\...\agent-transcripts\`). Copying the folder does **not** reopen the same Cursor thread.
+
+After material work in a turn, copy the current transcript `.jsonl` into `Custom Label Database/docs/chats/<uuid>.jsonl` (overwrite the same uuid). Keep `docs/chats/README.md` updated with title + date.
+
+A new chat on another computer still starts fresh in the UI. Point it at `docs/chats/` plus `docs/HANDOFF.md` so it can read what was said.
+
+Do not rely on Cursor account sync for this. The in-folder copy is the portable chat.

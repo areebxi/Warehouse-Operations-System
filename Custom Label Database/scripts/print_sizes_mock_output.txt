@@ -1,0 +1,99 @@
+﻿=== DB Mock codes in Print Positions ===
+Mock
+        105728
+M118      3760
+M262      2811
+M180      2088
+M263      1866
+M42       1864
+M195      1062
+Name: count, dtype: int64
+Rows with mock code: 13,451
+Rows without mock: 30,392
+
+=== Print Positions pattern per Mock code ===
+
+M118:
+   3760  Front Left Pocket, Back Center (M118)
+
+M262:
+   2811  Front Left Pocket, Back Center (M262)
+
+M180:
+   2088  Front Center, Back Center (M180)
+
+M263:
+   1866  Front Center, Back Center (M263)
+
+M42:
+   1864  Back Center, Front Left Pocket (M42)
+
+M195:
+   1062  Front Center, Back Center (M195)
+
+=== Size Ref mock codes (unique) ===
+Unique mocks in Size Ref: 23
+Top: {'M118': 1865, 'M263': 1865, 'M42': 1865, 'M289': 1865, 'M288': 1865, 'M262': 1865, 'M180': 1045, 'M119': 933, 'M286': 933, 'M287': 933, 'M260': 933, 'M264': 933, 'M261': 932, 'M96': 769, 'M214': 731}
+
+DB mocks: ['M118', 'M180', 'M195', 'M262', 'M263', 'M42']
+In Size Ref: ['M118', 'M180', 'M195', 'M262', 'M263', 'M42']
+Missing from Size Ref: []
+
+=== Size Ref Printing Position per DB mock ===
+M118: 1865 rows, positions={'Left Chest & Back Print': np.int64(1865)}, suffixes={'P': 932, 'B': 932, '': 1}
+M180: 1045 rows, positions={'Front & Back Print': np.int64(1045)}, suffixes={'F': 522, 'B': 522, '': 1}
+M195: 529 rows, positions={'Front & Back Print': np.int64(529)}, suffixes={'F': 264, 'B': 264, '': 1}
+M262: 1865 rows, positions={'Left Chest & Back Print': np.int64(1865)}, suffixes={'P': 932, 'B': 932, '': 1}
+M263: 1865 rows, positions={'Front & Back Print': np.int64(1865)}, suffixes={'F': 932, 'B': 932, '': 1}
+M42: 1865 rows, positions={'Left Chest & Back Print': np.int64(1865)}, suffixes={'P': 932, 'B': 932, '': 1}
+
+=== SKU Value parenthetical number vs Supplier SKU ===
+Sample M118 DB rows:
+      Supplier SKU Supplier Product Code Size                        Print Positions
+41183                              61036  4XL  Front Left Pocket, Back Center (M118)
+47662                              61036  5XL  Front Left Pocket, Back Center (M118)
+47663                              61036  4XL  Front Left Pocket, Back Center (M118)
+47664                              61036  5XL  Front Left Pocket, Back Center (M118)
+47665                              61036  4XL  Front Left Pocket, Back Center (M118)
+
+Sample M118 Size Ref:
+        SKU Value Suffix Gender Size        Printing Position Size Width Size Height Printing Size
+51  M118 (102722)      P    Men  4XL  Left Chest & Back Print       80.0       100.0            A4
+52  M118 (102722)      B    Men  4XL  Left Chest & Back Print      297.0       420.0            A4
+53  M118 (102723)      P    Men  5XL  Left Chest & Back Print       80.0       100.0            A4
+54  M118 (102723)      B    Men  5XL  Left Chest & Back Print      297.0       420.0            A4
+55  M118 (102724)      P    Men  4XL  Left Chest & Back Print       80.0       100.0            A4
+56  M118 (102724)      B    Men  4XL  Left Chest & Back Print      297.0       420.0            A4
+57  M118 (102725)      P    Men  5XL  Left Chest & Back Print       80.0       100.0            A4
+58  M118 (102725)      B    Men  5XL  Left Chest & Back Print      297.0       420.0            A4
+59  M118 (102726)      P    Men  4XL  Left Chest & Back Print       80.0       100.0            A4
+60  M118 (102726)      B    Men  4XL  Left Chest & Back Print      297.0       420.0            A4
+
+Mock rows: 13,451
+  mock+sku paren match: 0
+  mock only (no sku paren): 13,451
+  details: {'mock_only_no_sku': 13451}
+
+=== DB position text -> Size Ref Printing Position mapping (manual inference) ===
+Mock rows full key match: 12,389
+Mock rows partial: 1,062
+Mock rows no match: 0
+
+=== No-mock rows: Product Code path ===
+Count: 30,392
+Top patterns:
+Print Positions
+Front Center                                                               12467
+Front Center, Back Center                                                   5706
+Front Left Pocket                                                           4277
+Back Center                                                                 3022
+Front Left Pocket, Back Center                                              1909
+Front Center, Sleeve                                                        1288
+Front Left Pocket, Front Bottom Left Corner                                  508
+Front Left Pocket, Front Center                                              332
+front-neck-left, left-long sleeve-front-full forearm-shoulder to sleeve      240
+front-chest, left-long sleeve-front-full forearm-shoulder to sleeve          240
+Name: count, dtype: int64
+Front Center only (12,467): SPC in product code index: 11,462
+
+DONE

@@ -1,0 +1,13 @@
+{
+  "date": "02-06-2026",
+  "shift": "2nd",
+  "process_name": "600011111",
+  "missing_input": "D:/Areeb's Work/Apps/Packing List App - Testing/Missing Input/Missing Input.csv",
+  "all_orders": "D:/Areeb's Work/Apps/Packing List App - Testing/Data/All Orders.csv",
+  "apparel_dir": "I:/My Drive/00-Operations & Production/01B-Packling List",
+  "logo_custom_single_dir": "I:/My Drive/00-Operations & Production/01A-Per Design/1-SP",
+  "logo_custom_double_dir": "I:/My Drive/00-Operations & Production/01A-Per Design/2-DP",
+  "logo_normal_dir": "I:/My Drive/00-Operations & Production/01-DTF Designs",
+  "pdf_copy_dir": "G:/My Drive/UK/Missing/Missing Logo",
+  "excel_copy_dir": "G:/My Drive/Pakistan/03-DTF Queues & Present Day Data/02-Pakistan/00-Pakistan Shifts/P03A-Todays Files"
+}

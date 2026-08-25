@@ -1,0 +1,13 @@
+---
+description: Backup before writes; handle locked live CSV
+alwaysApply: false
+globs: "Custom Label Database/**"
+---
+
+# CSV writes
+
+Before a production write, copy the live file to `backups/` with a timestamp (under `Custom Label Database/`).
+
+If `PermissionError` (CSV open in Excel/Cursor): write `Custom_Label_Database_write_fallback.csv`, tell the supervisor to close the live file, then swap. Do not leave two competing live CSVs.
+
+PE CSV encoding: try `utf-8`, `utf-8-sig`, `cp1252`, `latin-1` (byte `0xB2` is not valid UTF-8).

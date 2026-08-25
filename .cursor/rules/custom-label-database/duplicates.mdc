@@ -1,0 +1,13 @@
+---
+description: Keep duplicate Custom Labels unless asked to merge
+alwaysApply: false
+globs: "Custom Label Database/**"
+---
+
+# Duplicates and seed drift
+
+Duplicate Custom Labels are **normal**. Do not merge, collapse, or delete copies unless asked. Same-label rows may differ (full BTC row vs seed-only paste).
+
+Do not auto-fix seed drift without asking: apostrophes in Gender Apparel, `Dark Heather` vs `Dark Heather Grey`, Size `3-6 Months` vs `0-3` on a `0>3` label, Navy/Royal colour families.
+
+Colour typos already cleaned historically (`Fuschia`, `Colbalt Blue`, `Sport Grey`) — do not re-run a whole-file colour pass unless asked.

@@ -1,0 +1,17 @@
+---
+description: Log resolved queue issues to this app issue-log
+alwaysApply: false
+globs: "Production Design Queue Manager/**"
+---
+
+# Issue resolution log
+
+When a queue bug/warning/operational issue is diagnosed or resolved, prepend an entry to `Production Design Queue Manager/.cursor/issue-log.md`.
+
+```markdown
+### YYYY-MM-DD HH:MM TZ
+**Issue:** One sentence.
+**Resolution:** Concrete fix or conclusion.
+```
+
+Do not log pure how-tos. Write the log yourself in the same turn.

@@ -1,0 +1,20 @@
+---
+description: Persist CL decisions into parent rules and app docs
+alwaysApply: false
+globs: "Custom Label Database/**"
+---
+
+# Save everything as we go
+
+`Custom Label Database/` docs plus parent `.cursor/rules/custom-label-database/` are the memory. A new chat will not remember this conversation. Write in the **same turn**.
+
+| Kind | Where |
+|------|--------|
+| Policy / do-not / fill rule | Parent `.cursor/rules/custom-label-database/*.mdc` (one concern; globs for this app) |
+| Role / hard do-nots | `Custom Label Database/AGENTS.md` |
+| Facts, incidents, mappings | `docs/FINDINGS.md` |
+| Current snapshot, leftovers | `docs/HANDOFF.md` |
+| Live vs helper vs archive | `docs/WORKSPACE.md` |
+| Chat transcript copy | `docs/chats/<uuid>.jsonl` |
+
+Save: decisions, sources of truth, blank-only vs overwrite, CSV fills (counts, backup path, before→after), leftovers. If it mattered in chat, it belongs in a file.

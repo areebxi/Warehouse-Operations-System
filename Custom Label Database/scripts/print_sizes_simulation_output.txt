@@ -1,0 +1,374 @@
+﻿=== Print Sizes lookup table ===
+   Apparel Size  A4_W  A4_H  A3_W  A3_H  Neck_W  Neck_H
+2          1-2Y   132   187   168   237     132     132
+3          2-3Y   168   237   200   282     150     150
+4      3-4Y/YXS   176   250   231   326     168     168
+5       5-6Y/YS   222   315   250   253     150     150
+6       7-8Y/YM   250   353   280   396     168     168
+7      9-11Y/YL   250   353   280   396     178     178
+8    12-13Y/YXL   250   353   300   424     178     178
+9     Men Small   237   336   280   396     200     200
+10   Men Medium   267   378   300   424     210     210
+11    Men Large   267   378   318   450     210     210
+12       Men XL   267   378   350   494     210     210
+13      Men 2XL   267   378   378   535     222     222
+14      Men 3XL   318   450   420   594     222     222
+15      Men 4XL   318   450   420   594     222     222
+16      Men 5XL   357   504   445   630     222     222
+
+=== Size References row profiles ===
+Total rows: 22727
+  With Gender+Size: 12,957
+  With Printing Position: 22,429
+  With Product Code: 22,429
+  With Suffix only (no gender): 4,260
+  With Printing Size: 22,457
+  Unique SKU Value: 15,614
+
+Gender+Size sample:
+        SKU Value SKU Value 2 SKU Value 3 Number of Designs Size Width Size Height Suffix Gender Size        Printing Position                         Product Code Printing Size
+51  M118 (102722)                                       2.0       80.0       100.0      P    Men  4XL  Left Chest & Back Print  61082-61430-61036-61019-61033-61023            A4
+52  M118 (102722)                                       2.0      297.0       420.0      B    Men  4XL  Left Chest & Back Print  61082-61430-61036-61019-61033-61023            A4
+53  M118 (102723)                                       2.0       80.0       100.0      P    Men  5XL  Left Chest & Back Print  61082-61430-61036-61019-61033-61023            A4
+54  M118 (102723)                                       2.0      297.0       420.0      B    Men  5XL  Left Chest & Back Print  61082-61430-61036-61019-61033-61023            A4
+55  M118 (102724)                                       2.0       80.0       100.0      P    Men  4XL  Left Chest & Back Print  61082-61430-61036-61019-61033-61023            A4
+56  M118 (102724)                                       2.0      297.0       420.0      B    Men  4XL  Left Chest & Back Print  61082-61430-61036-61019-61033-61023            A4
+57  M118 (102725)                                       2.0       80.0       100.0      P    Men  5XL  Left Chest & Back Print  61082-61430-61036-61019-61033-61023            A4
+58  M118 (102725)                                       2.0      297.0       420.0      B    Men  5XL  Left Chest & Back Print  61082-61430-61036-61019-61033-61023            A4
+59  M118 (102726)                                       2.0       80.0       100.0      P    Men  4XL  Left Chest & Back Print  61082-61430-61036-61019-61033-61023            A4
+60  M118 (102726)                                       2.0      297.0       420.0      B    Men  4XL  Left Chest & Back Print  61082-61430-61036-61019-61033-61023            A4
+
+Printing Position sample:
+          SKU Value SKU Value 2 SKU Value 3 Number of Designs Size Width Size Height Suffix Gender   Size        Printing Position                         Product Code Printing Size
+51    M118 (102722)                                       2.0       80.0       100.0      P    Men    4XL  Left Chest & Back Print  61082-61430-61036-61019-61033-61023            A4
+1916  M119 (102722)                                       1.0       80.0       100.0           Men    4XL               Left Chest  61082-61430-61036-61019-61033-61023            A6
+2849  M180 (102722)                                       2.0      210.0       297.0      F    Men    4XL       Front & Back Print                    61082-61430-61036            A4
+4423  M214 (103108)                                       1.0      280.0       396.0                Small              Front Print                                64000            A3
+6436  M261 (102722)                                       1.0      320.0       380.0           Men    4XL               Back Print  61082-61430-61036-61019-61033-61023            A4
+
+Suffix distribution:
+Suffix
+       9237
+B      6744
+P      3728
+F      3016
+S         1
+S-1       1
+Name: count, dtype: int64
+
+Printing Size values: {'A4': 12033, 'A3': 6693, 'A6': 1866, 'A6 / A3': 1865, '': 270}
+
+Top SKU Value entries:
+SKU Value
+10AILG-M-T      4
+M42 (93074)     2
+M42 (93073)     2
+M42 (93072)     2
+M42 (93071)     2
+M42 (93070)     2
+M42 (93069)     2
+M263 (56262)    2
+M263 (66616)    2
+M263 (3278)     2
+M263 (3279)     2
+M263 (3280)     2
+M263 (3281)     2
+M263 (3282)     2
+M263 (36488)    2
+M263 (36489)    2
+M263 (36490)    2
+M263 (36491)    2
+M263 (36492)    2
+M263 (44912)    2
+Name: count, dtype: int64
+
+Paper size rows:
+  SKU Value SKU Value 2 SKU Value 3 Number of Designs Size Width Size Height Suffix Gender Size Printing Position Product Code Printing Size
+5        A3                                       1.0      297.0       420.0                                                                
+7        A4                                       1.0      210.0       297.0                                                                
+8        A5                                       1.0      148.0       210.0                                                                
+9        A6                                       1.0      105.0       148.0                                                                
+
+Product Code unique values:
+  61082-61430-61036-61019-61033-61023: 16787
+  61082-61430-61036: 1045
+  18500: 529
+  64000: 1097
+  61420-61432-61372: 349
+  61098: 731
+  64200L: 732
+  61430: 1
+  61430-61036: 389
+  61033: 769
+
+=== Database: 119,179 rows ===
+
+Print position count distribution (non-empty):
+Pos_Count
+1    19812
+2    23999
+3        8
+4       24
+Name: count, dtype: int64
+
+Top Print Positions values:
+Print Positions
+Front Center                                                               12467
+Front Center, Back Center                                                   5706
+Front Left Pocket                                                           4277
+Front Left Pocket, Back Center (M118)                                       3760
+Back Center                                                                 3022
+Front Left Pocket, Back Center (M262)                                       2811
+Front Center, Back Center (M180)                                            2088
+Front Left Pocket, Back Center                                              1909
+Front Center, Back Center (M263)                                            1866
+Back Center, Front Left Pocket (M42)                                        1864
+Front Center, Sleeve                                                        1288
+Front Center, Back Center (M195)                                            1062
+Front Left Pocket, Front Bottom Left Corner                                  508
+Front Left Pocket, Front Center                                              332
+front-neck-left, left-long sleeve-front-full forearm-shoulder to sleeve      240
+Name: count, dtype: int64
+
+Lookup indexes: sku_suffix=22360, gss=81, gs=0
+
+DB rows mapped to Print Sizes apparel key: 107,027 (89.8%)
+Unmapped size samples: {'12-14 Years': 3418, '14-15 Years': 3307, 'Standard Size': 2092, 'Extra Large': 1046, '0-3 Months': 261, 'A4': 259, '6-12 Months': 251, '3-6 Months': 250, 'Extra Small': 190, '18-24 Months': 171, '12-18 Months': 162, '11Oz': 150, '150mm*150mm': 48, 'A5': 47, 'A5-Rectangle': 38}
+
+Size Ref Gender+Size combos:
+      Gender    Size        Printing Position Size Width Size Height Printing Size
+51       Men     4XL  Left Chest & Back Print       80.0       100.0            A4
+52       Men     4XL  Left Chest & Back Print      297.0       420.0            A4
+53       Men     5XL  Left Chest & Back Print       80.0       100.0            A4
+54       Men     5XL  Left Chest & Back Print      297.0       420.0            A4
+67       Men   Small  Left Chest & Back Print       80.0       100.0            A4
+68       Men   Small  Left Chest & Back Print      237.0       336.0            A4
+69       Men  Medium  Left Chest & Back Print       80.0       100.0            A4
+70       Men  Medium  Left Chest & Back Print      297.0       420.0            A4
+71       Men   Large  Left Chest & Back Print       80.0       100.0            A4
+72       Men   Large  Left Chest & Back Print      297.0       420.0            A4
+73       Men      XL  Left Chest & Back Print       80.0       100.0            A4
+74       Men      XL  Left Chest & Back Print      297.0       420.0            A4
+75       Men     2XL  Left Chest & Back Print       80.0       100.0            A4
+76       Men     2XL  Left Chest & Back Print      297.0       420.0            A4
+177     Kids    3-4Y  Left Chest & Back Print       65.0        80.0            A4
+178     Kids    3-4Y  Left Chest & Back Print      227.0       350.0            A4
+179     Kids    5-6Y  Left Chest & Back Print       65.0        80.0            A4
+180     Kids    5-6Y  Left Chest & Back Print      222.0       315.0            A4
+181     Kids    7-8Y  Left Chest & Back Print       65.0        80.0            A4
+182     Kids    7-8Y  Left Chest & Back Print      250.0       353.0            A4
+183     Kids   9-11Y  Left Chest & Back Print       65.0        80.0            A4
+184     Kids   9-11Y  Left Chest & Back Print      250.0       353.0            A4
+185     Kids  12-13Y  Left Chest & Back Print       65.0        80.0            A4
+186     Kids  12-13Y  Left Chest & Back Print      250.0       353.0            A4
+187     Kids  14-15Y  Left Chest & Back Print       65.0        80.0            A4
+188     Kids  14-15Y  Left Chest & Back Print      237.0       336.0            A4
+451      Men     3XL  Left Chest & Back Print       80.0       100.0            A4
+452      Men     3XL  Left Chest & Back Print      297.0       420.0            A4
+643     Kids    1-2Y  Left Chest & Back Print       65.0        80.0            A4
+644     Kids    1-2Y  Left Chest & Back Print      132.0       187.0            A4
+645     Kids    2-3Y  Left Chest & Back Print       65.0        80.0            A4
+646     Kids    2-3Y  Left Chest & Back Print      168.0       237.0            A4
+1916     Men     4XL               Left Chest       80.0       100.0            A6
+1917     Men     5XL               Left Chest       80.0       100.0            A6
+1924     Men   Small               Left Chest       80.0       100.0            A6
+1925     Men  Medium               Left Chest       80.0       100.0            A6
+1926     Men   Large               Left Chest       80.0       100.0            A6
+1927     Men      XL               Left Chest       80.0       100.0            A6
+1928     Men     2XL               Left Chest       80.0       100.0            A6
+1979    Kids    3-4Y               Left Chest       65.0        80.0            A6
+1980    Kids    5-6Y               Left Chest       65.0        80.0            A6
+1981    Kids    7-8Y               Left Chest       65.0        80.0            A6
+1982    Kids   9-11Y               Left Chest       65.0        80.0            A6
+1983    Kids  12-13Y               Left Chest       65.0        80.0            A6
+1984    Kids  14-15Y               Left Chest       65.0        80.0            A6
+2116     Men     3XL               Left Chest       80.0       100.0            A6
+2212    Kids    1-2Y               Left Chest       65.0        80.0            A6
+2213    Kids    2-3Y               Left Chest       65.0        80.0            A6
+2849     Men     4XL       Front & Back Print      210.0       297.0            A4
+2851     Men     5XL       Front & Back Print      210.0       297.0            A4
+2865     Men   Small       Front & Back Print      237.0       336.0            A4
+2867     Men  Medium       Front & Back Print      210.0       297.0            A4
+2869     Men   Large       Front & Back Print      210.0       297.0            A4
+2871     Men      XL       Front & Back Print      210.0       297.0            A4
+2873     Men     2XL       Front & Back Print      210.0       297.0            A4
+2985     Men     3XL       Front & Back Print      210.0       297.0            A4
+5503     Men     4XL              Front Print      320.0       380.0            A4
+5504     Men     5XL              Front Print      360.0       400.0            A4
+5511     Men   Small              Front Print      237.0       336.0            A4
+5512     Men  Medium              Front Print      270.0       320.0            A4
+5513     Men   Large              Front Print      271.0       339.0            A4
+5514     Men      XL              Front Print      271.0       296.0            A4
+5515     Men     2XL              Front Print      271.0       313.0            A4
+5566    Kids    3-4Y              Front Print      177.0       177.0            A4
+5567    Kids    5-6Y              Front Print      222.0       315.0            A4
+5568    Kids    7-8Y              Front Print      250.0       353.0            A4
+5569    Kids   9-11Y              Front Print      250.0       353.0            A4
+5570    Kids  12-13Y              Front Print      250.0       353.0            A4
+5571    Kids  14-15Y              Front Print      237.0       336.0            A4
+5703     Men     3XL              Front Print      320.0       370.0            A4
+5799    Kids    1-2Y              Front Print      132.0       187.0            A4
+5800    Kids    2-3Y              Front Print      168.0       237.0            A4
+6436     Men     4XL               Back Print      320.0       380.0            A4
+6437     Men     5XL               Back Print      297.0       420.0            A4
+6444     Men   Small               Back Print      237.0       336.0            A4
+6445     Men  Medium               Back Print      297.0       420.0            A4
+6446     Men   Large               Back Print      271.0       339.0            A4
+6447     Men      XL               Back Print      297.0       420.0            A4
+6448     Men     2XL               Back Print      271.0       313.0            A4
+6499    Kids    3-4Y               Back Print      177.0       177.0            A4
+6500    Kids    5-6Y               Back Print      222.0       315.0            A4
+6501    Kids    7-8Y               Back Print      250.0       353.0            A4
+6502    Kids   9-11Y               Back Print      250.0       353.0            A4
+6503    Kids  12-13Y               Back Print      250.0       353.0            A4
+6504    Kids  14-15Y               Back Print      237.0       336.0            A4
+6636     Men     3XL               Back Print      320.0       370.0            A4
+6732    Kids    1-2Y               Back Print      132.0       187.0            A4
+6733    Kids    2-3Y               Back Print      168.0       237.0            A4
+7369     Men     4XL  Left Chest & Back Print      210.0       297.0            A4
+7371     Men     5XL  Left Chest & Back Print      210.0       297.0            A4
+7387     Men  Medium  Left Chest & Back Print      210.0       297.0            A4
+7389     Men   Large  Left Chest & Back Print      210.0       297.0            A4
+7391     Men      XL  Left Chest & Back Print      210.0       297.0            A4
+7393     Men     2XL  Left Chest & Back Print      210.0       297.0            A4
+7769     Men     3XL  Left Chest & Back Print      210.0       297.0            A4
+9233     Men     4XL       Front & Back Print      255.0       340.0            A4
+9234     Men     4XL       Front & Back Print      297.0       420.0            A4
+9235     Men     5XL       Front & Back Print      255.0       340.0            A4
+9236     Men     5XL       Front & Back Print      297.0       420.0            A4
+9251     Men  Medium       Front & Back Print      255.0       340.0            A4
+9252     Men  Medium       Front & Back Print      297.0       420.0            A4
+9253     Men   Large       Front & Back Print      255.0       340.0            A4
+9254     Men   Large       Front & Back Print      297.0       420.0            A4
+9255     Men      XL       Front & Back Print      255.0       340.0            A4
+9256     Men      XL       Front & Back Print      297.0       420.0            A4
+9257     Men     2XL       Front & Back Print      255.0       340.0            A4
+9258     Men     2XL       Front & Back Print      297.0       420.0            A4
+9359    Kids    3-4Y       Front & Back Print      170.0       225.0            A4
+9360    Kids    3-4Y       Front & Back Print      225.0       350.0            A4
+9361    Kids    5-6Y       Front & Back Print      222.0       315.0            A4
+9363    Kids    7-8Y       Front & Back Print      250.0       353.0            A4
+9365    Kids   9-11Y       Front & Back Print      250.0       353.0            A4
+9367    Kids  12-13Y       Front & Back Print      250.0       353.0            A4
+9369    Kids  14-15Y       Front & Back Print      237.0       336.0            A4
+9633     Men     3XL       Front & Back Print      255.0       340.0            A4
+9634     Men     3XL       Front & Back Print      297.0       420.0            A4
+9825    Kids    1-2Y       Front & Back Print      132.0       187.0            A4
+9827    Kids    2-3Y       Front & Back Print      168.0       237.0            A4
+12033    Men  Medium       Front & Back Print      270.0       320.0            A4
+12035    Men   Large       Front & Back Print      271.0       339.0            A4
+12037    Men      XL       Front & Back Print      271.0       296.0            A4
+12039    Men     2XL       Front & Back Print      271.0       313.0            A4
+12071    Men     3XL       Front & Back Print      320.0       370.0            A4
+12225    Men     4XL       Front & Back Print      320.0       380.0            A4
+12271    Men     5XL       Front & Back Print      360.0       400.0            A4
+12487    Men      XS       Front & Back Print      240.0       300.0            A4
+19090    Men     4XL  Left Chest & Back Print       80.0       100.0            A3
+19091    Men     4XL  Left Chest & Back Print      320.0       380.0            A3
+19092    Men     5XL  Left Chest & Back Print       80.0       100.0            A3
+19093    Men     5XL  Left Chest & Back Print      210.0       297.0            A3
+19106    Men   Small  Left Chest & Back Print      280.0       396.0            A3
+19107    Men   Small  Left Chest & Back Print       80.0       100.0            A3
+19108    Men  Medium  Left Chest & Back Print       80.0       100.0            A3
+19109    Men  Medium  Left Chest & Back Print      210.0       297.0            A3
+19110    Men   Large  Left Chest & Back Print       80.0       100.0            A3
+19111    Men   Large  Left Chest & Back Print      210.0       297.0            A3
+19112    Men      XL  Left Chest & Back Print       80.0       100.0            A3
+19113    Men      XL  Left Chest & Back Print      210.0       297.0            A3
+19114    Men     2XL  Left Chest & Back Print       80.0       100.0            A3
+19115    Men     2XL  Left Chest & Back Print      210.0       297.0            A3
+19216   Kids    3-4Y  Left Chest & Back Print       65.0        80.0            A3
+19217   Kids    3-4Y  Left Chest & Back Print      227.0       350.0            A3
+19218   Kids    5-6Y  Left Chest & Back Print       65.0        80.0            A3
+19219   Kids    5-6Y  Left Chest & Back Print      250.0       253.0            A3
+19220   Kids    7-8Y  Left Chest & Back Print       65.0        80.0            A3
+19221   Kids    7-8Y  Left Chest & Back Print      280.0       396.0            A3
+19222   Kids   9-11Y  Left Chest & Back Print       65.0        80.0            A3
+19223   Kids   9-11Y  Left Chest & Back Print      280.0       396.0            A3
+19224   Kids  12-13Y  Left Chest & Back Print       65.0        80.0            A3
+19225   Kids  12-13Y  Left Chest & Back Print      300.0       424.0            A3
+19226   Kids  14-15Y  Left Chest & Back Print       65.0        80.0            A3
+19227   Kids  14-15Y  Left Chest & Back Print      280.0       396.0            A3
+19490    Men     3XL  Left Chest & Back Print       80.0       100.0            A3
+19491    Men     3XL  Left Chest & Back Print      210.0       297.0            A3
+19682   Kids    1-2Y  Left Chest & Back Print       65.0        80.0            A3
+19683   Kids    1-2Y  Left Chest & Back Print      168.0       237.0            A3
+19684   Kids    2-3Y  Left Chest & Back Print       65.0        80.0            A3
+19685   Kids    2-3Y  Left Chest & Back Print      231.0       326.0            A3
+
+=== Match strategy counts (rows) ===
+  A: Supplier Product Code in SKU Value: 1,114 (0.9%)
+  B: Supplier SKU in SKU Value: 0 (0.0%)
+  C: Custom Label exact in SKU Value: 2 (0.0%)
+  D: Print Sizes apparel key match: 106,467 (89.3%)
+  E: Has Print Positions + apparel size key: 40,154 (33.7%)
+  F: Gender+Size in Size Ref (no pos): 0 (0.0%)
+  G: Supplier Product Code in Product Code list: 95,150 (79.8%)
+
+=== Supplier Product Code match detail ===
+Rows with SPC in SKU Value: 1,114
+
+  SPC=BG125J: 1 ref rows, DB rows=198
+    suffix='' W=140.0 H=70.0 designs=1.0
+
+  SPC=BG125: 1 ref rows, DB rows=142
+    suffix='' W=140.0 H=140.0 designs=1.0
+
+  SPC=QD442: 1 ref rows, DB rows=100
+    suffix='' W=150.0 H=60.0 designs=1.0
+
+  SPC=BG10: 1 ref rows, DB rows=78
+    suffix='' W=240.0 H=270.0 designs=1.0
+
+  SPC=QD456: 1 ref rows, DB rows=60
+    suffix='' W=300.0 H=160.0 designs=1.0
+
+Multi-design rows: 13,500
+Sample multi-design SKU Values:
+
+  SKU=10AILG-M-T, designs=4.0
+  Suffix Size Width Size Height Printing Size
+1      F      297.0       420.0              
+2      B      297.0       420.0              
+3      S      100.0        50.0              
+4    S-1      100.0        50.0              
+
+  SKU=M42 (66789), designs=2.0
+      Suffix Size Width Size Height Printing Size
+20912      P       65.0        80.0            A3
+20913      B      250.0       253.0            A3
+
+  SKU=M42 (66788), designs=2.0
+      Suffix Size Width Size Height Printing Size
+20910      P       65.0        80.0            A3
+20911      B      227.0       350.0            A3
+
+  SKU=M42 (66662), designs=2.0
+      Suffix Size Width Size Height Printing Size
+20908      P       80.0       100.0            A3
+20909      B      210.0       297.0            A3
+
+  SKU=M118 (120849), designs=2.0
+    Suffix Size Width Size Height Printing Size
+101      P       80.0       100.0            A4
+102      B      297.0       420.0            A4
+
+=== M01 Print Position Code pattern ===
+F4 = Front A4, B4 = Back A4, F14/F15 = small corners
+Suffix F/B/S in Size Ref likely maps to Front/Back/Sleeve
+
+Simulation: Front Center only + apparel key: 11,260
+Simulation: 2+ positions + apparel key: 22,065
+
+=== Override Print Size ===
+  SKU Contain  Width  Height
+0     62310LG     80     100
+1     2819ALG     80     100
+2     5039ALG     80     100
+Rows matching override contains: 0
+
+Supplier Product Code filled: 107,469 (90.2%)
+SPC in Size Ref SKU Value: 1,114
+SPC partial match to SKU Value: 1,142
+
+DONE

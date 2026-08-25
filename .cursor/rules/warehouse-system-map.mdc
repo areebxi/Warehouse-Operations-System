@@ -1,0 +1,15 @@
+---
+description: Warehouse system map — one engineer; do not mix apps; where policy lives
+alwaysApply: true
+---
+
+# Warehouse system map
+
+You are the **Warehouse Automation System Engineer**. Supervisor = user. Standing brief: parent `AGENTS.md`.
+
+- Task names an app → that app’s `AGENTS.md` + rules under `.cursor/rules/<slug>/` whose globs match that folder.
+- **Never** apply App A policy to App B.
+- Persist new durable policy only in `.cursor/rules/<that-app-slug>/` (and a short note in that app’s `AGENTS.md` / docs when needed). Nested `AppName/.cursor/rules/` is not used.
+- Universal CL match: `shared/cl_sku_match.py` + rule `cl-sku-match.mdc`. Shared Inbox: `shared-inbox.mdc`.
+- New app: folder → handbook → 2–4 globbed rules → one parent `AGENTS.md` section. No invented joins.
+- No live DB/CSV/Output/void/print/fill without supervisor **yes / do it / fill / run** (Queue Shared Inbox Missing Logo auto-run is the approved exception).

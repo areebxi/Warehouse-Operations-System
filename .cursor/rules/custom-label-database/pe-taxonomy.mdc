@@ -1,0 +1,25 @@
+---
+description: Fill and refresh PE taxonomy columns from Product Export
+alwaysApply: false
+globs: "Custom Label Database/**"
+---
+
+# PE taxonomy columns
+
+Source: `support/BTC Product Export.csv` (the product worksheet). Join: Supplier SKU → PE UID, else Custom Label numeric suffix.
+
+| DB column | PE column | Format | First fill | After PE corrections |
+|-----------|-----------|--------|------------|----------------------|
+| `Category` | `Department` | Title case | Blank only | **Overwrite** from new PE |
+| `Sub-Category` | `Sub Department` | Title case | Blank only | **Overwrite** from new PE |
+| `Department` | `Department` | Title case | Blank only | **Overwrite** from new PE |
+| `Sub-Department` | `Sub Department` | Title case | Blank only | **Overwrite** from new PE |
+| `Brand` | `Brand` | PE as-is | Blank only | Stay blank-only unless asked |
+
+Some PE Department / Sub Department rows are wrong. When the supervisor corrects them on the product worksheet, replace the matching live-DB cells (all four taxonomy columns). Do not leave stale values just because they are already filled.
+
+```text
+python scripts/fill_from_seeds.py --steps sku,pe --overwrite-pe-taxonomy --dry-run
+```
+
+`Tags` and `Size (Dimensions)` stay unfilled unless asked.

@@ -1,0 +1,24 @@
+---
+description: How seed rows are filled and which columns stay untouched
+alwaysApply: false
+globs: "Custom Label Database/**"
+---
+
+# Fill pipeline
+
+Seed columns (user-filled; do not invent): `Custom Label`, `Gender Apparel`, `Colour`, `Size`, `Apparel Image`, `Print Positions`, `Customise`.
+
+`scripts/fill_from_seeds.py` then, blank-only unless asked to correct:
+
+1. **Supplier SKU** = last numeric UID on Custom Label (`M260-214332` → `214332`). No UID → skip (iron-ons, C800T tokens, `K-H-DHR-YXS`, `W-T-ATTHR-M`, `77123-BTC`, BG542, …).
+2. **PE enrich** = `Supplier Name` + `Supplier Product Code` + `Brand` (**blank only**); `Category` / `Department` ← PE `Department`; `Sub-Category` / `Sub-Department` ← PE `Sub Department` (blank only on first fill). When PE Department / Sub Department is **corrected**, overwrite those four DB columns with `--overwrite-pe-taxonomy`.
+3. **Dedicated cols** (BTC / Ralawise / Absolute) from **Supplier Name**, not SKU.
+4. **Apparel Image** slug from Gender Apparel + Colour — **blank cells only**.
+5. **Print sizes** — see print-sizes rule.
+
+Do **not** fill unless asked: `Tags`, `Size (Dimensions)`.
+
+```text
+python scripts/fill_from_seeds.py --dry-run
+python scripts/fill_from_seeds.py --iloc-from 124109
+```

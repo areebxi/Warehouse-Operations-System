@@ -1,0 +1,22 @@
+{
+  "input_csv": "G:\\My Drive\\Pakistan\\01-UK\\G-Packing List\\08-Aug\\11th\\3rd Shift\\4300.csv",
+  "date": "11-08-2026",
+  "shift": "3rd",
+  "output_dir": "D:/Areeb Work/Apps/Warehouse Operations System - Testing/Packing List App - Testing/Output",
+  "workbook_path": "D:/Areeb Work/Apps/Warehouse Operations System - Testing/Packing List App - Testing/Data/Workbook.xlsx",
+  "apparel_dir": "I:/My Drive/00-Operations & Production/01B-Packling List",
+  "logo_normal_dir": "I:/My Drive/00-Operations & Production/01-DTF Designs",
+  "logo_custom_single_dir": "I:/My Drive/00-Operations & Production/01A-Per Design/1-SP",
+  "logo_custom_double_dir": "I:/My Drive/00-Operations & Production/01A-Per Design/2-DP",
+  "pdf_copy_dir": "",
+  "excel_copy_dir": "",
+  "separate_by_logo_id": false,
+  "logo_id_threshold": 5,
+  "use_fixed_process_number": true,
+  "fixed_process_number": "",
+  "run_missing_logo_pipeline": false,
+  "input_mode": "file",
+  "shipstation_tags": [],
+  "shipstation_tag_name": "",
+  "shipstation_tag_id": ""
+}

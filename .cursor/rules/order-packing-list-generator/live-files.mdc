@@ -1,0 +1,23 @@
+---
+description: Packing live files and CL / Shared Inbox paths
+alwaysApply: false
+globs: "Order Packing List Generator/**"
+---
+
+# Live files
+
+App root: `Order Packing List Generator/`.
+
+| Path | Role |
+|---|---|
+| `packing_list_app.py` / pipeline scripts | Live packing pipeline |
+| `Data/Workbook.xlsx` | Process sheets live; **CL Database sheet archive-only** (lookup retired) |
+| `../Custom Label Database/Custom_Label_Database.csv` | Step 2 enrich source of truth |
+| `Data/New SKU Database.csv` | DTF Des Item-SKU remap only |
+| `Input/` | ShipStation CSV exports |
+| `Output/` | Process CSVs, PDFs, Picking / Orders Details / DTF Des |
+| `../Shared Inbox/DTF Des/{date}/{shift}/` | Dual-write of DTF Des (handoff) |
+| `preflight_issues_app.py`, `missing_run_app.py` | Helper tools |
+
+SKU match: `shared/cl_sku_match.py` (whole → after-first-dash → till-last-dash) on Custom Label.
+Column maps in `enrich_cl_lookup.py` (e.g. Position ← Print Positions, Picture Name ← Apparel Image, Prime ← Amazon Prime). Logo/Design Image left blank from CL.

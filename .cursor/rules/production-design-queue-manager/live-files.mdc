@@ -1,0 +1,21 @@
+---
+description: Queue live files, CL sizes, Shared Inbox auto Missing Logo
+alwaysApply: false
+globs: "Production Design Queue Manager/**"
+---
+
+# Live files
+
+App root: `Production Design Queue Manager/`.
+
+| Path | Role |
+|---|---|
+| `queue_app.py` | Live GUI entry |
+| `run_auto_missing_logo.bat` / `scripts/auto_missing_logo_watcher.py` | Shared Inbox Missing Logo auto-run |
+| `config/queue_app_settings.json` | Design folder paths for GUI + auto-run |
+| `config/Configuration Workbook.xlsx` | Pocket / Override Print Size (Size References sheet archive for sizing) |
+| `../Custom Label Database/Custom_Label_Database.csv` | Print sizes (Width/Height mm) via universal SKU match |
+| `../Shared Inbox/DTF Des/` | Inbox → Processed / Failed |
+| `Output/`, `Logs/`, `Missing Size Reference/` | Outputs |
+
+Do not use CL `support/Size References.csv` as this app’s live size table.

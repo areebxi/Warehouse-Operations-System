@@ -1,0 +1,14 @@
+---
+description: CL catalog approval and working style
+alwaysApply: false
+globs: "Custom Label Database/**"
+---
+
+# Custom Label Database — work style
+
+Domain handbook: `Custom Label Database/AGENTS.md`. App root = `Custom Label Database/` (parent of `scripts/`). Run Python from that folder.
+
+- No production writes without `yes` / `do it` / `fill` / `run`.
+- Propose, `--dry-run`, then wait. One problem at a time.
+- Scope fills (`--iloc-from`, `--shirts-only`, `--w1-blank`) when only a slice changed. Do not whole-file rewrite “to be safe.”
+- Prefer CSV. Save decisions in docs + this rules tree; chat is not memory.
