@@ -216,13 +216,17 @@ def _write_dtf_des(
         m = dtf_sku_map or {}
         segments = [_remap_dtf_item_sku(seg, m) for seg in segments]
         qty = max(1, int(row.get("Item Quantity", 1) or 1))
+        notes_from_buyer = (
+            _normalize(row.get("Notes From Buyer", ""))
+            or _normalize(row.get("Notes - From Buyer", ""))
+        )
         base_row = [
             _order_number_base(row),
             1,
             item_sku,
             _normalize(row.get("Item Name", "")),
             _normalize(row.get("Recipient Name", "")),
-            "", "", "", process_display, _normalize(row.get("Gender Apparel", "")),
+            notes_from_buyer, "", "", process_display, _normalize(row.get("Gender Apparel", "")),
             "", "", "",
         ]
         for seg in segments:

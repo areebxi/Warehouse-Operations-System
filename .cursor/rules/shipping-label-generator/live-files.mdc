@@ -14,7 +14,8 @@ App folder = **code only**. Resolve via `shared/paths.py` / `load_config`.
 | `runtime/Shipping/DTF Des Files/` | Input desfiles |
 | `runtime/Shipping/DTF Des Files - Processed/` | Archived inputs |
 | `config/Shipping/shipping_config.yaml` | Tuneables |
-| `config/Shipping/.env` | Secrets (never commit) |
+| `config/ShipStation/.env` | ShipStation secrets |
+| `config/Shipping/.env` | Optional app overrides (no API keys) |
 | `runtime/Shipping/Output/` | Labels and batch PDFs |
 
 Does **not** auto-read SharedInbox yet.

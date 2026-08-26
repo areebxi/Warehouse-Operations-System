@@ -1,18 +1,13 @@
 """
-Example configuration file for ShipStation API credentials
-Copy this file to config.py and update with your actual credentials
+Example configuration for Purchase Order Generator (BTC FTP / stock).
+
+ShipStation API credentials are NOT here — use config/ShipStation/.env:
+  REAL_API_BASE_URL=https://ssapi.shipstation.com
+  REAL_API_KEY=...
+  REAL_API_SECRET=...
+
+Copy this file to config/PurchaseOrder/config.py and fill FTP values.
 """
-
-# ShipStation API Configuration
-# Get these from your ShipStation account settings
-SHIPSTATION_API_KEY = "your_api_key_here"
-SHIPSTATION_API_SECRET = "your_api_secret_here"
-
-# How to get your API credentials:
-# 1. Log in to your ShipStation account
-# 2. Go to Settings > API Settings
-# 3. Generate or copy your API Key and API Secret
-# 4. Replace the values above with your actual credentials
 
 # BTC stock download — see FOLDER_LAYOUT.md → "Changing the BTC stock file"
 #

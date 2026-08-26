@@ -91,6 +91,13 @@ FONT_SIZE_LEFT_LABEL = FONT_SIZE + 6
 DATE_HEADER_FONT_SIZE = 10
 DATE_HEADER_TOP_OFFSET = 10
 
+# Buyer note band in left-bottom product-image cell (empty note → no band)
+NOTE_FROM_BUYER_PREFIX = "Note From Buyer: "
+NOTE_FROM_BUYER_MAX_LINES = 6
+NOTE_FROM_BUYER_MAX_H_PT = 80
+NOTE_FROM_BUYER_FONT_SIZE = FONT_SIZE_POSITION  # 11 pt
+
+
 OUTLINE_WIDTH = 0.5
 HEADER_PAD_PT = 2  # padding around Order Number, Item SKU, Process and Item Number, Item Name
 HEADER_TOP_PAD_PT = 1  # extra padding at top for those header fields

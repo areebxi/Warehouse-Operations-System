@@ -3,21 +3,16 @@ from __future__ import annotations
 import argparse
 import asyncio
 import base64
-import os
 import sys
+from pathlib import Path
 from typing import Any
 
 import aiohttp
-from dotenv import load_dotenv
 
 
 def _basic_auth_header(key: str, secret: str) -> str:
     token = base64.b64encode(f"{key}:{secret}".encode("utf-8")).decode("ascii")
     return f"Basic {token}"
-
-
-def _env(name: str) -> str:
-    return (os.getenv(name) or "").strip()
 
 
 async def _get_shipments_by_tracking(
@@ -60,15 +55,21 @@ async def _void_shipment(
 
 
 async def _run(*, tracking: str) -> int:
-    load_dotenv(override=False)
+    warehouse = Path(__file__).resolve().parents[5]
+    if str(warehouse) not in sys.path:
+        sys.path.insert(0, str(warehouse))
+    from shared.shipstation.credentials import ensure_shipstation_env, load_shipstation_credentials
 
-    key = _env("SHIPSTATION_API_KEY")
-    secret = _env("SHIPSTATION_API_SECRET")
-    base_url = _env("SHIPSTATION_API_BASE_URL") or "https://ssapi.shipstation.com"
-
-    if not key or not secret:
-        print("ERROR: Missing SHIPSTATION_API_KEY / SHIPSTATION_API_SECRET in environment or .env", file=sys.stderr)
+    ensure_shipstation_env()
+    try:
+        creds = load_shipstation_credentials()
+    except Exception as e:
+        print(f"ERROR: ShipStation credentials: {e}", file=sys.stderr)
         return 2
+
+    key = creds.api_key
+    secret = creds.api_secret
+    base_url = creds.base_url
 
     tracking = str(tracking).strip()
     if not tracking:

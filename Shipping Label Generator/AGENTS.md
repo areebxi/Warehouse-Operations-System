@@ -22,8 +22,8 @@ App folder = **code only**. Live paths via `shared/paths.py` / `load_config`.
 
 | `runtime/Shipping/DTF Des Files/` | `…/DTF Des Files - Processed/` |
 
-| `config/Shipping/shipping_config.yaml`, `.env` | `docs/archive/` |
-
+| `config/Shipping/shipping_config.yaml` | Tuneables |
+| `config/ShipStation/.env` | ShipStation secrets |
 | `runtime/Shipping/Output/` | |
 
 

@@ -99,8 +99,16 @@ def _absolutize_shipping_paths(cfg: dict[str, Any]) -> dict[str, Any]:
 
 def load_config(config_path: str | os.PathLike[str] | None = None) -> AppConfig:
     wh = _warehouse_paths()
+    warehouse = _repo_root().parent
+    if str(warehouse) not in sys.path:
+        sys.path.insert(0, str(warehouse))
+    from shared.shipstation.credentials import ensure_shipstation_env
+
+    ensure_shipstation_env()
+    load_dotenv(wh.shipstation_env_path(), override=False)
+    # App-only overrides (provider, concurrency notes) — not ShipStation API keys
     load_dotenv(wh.shipping_env_path(), override=False)
-    load_dotenv(override=False)  # allow local override if present
+    load_dotenv(override=False)
 
     cfg: dict[str, Any] = default_config_dict()
 

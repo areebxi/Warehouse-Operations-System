@@ -19,8 +19,7 @@ import openpyxl
 from ftplib import FTP, error_perm, error_temp, error_reply  # noqa: F401 (for parity logging)
 
 # Reuse original modules and helpers
-from shipstation_orders import ShipStationAPI
-from config import SHIPSTATION_API_KEY, SHIPSTATION_API_SECRET
+from shipstation_orders import ShipStationAPI, ShipStationError
 from app_paths import DATA_DIR, asset_path, data_path, shipstation_tags_path, tag_output_dir
 from pdf_generator import generate_packing_slips_for_tag
 
@@ -280,49 +279,40 @@ class ShipStationGUI:
                 self.log_message(f"[WARNING] FTP step raised an exception: {e}")
             self.log_message("")
 
-            # Credentials check
-            if not SHIPSTATION_API_KEY or not SHIPSTATION_API_SECRET or SHIPSTATION_API_KEY == "your_api_key_here" or SHIPSTATION_API_SECRET == "your_api_secret_here":
-                self.log_message("[ERROR] Please configure your API credentials in config.py")
-                self.log_message("   Copy config_example.py to config.py and update with your actual credentials")
-                return
-
-            # API init
+            # API init (shared ShipStation credentials)
             try:
                 self.log_message("[INFO] Initializing API client...")
-                shipstation = ShipStationAPI(SHIPSTATION_API_KEY, SHIPSTATION_API_SECRET)
+                shipstation = ShipStationAPI()
                 self.log_message("[SUCCESS] API client initialized successfully")
             except Exception as e:
                 self.log_message(f"[ERROR] Error initializing API client: {e}")
+                self.log_message(
+                    "   Create config/ShipStation/.env with REAL_API_KEY / REAL_API_SECRET"
+                )
                 return
 
             status_display = "Awaiting Dispatch"
             self.log_message(f"[SUCCESS] Processing: {status_display} orders only")
 
-            self.log_message(f"\n[FETCH] Fetching {status_display.lower()} orders with tag ID: {tag_id}...")
+            self.log_message(
+                f"\n[FETCH] Fetching {status_display.lower()} orders with tag ID: {tag_id}..."
+            )
             try:
-                orders = shipstation.get_awaiting_dispatch_orders()
+                filtered_orders = shipstation.get_orders_by_tag(tag_id)
+            except ShipStationError as e:
+                self.log_message(f"[ERROR] Error fetching orders: {e}")
+                return
             except Exception as e:
                 self.log_message(f"[ERROR] Error fetching orders: {e}")
                 return
 
-            if not orders:
-                self.log_message(f"[INFO] No {status_display.lower()} orders found.")
-                return
-
-            # Filter by tag
-            self.log_message("[FILTER] Filtering orders by tag ID...")
-            original_count = len(orders)
-            filtered_orders = []
-            for order in orders:
-                order_tags = order.get('tagIds') or []
-                if str(tag_id) in [str(t) for t in order_tags]:
-                    filtered_orders.append(order)
-                    self.log_message(f"[FOUND] Found order {order.get('orderNumber', 'N/A')} with tag ID {tag_id}")
-
-            self.log_message(f"[FILTER] Filtered {original_count} orders down to {len(filtered_orders)} orders")
             if not filtered_orders:
-                self.log_message("[INFO] No orders found with the specified tag ID.")
+                self.log_message(
+                    f"[INFO] No {status_display.lower()} orders found for tag ID {tag_id}."
+                )
                 return
+
+            self.log_message(f"[SUCCESS] Total orders found: {len(filtered_orders)}")
 
             # Process No lookup
             process_no = get_process_no_for_tag(tag_id)
@@ -347,7 +337,7 @@ class ShipStationGUI:
 
             # Export
             self.log_message("[EXPORT] Exporting orders...")
-            self.export_orders(filtered_orders, tag_id, tag_name, process_no)
+            self.export_orders(filtered_orders, tag_id, tag_name, process_no, shipstation)
 
             self.log_message("\n🎉 Done!")
             self.update_status("Completed successfully")
@@ -360,7 +350,14 @@ class ShipStationGUI:
             self.run_button.config(state='normal')
             self.progress.stop()
 
-    def export_orders(self, filtered_orders, tag_id: str, tag_name: str, process_no: str | None):
+    def export_orders(
+        self,
+        filtered_orders,
+        tag_id: str,
+        tag_name: str,
+        process_no: str | None,
+        shipstation: ShipStationAPI,
+    ):
         try:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             # Tag name mein spaces aur special characters replace karte hain
@@ -379,7 +376,6 @@ class ShipStationGUI:
 
             # Detailed CSV
             self.log_message("[CSV] Creating detailed CSV...")
-            shipstation = ShipStationAPI(SHIPSTATION_API_KEY, SHIPSTATION_API_SECRET)
             detailed_csv_file = shipstation.export_orders_to_csv(filtered_orders, detailed_csv_filename)
 
             self.log_message("[STOCK] Loading stock levels (config FTP_LOCAL_FILE)...")

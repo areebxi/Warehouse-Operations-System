@@ -14,6 +14,7 @@ def test_orders_to_rows_skips_discount_and_adjustment():
             "orderNumber": "ORD-1",
             "shipByDate": "2026-07-28T00:00:00.0000000",
             "giftMessage": "Happy!",
+            "customerNotes": "Ship soon please",
             "tagIds": [10, 20],
             "shipTo": {"name": "Alice"},
             "items": [
@@ -48,7 +49,22 @@ def test_orders_to_rows_skips_discount_and_adjustment():
     assert rows[0]["Item - Options"] == "Size: L"
     assert rows[0]["Recipient"] == "Alice"
     assert rows[0]["Gift - Message"] == "Happy!"
+    assert rows[0]["Notes - From Buyer"] == "Ship soon please"
     assert rows[0]["Tags"] == "Batch 100, Amazon Prime Order"
+
+
+def test_orders_to_rows_maps_customer_notes():
+    orders = [
+        {
+            "orderNumber": "ORD-N",
+            "customerNotes": "Birthday gift",
+            "tagIds": [10],
+            "shipTo": {"name": "Bob"},
+            "items": [{"sku": "S1", "name": "Tee", "quantity": 1}],
+        }
+    ]
+    rows = orders_to_rows(orders, {10: "Batch 100"})
+    assert rows[0]["Notes - From Buyer"] == "Birthday gift"
 
 
 def test_orders_to_rows_skips_post_order_designs_tag():

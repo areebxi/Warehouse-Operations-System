@@ -27,7 +27,7 @@ App folder = **code only**. Live paths via `shared/paths.py`.
 | `data/shipstation/ShipStation_Tags.xlsx` | Shared tags |
 
 | `runtime/Packing/Input|Output|…` | `config/Packing/` |
-
+| `config/ShipStation/.env` | ShipStation credentials |
 | `runtime/SharedInbox/DTF Des/{date}/{shift}/` | Dual-write DTF Des |
 
 

@@ -1,12 +1,13 @@
 """
-Simple script to run the ShipStation orders fetcher
-This script uses the config.py file for API credentials
+Simple script to run the ShipStation orders fetcher.
+
+ShipStation credentials: config/ShipStation/.env (REAL_API_*).
+BTC FTP settings remain in config/PurchaseOrder/config.py.
 """
 
 import app_paths  # noqa: F401 — configures import paths before other local imports
 
-from shipstation_orders import ShipStationAPI
-from config import SHIPSTATION_API_KEY, SHIPSTATION_API_SECRET
+from shipstation_orders import ShipStationAPI, ShipStationError
 from pdf_generator import generate_packing_slips_for_tag
 import sys
 import os
@@ -1094,83 +1095,45 @@ def main():
         print("[WARNING] FTP download failed. Continuing with cached/missing stock data if available.")
     print()
     
-    # Check if credentials are configured
-    if SHIPSTATION_API_KEY == "your_api_key_here" or SHIPSTATION_API_SECRET == "your_api_secret_here":
-        print("[ERROR] Please configure your API credentials in config.py")
-        print("   Copy config_example.py to config.py and update with your actual credentials")
-        sys.exit(1)
-    
-    # Initialize API client
+    # Initialize API client (shared credentials)
     try:
         print("[INFO] Initializing API client...")
-        shipstation = ShipStationAPI(SHIPSTATION_API_KEY, SHIPSTATION_API_SECRET)
+        shipstation = ShipStationAPI()
         print("[SUCCESS] API client initialized successfully")
     except Exception as e:
         print(f"[ERROR] Error initializing API client: {e}")
-        print("   Please check your API credentials and internet connection")
+        print("   Create config/ShipStation/.env with REAL_API_KEY / REAL_API_SECRET")
         sys.exit(1)
-    
-    # Set to awaiting dispatch orders only
+
     status_display = "Awaiting Dispatch"
     print(f"[SUCCESS] Processing: {status_display} orders only")
-    
-    # Get tag ID from user
+
     print("\n[TAG SEARCH] Tag ID Search")
     tag_id = input("Enter TAG ID: ").strip()
     if not tag_id:
         print("[ERROR] Tag ID cannot be empty!")
         sys.exit(1)
-    
+
     print(f"\n[FETCH] Fetching {status_display.lower()} orders with tag ID: {tag_id}...")
     try:
-        orders = shipstation.get_awaiting_dispatch_orders()
-    except Exception as e:
+        filtered_orders = shipstation.get_orders_by_tag(tag_id)
+    except ShipStationError as e:
         print(f"[ERROR] Error fetching orders: {e}")
         print("   This could be due to:")
         print("   - Invalid API credentials")
         print("   - Network connectivity issues")
         print("   - ShipStation API rate limiting")
         sys.exit(1)
-    
-    if not orders:
-        print(f"[INFO] No {status_display.lower()} orders found.")
-        print("   This means all your orders are in other statuses.")
-        return
-    
-    # Filter orders by tag ID
-    print("[FILTER] Filtering orders by tag ID...")
-    original_count = len(orders)
-    filtered_orders = []
-    
-    for order in orders:
-        order_tags = order.get('tagIds') or []  # Handle None values
-        
-        # Check if order has the specified tag ID
-        tag_id_str = str(tag_id)
-        order_tags_str = [str(tag) for tag in order_tags]
-        
-        if tag_id_str in order_tags_str:
-            filtered_orders.append(order)
-            print(f"[FOUND] Found order {order.get('orderNumber', 'N/A')} with tag ID {tag_id}")
-    
-    print(f"[FILTER] Filtered {original_count} orders down to {len(filtered_orders)} orders")
-    
+    except Exception as e:
+        print(f"[ERROR] Error fetching orders: {e}")
+        sys.exit(1)
+
     if not filtered_orders:
-        print("[INFO] No orders found with the specified tag ID.")
-        print("   Available tag IDs in your orders:")
-        all_tag_ids = set()
-        for order in orders:
-            order_tags = order.get('tagIds') or []  # Handle None values
-            all_tag_ids.update(str(tag) for tag in order_tags)
-        if all_tag_ids:
-            print(f"   {', '.join(sorted(all_tag_ids))}")
-        else:
-            print("   No tags found in any orders")
+        print(f"[INFO] No {status_display.lower()} orders found for tag ID {tag_id}.")
         return
-    
+
     print(f"[SUCCESS] Total orders found: {len(filtered_orders)}")
-    
-    # Debug: Check first order structure
+
     if filtered_orders:
         first_order = filtered_orders[0]
         print("\n[DEBUG] Debug - First order structure:")

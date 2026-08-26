@@ -13,7 +13,7 @@ pip install -r requirements.txt
 - **Project files** (expected structure):
   - `Data/Workbook.xlsx` – CL lookup workbook.
   - `Data/ShipStation Tags.xlsx` – tag name / Tag ID / per-shift process-number mapping. Used when tag-mode process number is left blank. Sync from ShipStation with `python scripts/sync_shipstation_tags.py` (close the Excel file first).
-  - `API KEY.txt` – ShipStation API credentials at the project root (`REAL_API_BASE_URL`, `REAL_API_KEY`, `REAL_API_SECRET`) for tag-based order fetch.
+  - `config/ShipStation/.env` – ShipStation API credentials (`REAL_API_BASE_URL`, `REAL_API_KEY`, `REAL_API_SECRET`) for tag-based order fetch.
   - `Output/` – output folder (created automatically if missing).
   - Optional image folders for PDFs (top-level files only; no subfolders are scanned):
     - Apparel images
@@ -52,7 +52,7 @@ All three GUIs share a common look from `scripts/gui_theme.py` (applied at start
   - Orders that also have the **`post-order-designs`** tag are excluded.
   - Then runs the normal pipeline (sequentially per tag, like multi-file). Outputs go to:
     - `Output/{Date}/{Shift} Shift/{Process}/...`
-  - Credentials: project-root `API KEY.txt` (not stored in `gui_config.json`).
+  - Credentials: `config/ShipStation/.env` (not stored in `gui_config.json`).
 - **Input CSV(s)**: ShipStation CSV file(s) to process (when Input source is CSV file(s)).
   - Use **Add files…** to add one or more CSVs; **Remove selected** / **Remove all** to manage the list.
   - To process **multiple CSVs at once**, **Use fixed process number** must be enabled (adding 2+ files turns it on automatically); each filename (without extension) is used as that file’s process number.
@@ -251,7 +251,7 @@ This opens the **Preflight Issues App** window (maximized). Progress appears in 
   - On Run, fetches **awaiting_shipment** orders per tag into `Input/{Date}/{Shift} Shift/{Process}.csv`, then audits all fetched files together.
   - Orders that also have the **`post-order-designs`** tag are excluded.
   - Issues CSV is written under `{Output directory}/{Date}/{Shift} Shift/Preflight Issues_{timestamp}.csv`.
-  - Credentials: project-root `API KEY.txt`.
+  - Credentials: `config/ShipStation/.env`.
 - **Date (DD-MM-YYYY)** / **Shift** / **Process number**:
   - **Date** and **Shift** required in tag mode. **Process number** required for a single tag unless the Tags sheet has a value; ignored when multiple tags are selected.
   - In **CSV file(s)** mode the process field is disabled — each file’s filename stem is used as Process Number.

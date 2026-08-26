@@ -18,4 +18,5 @@ App folder = **code only**. Resolve via `scripts/app_paths.py` → `shared/paths
 | `Custom Label Database/Custom_Label_Database.csv` | Stock id fallback (`BTC SKU`) |
 | `data/images/purchase_order/` | brand_logos / product_images |
 | `runtime/PurchaseOrder/Output/` | Run outputs |
-| `config/PurchaseOrder/config.py` | Secrets (never commit) |
+| `config/ShipStation/.env` | ShipStation `REAL_API_*` |
+| `config/PurchaseOrder/config.py` | FTP/stock settings (never commit) |

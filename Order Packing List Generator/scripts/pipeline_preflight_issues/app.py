@@ -106,6 +106,7 @@ class PreflightIssuesApp:
                 continue
         if data is None:
             return
+        # ponytail: never restore date — always open as today (field stays editable)
         mapping = {
             "workbook_path": self.workbook_var,
             "output_dir": self.output_dir_var,
@@ -113,7 +114,6 @@ class PreflightIssuesApp:
             "logo_normal_dir": self.logo_normal_dir_var,
             "logo_custom_single_dir": self.logo_custom_single_dir_var,
             "logo_custom_double_dir": self.logo_custom_double_dir_var,
-            "date": self.date_var,
             "shift": self.shift_var,
             "process_number": self.process_number_var,
         }

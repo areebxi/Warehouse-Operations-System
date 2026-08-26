@@ -171,6 +171,20 @@ def test_fetch_input_csv_maps_gift_message(tmp_path: Path):
     assert rows[0]["Item Image URL"] == ""
 
 
+def test_fetch_input_csv_maps_notes_from_buyer(tmp_path: Path):
+    from scripts.pipeline_cl_lookup.fetch_input_csv import fetch_input_csv
+
+    raw = tmp_path / "raw.csv"
+    raw.write_text(
+        "Order - Number,Notes - From Buyer,Quantity,Item - SKU,Item - Name,Recipient\n"
+        'ORD-1,"Please ship ASAP",1,SKU-1,Name,Alice\n',
+        encoding="utf-8",
+    )
+    rows = fetch_input_csv(raw, warn_missing_columns=False)
+    assert rows[0]["Notes From Buyer"] == "Please ship ASAP"
+    assert set(rows[0].keys()) == set(OUTPUT_COLUMNS)
+
+
 def test_fetch_input_csv_skips_discount_item_name(tmp_path: Path):
     from scripts.pipeline_cl_lookup.fetch_input_csv import fetch_input_csv
 

@@ -389,14 +389,17 @@ class PackingListApp:
                 continue
         if data is None:
             return
+        # ponytail: never restore date — always open as today (field stays editable)
         var_map = {
-            "input_csv": self.input_csv_var, "date": self.date_var, "shift": self.shift_var, "output_dir": self.output_dir_var,
+            "input_csv": self.input_csv_var, "shift": self.shift_var, "output_dir": self.output_dir_var,
             "workbook_path": self.workbook_var, "apparel_dir": self.apparel_dir_var, "logo_normal_dir": self.logo_normal_dir_var,
             "logo_custom_single_dir": self.logo_custom_single_dir_var, "logo_custom_double_dir": self.logo_custom_double_dir_var,
             "pdf_copy_dir": self.pdf_copy_dir_var, "excel_copy_dir": self.excel_copy_dir_var,
         }
         for key in CONFIG_KEYS:
             if key not in data:
+                continue
+            if key == "date":
                 continue
             if key == "separate_by_logo_id" and isinstance(data[key], bool):
                 self.separate_by_logo_id_var.set(data[key])

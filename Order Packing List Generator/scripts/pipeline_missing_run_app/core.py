@@ -24,6 +24,29 @@ DEFAULT_MISSING_INPUT = MISSING_DIR / "Missing Input.csv"
 CONFIG_DIR = wh.packing_config_dir()
 MISSING_RUN_CONFIG = CONFIG_DIR / "missing_run_config.json"
 
+MISSING_PDF_SUBDIRS = ("Missing Logo", "Missing Apparel")
+DEFAULT_MISSING_TYPE = "Missing Logo"
+
+
+def resolve_missing_pdf_copy_dir(
+    base: str | Path | None,
+    missing_type: str,
+) -> Path | None:
+    """Append Missing Logo / Missing Apparel under the PDF copy base (if set)."""
+    raw = (str(base).strip() if base is not None else "")
+    if not raw:
+        return None
+    kind = (missing_type or "").strip()
+    if kind not in MISSING_PDF_SUBDIRS:
+        raise ValueError(
+            f"missing_type must be one of {MISSING_PDF_SUBDIRS}, got {missing_type!r}"
+        )
+    path = Path(raw)
+    # Avoid nesting when the field already ends with either subtype folder.
+    if path.name in MISSING_PDF_SUBDIRS:
+        path = path.parent
+    return path / kind
+
 
 def _normalise_match_value(value: object) -> str:
     if pd.isna(value):

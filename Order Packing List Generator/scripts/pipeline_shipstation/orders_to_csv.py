@@ -28,6 +28,7 @@ CSV_FIELDNAMES = [
     "Quantity",
     "Item - Image URL",
     "Gift - Message",
+    "Notes - From Buyer",
     "Item SKU",
     "Item Name",
     "Item - Options",
@@ -127,6 +128,7 @@ def orders_to_rows(
         order_number = str(order.get("orderNumber") or "").strip()
         ship_by = str(order.get("shipByDate") or "").strip()
         gift = str(order.get("giftMessage") or "").strip()
+        buyer_notes = str(order.get("customerNotes") or "").strip()
         recipient = _ship_to_name(order)
         tags = _tags_string(order.get("tagIds"), tag_id_to_name)
         items = order.get("items")
@@ -149,6 +151,7 @@ def orders_to_rows(
                     "Quantity": qty_str,
                     "Item - Image URL": str(item.get("imageUrl") or "").strip(),
                     "Gift - Message": gift,
+                    "Notes - From Buyer": buyer_notes,
                     "Item SKU": str(item.get("sku") or "").strip(),
                     "Item Name": item_name,
                     "Item - Options": _format_options(item.get("options")),

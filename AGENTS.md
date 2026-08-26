@@ -11,7 +11,7 @@ When a task names an app, follow that app’s `AGENTS.md` handbook and the paren
 | `data/` | Workbooks, stock CSVs, Product Export, ShipStation Tags, images, CL helpers |
 | `runtime/` | Input / Output / Logs / SharedInbox |
 | `config/` | Machine-local secrets and GUI settings |
-| `shared/` | Python helpers (`paths.py`, `cl_sku_match.py`) |
+| `shared/` | Python helpers (`paths.py`, `cl_sku_match.py`, `shipstation/`) |
 | `<App>/` | Code, docs, bats, requirements only |
 | `Custom Label Database/` | Code **plus** the live `Custom_Label_Database.csv` (CL owns its DB) |
 
@@ -38,6 +38,7 @@ Key live files:
 5. **Ship** — Shipping Label Generator from `runtime/Shipping/DTF Des Files/` (manual; SharedInbox auto-ship later).
 
 Shared matcher: `shared/cl_sku_match.py` — whole SKU → after first dash → till last dash; entire-cell match on Custom Label.
+Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets only in `config/ShipStation/.env`. Label create/void stays in Shipping.
 
 ## Apps
 
@@ -78,7 +79,7 @@ Shared matcher: `shared/cl_sku_match.py` — whole SKU → after first dash → 
 | Print sizes (Queue) | CL CSV Width/Height mm; Pocket overrides in Queue Configuration Workbook |
 | New SKU Database | Packing DTF Des Item-SKU remap only (`data/Packing/`) |
 | NocoDB | Custom Label Database scripts only |
-| ShipStation | Packing, PO, Shipping |
+| ShipStation | Packing, PO, Shipping via `shared/shipstation` (create/void local to Shipping) |
 
 **Later (not built):** Shipping auto-ingest from SharedInbox.
 

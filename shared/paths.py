@@ -135,10 +135,6 @@ def packing_config_dir(from_path: object | None = None) -> Path:
     return config_root(from_path) / "Packing"
 
 
-def packing_api_key_path(from_path: object | None = None) -> Path:
-    return packing_config_dir(from_path) / "API KEY.txt"
-
-
 def packing_gui_config_path(from_path: object | None = None) -> Path:
     return packing_config_dir(from_path) / "gui_config.json"
 
@@ -274,6 +270,18 @@ def shipping_env_path(from_path: object | None = None) -> Path:
 
 def shipping_yaml_path(from_path: object | None = None) -> Path:
     return shipping_config_dir(from_path) / "shipping_config.yaml"
+
+
+# --- ShipStation (shared credentials) ---
+
+
+def shipstation_config_dir(from_path: object | None = None) -> Path:
+    return config_root(from_path) / "ShipStation"
+
+
+def shipstation_env_path(from_path: object | None = None) -> Path:
+    """Warehouse ShipStation secrets file (REAL_API_*)."""
+    return shipstation_config_dir(from_path) / ".env"
 
 
 # --- Shared Inbox / images ---

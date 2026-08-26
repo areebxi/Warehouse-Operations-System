@@ -14,15 +14,16 @@ Also known in older docs as **Plain Orders**. App folder = **code only**.
 | `data/shipstation/ShipStation_Tags.xlsx` | Shared |
 | `data/product_export/ProductExport.csv` | Shared |
 | `data/images/purchase_order/` | brand_logos / product_images |
-| `runtime/PurchaseOrder/Output/` | `config/PurchaseOrder/config.py` |
+| `runtime/PurchaseOrder/Output/` | `config/PurchaseOrder/config.py` (FTP only) |
+| `config/ShipStation/.env` | Shared ShipStation `REAL_API_*` |
 
 ## How work is done
 
-Fetch ShipStation awaiting-dispatch by tag → primary stock id (before first dash) → else universal CL match → `BTC SKU` → free_stock → packing-slip PDFs under Runtime output.
+Fetch ShipStation awaiting-dispatch **by tag** (`shared.shipstation` / `orders/listbytag`) → primary stock id (before first dash) → else universal CL match → `BTC SKU` → free_stock → packing-slip PDFs under Runtime output.
 
 ## Hard do-nots
 
-- Do not paste credentials from `config.py` into docs or chat.
+- Do not paste credentials into docs or chat. ShipStation keys live in `config/ShipStation/.env`, not `config.py`.
 - Do not reinstate a second live CL CSV as the stock map source.
 - No live sync/output runs without **yes / do it / fill / run**.
 

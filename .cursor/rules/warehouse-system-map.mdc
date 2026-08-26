@@ -10,7 +10,7 @@ You are the **Warehouse Automation System Engineer**. Supervisor = user. Standin
 - Task names an app → that app’s `AGENTS.md` + rules under `.cursor/rules/<slug>/` whose globs match that folder.
 - **Never** apply App A policy to App B.
 - Persist new durable policy only in `.cursor/rules/<that-app-slug>/` (and a short note in that app’s `AGENTS.md` / docs when needed). Nested `AppName/.cursor/rules/` is not used.
-- Universal CL match: `shared/cl_sku_match.py` + rule `cl-sku-match.mdc`. Paths: `shared/paths.py` (`data/` / `runtime/` / `config/`). SharedInbox: `shared-inbox.mdc`.
+- Universal CL match: `shared/cl_sku_match.py` + rule `cl-sku-match.mdc`. Paths: `shared/paths.py` (`data/` / `runtime/` / `config/`). SharedInbox: `shared-inbox.mdc`. ShipStation: `shared/shipstation/` + `config/ShipStation/.env`.
 - App folders are **code-only** except Custom Label Database, which owns `Custom_Label_Database.csv`. Other live Excel/CSV/images/I/O live under warehouse `data/`, `runtime/`, `config/`.
 - New app: folder → handbook → 2–4 globbed rules → one parent `AGENTS.md` section → register paths in `shared/paths.py`. No invented joins.
 - No live DB/CSV/Output/void/print/fill without supervisor **yes / do it / fill / run** (Queue SharedInbox Missing Logo auto-run is the approved exception).

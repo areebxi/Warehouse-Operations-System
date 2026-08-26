@@ -6,8 +6,8 @@
 **/api_key*.txt
 **/api-key*.txt
 config/PurchaseOrder/config.py
-config/Packing/API KEY.txt
 config/Shipping/.env
+config/ShipStation/.env
 config/Queue/queue_app_settings.json
 config/Packing/*.json
 config/PurchaseOrder/gui_settings.json
@@ -17,6 +17,7 @@ config/PurchaseOrder/gui_settings.json
 !config/**/config_example.py
 !config/**/README.md
 !config/README.md
+!config/ShipStation/README.md
 
 # --- Python / tooling ---
 __pycache__/

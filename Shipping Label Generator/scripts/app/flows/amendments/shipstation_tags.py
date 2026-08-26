@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import asyncio
+import sys
+from pathlib import Path
 from typing import Any
 
 from scripts.app.flows.amendments.tags import OrderTagInfo
@@ -52,32 +55,26 @@ def _parse_tag_ids(raw: Any) -> list[int]:
     return out
 
 
+def _list_account_tags_sync() -> dict[int, str]:
+    """Shared sync client — one credentials path for the whole warehouse."""
+    warehouse = Path(__file__).resolve().parents[5]
+    if str(warehouse) not in sys.path:
+        sys.path.insert(0, str(warehouse))
+    from shared.shipstation import ShipStationClient
+
+    tags = ShipStationClient().list_tags()
+    return {int(t["tagId"]): str(t["name"]) for t in tags if t.get("name")}
+
+
 async def list_account_tags(provider: RealProvider) -> dict[int, str]:
     """
     Map tagId -> name from ShipStation GET /accounts/listtags.
+
+    Uses shared.shipstation sync client (same credentials as Packing/PO).
+    ``provider`` is kept for call-site compatibility / cache keying.
     """
-    data = await provider._request_json(method="GET", path="/accounts/listtags")
-    items: list[Any]
-    if isinstance(data, list):
-        items = data
-    elif isinstance(data, dict):
-        # Be defensive: some gateways wrap lists.
-        raw = data.get("tags") or data.get("list") or []
-        items = raw if isinstance(raw, list) else []
-    else:
-        items = []
-
-    out: dict[int, str] = {}
-    for it in items:
-        if not isinstance(it, dict):
-            continue
-        tid = _as_int(_get(it, "tagId", "tag_id", "id"))
-        name = str(_get(it, "name", "tagName", "tag_name") or "").strip()
-        if tid is None or not name:
-            continue
-        out[tid] = name
-    return out
-
+    _ = provider
+    return await asyncio.to_thread(_list_account_tags_sync)
 
 def _order_tag_info_from_raw(
     *,

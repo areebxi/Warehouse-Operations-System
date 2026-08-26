@@ -17,4 +17,5 @@ App folder = **code only**. Resolve via `shared/paths.py`.
 | `Custom Label Database/Custom_Label_Database.csv` | Enrich source |
 | `runtime/Packing/{Input,Output,logs,…}` | Run I/O |
 | `runtime/SharedInbox/DTF Des/{date}/{shift}/` | DTF Des dual-write |
-| `config/Packing/` | API KEY.txt, gui_config.json |
+| `config/ShipStation/.env` | ShipStation credentials |
+| `config/Packing/` | gui_config.json |

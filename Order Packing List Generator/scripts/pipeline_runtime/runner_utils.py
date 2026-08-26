@@ -63,6 +63,7 @@ PIPELINE_PREVIEW_COLUMNS: tuple[str, ...] = (
     "Item Quantity",
     "Ship By",
     "Recipient Name",
+    "Notes From Buyer",
     "Tags",
 )
 
