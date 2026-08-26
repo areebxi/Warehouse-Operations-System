@@ -1,7 +1,12 @@
 ﻿# data/
 
-Workbooks, stock CSVs, Product Export, ShipStation Tags, and image libraries used across apps (e.g. PO assets under `images/purchase_order/`).
+Shared tabular files used by more than one app:
 
-Custom Label live CSV, `support/` helpers, and Maker `Apparel Images/` stay under `Custom Label Database/`.
+- `product_export/ProductExport.csv` — CL + Purchase Order
+- `shipstation/ShipStation_Tags.xlsx` — Packing + Purchase Order
+- `archive/` — shared backups / former local copies
 
-Resolve paths via `shared/paths.py`. Do not commit live files (see root `.gitignore`).
+App-owned workbooks, stock CSVs, and images live inside each app folder.
+Custom Label live CSV stays under `Custom Label Database/`.
+
+Resolve via `shared/paths.py`. Do not commit live files (see root `.gitignore`).

@@ -1,21 +1,18 @@
----
-description: Shipping live paths under runtime/config
-alwaysApply: false
-globs: "Shipping Label Generator/**"
----
-
-# Live files
-
-App folder = **code only**. Resolve via `shared/paths.py` / `load_config`.
-
-| Path | Role |
-|---|---|
-| `python -m scripts.app.main` | convert / print / void |
-| `runtime/Shipping/DTF Des Files/` | Input desfiles |
-| `runtime/Shipping/DTF Des Files - Processed/` | Archived inputs |
-| `config/Shipping/shipping_config.yaml` | Tuneables |
-| `config/ShipStation/.env` | ShipStation secrets |
-| `config/Shipping/.env` | Optional app overrides (no API keys) |
-| `runtime/Shipping/Output/` | Labels and batch PDFs |
-
-Does **not** auto-read SharedInbox yet.
+---
+description: Shipping live paths under the Shipping app folder
+globs: Shipping Label Generator/**
+alwaysApply: false
+---
+
+# Shipping live files
+
+App owns I/O + yaml. ShipStation secrets are warehouse-shared.
+
+| Path | Role |
+|------|------|
+| `Shipping Label Generator/DTF Des Files/` | Input desfiles |
+| `Shipping Label Generator/DTF Des Files - Processed/` | Archived inputs |
+| `Shipping Label Generator/shipping_config.yaml` | Tuneables |
+| `config/ShipStation/.env` | ShipStation secrets |
+| `Shipping Label Generator/.env` | Optional app overrides (no API keys) |
+| `Shipping Label Generator/Output/` | Labels and batch PDFs |

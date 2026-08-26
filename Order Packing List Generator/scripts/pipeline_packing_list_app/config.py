@@ -13,7 +13,7 @@ from shared import paths as wh  # noqa: E402
 def logs_directory() -> Path:
     """Directory for pipeline session logs (always writable when possible).
 
-    - Normal runs: ``runtime/Packing/Logs``.
+    - Normal runs: packing app ``Logs/``.
     - Frozen / one-file builds: try ``<exe_dir>/logs``, then ``%LOCALAPPDATA%/PackingListApp/logs``.
     """
     if getattr(sys, "frozen", False):

@@ -9,10 +9,11 @@ from scripts.app.flows.amendments.run import read_order_numbers_file, run_amendm
 from scripts.app.logging.jsonl import JsonlLogger
 from scripts.app.util.win_console import configure_windows_console
 
-
-def _repo_root() -> Path:
-    # scripts/app/launchers/ -> repo root
-    return Path(__file__).resolve().parents[3]
+# warehouse root on path for shared.paths
+_WAREHOUSE = Path(__file__).resolve().parents[4]
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared import paths as wh  # noqa: E402
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -25,7 +26,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--config",
-        default=str((_repo_root().parent / "config" / "Shipping" / "shipping_config.yaml")),
+        default=str(wh.shipping_yaml_path()),
         help="Path to shipping_config.yaml",
     )
     p.add_argument(

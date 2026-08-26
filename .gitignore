@@ -5,19 +5,36 @@
 **/API KEY.txt
 **/api_key*.txt
 **/api-key*.txt
-config/PurchaseOrder/config.py
-config/Shipping/.env
-config/ShipStation/.env
-config/Queue/queue_app_settings.json
-config/Packing/*.json
-config/PurchaseOrder/gui_settings.json
 
-# Keep tracked templates under config
+# Shared ShipStation secrets
+config/ShipStation/.env
+
+# Packing app-local GUI settings
+Order Packing List Generator/config/*.json
+
+# Queue app-local settings + live workbook/refs
+Production Design Queue Manager/config/queue_app_settings.json
+Production Design Queue Manager/config/Configuration Workbook.xlsx
+Production Design Queue Manager/config/*.xlsx
+Production Design Queue Manager/config/*.txt
+Production Design Queue Manager/config/*.png
+
+# PO secrets + live data
+Purchase Order Generator/config.py
+Purchase Order Generator/data/**
+Purchase Order Generator/assets/**
+Purchase Order Generator/output/**
+
+# Shipping optional app .env (no API keys; ShipStation is shared)
+Shipping Label Generator/.env
+
+# Keep tracked templates
 !config/**/.env.example
-!config/**/config_example.py
 !config/**/README.md
 !config/README.md
 !config/ShipStation/README.md
+!Purchase Order Generator/config_example.py
+!Shipping Label Generator/.env.example
 
 # --- Python / tooling ---
 __pycache__/
@@ -44,19 +61,45 @@ Desktop.ini
 .vscode/
 *.code-workspace
 
-# --- Live data (catalogs, workbooks, stock, images) ---
+# --- Shared live data (PE, tags, archive) ---
 data/**
 !data/README.md
 !data/**/README.md
 
-# CL app owns the live catalog + helpers + apparel images (exception to code-only)
+# CL app owns the live catalog + helpers + apparel images
 Custom Label Database/Custom_Label_Database.csv
 Custom Label Database/Custom_Label_Database.xlsx
 Custom Label Database/backups/
 Custom Label Database/support/
 Custom Label Database/Apparel Images/
 
-# --- Runtime I/O ---
+# --- Packing app live I/O + Data ---
+Order Packing List Generator/Data/**
+Order Packing List Generator/Input/**
+Order Packing List Generator/Output/**
+Order Packing List Generator/Logs/**
+Order Packing List Generator/Missing Input/**
+Order Packing List Generator/Missing Logo Files/**
+Order Packing List Generator/Preflight Issues/**
+Order Packing List Generator/Unmatched SKU Files/**
+
+# --- Queue app live I/O ---
+Production Design Queue Manager/Input/**
+Production Design Queue Manager/Output/**
+Production Design Queue Manager/Logs/**
+Production Design Queue Manager/Missing Size Reference/**
+
+# --- Shipping app live I/O ---
+Shipping Label Generator/DTF Des Files/**
+Shipping Label Generator/DTF Des Files - Processed/**
+Shipping Label Generator/Output/**
+Shipping Label Generator/Logs/**
+Shipping Label Generator/Reports/**
+Shipping Label Generator/Manual Print Input/**
+Shipping Label Generator/Void Label Input/**
+Shipping Label Generator/Error and Failures/**
+
+# --- Shared runtime (SharedInbox) ---
 runtime/**
 !runtime/README.md
 !runtime/**/README.md

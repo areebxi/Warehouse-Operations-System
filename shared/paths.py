@@ -1,7 +1,10 @@
 """
-Warehouse path registry — single source of truth for data/, runtime/, config/.
+Warehouse path registry — shared joins + per-app live folders.
 
-App folders are code-only; resolve live files through these helpers.
+Shared (warehouse root): data/product_export, data/shipstation, config/ShipStation,
+runtime/SharedInbox, Custom Label Database catalog.
+
+App-owned data/config/runtime live inside each app folder (historical layout).
 """
 
 from __future__ import annotations
@@ -41,14 +44,17 @@ def warehouse_root() -> Path:
 
 
 def data_root(from_path: object | None = None) -> Path:
+    """Shared tabular data only (product_export, shipstation tags, archive)."""
     return warehouse_root_from(from_path) / "data"
 
 
 def runtime_root(from_path: object | None = None) -> Path:
+    """Shared runtime only (SharedInbox)."""
     return warehouse_root_from(from_path) / "runtime"
 
 
 def config_root(from_path: object | None = None) -> Path:
+    """Shared config only (ShipStation secrets)."""
     return warehouse_root_from(from_path) / "config"
 
 
@@ -84,11 +90,15 @@ def custom_label_support_dir(from_path: object | None = None) -> Path:
     return cl_app_dir(from_path) / "support"
 
 
-# --- Packing ---
+# --- Packing (Order Packing List Generator) ---
+
+
+def packing_app_dir(from_path: object | None = None) -> Path:
+    return warehouse_root_from(from_path) / "Order Packing List Generator"
 
 
 def packing_data_dir(from_path: object | None = None) -> Path:
-    return data_root(from_path) / "Packing"
+    return packing_app_dir(from_path) / "Data"
 
 
 def packing_workbook_path(from_path: object | None = None) -> Path:
@@ -104,7 +114,8 @@ def packing_all_orders_path(from_path: object | None = None) -> Path:
 
 
 def packing_runtime_dir(from_path: object | None = None) -> Path:
-    return runtime_root(from_path) / "Packing"
+    """I/O lives at the packing app root (Input/, Output/, Logs/, …)."""
+    return packing_app_dir(from_path)
 
 
 def packing_input_dir(from_path: object | None = None) -> Path:
@@ -132,18 +143,23 @@ def packing_preflight_dir(from_path: object | None = None) -> Path:
 
 
 def packing_config_dir(from_path: object | None = None) -> Path:
-    return config_root(from_path) / "Packing"
+    return packing_app_dir(from_path) / "config"
 
 
 def packing_gui_config_path(from_path: object | None = None) -> Path:
     return packing_config_dir(from_path) / "gui_config.json"
 
 
-# --- Queue ---
+# --- Queue (Production Design Queue Manager) ---
+
+
+def queue_app_dir(from_path: object | None = None) -> Path:
+    return warehouse_root_from(from_path) / "Production Design Queue Manager"
 
 
 def queue_data_dir(from_path: object | None = None) -> Path:
-    return data_root(from_path) / "Queue"
+    """Workbook + reference files live under the Queue app ``config/``."""
+    return queue_app_dir(from_path) / "config"
 
 
 def queue_config_workbook_path(from_path: object | None = None) -> Path:
@@ -151,7 +167,7 @@ def queue_config_workbook_path(from_path: object | None = None) -> Path:
 
 
 def queue_runtime_dir(from_path: object | None = None) -> Path:
-    return runtime_root(from_path) / "Queue"
+    return queue_app_dir(from_path)
 
 
 def queue_input_dir(from_path: object | None = None) -> Path:
@@ -171,18 +187,22 @@ def queue_missing_size_dir(from_path: object | None = None) -> Path:
 
 
 def queue_config_dir(from_path: object | None = None) -> Path:
-    return config_root(from_path) / "Queue"
+    return queue_app_dir(from_path) / "config"
 
 
 def queue_settings_path(from_path: object | None = None) -> Path:
     return queue_config_dir(from_path) / "queue_app_settings.json"
 
 
-# --- Purchase Order ---
+# --- Purchase Order Generator ---
+
+
+def po_app_dir(from_path: object | None = None) -> Path:
+    return warehouse_root_from(from_path) / "Purchase Order Generator"
 
 
 def po_data_dir(from_path: object | None = None) -> Path:
-    return data_root(from_path) / "PurchaseOrder"
+    return po_app_dir(from_path) / "data"
 
 
 def po_database_path(from_path: object | None = None) -> Path:
@@ -202,15 +222,16 @@ def po_stock_csv_path(
 
 
 def po_runtime_dir(from_path: object | None = None) -> Path:
-    return runtime_root(from_path) / "PurchaseOrder"
+    return po_app_dir(from_path)
 
 
 def po_output_dir(from_path: object | None = None) -> Path:
-    return po_runtime_dir(from_path) / "Output"
+    return po_runtime_dir(from_path) / "output"
 
 
 def po_config_dir(from_path: object | None = None) -> Path:
-    return config_root(from_path) / "PurchaseOrder"
+    """``config.py`` lives at the PO app root."""
+    return po_app_dir(from_path)
 
 
 def po_config_py_path(from_path: object | None = None) -> Path:
@@ -218,14 +239,18 @@ def po_config_py_path(from_path: object | None = None) -> Path:
 
 
 def po_gui_settings_path(from_path: object | None = None) -> Path:
-    return po_config_dir(from_path) / "gui_settings.json"
+    return po_data_dir(from_path) / "gui_settings.json"
 
 
-# --- Shipping ---
+# --- Shipping Label Generator ---
+
+
+def shipping_app_dir(from_path: object | None = None) -> Path:
+    return warehouse_root_from(from_path) / "Shipping Label Generator"
 
 
 def shipping_runtime_dir(from_path: object | None = None) -> Path:
-    return runtime_root(from_path) / "Shipping"
+    return shipping_app_dir(from_path)
 
 
 def shipping_desfiles_dir(from_path: object | None = None) -> Path:
@@ -261,7 +286,7 @@ def shipping_errors_dir(from_path: object | None = None) -> Path:
 
 
 def shipping_config_dir(from_path: object | None = None) -> Path:
-    return config_root(from_path) / "Shipping"
+    return shipping_app_dir(from_path)
 
 
 def shipping_env_path(from_path: object | None = None) -> Path:
@@ -296,7 +321,7 @@ def images_apparel_dir(from_path: object | None = None) -> Path:
 
 
 def images_po_dir(from_path: object | None = None) -> Path:
-    return data_root(from_path) / "images" / "purchase_order"
+    return po_app_dir(from_path) / "assets"
 
 
 def ensure_dir(path: Path) -> Path:

@@ -1,18 +1,17 @@
-﻿---
-description: Queue live paths under data/runtime/config
-alwaysApply: false
-globs: "Production Design Queue Manager/**"
----
-
-# Live files
-
-App folder = **code only**. Resolve via `shared/paths.py`.
-
-| Path | Role |
-|---|---|
-| `queue_app.py` / `run_auto_missing_logo.bat` | GUI + headless watcher entry |
-| `data/Queue/Configuration Workbook.xlsx` | Pocket / Override Print Size |
-| `config/Queue/queue_app_settings.json` | Design folders + last paths |
-| `Custom Label Database/Custom_Label_Database.csv` | Print sizes (Width/Height mm) |
-| `runtime/Queue/{Input,Output,Logs,Missing Size Reference}` | Run I/O |
-| `runtime/SharedInbox/DTF Des/` | Auto Missing Logo input |
+﻿---
+description: Queue live paths under the app folder + SharedInbox
+globs: Production Design Queue Manager/**
+alwaysApply: false
+---
+
+# Queue live files
+
+App owns config + I/O. SharedInbox stays warehouse-shared.
+
+| Path | Role |
+|------|------|
+| `Production Design Queue Manager/config/Configuration Workbook.xlsx` | Pocket / Override Print Size |
+| `Production Design Queue Manager/config/queue_app_settings.json` | Design folders + last paths |
+| `Custom Label Database/Custom_Label_Database.csv` | Print sizes (Width/Height mm) |
+| `Production Design Queue Manager/{Input,Output,Logs,Missing Size Reference}` | Run I/O |
+| `runtime/SharedInbox/DTF Des/` | Auto Missing Logo input |

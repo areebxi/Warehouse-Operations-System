@@ -2,7 +2,7 @@
 Simple script to run the ShipStation orders fetcher.
 
 ShipStation credentials: config/ShipStation/.env (REAL_API_*).
-BTC FTP settings remain in config/PurchaseOrder/config.py.
+BTC FTP settings remain in this app's config.py.
 """
 
 import app_paths  # noqa: F401 — configures import paths before other local imports

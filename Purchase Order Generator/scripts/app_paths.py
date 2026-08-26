@@ -51,7 +51,7 @@ DONE_DIR = APP_ROOT / "00-Done"
 
 
 def data_path(filename: str) -> Path:
-    """Resolve a file under Data/PurchaseOrder (or shared ProductExport / Tags)."""
+    """Resolve a file under this app's data/ (or shared ProductExport / Tags)."""
     if filename in ("ProductExport.csv", "ProductExport.xlsx"):
         return wh.product_export_path() if filename.endswith(".csv") else wh.data_archive_dir() / "PO_ProductExport.xlsx"
     if filename in ("ShipStation Tags.xlsx", "ShipStation_Tags.xlsx"):
@@ -80,7 +80,7 @@ def packs_database_path() -> Path:
 
 
 def asset_path(*parts: str) -> Path:
-    """Resolve under Data/Images/PurchaseOrder/."""
+    """Resolve under this app's assets/."""
     in_assets = ASSETS_DIR.joinpath(*parts)
     if in_assets.exists():
         return in_assets

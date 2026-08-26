@@ -2,7 +2,7 @@
 Example configuration for Purchase Order Generator (BTC FTP / stock).
 
 ShipStation credentials: config/ShipStation/.env (REAL_API_*).
-Copy to config/PurchaseOrder/config.py for FTP settings.
+Copy to config.py in this app folder for FTP settings.
 """
 
 FTP_PROTOCOL = "sftp"
