@@ -15,9 +15,15 @@ def extract_input_file_name(gui) -> str:
 
 
 def get_output_folder() -> str:
-    import queue_app
-    app_dir = os.path.dirname(os.path.abspath(queue_app.__file__))
-    return os.path.join(app_dir, "Output", datetime.now().strftime("%Y-%m-%d"))
+    import sys
+    from pathlib import Path
+
+    warehouse = Path(__file__).resolve().parents[3].parent
+    if str(warehouse) not in sys.path:
+        sys.path.insert(0, str(warehouse))
+    from shared import paths as wh
+
+    return str(wh.queue_output_dir() / datetime.now().strftime("%Y-%m-%d"))
 
 
 def create_output_folder_safe(output_folder: str) -> bool:

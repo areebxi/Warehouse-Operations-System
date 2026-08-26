@@ -16,11 +16,18 @@ from scripts.pipeline_generate_packing_list_pdf.core_helpers import (
     safe_str_impl,
 )
 
+import sys
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-UNMATCHED_ROOT_DIR = PROJECT_ROOT / "Unmatched SKU Files"
-MISSING_LOGO_ROOT_DIR = PROJECT_ROOT / "Missing Logo Files"
-DATA_DIR = PROJECT_ROOT / "Data"
-ALL_ORDERS_PATH = DATA_DIR / "All Orders.csv"
+_WAREHOUSE = PROJECT_ROOT.parent
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared import paths as wh  # noqa: E402
+
+UNMATCHED_ROOT_DIR = wh.packing_runtime_dir() / "Unmatched SKU Files"
+MISSING_LOGO_ROOT_DIR = wh.packing_missing_logo_dir()
+DATA_DIR = wh.packing_data_dir()
+ALL_ORDERS_PATH = wh.packing_all_orders_path()
 _PROCESS_ITEM_RE = re.compile(r"^Process\s+(\S+)\s+Item-(\d+)")
 
 # Characters not allowed in Windows filenames

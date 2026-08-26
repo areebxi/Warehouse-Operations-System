@@ -12,8 +12,16 @@ DB_NAME = "central_ecommerce_db"
 
 # 2. Table Name Aur Output CSV File Path
 # Jis table ko export karna hai uska naam daalein (e.g. 'product_catalog' ya 'customlabel_table')
-TABLE_NAME = "Custom_Label_Database"  
-OUTPUT_CSV_FILE = "Custom_Label_Database.csv"
+TABLE_NAME = "Custom_Label_Database"
+
+from pathlib import Path
+import sys
+_WAREHOUSE = Path(__file__).resolve().parents[2]
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared.paths import cl_csv_path  # noqa: E402
+
+OUTPUT_CSV_FILE = str(cl_csv_path())
 
 try:
     print(f"⏳ Connecting to PostgreSQL database...")

@@ -34,13 +34,18 @@ from pathlib import Path
 import pandas as pd
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-BASE = SCRIPT_DIR.parent
-SUPPORT = BASE / "support"
-BACKUPS = BASE / "backups"
+_WAREHOUSE = SCRIPT_DIR.parent.parent
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared import paths as wh  # noqa: E402
 
-DEFAULT_DB = BASE / "Custom_Label_Database.csv"
-DEFAULT_PE = SUPPORT / "ProductExport.xlsx"
-DEFAULT_MOCKS = SUPPORT / "14-01-Mocks Database Guide(01-Mocks Databse).csv"
+BASE = SCRIPT_DIR.parent
+SUPPORT = wh.custom_label_support_dir()
+BACKUPS = wh.cl_backups_dir()
+
+DEFAULT_DB = wh.cl_csv_path()
+DEFAULT_PE = wh.product_export_path()
+DEFAULT_MOCKS = SUPPORT / "Mocks Databse.csv"
 SHEET = "Data"
 
 SEED_COLS = [

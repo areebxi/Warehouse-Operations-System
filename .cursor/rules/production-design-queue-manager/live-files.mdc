@@ -1,21 +1,18 @@
----
-description: Queue live files, CL sizes, Shared Inbox auto Missing Logo
+﻿---
+description: Queue live paths under data/runtime/config
 alwaysApply: false
 globs: "Production Design Queue Manager/**"
 ---
 
 # Live files
 
-App root: `Production Design Queue Manager/`.
+App folder = **code only**. Resolve via `shared/paths.py`.
 
 | Path | Role |
 |---|---|
-| `queue_app.py` | Live GUI entry |
-| `run_auto_missing_logo.bat` / `scripts/auto_missing_logo_watcher.py` | Shared Inbox Missing Logo auto-run |
-| `config/queue_app_settings.json` | Design folder paths for GUI + auto-run |
-| `config/Configuration Workbook.xlsx` | Pocket / Override Print Size (Size References sheet archive for sizing) |
-| `../Custom Label Database/Custom_Label_Database.csv` | Print sizes (Width/Height mm) via universal SKU match |
-| `../Shared Inbox/DTF Des/` | Inbox → Processed / Failed |
-| `Output/`, `Logs/`, `Missing Size Reference/` | Outputs |
-
-Do not use CL `support/Size References.csv` as this app’s live size table.
+| `queue_app.py` / `run_auto_missing_logo.bat` | GUI + headless watcher entry |
+| `data/Queue/Configuration Workbook.xlsx` | Pocket / Override Print Size |
+| `config/Queue/queue_app_settings.json` | Design folders + last paths |
+| `Custom Label Database/Custom_Label_Database.csv` | Print sizes (Width/Height mm) |
+| `runtime/Queue/{Input,Output,Logs,Missing Size Reference}` | Run I/O |
+| `runtime/SharedInbox/DTF Des/` | Auto Missing Logo input |

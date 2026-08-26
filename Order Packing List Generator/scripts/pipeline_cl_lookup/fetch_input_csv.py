@@ -36,7 +36,11 @@ OUTPUT_COLUMNS = [
 ]
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "Output"
+_WAREHOUSE = PROJECT_ROOT.parent
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared import paths as wh  # noqa: E402
+DEFAULT_OUTPUT_DIR = wh.packing_output_dir()
 
 
 def _strip(value: str) -> str:

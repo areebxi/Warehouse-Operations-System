@@ -1,20 +1,20 @@
 ---
-description: Shipping Label Generator — live paths and flows
+description: Shipping live paths under runtime/config
 alwaysApply: false
 globs: "Shipping Label Generator/**"
 ---
 
 # Live files
 
-App root: `Shipping Label Generator/`.
+App folder = **code only**. Resolve via `shared/paths.py` / `load_config`.
 
 | Path | Role |
-|------|------|
+|---|---|
 | `python -m scripts.app.main` | convert / print / void |
-| `DTF Des Files/` | Input desfiles (DTF Des–shaped Excel/CSV) |
-| `DTF Des Files - Processed/` | Archived inputs |
-| `shipping_config.yaml` | Tuneables |
-| `.env` | Secrets (never commit or paste into docs) |
-| `output/` | Labels and batch PDFs |
+| `runtime/Shipping/DTF Des Files/` | Input desfiles |
+| `runtime/Shipping/DTF Des Files - Processed/` | Archived inputs |
+| `config/Shipping/shipping_config.yaml` | Tuneables |
+| `config/Shipping/.env` | Secrets (never commit) |
+| `runtime/Shipping/Output/` | Labels and batch PDFs |
 
-Reads DTF Des inputs (`Order - Number`, `Process Num`, …). Does **not** read packing Orders Details.
+Does **not** auto-read SharedInbox yet.

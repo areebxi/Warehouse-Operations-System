@@ -1,4 +1,4 @@
-# Custom Label Database — Key findings
+﻿# Custom Label Database — Key findings
 
 Facts and locked lessons. Snapshot numbers that can drift are dated. Policy that must not be forgotten is also in `.cursor/rules/`.
 
@@ -145,6 +145,31 @@ Original `M96-138334` was already 250×353. ~10.9k shirts with an **exact** `M##
 
 After shirt fills, **Width 1 still blank** on hundreds of **non-shirt** rows (stickers, mugs, caps, bags, aprons, beanies, leftover mocks M251 / M290 / M307). Those need a Size References hit or an explicit override — not a shirt-table fill.
 
+### Size References reverse fill (25 Aug 2026)
+
+Supervisor: fill Size References from the live catalog; mock+UID only; other columns too. Script: `scripts/fill_size_references_from_cl.py`. Live helper path: `support/Size References.csv`.
+
+| Rule | Choice |
+|------|--------|
+| Key | Custom Label `M123-45678` → SKU Value `M123 (45678)` |
+| Skip | Non-mock codes, iron-on/hybrids (`M260-P5-…`), bare `M96` |
+| Existing mm | Blank-only — never overwrite Size Width/Height |
+| New keys | Append; explode Width/Height 1–4 into extra rows + Suffix |
+| Other cols | Gender, Size, Printing Position, Product Code, Printing Size, Number of Designs |
+| Product Code / Printing Size | Mocks guide for that `M##`, else catalog |
+
+**25 Aug write:** 22,727 → **96,744** rows. Backup: `support/backups/Size_References_preFill_20260825_202358.csv`. 20:44 dry-run at the same path: no remaining mock+UID work.
+
+| Change | Count |
+|--------|------:|
+| New mock+UID keys | 59,608 |
+| New rows (incl. 12,719 multi-design keys) | 74,017 |
+| Existing Gender blank-fill | 8,542 |
+| Existing Printing Position / Product Code / Printing Size | 188 each |
+| Non-mock SR rows left alone | 133 |
+
+Spot checks: `M118 (102722)` still 80×100 P / 297×420 B; `M96 (138334)` 250×353 Kids 12-13Y; `M251 (169164)` appended with blank mm (beanie still has no Width 1 on CL). One duplicate-label seed `M38 (77098)` was corrected Men/2Xl → Women/2XL.
+
 Non-apparel pocket rename (done once, 58 rows): bags / backpacks / keyrings only, `Front Left Pocket` → `Pocket`.
 
 ---
@@ -157,7 +182,7 @@ Format: `(Gender Apparel)-(Colour)` with spaces → `-`, letters/digits/dash onl
 
 A past bulk pass rewrote **~34,755** Apparel Image cells. The true pre-change backup was **deleted**. Agreed fallback: restore from `support/Workbook.xlsx` column `Picture Name` (23 Aug 2026: 64,848 matched, 6,913 changed, 369 sanitized). That is **not** a perfect undo.
 
-Download files with `Custom Label Database Maker/download_apparel_images.py` using PE **`colour image 01`**, saved as the **exact** DB Apparel Image filename. Legacy `download-images.ps1` names from Brand-Description-Colour and does **not** match DB names.
+Download files with `scripts/download_apparel_images.py` using PE **`colour image 01`**, saved as the **exact** DB Apparel Image filename. Legacy `download-images.ps1` names from Brand-Description-Colour and does **not** match DB names.
 
 Iron-on mock rows with no numeric UID have no PE image (e.g. `DTF-IronOn-A4-Iron-On-Sticker`). `--all-mocks` still needed for remaining unique `M##` filenames (on the order of **~189** on 24 Aug 2026).
 

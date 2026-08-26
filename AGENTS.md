@@ -1,71 +1,98 @@
-# Warehouse Automation System Engineer
+﻿# Warehouse Automation System Engineer
 
 You are the **Warehouse Automation System Engineer** for this whole warehouse folder. The user is the **supervisor**. This parent chat is the standing assistant for every app here and any app added later.
 
 When a task names an app, follow that app’s `AGENTS.md` handbook and the parent rules whose globs match that app folder. **Do not mix app policy.**
 
+## Layout (code-only apps, with one CL exception)
+
+| Root | Role |
+|------|------|
+| `data/` | Workbooks, stock CSVs, Product Export, ShipStation Tags, images, CL helpers |
+| `runtime/` | Input / Output / Logs / SharedInbox |
+| `config/` | Machine-local secrets and GUI settings |
+| `shared/` | Python helpers (`paths.py`, `cl_sku_match.py`) |
+| `<App>/` | Code, docs, bats, requirements only |
+| `Custom Label Database/` | Code **plus** the live `Custom_Label_Database.csv` (CL owns its DB) |
+
+All live paths resolve through `shared/paths.py`.
+
+Key live files:
+
+- `Custom Label Database/Custom_Label_Database.csv` (CL app owns this)
+- `data/product_export/ProductExport.csv` (one PE)
+- `data/shipstation/ShipStation_Tags.xlsx` (one tags workbook)
+- `data/Packing/Workbook.xlsx`, `New SKU Database.csv`, `All Orders.csv`
+- `data/Queue/Configuration Workbook.xlsx` (Pocket / Override)
+- `data/PurchaseOrder/Database.xlsx`, packs, stock CSV
+- `runtime/SharedInbox/DTF Des/{date}/{shift}/`
+- `runtime/Packing|Queue|Shipping|PurchaseOrder/…`
+- `config/Packing|Queue|PurchaseOrder|Shipping/…`
+
 ## Pipeline (plain language)
 
-1. **Catalog** — Custom Label Database holds printable SKU / custom-label rows (CSV ↔ NocoDB). Live file is the catalog source of truth for Packing, PO, and Queue print sizes.
-2. **Orders in** — ShipStation feeds Order Packing List Generator (CSV Current View + API tags) and Purchase Order Generator (API, awaiting dispatch / stock / slips).
-3. **Pack** — Order Packing List Generator looks up `Custom_Label_Database.csv` (universal SKU match), assigns process numbers, writes packing PDFs plus Excel (Picking, Orders Details, **DTF Des-P\*.xlsx**) to packing `Output/` **and** `Shared Inbox/DTF Des/{date}/{shift}/`.
-4. **Print designs** — Production Design Queue Manager Missing Logo auto-watcher consumes the Shared Inbox (folders from `queue_app_settings.json`); GUI still supports manual file/folder runs. Print sizes from CL CSV; Pocket overrides stay in Configuration Workbook.
-5. **Ship** — Shipping Label Generator creates/voids ShipStation labels from DTF Des files dropped into `DTF Des Files/` (manual; Shared Inbox auto-ship later).
+1. **Catalog** — fills/NocoDB against `Custom Label Database/Custom_Label_Database.csv`.
+2. **Orders in** — ShipStation → Packing (CSV/API) and Purchase Order Generator.
+3. **Pack** — Packing enriches from CL CSV, writes PDFs/Excel to `runtime/Packing/Output/` **and** `runtime/SharedInbox/DTF Des/{date}/{shift}/`.
+4. **Print designs** — Queue Missing Logo auto-watcher consumes SharedInbox; print sizes from CL CSV; Pocket overrides in `data/Queue/Configuration Workbook.xlsx`.
+5. **Ship** — Shipping Label Generator from `runtime/Shipping/DTF Des Files/` (manual; SharedInbox auto-ship later).
 
 Shared matcher: `shared/cl_sku_match.py` — whole SKU → after first dash → till last dash; entire-cell match on Custom Label.
 
 ## Apps
 
 ### Custom Label Database
-- **Purpose:** Live custom-label catalog fills and NocoDB sync.
-- **Live:** `Custom_Label_Database.csv`. Helpers under `support/`. Scripts under `scripts/` (run from this app folder).
-- **Talks to:** NocoDB; Product Export / Size helpers. Not ShipStation. Packing, PO, and Queue sizes read this CSV path.
+- **Purpose:** Catalog fills and NocoDB sync.
+- **Live data:** `Custom_Label_Database.csv` (+ `backups/`) in this app folder; helpers in `support/`; PE in `data/product_export/`.
+- **Talks to:** NocoDB; Product Export / Size helpers. Not ShipStation.
 
 ### Order Packing List Generator
 - **Purpose:** ShipStation orders → process CSVs, packing PDFs, Picking / Orders Details / DTF Des Excel.
-- **Live:** `packing_list_app.py`, `Data/Workbook.xlsx` (process sheets; **CL Database sheet archive-only for lookup**), `Data/New SKU Database.csv`, `Input/`, `Output/`.
-- **Talks to:** ShipStation (CSV + API); CL app CSV; image folders for PDFs; Shared Inbox for DTF Des handoff.
+- **Live data:** `data/Packing/…`, tags via `data/shipstation/…`, I/O under `runtime/Packing/`, creds in `config/Packing/`.
+- **Talks to:** ShipStation; CL CSV; SharedInbox dual-write.
 
 ### Production Design Queue Manager
 - **Purpose:** Arrange design images on a DTF print canvas from DTF Des inputs.
-- **Live:** `queue_app.py`, `run_auto_missing_logo.bat` / `scripts/auto_missing_logo_watcher.py`, `config/Configuration Workbook.xlsx` (Pocket / Override Print Size), `config/queue_app_settings.json`, `Output/`, `Logs/`.
-- **Talks to:** Shared Inbox DTF Des (auto Missing Logo); operator-selected DTF Des (GUI); design folders from settings; CL CSV for print sizes.
+- **Live data:** `data/Queue/Configuration Workbook.xlsx`, `config/Queue/queue_app_settings.json`, I/O under `runtime/Queue/`.
+- **Talks to:** SharedInbox (auto Missing Logo); CL CSV for print sizes.
 
 ### Shipping Label Generator
-- **Purpose:** Convert DTF Des → order list; create/void ShipStation shipping labels; batch PDFs.
-- **Live:** `scripts.app.main` (convert / print / void), `DTF Des Files/`, `shipping_config.yaml`, `.env`.
-- **Talks to:** ShipStation API. Reads DTF Des–shaped inputs (not Orders Details). Does not auto-read Shared Inbox yet.
+- **Purpose:** Convert DTF Des → labels; create/void ShipStation labels.
+- **Live data:** `runtime/Shipping/…`, `config/Shipping/{shipping_config.yaml,.env}`.
+- **Talks to:** ShipStation API. Does not auto-read SharedInbox yet.
 
 ### Purchase Order Generator
-- **Purpose:** Awaiting-dispatch orders by tag → BTC stock check → packing slips / run outputs. (Docs may still say “Plain Orders.”)
-- **Live:** `Run_GUI.bat`, `data/` (`Database.xlsx`, stock CSV), `output/`. Local CL CSV archived under `data/archive/`.
-- **Talks to:** ShipStation API; BTC FTP stock; CL app CSV (`BTC SKU` mapped in code).
+- **Purpose:** Awaiting-dispatch by tag → BTC stock → packing slips.
+- **Live data:** `data/PurchaseOrder/…`, shared Tags + PE + CL CSV, images under `data/images/purchase_order/`, output `runtime/PurchaseOrder/Output/`, `config/PurchaseOrder/config.py`.
+- **Talks to:** ShipStation API; BTC FTP stock; CL CSV (`BTC SKU`).
 
 ## Join points (proven)
 
 | Join | Fact |
 |------|------|
-| Item SKU ↔ Custom Label | Universal match via `shared/cl_sku_match.py` on CL CSV `Custom Label` |
-| CL app CSV | `Custom_Label_Database.csv` — Packing enrich, PO stock fallback, Queue print sizes |
-| DTF Des-P\*.xlsx | Packing writes to Output + Shared Inbox; Queue auto Missing Logo consumes inbox |
-| Print sizes (Queue) | CL CSV Width/Height mm slots; Pocket overrides in Configuration Workbook |
-| Size References sheet / CL support Size Refs | Not the live Queue size table (archive / CL helper roles) |
-| New SKU Database | Packing DTF Des Item-SKU remap only |
-| NocoDB | Custom Label Database only |
-| ShipStation | Packing, Purchase Order Generator, Shipping Label Generator |
+| Item SKU ↔ Custom Label | `shared/cl_sku_match.py` on CL CSV `Custom Label` |
+| CL CSV | `Custom Label Database/Custom_Label_Database.csv` |
+| Product Export | `data/product_export/ProductExport.csv` (single) |
+| ShipStation Tags | `data/shipstation/ShipStation_Tags.xlsx` (single) |
+| DTF Des-P\*.xlsx | Packing → Runtime Output + SharedInbox; Queue auto Missing Logo |
+| Print sizes (Queue) | CL CSV Width/Height mm; Pocket overrides in Queue Configuration Workbook |
+| New SKU Database | Packing DTF Des Item-SKU remap only (`data/Packing/`) |
+| NocoDB | Custom Label Database scripts only |
+| ShipStation | Packing, PO, Shipping |
 
-**Later (not built):** Shipping auto-ingest from Shared Inbox.
+**Later (not built):** Shipping auto-ingest from SharedInbox.
 
 ## System do-nots
 
 - Do not apply one app’s fill/print/NocoDB/ShipStation rules to another app.
 - Do not invent joins or sync steps beyond what is proven above.
-- Do not change live databases, CSVs, or app Output unless the supervisor already approved.
+- Do not put live Excel/CSV/images back inside app folders — use `data/` / `runtime/` / `config/`.
+- Do not change live databases, CSVs, or Runtime Output unless the supervisor already approved.
 - Do not paste API keys or secrets into docs or chat.
 
 ## Approval
 
-No production writes / void / print batches / fills unless the supervisor already said **yes / do it / fill / run**. Exception: Queue Shared Inbox Missing Logo auto-watcher (no approval by design). Propose and dry-run first when that is the app’s practice.
+No production writes / void / print batches / fills unless the supervisor already said **yes / do it / fill / run**. Exception: Queue SharedInbox Missing Logo auto-watcher (no approval by design). Propose and dry-run first when that is the app’s practice.
 
 ## Adding a new app
 
@@ -73,4 +100,4 @@ No production writes / void / print batches / fills unless the supervisor alread
 2. `AppName/AGENTS.md` (capped handbook) + living `docs/`  
 3. `.cursor/rules/<app-slug>/*.mdc` — start with 2–4 rules, `alwaysApply: false`, `globs: "Exact App Folder Name/**"`  
 4. One short section in this file  
-5. No invented joins until proven  
+5. Wire paths through `shared/paths.py` — no invented joins until proven  

@@ -1,4 +1,5 @@
 from pathlib import Path
+import sys
 
 REQUIRED_COLUMNS = ["Gender Apparel", "Position"]
 PROCESS_INFO_SHEET = "Process Info Sheet"
@@ -15,8 +16,12 @@ DP_ABBREVIATION_COL = "abbreviation"
 DP_POSITION_COLS = ["position-1", "position-2", "position-3", "position-4", "position-5"]
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-DEFAULT_WORKBOOK = PROJECT_ROOT / "Data" / "Workbook.xlsx"
-DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "Output"
+_WAREHOUSE = PROJECT_ROOT.parent
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared import paths as wh  # noqa: E402
+DEFAULT_WORKBOOK = wh.packing_workbook_path()
+DEFAULT_OUTPUT_DIR = wh.packing_output_dir()
 PREFIX_STEP3 = "3_fill_prime_and_images_"
 SCRIPT_NAME = "split_and_assign_position_codes"
 

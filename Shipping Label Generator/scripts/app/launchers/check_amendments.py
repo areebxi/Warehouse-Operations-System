@@ -25,7 +25,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--config",
-        default=str(_repo_root() / "shipping_config.yaml"),
+        default=str((_repo_root().parent / "config" / "Shipping" / "shipping_config.yaml")),
         help="Path to shipping_config.yaml",
     )
     p.add_argument(

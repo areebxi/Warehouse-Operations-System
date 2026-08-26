@@ -68,7 +68,13 @@ def setup_console_logging() -> Optional[Path]:
     try:
         project_root = _get_project_root()
 
-        _console_logs_dir = project_root / "Logs"
+        import sys as _sys_wh
+        _wh_root = project_root.parent
+        if str(_wh_root) not in _sys_wh.path:
+            _sys_wh.path.insert(0, str(_wh_root))
+        from shared import paths as wh
+
+        _console_logs_dir = wh.queue_logs_dir()
         _console_logs_dir.mkdir(exist_ok=True)
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")

@@ -34,7 +34,12 @@ def initialize_size_determination_logging() -> Optional[Path]:
     global _size_determination_logs_dir
     if _size_determination_logs_dir is None:
         project_root = _get_project_root()
-        _size_determination_logs_dir = project_root / "Logs"
+        import sys
+        warehouse = project_root.parent
+        if str(warehouse) not in sys.path:
+            sys.path.insert(0, str(warehouse))
+        from shared import paths as wh
+        _size_determination_logs_dir = wh.queue_logs_dir()
         try:
             _size_determination_logs_dir.mkdir(exist_ok=True)
         except Exception as e:

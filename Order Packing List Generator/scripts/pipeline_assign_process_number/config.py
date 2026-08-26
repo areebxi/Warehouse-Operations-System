@@ -1,4 +1,5 @@
 from pathlib import Path
+import sys
 
 REQUIRED_COLUMNS = [
     "Gender Apparel",
@@ -13,7 +14,11 @@ LOGO_ID_REQUIRED_COLUMNS = ["Logo ID", "Order Number"]
 PROCESS_INFO_SHEET = "Process Info Sheet"
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "Output"
+_WAREHOUSE = PROJECT_ROOT.parent
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared import paths as wh  # noqa: E402
+DEFAULT_OUTPUT_DIR = wh.packing_output_dir()
 PREFIX_STEP4 = "4_matched_split_and_assign_position_codes_"
 SCRIPT_NAME = "assign_process_number"
 

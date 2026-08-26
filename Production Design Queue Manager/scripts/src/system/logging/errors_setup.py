@@ -27,7 +27,15 @@ def setup_error_logging() -> Tuple[None, Optional[Path]]:
 
     project_root = _get_project_root()
     console_dir = get_console_logs_dir()
-    _logs_dir = console_dir if console_dir is not None else (project_root / "Logs")
+    if console_dir is not None:
+        _logs_dir = console_dir
+    else:
+        import sys
+        warehouse = project_root.parent
+        if str(warehouse) not in sys.path:
+            sys.path.insert(0, str(warehouse))
+        from shared import paths as wh
+        _logs_dir = wh.queue_logs_dir()
     try:
         _logs_dir.mkdir(exist_ok=True)
         print(f"Logging system initialized. Logs will be saved to: {_logs_dir}")

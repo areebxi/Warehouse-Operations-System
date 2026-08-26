@@ -41,7 +41,7 @@ async def _test_server(routes: web.RouteTableDef) -> AsyncIterator[str]:
 def _cfg() -> AppConfig:
     # Minimal config for provider init.
     raw: dict[str, Any] = {
-        "paths": {"logs_dir": "logs", "output_dir": "output", "orders_csv": "Order Numbers.csv", "desfiles_dir": "DTF Des Files", "void_csv": "void label input/void_labels.csv"},
+        "paths": {"logs_dir": "Logs", "output_dir": "Output", "orders_csv": "Order Numbers.csv", "desfiles_dir": "DTF Des Files", "void_csv": "Void Label Input/void_labels.csv"},
         "logging": {"level": "INFO", "redact_keys": ["labelData", "Authorization", "apiKey", "apiSecret"]},
         "concurrency": {"max_workers": 5, "max_retries": 0, "request_timeout_sec": 15, "label_timeout_sec": 35, "retry_min_wait_sec": 1, "retry_max_wait_sec": 8},
         "rate_limit": {"fallback_wait_sec": 60},

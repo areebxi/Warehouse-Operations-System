@@ -1,5 +1,5 @@
 """
-Project paths — single source of truth for data, assets, and output locations.
+Project paths — thin wrapper over warehouse shared.paths.
 Supports running from source (python scripts/run_script_gui.py) or a frozen executable.
 """
 
@@ -18,11 +18,24 @@ def get_app_root() -> Path:
     return here
 
 
+def _ensure_warehouse_on_path() -> None:
+    root = get_app_root().parent
+    shared = root / "shared"
+    if shared.is_dir() and str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+
+
+_ensure_warehouse_on_path()
+
+from shared import paths as wh  # noqa: E402
+
+
 def _setup_import_paths() -> None:
-    """Allow imports of config (app root) and app modules (scripts/)."""
+    """Allow imports of config (Config/purchase_order) and app modules (scripts/)."""
     root = str(APP_ROOT)
     scripts = str(SCRIPTS_DIR)
-    for entry in (root, scripts):
+    cfg = str(wh.po_config_dir())
+    for entry in (cfg, root, scripts):
         if entry not in sys.path:
             sys.path.insert(0, entry)
 
@@ -30,75 +43,51 @@ def _setup_import_paths() -> None:
 APP_ROOT = get_app_root()
 SCRIPTS_DIR = APP_ROOT / "scripts"
 _setup_import_paths()
-DATA_DIR = APP_ROOT / "data"
-ASSETS_DIR = APP_ROOT / "assets"
-OUTPUT_DIR = APP_ROOT / "output"
+
+DATA_DIR = wh.po_data_dir()
+ASSETS_DIR = wh.images_po_dir()
+OUTPUT_DIR = wh.po_output_dir()
 DONE_DIR = APP_ROOT / "00-Done"
 
 
 def data_path(filename: str) -> Path:
-    """Resolve a file in data/, with fallback to app root for legacy layouts."""
+    """Resolve a file under Data/PurchaseOrder (or shared ProductExport / Tags)."""
+    if filename in ("ProductExport.csv", "ProductExport.xlsx"):
+        return wh.product_export_path() if filename.endswith(".csv") else wh.data_archive_dir() / "PO_ProductExport.xlsx"
+    if filename in ("ShipStation Tags.xlsx", "ShipStation_Tags.xlsx"):
+        return wh.shipstation_tags_path()
     in_data = DATA_DIR / filename
     if in_data.exists():
         return in_data
-    legacy = APP_ROOT / filename
-    if legacy.exists():
-        return legacy
     return in_data
 
 
 PRODUCT_DATABASE_FILENAME = "Database.xlsx"
-_LEGACY_PRODUCT_DATABASE_FILENAME = "database.xlsx"
-
 SHIPSTATION_TAGS_FILENAME = "ShipStation Tags.xlsx"
-_LEGACY_SHIPSTATION_TAGS_FILENAME = "ShipStation_Tags.xlsx"
-
 PACKS_DATABASE_FILENAME = "Packs Database.xlsx"
-_LEGACY_PACKS_DATABASE_FILENAME = "01-Packs Database.xlsx"
-
-
-def _first_existing_data_file(*filenames: str) -> Path:
-    for name in filenames:
-        path = data_path(name)
-        if path.exists():
-            return path
-    return data_path(filenames[0])
 
 
 def product_database_path() -> Path:
-    """Product database for packing slips (SKU = BTC stock id). Prefers Database.xlsx."""
-    return _first_existing_data_file(
-        PRODUCT_DATABASE_FILENAME, _LEGACY_PRODUCT_DATABASE_FILENAME
-    )
+    return wh.po_database_path()
 
 
 def shipstation_tags_path() -> Path:
-    """ShipStation tag ID / process-no workbook. Prefers ShipStation Tags.xlsx."""
-    return _first_existing_data_file(
-        SHIPSTATION_TAGS_FILENAME, _LEGACY_SHIPSTATION_TAGS_FILENAME
-    )
+    return wh.shipstation_tags_path()
 
 
 def packs_database_path() -> Path:
-    """Packs component workbook. Prefers Packs Database.xlsx."""
-    return _first_existing_data_file(
-        PACKS_DATABASE_FILENAME, _LEGACY_PACKS_DATABASE_FILENAME
-    )
+    return wh.po_packs_database_path()
 
 
 def asset_path(*parts: str) -> Path:
-    """Resolve a path under assets/, with fallback to app root."""
+    """Resolve under Data/Images/PurchaseOrder/."""
     in_assets = ASSETS_DIR.joinpath(*parts)
     if in_assets.exists():
         return in_assets
-    legacy = APP_ROOT.joinpath(*parts)
-    if legacy.exists():
-        return legacy
     return in_assets
 
 
 def output_date_dir(*, date: str | None = None) -> Path:
-    """Today's output folder: output/{YYYY-MM-DD}/."""
     from datetime import datetime
 
     date_part = date or datetime.now().strftime("%Y-%m-%d")
@@ -108,7 +97,6 @@ def output_date_dir(*, date: str | None = None) -> Path:
 
 
 def tag_output_dir(folder_name: str) -> Path:
-    """Subfolder under output/{date}/ for a run or artifact group."""
     path = output_date_dir() / folder_name
     path.mkdir(parents=True, exist_ok=True)
     return path

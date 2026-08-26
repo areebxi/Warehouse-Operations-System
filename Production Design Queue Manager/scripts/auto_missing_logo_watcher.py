@@ -37,6 +37,7 @@ if str(WAREHOUSE_ROOT) not in sys.path:
 Image.MAX_IMAGE_PIXELS = None
 
 from shared.cl_sku_match import shared_inbox_dtf_des_root  # noqa: E402
+from shared import paths as wh  # noqa: E402
 from src.core.canvas_arranger import pack_designs  # noqa: E402
 from src.core.canvas_creation import create_canvas_image, save_canvas_image  # noqa: E402
 from src.core.design_processor import (  # noqa: E402
@@ -64,7 +65,7 @@ DTF_NAME_RE = re.compile(r"dtf\s*des", re.IGNORECASE)
 
 
 def _setup_logging() -> Path:
-    logs_dir = APP_ROOT / "Logs"
+    logs_dir = wh.queue_logs_dir()
     logs_dir.mkdir(parents=True, exist_ok=True)
     log_path = logs_dir / f"auto_missing_logo_{datetime.now().strftime('%Y%m%d')}.log"
     logging.basicConfig(
@@ -181,7 +182,7 @@ def _output_stem(file_path: Path) -> str:
 
 
 def _save_batches(ctx: SimpleNamespace, batches: list, file_path: Path) -> list[Path]:
-    out_dir = APP_ROOT / "Output" / datetime.now().strftime("%Y-%m-%d")
+    out_dir = wh.queue_output_dir() / datetime.now().strftime("%Y-%m-%d")
     out_dir.mkdir(parents=True, exist_ok=True)
     stem = _output_stem(file_path)
     # DES label without timestamp for canvas text; file name keeps timestamp

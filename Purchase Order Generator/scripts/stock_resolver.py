@@ -26,7 +26,7 @@ from shared.cl_sku_match import (  # noqa: E402
 )
 
 DEFAULT_CL_CSV = default_cl_csv_path(APP_ROOT)
-# Legacy local copy (archive); default path is the CL app CSV.
+# Legacy archived copies under Data/archive
 LEGACY_LOCAL_CL_CSV = "Custom Label Database.csv"
 STOCK_ID_COLUMNS = ("BTC SKU", "BTC Stock ID")
 
@@ -56,12 +56,17 @@ def get_app_dir() -> Path:
 def _default_cl_path() -> Path:
     if DEFAULT_CL_CSV.is_file():
         return DEFAULT_CL_CSV
-    # Fallback to archived local copy if CL app path missing
-    legacy = APP_ROOT / "data" / "archive" / LEGACY_LOCAL_CL_CSV
-    if legacy.is_file():
-        return legacy
-    legacy2 = APP_ROOT / "data" / LEGACY_LOCAL_CL_CSV
-    return legacy2
+    from shared import paths as wh
+
+    for name in (
+        f"PO_{LEGACY_LOCAL_CL_CSV}",
+        LEGACY_LOCAL_CL_CSV,
+        "PO_Custom Label Database.csv",
+    ):
+        legacy = wh.data_archive_dir() / name
+        if legacy.is_file():
+            return legacy
+    return DEFAULT_CL_CSV
 
 
 def load_custom_label_stock_map(

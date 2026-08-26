@@ -1,0 +1,16 @@
+{
+  "exclude": [
+    "data",
+    "Data",
+    "runtime",
+    "Runtime",
+    "**/__pycache__",
+    "**/.venv",
+    "**/venv",
+    "**/Versions",
+    "Custom Label Database/Custom_Label_Database.csv",
+    "Custom Label Database/backups",
+    "Custom Label Database/support",
+    "Custom Label Database/Apparel Images"
+  ]
+}

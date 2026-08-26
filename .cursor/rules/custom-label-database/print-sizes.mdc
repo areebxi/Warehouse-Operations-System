@@ -6,7 +6,9 @@ globs: "Custom Label Database/**"
 
 # Print sizes — all shirts
 
-SKU source = always `Custom Label`. Helpers: `support/Shirts Print Sizes.csv`, `support/Size References.csv`, `support/BTC Product Export.csv` (under `Custom Label Database/`).
+SKU source = always `Custom Label`. Helpers: `support/Shirts Print Sizes.csv`, `support/Size References.csv`. Product Export: `data/product_export/ProductExport.csv`.
+
+Reverse fill (mock+UID only, blank-only mm, append missing keys): `python scripts/fill_size_references_from_cl.py --dry-run` then write. Custom Label `M123-45678` → Size References `M123 (45678)`. Do not dump non-mock SKUs. Do not use a generic mock prefix.
 
 **All kinds of shirts** (t-shirt, tee, polo, hoodie, sweatshirt, tank — and any row whose `Size` maps to the shirt table: Small/Medium/Large/YXS/12-13 Years, …), unless Gender Apparel is clearly not a shirt (bag, tote, apron, beanie, hat, cap, iron-on, romper, sticker, mug, mask):
 

@@ -19,10 +19,16 @@ def _repo_root() -> Path:
 
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="void-labels")
+    warehouse = _repo_root().parent
+    import sys
+    if str(warehouse) not in sys.path:
+        sys.path.insert(0, str(warehouse))
+    from shared import paths as wh
+
     p.add_argument(
         "--config",
-        default=str(_repo_root() / "shipping_config.yaml"),
-        help="Path to shipping_config.yaml (default: shipping_config.yaml)",
+        default=str(wh.shipping_yaml_path()),
+        help="Path to shipping_config.yaml",
     )
     p.add_argument(
         "--void-csv",

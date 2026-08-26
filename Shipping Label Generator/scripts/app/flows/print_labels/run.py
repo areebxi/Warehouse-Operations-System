@@ -641,7 +641,14 @@ def run_print(
     if all_failures:
         combined_name = _combined_pdf_name_for_run(orders_csv=orders_csv, combined_name_override=combined_name_override)
         failures_key = combined_name if combined_name != "combined" else batch_number
-        failures_dir = failures_dir_override or (_repo_root() / "Error and Failures" / date_dir / failures_key)
+        import sys
+        _wh_root = _repo_root().parent
+        if str(_wh_root) not in sys.path:
+            sys.path.insert(0, str(_wh_root))
+        from shared import paths as wh
+        failures_dir = failures_dir_override or (
+            wh.shipping_errors_dir() / date_dir / failures_key
+        )
         failures_dir.mkdir(parents=True, exist_ok=True)
         failures_csv = failures_dir / "failures.csv"
         error_log = failures_dir / "error_log.txt"

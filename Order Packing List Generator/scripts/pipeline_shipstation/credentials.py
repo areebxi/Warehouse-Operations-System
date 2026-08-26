@@ -1,12 +1,18 @@
-"""Load ShipStation API credentials from project-root API KEY.txt."""
+"""Load ShipStation API credentials from config/Packing/API KEY.txt."""
 
 from __future__ import annotations
 
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-DEFAULT_CREDENTIALS_PATH = PROJECT_ROOT / "API KEY.txt"
+_WAREHOUSE = PROJECT_ROOT.parent
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared import paths as wh  # noqa: E402
+
+DEFAULT_CREDENTIALS_PATH = wh.packing_api_key_path()
 
 
 @dataclass(frozen=True)

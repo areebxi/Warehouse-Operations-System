@@ -31,7 +31,13 @@ DB_NAME = "central_ecommerce_db"
 
 # 2. CSV / table (db_export.py jaisi file)
 TABLE_NAME = "Custom_Label_Database"
-CSV_FILE = "Custom_Label_Database.csv"
+from pathlib import Path
+_WAREHOUSE = Path(__file__).resolve().parents[2]
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared.paths import cl_csv_path  # noqa: E402
+
+CSV_FILE = str(cl_csv_path())
 STAGING_TABLE = "_tmp_custom_label_csv_upload"
 
 # 3. Options

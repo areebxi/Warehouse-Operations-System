@@ -15,7 +15,7 @@ from scripts.app.util.retries import call_with_retries
 
 def _cfg(*, max_retries: int) -> AppConfig:
     raw: dict[str, Any] = {
-        "paths": {"logs_dir": "logs", "output_dir": "output", "orders_csv": "Order Numbers.csv", "desfiles_dir": "DTF Des Files", "void_csv": "void label input/void_labels.csv"},
+        "paths": {"logs_dir": "Logs", "output_dir": "Output", "orders_csv": "Order Numbers.csv", "desfiles_dir": "DTF Des Files", "void_csv": "Void Label Input/void_labels.csv"},
         "logging": {"level": "INFO", "redact_keys": []},
         "concurrency": {
             "max_workers": 2,

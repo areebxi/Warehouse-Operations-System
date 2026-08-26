@@ -78,7 +78,13 @@ def _dtf_key_for_manifest(source_files: list[Path]) -> str | None:
 
 def run_convert(cfg: AppConfig, log: JsonlLogger) -> int:
     desfiles_dir = Path(str(cfg.raw["paths"]["desfiles_dir"]))
-    processed_dir = Path("DTF Des Files - Processed")
+    import sys
+    warehouse = Path(__file__).resolve().parents[4].parent
+    if str(warehouse) not in sys.path:
+        sys.path.insert(0, str(warehouse))
+    from shared import paths as wh
+
+    processed_dir = wh.shipping_desfiles_processed_dir()
 
     try:
         discovery = discover_input_files(desfiles_dir)

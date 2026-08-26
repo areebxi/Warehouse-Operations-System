@@ -35,7 +35,13 @@ def save_missing_size_reference_rows(
             src_dir = Path(__file__).parent
             app_dir = src_dir.parent
 
-        missing_folder = Path(app_dir) / "Missing Size Reference"
+        import sys
+        warehouse = Path(__file__).resolve().parents[3].parent
+        if str(warehouse) not in sys.path:
+            sys.path.insert(0, str(warehouse))
+        from shared import paths as wh
+
+        missing_folder = wh.queue_missing_size_dir()
         missing_folder.mkdir(exist_ok=True)
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")

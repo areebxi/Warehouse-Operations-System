@@ -8,11 +8,11 @@ Default scope: mock rows (Custom Label ^M\\d+) that were added by
 generate_from_mocks (not present in the preGenerate backup). Use --all-mocks
 for every M## row.
 
-Example (from repo root or Maker folder):
+Example (from Custom Label Database app root):
 
-  python "Custom Label Database Maker/download_apparel_images.py"
-  python "Custom Label Database Maker/download_apparel_images.py" --all-mocks
-  python "Custom Label Database Maker/download_apparel_images.py" --dry-run
+  python scripts/download_apparel_images.py
+  python scripts/download_apparel_images.py --all-mocks
+  python scripts/download_apparel_images.py --dry-run
 """
 from __future__ import annotations
 
@@ -28,15 +28,18 @@ from pathlib import Path
 
 import pandas as pd
 
-MAKER_DIR = Path(__file__).resolve().parent
-REPO = MAKER_DIR.parent
+SCRIPTS_DIR = Path(__file__).resolve().parent
+REPO = SCRIPTS_DIR.parent
+_WAREHOUSE = REPO.parent
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared import paths as wh  # noqa: E402
 
-DEFAULT_DB = REPO / "Custom_Label_Database.csv"
-DEFAULT_PE_XLSX = REPO / "support" / "ProductExport.xlsx"
-DEFAULT_PE_CSV = MAKER_DIR / "ProductExport.csv"
-DEFAULT_OUT = MAKER_DIR / "Apparel Images"
+DEFAULT_DB = wh.cl_csv_path(REPO)
+DEFAULT_PE = wh.product_export_path(REPO)
+DEFAULT_OUT = wh.images_apparel_dir(REPO)
 DEFAULT_PRE_GENERATE = (
-    REPO / "backups" / "Custom Label Database_preGenerate_20260820_171255.xlsx"
+    wh.cl_backups_dir(REPO) / "Custom Label Database_preGenerate_20260820_171255.xlsx"
 )
 
 RE_MOCK = re.compile(r"(?i)^M\d+")
@@ -122,7 +125,7 @@ def download_one(url: str, out_path: Path, timeout: int = 120) -> tuple[str, str
     try:
         req = urllib.request.Request(
             url,
-            headers={"User-Agent": "CustomLabelDatabaseMaker/1.0"},
+            headers={"User-Agent": "CustomLabelDatabase/1.0"},
         )
         with urllib.request.urlopen(req, timeout=timeout) as resp, open(tmp, "wb") as f:
             while True:
@@ -150,13 +153,13 @@ def main() -> int:
         "--product",
         type=Path,
         default=None,
-        help="ProductExport.xlsx or .csv (default: support/ProductExport.xlsx)",
+        help="ProductExport.xlsx or .csv (default: data/product_export/ProductExport.csv)",
     )
     ap.add_argument(
         "--out",
         type=Path,
         default=DEFAULT_OUT,
-        help="Output folder (default: Maker/Apparel Images)",
+        help="Output folder (default: Apparel Images/)",
     )
     ap.add_argument(
         "--all-mocks",
@@ -176,7 +179,7 @@ def main() -> int:
 
     pe_path = args.product
     if pe_path is None:
-        pe_path = DEFAULT_PE_XLSX if DEFAULT_PE_XLSX.exists() else DEFAULT_PE_CSV
+        pe_path = DEFAULT_PE
     if not args.db.exists():
         raise SystemExit(f"DB not found: {args.db}")
     if not pe_path.exists():

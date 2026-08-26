@@ -23,12 +23,12 @@ def default_config_dict() -> dict[str, Any]:
             # Optional: set requests_per_sec for fixed-spacing pacing; omit or 0 for none (429-driven throttle).
         },
         "paths": {
-            "output_dir": "output",
-            "logs_dir": "logs",
+            "output_dir": "Output",
+            "logs_dir": "Logs",
             "reports_dir": "Reports",
-            "desfiles_dir": "desfiles",
+            "desfiles_dir": "DTF Des Files",
             "orders_csv": "Order Numbers.csv",
-            "void_csv": "void_labels.csv",
+            "void_csv": "Void Label Input/void_labels.csv",
         },
         "manual_print": {
             "input_csv": "Manual Print Input/Order Numbers.csv",

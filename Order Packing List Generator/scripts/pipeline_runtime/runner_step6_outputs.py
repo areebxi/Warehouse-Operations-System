@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -159,7 +160,11 @@ def run_step6_style_outputs(
     if log:
         log.step("Step 8 (missing pipeline): Generating PDF...")
     pdf_path = output_root / f"{name}.pdf"
-    workbook_path = PROJECT_ROOT / "Data" / "Workbook.xlsx"
+    _wh = PROJECT_ROOT.parent
+    if str(_wh) not in sys.path:
+        sys.path.insert(0, str(_wh))
+    from shared import paths as wh
+    workbook_path = wh.packing_workbook_path()
     try:
         position_code_to_draw = load_position_code_to_draw(workbook_path) if workbook_path.exists() else {}
     except Exception:

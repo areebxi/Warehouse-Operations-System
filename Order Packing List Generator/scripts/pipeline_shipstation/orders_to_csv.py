@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 from pathlib import Path
+import sys
 from typing import Any, Callable
 
 from scripts.pipeline_runtime.runner_utils import (
@@ -35,7 +36,11 @@ CSV_FIELDNAMES = [
 ]
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-DEFAULT_INPUT_ROOT = PROJECT_ROOT / "Input"
+_WAREHOUSE = PROJECT_ROOT.parent
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared import paths as wh  # noqa: E402
+DEFAULT_INPUT_ROOT = wh.packing_input_dir()
 
 
 def input_csv_path_for_batch(

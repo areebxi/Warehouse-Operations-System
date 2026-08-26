@@ -1,4 +1,4 @@
-"""
+﻿"""
 Reusable filler for Custom Label Database.csv (preferred) or .xlsx
 
 Use when you add rows with seed columns only:
@@ -49,20 +49,20 @@ from size_code_logic import (  # noqa: E402
 )
 
 # ---------------------------------------------------------------------------
-# Paths — see docs/WORKSPACE.md:
-#   Custom_Label_Database.csv           (working DB, repo root)
-#   support/BTC Product Export.csv
-#   support/Shirts Print Sizes.csv
-#   support/Size References.csv
-#   backups/                            (snapshots)
+# Paths — CL app CSV + support/ + data/product_export
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = Path(__file__).resolve().parent
-BASE = SCRIPT_DIR.parent
-SUPPORT = BASE / "support"
-BACKUPS = BASE / "backups"
+_WAREHOUSE = SCRIPT_DIR.parent.parent
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared import paths as wh  # noqa: E402
 
-DEFAULT_DB = BASE / "Custom_Label_Database.csv"
-DEFAULT_PE = SUPPORT / "BTC Product Export.csv"
+BASE = SCRIPT_DIR.parent  # app folder (code only)
+SUPPORT = wh.custom_label_support_dir()
+BACKUPS = wh.cl_backups_dir()
+
+DEFAULT_DB = wh.cl_csv_path()
+DEFAULT_PE = wh.product_export_path()
 DEFAULT_CONFIG = SUPPORT / "Size References.csv"
 DEFAULT_PRINT_SIZES = SUPPORT / "Shirts Print Sizes.csv"
 

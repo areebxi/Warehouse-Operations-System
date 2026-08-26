@@ -4,12 +4,16 @@ from pathlib import Path
 
 _PROJECT_ROOT_DEV = Path(__file__).resolve().parent.parent.parent
 PROJECT_ROOT = _PROJECT_ROOT_DEV
+_WAREHOUSE = PROJECT_ROOT.parent
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared import paths as wh  # noqa: E402
 
 
 def logs_directory() -> Path:
     """Directory for pipeline session logs (always writable when possible).
 
-    - Normal runs: ``<project>/logs`` (same folder as ``scripts/`` parent).
+    - Normal runs: ``runtime/Packing/Logs``.
     - Frozen / one-file builds: try ``<exe_dir>/logs``, then ``%LOCALAPPDATA%/PackingListApp/logs``.
     """
     if getattr(sys, "frozen", False):
@@ -30,11 +34,13 @@ def logs_directory() -> Path:
         out = exe_parent / "logs"
         out.mkdir(parents=True, exist_ok=True)
         return out.resolve()
-    return (_PROJECT_ROOT_DEV / "logs").resolve()
-DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "Output"
-DEFAULT_WORKBOOK = PROJECT_ROOT / "Data" / "Workbook.xlsx"
-CONFIG_DIR = PROJECT_ROOT / "config"
-CONFIG_PATH = CONFIG_DIR / "gui_config.json"
+    return wh.packing_logs_dir().resolve()
+
+
+DEFAULT_OUTPUT_DIR = wh.packing_output_dir()
+DEFAULT_WORKBOOK = wh.packing_workbook_path()
+CONFIG_DIR = wh.packing_config_dir()
+CONFIG_PATH = wh.packing_gui_config_path()
 
 CONFIG_KEYS = (
     "input_csv",

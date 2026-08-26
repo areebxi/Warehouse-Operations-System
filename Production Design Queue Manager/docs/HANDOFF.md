@@ -1,12 +1,12 @@
-# Production Design Queue Manager — snapshot
+﻿# Production Design Queue Manager — snapshot
 
-**Updated:** 25 August 2026 (CL sizes + Shared Inbox auto Missing Logo)  
+**Updated:** 25 August 2026 (CL sizes + SharedInbox auto Missing Logo)  
 **Handbook:** `AGENTS.md`
 
 ## Continue here
 
 - GUI: `run_queue_app.bat` or `pythonw queue_app.py`.
-- Auto Missing Logo: `run_auto_missing_logo.bat` (watches Shared Inbox; folders from `config/queue_app_settings.json`).
+- Auto Missing Logo: `run_auto_missing_logo.bat` (watches SharedInbox; folders from `config/queue_app_settings.json`).
 - Print sizes: CL CSV; Pocket overrides: Configuration Workbook.
 - Modes (GUI): Normal, Personalised, Missing Logo.
 

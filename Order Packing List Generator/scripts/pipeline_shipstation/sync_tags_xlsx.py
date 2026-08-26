@@ -20,7 +20,12 @@ from .client import ShipStationClient, ShipStationError
 from .credentials import load_shipstation_credentials
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-DEFAULT_XLSX_PATH = PROJECT_ROOT / "Data" / "ShipStation Tags.xlsx"
+_WAREHOUSE = PROJECT_ROOT.parent
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared import paths as wh  # noqa: E402
+
+DEFAULT_XLSX_PATH = wh.shipstation_tags_path()
 SHEET_NAME = "Tags"
 
 COL_SR = 1

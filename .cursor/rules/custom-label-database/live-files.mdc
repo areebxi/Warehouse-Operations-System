@@ -1,22 +1,21 @@
----
-description: CL live vs helper vs archive files
+﻿---
+description: Custom Label Database live vs helper paths
 alwaysApply: false
 globs: "Custom Label Database/**"
 ---
 
 # Live vs helper vs archive
 
-Paths are relative to `Custom Label Database/`.
+CL app owns its live catalog, support helpers, and apparel images. Resolve via `shared/paths.py`:
 
 | Path | Role |
-|------|------|
-| `Custom_Label_Database.csv` | **Live** working DB. Edit this. |
-| `Custom Label Database.xlsx` | Archive. Not live. |
-| `support/Shirts Print Sizes.csv` | Shirt size-band W/H (A4/A3/Neck). |
-| `support/Size References.csv` | Bags, paper, iron-on, exact `M## (UID)`, templates. |
-| `support/BTC Product Export.csv` | Product catalog (UID join). Not UTF-8-safe; try cp1252/latin-1. |
-| `support/Mocks Databse.csv` | Mocks guide (spelling is real). |
-| `support/Workbook.xlsx` | Apparel Image restore (`Picture Name`). |
-| `backups/` | Pre-change snapshots. |
+|---|---|
+| `Custom Label Database/Custom_Label_Database.csv` | **Live** working DB |
+| `Custom Label Database/backups/` | Pre-change catalog snapshots |
+| `Custom Label Database/support/` | Size refs, shirts print sizes, mocks, Workbook restore |
+| `Custom Label Database/Apparel Images/` | Apparel image library |
+| `data/product_export/ProductExport.csv` | Product catalog (UID join) |
 
-Prefer scripts over opening the full CSV in the editor. `D:\Custom Label Database` and this tree have been the same project; treat as one until told otherwise.
+Useful scripts (app `scripts/`): `fill_from_seeds.py`, `generate_from_mocks.py`, `download_apparel_images.py`, `fill_cl_database.py` (legacy template expand).
+
+Run Python from the Custom Label Database app folder. Prefer scripts over opening the full CSV in the editor.

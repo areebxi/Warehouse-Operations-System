@@ -23,7 +23,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Assign process numbers (step 5)")
     parser.add_argument("step4_csv", type=Path, help="Step-4 matched CSV path")
     parser.add_argument("shift", type=str, help="Shift: 1st, 2nd, 3rd, 4th, 5th")
-    parser.add_argument("workbook_path", type=Path, nargs="?", default=PROJECT_ROOT / "Data" / "Workbook.xlsx", help="Workbook path")
+    parser.add_argument("workbook_path", type=Path, nargs="?", default=__import__('shared.paths', fromlist=['packing_workbook_path']).packing_workbook_path(), help="Workbook path")
     parser.add_argument("output_dir", type=Path, nargs="?", default=DEFAULT_OUTPUT_DIR, help="Output directory")
     parser.add_argument("--separate-by-logo-id", action="store_true", help="Use Logo ID as process number when order count >= threshold")
     parser.add_argument("--logo-id-threshold", type=int, default=5, help="Min units per Logo ID (full-logo orders only) to separate (default: 5)")

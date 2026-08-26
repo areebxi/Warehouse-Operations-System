@@ -28,17 +28,28 @@ def _resolve_project_root_from_module() -> str:
     return project_root
 
 
+def _warehouse_queue_paths():
+    import sys
+    from pathlib import Path
+
+    app_root = Path(_resolve_project_root_from_module())
+    warehouse = app_root.parent
+    if str(warehouse) not in sys.path:
+        sys.path.insert(0, str(warehouse))
+    from shared import paths as wh
+
+    return wh
+
+
 def load_color_bar_from_app_dir(app_dir: Optional[str] = None) -> Tuple[Optional[Image.Image], Optional[str]]:
-    """Auto-load Color Bar file from app directory."""
+    """Auto-load Color Bar file from Data/Queue (or legacy app dirs)."""
     try:
+        wh = _warehouse_queue_paths()
+        color_bar_names = ["Color Bar.png", "ColorBar.png", "color_bar.png", "colorbar.png"]
+        search_dirs = [str(wh.queue_data_dir())]
         if app_dir is None:
             app_dir = _resolve_project_root_from_module()
-
-        color_bar_names = ["Color Bar.png", "ColorBar.png", "color_bar.png", "colorbar.png"]
-
-        # Check config/ (new location), then app root (legacy)
-        config_dir = os.path.join(app_dir, "config")
-        search_dirs = [config_dir, app_dir] if os.path.exists(config_dir) else [app_dir]
+        search_dirs.extend([os.path.join(app_dir, "config"), app_dir])
 
         for search_dir in search_dirs:
             for name in color_bar_names:
@@ -159,8 +170,8 @@ def _load_configuration_workbook_sheets(
     if app_dir is None:
         app_dir = _resolve_project_root_from_module()
 
-    config_dir = os.path.join(app_dir, "config")
-    config_workbook_path = os.path.join(config_dir, "Configuration Workbook.xlsx")
+    wh = _warehouse_queue_paths()
+    config_workbook_path = str(wh.queue_config_workbook_path())
 
     if not os.path.exists(config_workbook_path):
         return config_workbook_path, None, None, None, None

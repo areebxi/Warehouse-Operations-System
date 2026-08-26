@@ -1,7 +1,12 @@
 import re
+import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+_WAREHOUSE = PROJECT_ROOT.parent
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared import paths as wh  # noqa: E402
 
 EXCEL_PROCESS_NO_DASH = False
 
@@ -17,7 +22,7 @@ REQUIRED = [
     "Colour",
 ]
 
-DTF_SKU_MAP_CSV = PROJECT_ROOT / "Data" / "New SKU Database.csv"
+DTF_SKU_MAP_CSV = wh.packing_new_sku_csv_path()
 DTF_COL_COMPANY_LABEL = "Company-Custom-Label"
 DTF_COL_OLD_LABEL = "Old-Company-Custom-Label"
 _DTF_DESIGN_HEAD_LG = re.compile(

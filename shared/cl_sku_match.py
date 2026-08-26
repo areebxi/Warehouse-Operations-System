@@ -127,29 +127,19 @@ def resolve_from_map(
 
 
 def warehouse_root_from(path: object) -> "Path":
-    """Walk up from path until a directory that contains Custom Label Database/."""
-    from pathlib import Path
+    """Delegate to shared.paths (data/runtime/config layout)."""
+    from shared.paths import warehouse_root_from as _root
 
-    p = Path(path).resolve()
-    if p.is_file():
-        p = p.parent
-    for candidate in (p, *p.parents):
-        if (candidate / "Custom Label Database").is_dir():
-            return candidate
-    # Fallback: three levels up from a typical app scripts/ file is wrong;
-    # prefer parent of app folder when CL folder missing.
-    return p
+    return _root(path)
 
 
 def default_cl_csv_path(from_path: object) -> "Path":
-    from pathlib import Path
+    from shared.paths import cl_csv_path
 
-    root = warehouse_root_from(from_path)
-    return root / "Custom Label Database" / "Custom_Label_Database.csv"
+    return cl_csv_path(from_path)
 
 
 def shared_inbox_dtf_des_root(from_path: object) -> "Path":
-    from pathlib import Path
+    from shared.paths import shared_inbox_dtf_des_root as _inbox
 
-    root = warehouse_root_from(from_path)
-    return root / "Shared Inbox" / "DTF Des"
+    return _inbox(from_path)

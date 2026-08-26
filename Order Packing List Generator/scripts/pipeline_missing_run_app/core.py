@@ -10,12 +10,18 @@ from scripts.pipeline_generate_packing_list_pdf.core_helpers import parse_proces
 from scripts.pipeline_runtime.pipeline_log import PipelineLog
 from scripts.pipeline_runtime.order_number_csv import read_csv_with_order_numbers
 from scripts.pipeline_runtime.runner import ALL_ORDERS_PATH, PROJECT_ROOT, _run_step6_style_outputs
+import sys
+
+_WAREHOUSE = PROJECT_ROOT.parent
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared import paths as wh  # noqa: E402
 
 _PROCESS_ITEM_RE = re.compile(r"^Process\s+(\S+)\s+Item-(\d+)")
 
-MISSING_DIR = PROJECT_ROOT / "Missing"
+MISSING_DIR = wh.packing_missing_input_dir()
 DEFAULT_MISSING_INPUT = MISSING_DIR / "Missing Input.csv"
-CONFIG_DIR = PROJECT_ROOT / "config"
+CONFIG_DIR = wh.packing_config_dir()
 MISSING_RUN_CONFIG = CONFIG_DIR / "missing_run_config.json"
 
 

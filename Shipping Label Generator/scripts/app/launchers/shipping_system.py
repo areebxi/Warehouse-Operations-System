@@ -64,7 +64,7 @@ def main() -> int:
         print("  2) Print labels (output/Order_Numbers/YYYY-MM-DD/Order Numbers.csv -> dated PDFs)")
         print("  3) Convert + Print (one run)")
         print("  4) Manual Print (Manual Print Input/Order Numbers.csv -> manual outputs)")
-        print("  5) Void labels (void label input/void_labels.csv)")
+        print("  5) Void labels (Void Label Input/void_labels.csv)")
         print("  6) Exit")
         choice = (input("\nEnter choice (1-6): ") or "").strip()
 

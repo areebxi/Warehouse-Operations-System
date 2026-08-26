@@ -23,8 +23,20 @@ from src.system.interfaces import ISettingsManager
 
 
 def _get_project_root() -> str:
-    """Resolve repository root from scripts/src/system module path."""
+    """Resolve Queue app root from scripts/src/system module path."""
     return str(Path(__file__).resolve().parents[3])
+
+
+def _warehouse_settings_path() -> Path:
+    import sys
+
+    app_root = Path(_get_project_root())
+    warehouse = app_root.parent
+    if str(warehouse) not in sys.path:
+        sys.path.insert(0, str(warehouse))
+    from shared import paths as wh
+
+    return wh.queue_settings_path()
 
 
 class SettingsManager(ISettingsManager):
@@ -43,44 +55,11 @@ class SettingsManager(ISettingsManager):
         """Initialize settings manager.
         
         Args:
-            settings_file_path: Path to settings file. If None, uses default
-                location (queue_app_settings.json in config/ directory,
-                or root directory for backwards compatibility).
-                
-        Note:
-            Settings are automatically loaded from the file if it exists.
-            Checks config/ directory first, then root directory.
+            settings_file_path: Path to settings file. If None, uses
+                Config/queue/queue_app_settings.json.
         """
         if settings_file_path is None:
-            app_dir = _get_project_root()
-            config_dir = os.path.join(app_dir, 'config')
-            # Check config/ directory first (new location), then root directory
-            # Support both new and old file names for backwards compatibility
-            settings_file_name = 'queue_app_settings.json'
-            old_settings_file_name = 'design_arranger_settings.json'
-            config_path = os.path.join(config_dir, settings_file_name)
-            old_config_path = os.path.join(config_dir, old_settings_file_name)
-            root_path = os.path.join(app_dir, settings_file_name)
-            old_root_path = os.path.join(app_dir, old_settings_file_name)
-            
-            # Check new file first, then old file for backwards compatibility
-            if os.path.exists(config_path):
-                settings_file_path = config_path
-            elif os.path.exists(old_config_path):
-                # Migrate old file to new name
-                import shutil
-                shutil.copy2(old_config_path, config_path)
-                settings_file_path = config_path
-            elif os.path.exists(root_path):
-                settings_file_path = root_path
-            elif os.path.exists(old_root_path):
-                # Migrate old file to new name
-                import shutil
-                shutil.copy2(old_root_path, root_path)
-                settings_file_path = root_path
-            else:
-                # Default to config/ directory for new installations
-                settings_file_path = config_path
+            settings_file_path = str(_warehouse_settings_path())
         
         self.settings_file: str = settings_file_path
         self._saved_settings: Dict[str, Optional[str]] = {}

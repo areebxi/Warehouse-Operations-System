@@ -55,8 +55,12 @@ CL_DB_COLUMN_ALIASES = {
 CUSTOM_LABEL_COL = "Custom Label"
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-DATA_DIR = PROJECT_ROOT / "Data"
-DEFAULT_WORKBOOK = DATA_DIR / "Workbook.xlsx"
+_WAREHOUSE = PROJECT_ROOT.parent
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared import paths as wh  # noqa: E402
+DATA_DIR = wh.packing_data_dir()
+DEFAULT_WORKBOOK = wh.packing_workbook_path()
 DEFAULT_CL_CSV = default_cl_csv_path(PROJECT_ROOT)
 
 _ITEM_NAME_CUSTOM_KEYWORDS = (
@@ -282,7 +286,7 @@ def main() -> None:
         stem = Path(step1).stem
         prefix = "1_fetch_input_csv_"
         token = stem[len(prefix) :] if stem.startswith(prefix) else stem
-        output_path = PROJECT_ROOT / "Output" / f"2_enrich_cl_lookup_{token}.csv"
+        output_path = wh.packing_output_dir() / f"2_enrich_cl_lookup_{token}.csv"
 
     step1_path = Path(step1)
     output_path = Path(output_path)

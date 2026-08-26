@@ -1,5 +1,5 @@
----
-description: Queue approval — GUI batches vs Shared Inbox auto Missing Logo
+﻿---
+description: Queue approval — GUI batches vs SharedInbox auto Missing Logo
 alwaysApply: false
 globs: "Production Design Queue Manager/**"
 ---
@@ -7,4 +7,4 @@ globs: "Production Design Queue Manager/**"
 # Approval
 
 - **GUI** Normal / Personalised / Missing Logo batch into Output/RAR: do not run against live data unless the supervisor already said **yes / do it / fill / run**. Confirm mode and folders when unclear.
-- **Shared Inbox auto Missing Logo** (`auto_missing_logo_watcher`): **no approval** by design. Uses folders from `queue_app_settings.json`. Re-runs generate new timestamped PNGs.
+- **SharedInbox auto Missing Logo** (`auto_missing_logo_watcher`): **no approval** by design. Uses folders from `queue_app_settings.json`. Re-runs generate new timestamped PNGs.

@@ -1,7 +1,7 @@
 ---
 description: Universal Custom Label SKU match order for all warehouse apps
 alwaysApply: false
-globs: "{Custom Label Database,Order Packing List Generator,Production Design Queue Manager,Purchase Order Generator,Shipping Label Generator,Shared Inbox,shared}/**"
+globs: "{Custom Label Database,Order Packing List Generator,Production Design Queue Manager,Purchase Order Generator,Shipping Label Generator,shared,runtime/SharedInbox}/**"
 ---
 
 # Universal CL SKU match

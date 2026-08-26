@@ -14,9 +14,16 @@ from pathlib import Path
 
 import openpyxl
 
-CONFIG_DIR = Path(__file__).resolve().parent
-WORKBOOK_PATH = CONFIG_DIR / "Configuration Workbook.xlsx"
-PRODUCT_EXPORT_PATH = CONFIG_DIR / "ProductExport.xlsx"
+_WAREHOUSE = Path(__file__).resolve().parents[2]
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared import paths as wh  # noqa: E402
+
+WORKBOOK_PATH = wh.queue_config_workbook_path()
+PRODUCT_EXPORT_PATH = wh.data_archive_dir() / "Queue_ProductExport.xlsx"
+if not PRODUCT_EXPORT_PATH.exists():
+    # Prefer shared CSV PE via openpyxl only for xlsx; archive holds Queue xlsx
+    PRODUCT_EXPORT_PATH = wh.data_archive_dir() / "PO_ProductExport.xlsx"
 
 SIZE_REFERENCES_SHEET = "Size References"
 PRODUCT_EXPORT_SHEET = "staff"

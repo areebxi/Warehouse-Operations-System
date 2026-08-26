@@ -1,11 +1,22 @@
-# --- Secrets (never commit) ---
+# --- Secrets / machine config (never commit live) ---
 .env
 .env.*
 !.env.example
 **/API KEY.txt
 **/api_key*.txt
 **/api-key*.txt
-Purchase Order Generator/config.py
+config/PurchaseOrder/config.py
+config/Packing/API KEY.txt
+config/Shipping/.env
+config/Queue/queue_app_settings.json
+config/Packing/*.json
+config/PurchaseOrder/gui_settings.json
+
+# Keep tracked templates under config
+!config/**/.env.example
+!config/**/config_example.py
+!config/**/README.md
+!config/README.md
 
 # --- Python / tooling ---
 __pycache__/
@@ -32,56 +43,27 @@ Desktop.ini
 .vscode/
 *.code-workspace
 
-# --- Live catalog (sync via OneDrive / share, not Git) ---
+# --- Live data (catalogs, workbooks, stock, images) ---
+data/**
+!data/README.md
+!data/**/README.md
+
+# CL app owns the live catalog + helpers + apparel images (exception to code-only)
 Custom Label Database/Custom_Label_Database.csv
+Custom Label Database/Custom_Label_Database.xlsx
 Custom Label Database/backups/
-Custom Label Database/support/*.csv
-Custom Label Database/support/*.xlsx
-Custom Label Database/docs/chats/
-Custom Label Database/Custom Label Database Maker/Apparel Images/
-Custom Label Database/Custom Label Database Maker/*.csv
-Custom Label Database/Custom Label Database Maker/ProductExport/
+Custom Label Database/support/
+Custom Label Database/Apparel Images/
 
-# --- Shared Inbox payload (keep README) ---
-Shared Inbox/DTF Des/**
+# --- Runtime I/O ---
+runtime/**
+!runtime/README.md
+!runtime/**/README.md
 
-# --- Run artifacts (all apps) ---
-**/Output/
-**/output/
-**/Input/
-**/Logs/
-**/logs/
-**/*.log
-
-# Packing
-Order Packing List Generator/Missing Input/
-Order Packing List Generator/Missing Logo Files/
-Order Packing List Generator/Preflight Issues/
-Order Packing List Generator/Data/
-
-# Queue — machine-local paths + live size/pocket workbook
-Production Design Queue Manager/config/queue_app_settings.json
-Production Design Queue Manager/config/Configuration Workbook.xlsx
-Production Design Queue Manager/Missing Size Reference/
-Production Design Queue Manager/Input/
-
-# PO live data / stock / product image library (sync separately)
-Purchase Order Generator/data/
-Purchase Order Generator/assets/
-
-# Shipping working folders
-Shipping Label Generator/DTF Des Files/
-Shipping Label Generator/DTF Des Files - Processed/
-Shipping Label Generator/DTF Des Files -Processed/
-Shipping Label Generator/Error and Failures/
-Shipping Label Generator/Manual Print Input/
-Shipping Label Generator/Reports/
-Shipping Label Generator/void label input/
-
-# --- Old snapshot trees (Git replaces these going forward) ---
+# --- Old snapshot trees ---
 **/Versions/
 
-# --- Large binary dumps often dropped in-tree ---
+# --- Large binary dumps ---
 *.zip
 *.7z
 *.rar
