@@ -1,4 +1,4 @@
-"""ponytail: layout self-check — fails if app-owned paths drift back to warehouse roots."""
+"""ponytail: layout self-check — fails if database paths drift back into app folders."""
 
 from __future__ import annotations
 
@@ -7,26 +7,18 @@ from shared import paths as wh
 
 def main() -> None:
     root = wh.warehouse_root()
-    pack = wh.packing_app_dir()
-    queue = wh.queue_app_dir()
-    ship = wh.shipping_app_dir()
-    po = wh.po_app_dir()
+    db = wh.database_root()
 
-    assert wh.packing_data_dir() == pack / "Data"
-    assert wh.packing_output_dir() == pack / "Output"
-    assert wh.packing_config_dir() == pack / "config"
-    assert wh.queue_config_workbook_path() == queue / "config" / "Configuration Workbook.xlsx"
-    assert wh.queue_output_dir() == queue / "Output"
-    assert wh.shipping_yaml_path() == ship / "shipping_config.yaml"
-    assert wh.shipping_desfiles_dir() == ship / "DTF Des Files"
-    assert wh.po_data_dir() == po / "data"
-    assert wh.images_po_dir() == po / "assets"
-    assert wh.po_output_dir() == po / "output"
-    assert wh.po_config_py_path() == po / "config.py"
-
-    # Shared joins stay outside apps
-    assert wh.product_export_path().is_relative_to(root / "data")
-    assert wh.shipstation_tags_path().is_relative_to(root / "data")
+    assert wh.packing_data_dir() == db / "order-packing-list-generator"
+    assert wh.packing_workbook_path() == db / "order-packing-list-generator" / "Workbook.xlsx"
+    assert wh.queue_config_workbook_path() == db / "production-design-queue-manager" / "Configuration Workbook.xlsx"
+    assert wh.po_data_dir() == db / "purchase-order-generator"
+    assert wh.po_gui_settings_path().is_relative_to(wh.po_app_dir() / "config")
+    assert wh.cl_csv_path() == db / "shared" / "custom_label" / "Custom_Label_Database.csv"
+    assert wh.custom_label_support_dir() == db / "custom-label-database" / "support"
+    assert wh.images_apparel_dir() == db / "custom-label-database" / "Apparel Images"
+    assert wh.product_export_path() == db / "shared" / "product_export" / "ProductExport.csv"
+    assert wh.shipstation_tags_path() == db / "shared" / "shipstation" / "ShipStation_Tags.xlsx"
     assert wh.shipstation_env_path().is_relative_to(root / "config" / "ShipStation")
     assert wh.shared_inbox_dtf_des_root().is_relative_to(root / "runtime" / "SharedInbox")
     print("paths layout ok")

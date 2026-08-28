@@ -1,10 +1,9 @@
 """
-Warehouse path registry — shared joins + per-app live folders.
+Warehouse path registry — database/ live data + per-app code/I/O.
 
-Shared (warehouse root): data/product_export, data/shipstation, config/ShipStation,
-runtime/SharedInbox, Custom Label Database catalog.
-
-App-owned data/config/runtime live inside each app folder (historical layout).
+Shared databases: database/shared/ (PE, Tags, CL CSV).
+App databases: database/<app-slug>/.
+Secrets: config/ShipStation. Pipeline I/O: runtime/SharedInbox + app Input/Output/Logs.
 """
 
 from __future__ import annotations
@@ -14,12 +13,19 @@ from typing import Optional
 
 _WAREHOUSE_MARKERS = ("shared", "AGENTS.md")
 
+# App slug folder names under database/
+DB_SLUG_CL = "custom-label-database"
+DB_SLUG_PACKING = "order-packing-list-generator"
+DB_SLUG_QUEUE = "production-design-queue-manager"
+DB_SLUG_PO = "purchase-order-generator"
+DB_SLUG_SHIPPING = "shipping-label-generator"
+
 
 def warehouse_root_from(path: object | None = None) -> Path:
     """
     Walk up from path (or this file) until warehouse root is found.
 
-    Root is a directory that contains ``shared/`` and either ``data/`` or ``AGENTS.md``.
+    Root is a directory that contains ``shared/`` and ``database/``, ``data/``, or ``AGENTS.md``.
     """
     if path is None:
         start = Path(__file__).resolve().parent
@@ -30,9 +36,10 @@ def warehouse_root_from(path: object | None = None) -> Path:
 
     for candidate in (start, *start.parents):
         has_shared = (candidate / "shared").is_dir()
+        has_database = (candidate / "database").is_dir()
         has_data = (candidate / "data").is_dir() or (candidate / "Data").is_dir()
         has_agents = (candidate / "AGENTS.md").is_file()
-        if has_shared and (has_data or has_agents):
+        if has_shared and (has_database or has_data or has_agents):
             return candidate
         if has_shared and (candidate / "Custom Label Database").is_dir():
             return candidate
@@ -43,9 +50,24 @@ def warehouse_root() -> Path:
     return warehouse_root_from(Path(__file__))
 
 
+def database_root(from_path: object | None = None) -> Path:
+    """All live database files (shared + per-app subfolders)."""
+    return warehouse_root_from(from_path) / "database"
+
+
+def database_shared_dir(from_path: object | None = None) -> Path:
+    """Cross-app databases (PE, ShipStation tags, CL catalog)."""
+    return database_root(from_path) / "shared"
+
+
+def database_app_dir(slug: str, from_path: object | None = None) -> Path:
+    """One app's database folder under database/."""
+    return database_root(from_path) / slug
+
+
 def data_root(from_path: object | None = None) -> Path:
-    """Shared tabular data only (product_export, shipstation tags, archive)."""
-    return warehouse_root_from(from_path) / "data"
+    """Alias for database_shared_dir (replaces legacy warehouse data/)."""
+    return database_shared_dir(from_path)
 
 
 def runtime_root(from_path: object | None = None) -> Path:
@@ -62,32 +84,37 @@ def config_root(from_path: object | None = None) -> Path:
 
 
 def cl_app_dir(from_path: object | None = None) -> Path:
-    """Custom Label Database app folder (owns the live CSV)."""
+    """Custom Label Database app folder (scripts/docs only)."""
     return warehouse_root_from(from_path) / "Custom Label Database"
 
 
 def cl_csv_path(from_path: object | None = None) -> Path:
-    return cl_app_dir(from_path) / "Custom_Label_Database.csv"
+    return database_shared_dir(from_path) / "custom_label" / "Custom_Label_Database.csv"
 
 
 def cl_backups_dir(from_path: object | None = None) -> Path:
-    return cl_app_dir(from_path) / "backups"
+    return database_shared_dir(from_path) / "custom_label" / "backups"
 
 
 def product_export_path(from_path: object | None = None) -> Path:
-    return data_root(from_path) / "product_export" / "ProductExport.csv"
+    return database_shared_dir(from_path) / "product_export" / "ProductExport.csv"
 
 
 def shipstation_tags_path(from_path: object | None = None) -> Path:
-    return data_root(from_path) / "shipstation" / "ShipStation_Tags.xlsx"
+    return database_shared_dir(from_path) / "shipstation" / "ShipStation_Tags.xlsx"
 
 
 def data_archive_dir(from_path: object | None = None) -> Path:
-    return data_root(from_path) / "archive"
+    return database_shared_dir(from_path) / "archive"
 
 
 def custom_label_support_dir(from_path: object | None = None) -> Path:
-    return cl_app_dir(from_path) / "support"
+    return database_app_dir(DB_SLUG_CL, from_path) / "support"
+
+
+def custom_label_database_dir(from_path: object | None = None) -> Path:
+    """CL app-owned helpers (support/, Apparel Images/)."""
+    return database_app_dir(DB_SLUG_CL, from_path)
 
 
 # --- Packing (Order Packing List Generator) ---
@@ -98,7 +125,7 @@ def packing_app_dir(from_path: object | None = None) -> Path:
 
 
 def packing_data_dir(from_path: object | None = None) -> Path:
-    return packing_app_dir(from_path) / "Data"
+    return database_app_dir(DB_SLUG_PACKING, from_path)
 
 
 def packing_workbook_path(from_path: object | None = None) -> Path:
@@ -157,13 +184,17 @@ def queue_app_dir(from_path: object | None = None) -> Path:
     return warehouse_root_from(from_path) / "Production Design Queue Manager"
 
 
+def queue_database_dir(from_path: object | None = None) -> Path:
+    return database_app_dir(DB_SLUG_QUEUE, from_path)
+
+
 def queue_data_dir(from_path: object | None = None) -> Path:
-    """Workbook + reference files live under the Queue app ``config/``."""
-    return queue_app_dir(from_path) / "config"
+    """Alias for queue_database_dir (workbook lives here)."""
+    return queue_database_dir(from_path)
 
 
 def queue_config_workbook_path(from_path: object | None = None) -> Path:
-    return queue_data_dir(from_path) / "Configuration Workbook.xlsx"
+    return queue_database_dir(from_path) / "Configuration Workbook.xlsx"
 
 
 def queue_runtime_dir(from_path: object | None = None) -> Path:
@@ -202,7 +233,7 @@ def po_app_dir(from_path: object | None = None) -> Path:
 
 
 def po_data_dir(from_path: object | None = None) -> Path:
-    return po_app_dir(from_path) / "data"
+    return database_app_dir(DB_SLUG_PO, from_path)
 
 
 def po_database_path(from_path: object | None = None) -> Path:
@@ -230,7 +261,7 @@ def po_output_dir(from_path: object | None = None) -> Path:
 
 
 def po_config_dir(from_path: object | None = None) -> Path:
-    """``config.py`` lives at the PO app root."""
+    """``config.py`` and GUI settings live at the PO app root config/."""
     return po_app_dir(from_path)
 
 
@@ -239,7 +270,7 @@ def po_config_py_path(from_path: object | None = None) -> Path:
 
 
 def po_gui_settings_path(from_path: object | None = None) -> Path:
-    return po_data_dir(from_path) / "gui_settings.json"
+    return po_app_dir(from_path) / "config" / "gui_settings.json"
 
 
 # --- Shipping Label Generator ---
@@ -247,6 +278,10 @@ def po_gui_settings_path(from_path: object | None = None) -> Path:
 
 def shipping_app_dir(from_path: object | None = None) -> Path:
     return warehouse_root_from(from_path) / "Shipping Label Generator"
+
+
+def shipping_database_dir(from_path: object | None = None) -> Path:
+    return database_app_dir(DB_SLUG_SHIPPING, from_path)
 
 
 def shipping_runtime_dir(from_path: object | None = None) -> Path:
@@ -317,7 +352,7 @@ def shared_inbox_dtf_des_root(from_path: object | None = None) -> Path:
 
 
 def images_apparel_dir(from_path: object | None = None) -> Path:
-    return cl_app_dir(from_path) / "Apparel Images"
+    return custom_label_database_dir(from_path) / "Apparel Images"
 
 
 def images_po_dir(from_path: object | None = None) -> Path:

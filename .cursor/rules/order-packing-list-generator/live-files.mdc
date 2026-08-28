@@ -1,21 +1,21 @@
-﻿---
-description: Packing live paths under the app folder + shared joins
-globs: Order Packing List Generator/**
-alwaysApply: false
----
-
-# Packing live files
-
-App owns its Data/config/I/O. Shared joins resolve via `shared/paths.py`.
-
-| Path | Role |
-|------|------|
-| `Order Packing List Generator/Data/Workbook.xlsx` | Process sheets (CL Database sheet archive-only for lookup) |
-| `Order Packing List Generator/Data/New SKU Database.csv` | DTF Des Item-SKU remap |
-| `Order Packing List Generator/Data/All Orders.csv` | Cumulative run log |
-| `data/shipstation/ShipStation_Tags.xlsx` | Tags → process# (shared) |
-| `Custom Label Database/Custom_Label_Database.csv` | Enrich |
-| `Order Packing List Generator/{Input,Output,Logs,…}` | Run I/O |
-| `runtime/SharedInbox/DTF Des/{date}/{shift}/` | DTF Des dual-write |
-| `config/ShipStation/.env` | ShipStation credentials |
-| `Order Packing List Generator/config/` | gui_config.json |
+---
+description: Packing live paths — database/ + app I/O + shared joins
+globs: Order Packing List Generator/**
+alwaysApply: false
+---
+
+# Packing live files
+
+App DB in `database/order-packing-list-generator/`. Run I/O in app folder. Shared joins via `shared/paths.py`.
+
+| Path | Role |
+|------|------|
+| `database/order-packing-list-generator/Workbook.xlsx` | Process sheets (CL Database sheet archive-only) |
+| `database/order-packing-list-generator/New SKU Database.csv` | DTF Des Item-SKU remap |
+| `database/order-packing-list-generator/All Orders.csv` | Cumulative run log |
+| `database/shared/shipstation/ShipStation_Tags.xlsx` | Tags → process# (shared) |
+| `database/shared/custom_label/Custom_Label_Database.csv` | Enrich |
+| `Order Packing List Generator/{Input,Output,Logs,…}` | Run I/O |
+| `runtime/SharedInbox/DTF Des/{date}/{shift}/` | DTF Des dual-write |
+| `config/ShipStation/.env` | ShipStation credentials |
+| `Order Packing List Generator/config/` | gui_config.json |

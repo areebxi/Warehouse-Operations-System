@@ -12,6 +12,7 @@ from typing import Callable, Optional
 import pandas as pd
 
 from scripts.pipeline_cl_lookup.enrich_cl_lookup import (
+    DEFAULT_CL_CSV,
     apply_cl_enrichment,
     build_cl_lookup,
     load_cl_database,
@@ -149,6 +150,7 @@ def run_preflight_audit(
     output_dir: Path,
     log_callback: Callable[[str], None],
     *,
+    cl_csv_path: Optional[Path] = None,
     apparel_dir: Optional[Path] = None,
     logo_normal_dir: Optional[Path] = None,
     logo_custom_single_dir: Optional[Path] = None,
@@ -158,6 +160,9 @@ def run_preflight_audit(
     Process each input CSV through steps 2–4, flag unmatched SKU + missing logo/apparel,
     write Preflight Issues CSV for rows with at least one Yes.
     Returns PreflightResult, NO_ISSUES, or None on error.
+
+    Workbook = process/position sheets. Custom Label enrich uses ``cl_csv_path``
+    (default live Custom_Label_Database.csv), not the Workbook CL sheet.
     """
     t0 = time.perf_counter()
 
@@ -166,6 +171,10 @@ def run_preflight_audit(
         return None
     if not workbook_path.is_file():
         log_callback(f"Error: Workbook not found: {workbook_path}")
+        return None
+    resolved_cl = Path(cl_csv_path) if cl_csv_path is not None else Path(DEFAULT_CL_CSV)
+    if not resolved_cl.is_file():
+        log_callback(f"Error: Custom Label Database CSV not found: {resolved_cl}")
         return None
 
     output_dir = Path(output_dir)
@@ -208,13 +217,14 @@ def run_preflight_audit(
             f"  [{_fmt_secs(time.perf_counter() - t_img)}]"
         )
 
-    # --- Stage 2: workbook cache ---
-    log_callback("2/4  Loading workbook lookups…")
+    # --- Stage 2: CL CSV + workbook process sheets ---
+    log_callback("2/4  Loading CL CSV + workbook lookups…")
+    log_callback(f"      CL CSV: {resolved_cl.resolve()}")
     t_wb = time.perf_counter()
     try:
-        cache = _load_workbook_cache(workbook_path)
+        cache = _load_workbook_cache(workbook_path, cl_csv_path=resolved_cl)
     except Exception as e:
-        log_callback(f"Error loading workbook: {e}")
+        log_callback(f"Error loading CL CSV / workbook: {e}")
         return None
     log_callback(
         f"      Done — CL labels {len(cache.cl_lookup):,}"

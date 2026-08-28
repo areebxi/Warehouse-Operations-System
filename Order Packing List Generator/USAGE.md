@@ -11,8 +11,9 @@ pip install -r requirements.txt
 ```
 
 - **Project files** (expected structure):
-  - `Data/Workbook.xlsx` – CL lookup workbook.
-  - `Data/ShipStation Tags.xlsx` – tag name / Tag ID / per-shift process-number mapping. Used when tag-mode process number is left blank. Sync from ShipStation with `python scripts/sync_shipstation_tags.py` (close the Excel file first).
+  - `database/order-packing-list-generator/Workbook.xlsx` – process/position sheets (Process Info, Multiple Positions, Logo IDs, etc.). Not the live Custom Label catalog.
+  - `database/shared/custom_label/Custom_Label_Database.csv` – live CL enrich source (SKU → Gender Apparel, etc.). Set via **Custom Label Database (CSV)** in the GUI.
+  - `database/shared/shipstation/ShipStation_Tags.xlsx` – tag name / Tag ID / per-shift process-number mapping. Used when tag-mode process number is left blank. Sync from ShipStation with `python scripts/sync_shipstation_tags.py` (close the Excel file first).
   - `config/ShipStation/.env` – ShipStation API credentials (`REAL_API_BASE_URL`, `REAL_API_KEY`, `REAL_API_SECRET`) for tag-based order fetch.
   - `Output/` – output folder (created automatically if missing).
   - Optional image folders for PDFs (top-level files only; no subfolders are scanned):
@@ -60,7 +61,8 @@ All three GUIs share a common look from `scripts/gui_theme.py` (applied at start
 - **Date (DD-MM-YYYY)**: Dispatch date for this run (e.g. `13-03-2026`).
 - **Shift**: Required; choose one of `1st`, `2nd`, `3rd`, `4th`, `5th`.
 - **Output directory**: Root folder where all outputs are created (default `Output`).
-- **Workbook path**: Path to `Data/Workbook.xlsx` (or your workbook file).
+- **Workbook path**: Path to `database/order-packing-list-generator/Workbook.xlsx` (process/position sheets only).
+- **Custom Label Database (CSV)**: Path to live `database/shared/custom_label/Custom_Label_Database.csv` (SKU enrich). Defaults via `shared/paths.py`.
 - **Apparel Image folder**: Folder containing product/apparel images (files in the top level only).
 - **Normal Logo/Design folder**: Folder for standard logo/design images (files in the top level only).
 - **Customise Single Position Logo/Design folder**:
@@ -103,12 +105,13 @@ All three GUIs share a common look from `scripts/gui_theme.py` (applied at start
    - **CSV file(s):** click **Add files…** and select one or more ShipStation CSVs (multiple files require **Use fixed process number**).
 3. **Choose Date** in `DD-MM-YYYY` format.
 4. **Select Shift** (required).
-5. **Set Workbook path** (usually `Data/Workbook.xlsx`).
-6. Optionally set **Apparel**, **Normal Logo/Design**, **Customise Single Position**, and **Customise Double Position** folders to embed real images into PDFs. If a folder path is filled in, it must be an existing directory. If all are empty, the app will warn that only placeholders will be used.
-7. Optionally set **PDF copy directory** and **Excel copy directory**.
-8. Optionally enable **Separate by Logo ID** and adjust **Logo ID threshold**.
-9. Optionally enable **Use fixed process number** and set **Fixed process number** (forced on for a single tag; blank uses the Tags sheet; disabled when multiple tags are selected).
-10. Click **Run pipeline**.
+5. **Set Workbook path** (usually `Data/Workbook.xlsx` — process sheets).
+6. **Set Custom Label Database (CSV)** (usually warehouse `Custom_Label_Database.csv`).
+7. Optionally set **Apparel**, **Normal Logo/Design**, **Customise Single Position**, and **Customise Double Position** folders to embed real images into PDFs. If a folder path is filled in, it must be an existing directory. If all are empty, the app will warn that only placeholders will be used.
+8. Optionally set **PDF copy directory** and **Excel copy directory**.
+9. Optionally enable **Separate by Logo ID** and adjust **Logo ID threshold**.
+10. Optionally enable **Use fixed process number** and set **Fixed process number** (forced on for a single tag; blank uses the Tags sheet; disabled when multiple tags are selected).
+11. Click **Run pipeline**.
 
 The log area at the bottom shows progress through all 8 steps (CSV fetch, enrichment, split, Excel creation, PDF creation, etc.).
 
@@ -216,14 +219,15 @@ You can then treat these outputs exactly like those from the main Packing List A
 
 The **Preflight Issues App** (launcher: `preflight_issues_app.py`) audits ShipStation CSVs before a full packing run. It reports:
 
-1. **Unmatched SKU** — blank **Gender Apparel** after CL Database lookup
+1. **Unmatched SKU** — blank **Gender Apparel** after Custom Label Database CSV lookup
 2. **Missing Logo** — Logo/Design token present but no matching image file (dry-run)
 3. **Missing Apparel** — Apparel/Picture Name present but no matching apparel image (dry-run)
 
 Discount line items (**Item Name** contains `discount`) are skipped in Step 1, same as the main pipeline. Rows whose Item SKU contains `plain` or `plainlg` are not flagged for Missing Logo. Full behaviour: [docs/scripts/preflight_issues_app.md](docs/scripts/preflight_issues_app.md).
 
 ### 1. Prerequisites
-- `Data/Workbook.xlsx` – main CL workbook (includes **CL Database**, Process Info Sheet, Multiple Positions).
+- `database/order-packing-list-generator/Workbook.xlsx` – process/position sheets (Process Info, Multiple Positions, Logo IDs). Not the live Custom Label catalog.
+- `database/shared/custom_label/Custom_Label_Database.csv` – live CL enrich source (set via **Custom Label Database (CSV)** in the GUI).
 - Optional image folders (same as the main Packing List App) for logo/apparel dry-run checks.
 - Python dependencies installed (`pip install -r requirements.txt`).
 
@@ -260,7 +264,9 @@ This opens the **Preflight Issues App** window (maximized). Progress appears in 
   - Use **Add files…** to add one or more CSVs.
   - **Remove selected** / **Remove all** to manage the list.
 - **Workbook**:
-  - Path to `Data/Workbook.xlsx` (or your workbook).
+  - Path to `Data/Workbook.xlsx` (process/position sheets only).
+- **Custom Label Database (CSV)**:
+  - Path to live `Custom_Label_Database.csv` used for SKU enrich / Unmatched SKU checks.
 - **Output directory**:
   - Where the **Preflight Issues** CSV will be written (default `Unmatched SKU Files` at the project root; you can point this at e.g. `Preflight Issues/`).
   - Tag mode nests under `{output}/{Date}/{Shift} Shift/`.
@@ -270,14 +276,14 @@ This opens the **Preflight Issues App** window (maximized). Progress appears in 
 - **Log**:
   - Text area that shows per-file progress and errors.
 
-The app remembers Workbook, output directory, image folders, date/shift/process, and selected tags in `config/preflight_issues_config.json` (falls back to reading `unmatched_skus_config.json` if the new file is missing). If the file cannot be written, the failure is printed to **stderr** (no dialog).
+The app remembers Workbook, Custom Label Database CSV, output directory, image folders, date/shift/process, and selected tags in `config/preflight_issues_config.json` (falls back to reading `unmatched_skus_config.json` if the new file is missing). If the file cannot be written, the failure is printed to **stderr** (no dialog).
 
 ### 4. Steps to run a preflight audit
 1. Open the app (`python preflight_issues_app.py`).
 2. Choose **Input source**:
    - **ShipStation tag(s):** add one or more tags, plus Date and Shift (Process number optional for a single tag if Tags.xlsx has it), or
    - **CSV file(s):** click **Add files…** and select one or more ShipStation CSV files.
-3. Confirm **Workbook** path is correct.
+3. Confirm **Workbook** path (process sheets) and **Custom Label Database (CSV)** path are correct.
 4. Optionally set the four image folders.
 5. Set **Output directory** (or use the default `Unmatched SKU Files`).
 6. Click **Run**.

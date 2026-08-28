@@ -14,7 +14,7 @@ from scripts.pipeline_shipstation.client import ShipStationError
 from scripts.pipeline_shipstation.orders_to_csv import fetch_tag_orders_to_csv
 from scripts.pipeline_shipstation.sync_tags_xlsx import DEFAULT_XLSX_PATH
 from scripts.pipeline_shipstation.tags_process_lookup import resolve_tag_list_processes
-from .config import DEFAULT_OUTPUT_DIR, PROJECT_ROOT, logs_directory
+from .config import DEFAULT_CL_CSV, DEFAULT_OUTPUT_DIR, PROJECT_ROOT, logs_directory
 
 
 def get_input_paths(app) -> list[Path]:
@@ -23,6 +23,12 @@ def get_input_paths(app) -> list[Path]:
         return list(paths)
     raw = (app.input_csv_var.get() or "").strip()
     return [Path(p.strip()) for p in raw.split(";") if p.strip()] if raw else []
+
+
+def resolve_cl_csv_path(app) -> Path:
+    var = getattr(app, "cl_csv_var", None)
+    text = str(var.get() if var is not None else "").strip()
+    return Path(text) if text else Path(DEFAULT_CL_CSV)
 
 
 def append_log(app, msg: str) -> None:
@@ -138,6 +144,10 @@ def validate_tag_mode(app) -> bool:
     if not workbook.is_file():
         messagebox.showerror("Error", f"Workbook not found: {workbook}")
         return False
+    cl_csv = resolve_cl_csv_path(app)
+    if not cl_csv.is_file():
+        messagebox.showerror("Error", f"Custom Label Database CSV not found: {cl_csv}")
+        return False
     if not validate_image_folders(app):
         return False
     return True
@@ -166,6 +176,10 @@ def validate_inputs(app) -> bool:
     workbook = Path(app.workbook_var.get())
     if not workbook.is_file():
         messagebox.showerror("Error", f"Workbook not found: {workbook}")
+        return False
+    cl_csv = resolve_cl_csv_path(app)
+    if not cl_csv.is_file():
+        messagebox.showerror("Error", f"Custom Label Database CSV not found: {cl_csv}")
         return False
     if not validate_image_folders(app):
         return False
@@ -363,6 +377,7 @@ def on_run_clicked(app) -> None:
                         excel_copy_dir=(app.excel_copy_dir_var.get() or "").strip() or None,
                         log=pl,
                         phases=phases,  # type: ignore[arg-type]
+                        cl_csv_path=resolve_cl_csv_path(app),
                     )
 
                 def _emit_batch_banner(message: str, logs: list[PipelineLog]) -> None:

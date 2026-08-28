@@ -17,7 +17,7 @@ from scripts.pipeline_shipstation.tags_process_lookup import (
     shipstation_tags_config_payload,
 )
 
-from .config import CONFIG_DIR, CONFIG_KEYS, CONFIG_PATH, DEFAULT_OUTPUT_DIR, DEFAULT_WORKBOOK, PROJECT_ROOT
+from .config import CONFIG_DIR, CONFIG_KEYS, CONFIG_PATH, DEFAULT_CL_CSV, DEFAULT_OUTPUT_DIR, DEFAULT_WORKBOOK, PROJECT_ROOT
 from .runner import (
     drain_log_queue,
     get_input_paths,
@@ -38,6 +38,7 @@ class PackingListApp:
         self.shift_var = StringVar()
         self.output_dir_var = StringVar(value=str(DEFAULT_OUTPUT_DIR))
         self.workbook_var = StringVar(value=str(DEFAULT_WORKBOOK))
+        self.cl_csv_var = StringVar(value=str(DEFAULT_CL_CSV))
         self.apparel_dir_var = StringVar()
         self.logo_normal_dir_var = StringVar()
         self.logo_custom_single_dir_var = StringVar()
@@ -392,7 +393,8 @@ class PackingListApp:
         # ponytail: never restore date — always open as today (field stays editable)
         var_map = {
             "input_csv": self.input_csv_var, "shift": self.shift_var, "output_dir": self.output_dir_var,
-            "workbook_path": self.workbook_var, "apparel_dir": self.apparel_dir_var, "logo_normal_dir": self.logo_normal_dir_var,
+            "workbook_path": self.workbook_var, "cl_csv_path": self.cl_csv_var,
+            "apparel_dir": self.apparel_dir_var, "logo_normal_dir": self.logo_normal_dir_var,
             "logo_custom_single_dir": self.logo_custom_single_dir_var, "logo_custom_double_dir": self.logo_custom_double_dir_var,
             "pdf_copy_dir": self.pdf_copy_dir_var, "excel_copy_dir": self.excel_copy_dir_var,
         }
@@ -429,6 +431,7 @@ class PackingListApp:
             "shift": self.shift_var.get() or "",
             "output_dir": self.output_dir_var.get() or "",
             "workbook_path": self.workbook_var.get() or "",
+            "cl_csv_path": self.cl_csv_var.get() or "",
             "apparel_dir": self.apparel_dir_var.get() or "",
             "logo_normal_dir": self.logo_normal_dir_var.get() or "",
             "logo_custom_single_dir": (self.logo_custom_single_dir_var.get() or "").strip(),
@@ -464,6 +467,14 @@ class PackingListApp:
         filename = filedialog.askopenfilename()
         if filename:
             var.set(filename)
+
+    def _browse_cl_csv(self) -> None:
+        filename = filedialog.askopenfilename(
+            title="Select Custom Label Database CSV",
+            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
+        )
+        if filename:
+            self.cl_csv_var.set(filename)
 
     def _get_input_paths(self) -> list[Path]:
         return get_input_paths(self)

@@ -2,9 +2,9 @@
 Fill Size References.csv from live Custom_Label_Database.csv.
 
 Live paths:
-  Custom Label Database/Custom_Label_Database.csv
-  support/Size References.csv
-  support/Mocks Databse.csv
+  database/shared/custom_label/Custom_Label_Database.csv
+  database/custom-label-database/support/Size References.csv
+  database/custom-label-database/support/Mocks Databse.csv
 
 Scope: mock+UID labels only (Custom Label M123-45678 → SKU Value `M123 (45678)`).
   - Append missing exact mock+UID keys (and extra design rows when CL has more slots).

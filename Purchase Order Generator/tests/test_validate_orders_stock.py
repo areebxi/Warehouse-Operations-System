@@ -392,9 +392,16 @@ class TestRealTagJsonFixture(unittest.TestCase):
             cls.orders = json.load(handle)
 
         from stock_resolver import load_custom_label_stock_map  # noqa: E402
+        import sys
+        from pathlib import Path
+
+        _wh = Path(__file__).resolve().parents[2]
+        if str(_wh) not in sys.path:
+            sys.path.insert(0, str(_wh))
+        from shared import paths as wh  # noqa: E402
 
         cls.stock_levels = {}
-        stock_path = ROOT / "data" / "stock_levels_stock_id_fully_quoted.csv"
+        stock_path = wh.po_stock_csv_path()
         if stock_path.exists():
             with open(stock_path, encoding="utf-8", newline="") as handle:
                 for row in csv.DictReader(handle):

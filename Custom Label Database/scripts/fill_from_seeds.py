@@ -73,6 +73,7 @@ SHEET = "Data"
 
 RE_MOCK = re.compile(r"\(M(\d+)\)", re.I)
 RE_UID = re.compile(r"-(\d+)$")
+RE_P_PERSONAL = re.compile(r"-P\d+-", re.I)
 RE_CRLF = re.compile(r"[\r\n]+")
 
 # DB Size aliases -> Shirts Print Sizes.csv "Apparel Size" key
@@ -207,7 +208,7 @@ KNOWN_HUMAN = {
     "inside",
 }
 
-ALL_STEPS = ("sku", "pe", "suppliers", "image", "print")
+ALL_STEPS = ("sku", "pe", "suppliers", "image", "print", "customise")
 
 # Supplier Name keyword -> (SKU col, Product Code col, Stock col)
 DEDICATED_SUPPLIERS = (
@@ -254,6 +255,11 @@ def uid_from_custom_label(label: str) -> str:
     """Last numeric segment: M260-P6-349876 -> 349876."""
     m = RE_UID.search(clean(label))
     return m.group(1) if m else ""
+
+
+def customise_for_label(label: str) -> str:
+    """-P{digit}- in Custom Label => personalised (Yes); else blank."""
+    return "Yes" if RE_P_PERSONAL.search(clean(label)) else ""
 
 
 def g1_format(text: str) -> str:
@@ -715,6 +721,25 @@ def lookup_sr(
 # ---------------------------------------------------------------------------
 # Fill steps
 # ---------------------------------------------------------------------------
+def step_customise(df: pd.DataFrame, counts: dict) -> None:
+    """Customise from Custom Label: -P{digit}- => Yes; otherwise not Yes."""
+    if "Customise" not in df.columns:
+        df["Customise"] = ""
+    for idx in df.index:
+        label = clean(df.at[idx, "Custom Label"])
+        if not label:
+            continue
+        expected = customise_for_label(label)
+        current = clean(df.at[idx, "Customise"])
+        if expected:
+            if current != "Yes":
+                df.at[idx, "Customise"] = "Yes"
+                counts["customise_set_yes"] += 1
+        elif current.lower() == "yes":
+            df.at[idx, "Customise"] = ""
+            counts["customise_cleared_yes"] += 1
+
+
 def step_supplier_sku(df: pd.DataFrame, counts: dict) -> None:
     """Fill blank Supplier SKU from Custom Label UID suffix."""
     if "Supplier SKU" not in df.columns:
@@ -1099,7 +1124,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument(
         "--steps",
         default=",".join(ALL_STEPS),
-        help="Comma list: sku,pe,suppliers,image,print (default: all)",
+        help="Comma list: sku,pe,suppliers,image,print,customise (default: all)",
     )
     p.add_argument(
         "--only-missing-wh",
@@ -1266,6 +1291,10 @@ def main(argv: list[str] | None = None) -> int:
             shirts_only=args.shirts_only,
             w1_blank=args.w1_blank,
         )
+
+    if "customise" in steps:
+        print("Step: Customise from Custom Label (-P{digit}- => Yes)...", flush=True)
+        step_customise(work, counts)
 
     if args.iloc_from is not None:
         for c in work.columns:

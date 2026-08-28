@@ -1,41 +1,30 @@
 ﻿# Workspace layout
 
-**App root** is this folder (`Custom Label Database/`), the parent of `scripts/`. That is true whether Cursor opened this folder alone or opened `Warehouse Operations System` (this path nested underneath).
+**App root** is this folder (`Custom Label Database/`), the parent of `scripts/`. Code and docs live here; **live database files** live under warehouse `database/`.
 
-Live catalog, `support/` helpers, and `Apparel Images/` live in this app. Product Export stays under warehouse `data/product_export/`. Resolve via `shared/paths.py`.
-
-Two copies of this tree have existed (`D:\Custom Label Database` and `D:\Warehouse Operations System\Custom Label Database`). Treat them as the same project until the supervisor says otherwise.
-
-**Policy rules** for this app live only at the warehouse parent: `../.cursor/rules/custom-label-database/` (when the parent folder is the Cursor window).
+Resolve all paths via `shared/paths.py`.
 
 ```
-Custom Label Database/
-├── Custom_Label_Database.csv     ← LIVE catalog
-├── backups/                      ← catalog snapshots
-├── Apparel Images/               ← apparel image library
-├── support/
-│   ├── Size References.csv
-│   ├── Shirts Print Sizes.csv
-│   ├── Mocks Databse.csv         ← filename spelling is real
-│   ├── Workbook.xlsx             ← apparel restore source
-│   └── backups/                  ← Size References snapshots
-└── scripts/
-    ├── fill_from_seeds.py
-    ├── generate_from_mocks.py
-    ├── download_apparel_images.py
-    └── fill_cl_database.py       ← legacy PE→template expand
-data/product_export/ProductExport.csv
+Custom Label Database/          ← scripts + docs (this app)
+database/
+├── shared/
+│   ├── custom_label/
+│   │   ├── Custom_Label_Database.csv   ← LIVE catalog
+│   │   └── backups/
+│   └── product_export/ProductExport.csv
+└── custom-label-database/
+    ├── support/                  ← Size References, Shirts Print Sizes, Mocks, Workbook
+    └── Apparel Images/
 ```
 
 ## Roles
 
 | Path | Role |
 |------|------|
-| `Custom_Label_Database.csv` | Live database. Prefer CSV. |
-| `support/` | Helpers (Size References, Shirts Print Sizes, Mocks, Workbook). |
-| `support/backups/` | Size References snapshots. |
-| `backups/` | Catalog snapshots. |
-| `Apparel Images/` | Apparel image library. |
+| `database/shared/custom_label/Custom_Label_Database.csv` | Live database. Prefer CSV. |
+| `database/custom-label-database/support/` | Helpers (Size References, Shirts Print Sizes, Mocks, Workbook). |
+| `database/shared/custom_label/backups/` | Catalog snapshots. |
+| `database/custom-label-database/Apparel Images/` | Apparel image library. |
 | `scripts/` | Fillers, generators, NocoDB round-trip, image download. |
 
 ## Main commands (app root)
@@ -44,20 +33,19 @@ data/product_export/ProductExport.csv
 python scripts/fill_size_references_from_cl.py --dry-run
 python scripts/fill_from_seeds.py --dry-run
 python scripts/fill_from_seeds.py --steps print --shirts-only --w1-blank
-python scripts/fill_from_seeds.py --iloc-from 124109
+python scripts/fill_from_seeds.py --iloc-from 124138
 python scripts/generate_from_mocks.py --dry-run
 python scripts/download_apparel_images.py --dry-run
 python scripts/db_export.py
 python scripts/db_update.py
 ```
 
-`db_export.py` / `db_update.py` read/write `Custom_Label_Database.csv` via `shared.paths.cl_csv_path()`.
+`db_export.py` / `db_update.py` read/write the live CSV via `shared.paths.cl_csv_path()`.
 
 ## Path rules
 
 - App root = parent of `scripts/`
-- Helpers = `support/`
-- Catalog backups = `backups/`
-- Size References backups = `support/backups/`
-- Apparel images = `Apparel Images/`
+- Helpers = `database/custom-label-database/support/` (`custom_label_support_dir()`)
+- Catalog backups = `database/shared/custom_label/backups/` (`cl_backups_dir()`)
+- Apparel images = `database/custom-label-database/Apparel Images/` (`images_apparel_dir()`)
 - If the live CSV is open in Excel/Cursor, writes hit `PermissionError`. The filler then writes `Custom_Label_Database_write_fallback.csv`. Swap onto live after the file is closed; do not leave a second “live” CSV.

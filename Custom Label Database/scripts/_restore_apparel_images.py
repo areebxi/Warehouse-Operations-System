@@ -15,10 +15,17 @@ from pathlib import Path
 
 import pandas as pd
 
-BASE = Path(r"d:\Custom Label Database")
-DB = BASE / "Custom_Label_Database.csv"
-WORKBOOK = BASE / "support" / "Workbook.xlsx"
-BACKUPS = BASE / "backups"
+import sys
+
+_REPO = Path(__file__).resolve().parents[1]
+_WAREHOUSE = _REPO.parent
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared import paths as wh  # noqa: E402
+
+DB = wh.cl_csv_path(_WAREHOUSE)
+WORKBOOK = wh.custom_label_support_dir(_WAREHOUSE) / "Workbook.xlsx"
+BACKUPS = wh.cl_backups_dir(_WAREHOUSE)
 
 RE_MOCK = re.compile(r"(?i)^M\d+")
 RE_NON_SAFE = re.compile(r"[^A-Za-z0-9-]+")

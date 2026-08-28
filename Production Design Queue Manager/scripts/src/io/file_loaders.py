@@ -46,10 +46,9 @@ def load_color_bar_from_app_dir(app_dir: Optional[str] = None) -> Tuple[Optional
     try:
         wh = _warehouse_queue_paths()
         color_bar_names = ["Color Bar.png", "ColorBar.png", "color_bar.png", "colorbar.png"]
-        search_dirs = [str(wh.queue_data_dir())]
         if app_dir is None:
             app_dir = _resolve_project_root_from_module()
-        search_dirs.extend([os.path.join(app_dir, "config"), app_dir])
+        search_dirs = [str(wh.queue_config_dir()), app_dir]
 
         for search_dir in search_dirs:
             for name in color_bar_names:

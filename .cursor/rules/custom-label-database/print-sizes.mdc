@@ -6,7 +6,7 @@ globs: "Custom Label Database/**"
 
 # Print sizes — all shirts
 
-SKU source = always `Custom Label`. Helpers: `support/Shirts Print Sizes.csv`, `support/Size References.csv`. Product Export: `data/product_export/ProductExport.csv`.
+SKU source = always `Custom Label`. Helpers: `database/custom-label-database/support/Shirts Print Sizes.csv`, `Size References.csv`. Product Export: `database/shared/product_export/ProductExport.csv`.
 
 Reverse fill (mock+UID only, blank-only mm, append missing keys): `python scripts/fill_size_references_from_cl.py --dry-run` then write. Custom Label `M123-45678` → Size References `M123 (45678)`. Do not dump non-mock SKUs. Do not use a generic mock prefix.
 

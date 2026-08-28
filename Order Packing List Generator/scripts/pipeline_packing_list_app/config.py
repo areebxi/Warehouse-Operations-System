@@ -39,6 +39,7 @@ def logs_directory() -> Path:
 
 DEFAULT_OUTPUT_DIR = wh.packing_output_dir()
 DEFAULT_WORKBOOK = wh.packing_workbook_path()
+DEFAULT_CL_CSV = wh.cl_csv_path()
 CONFIG_DIR = wh.packing_config_dir()
 CONFIG_PATH = wh.packing_gui_config_path()
 
@@ -48,6 +49,7 @@ CONFIG_KEYS = (
     "shift",
     "output_dir",
     "workbook_path",
+    "cl_csv_path",
     "apparel_dir",
     "logo_normal_dir",
     "logo_custom_single_dir",

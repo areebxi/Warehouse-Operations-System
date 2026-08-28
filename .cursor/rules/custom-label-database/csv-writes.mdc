@@ -6,7 +6,7 @@ globs: "Custom Label Database/**"
 
 # CSV writes
 
-Before a production write, copy the live file to `backups/` with a timestamp (under `Custom Label Database/`).
+Before a production write, copy the live file to `database/shared/custom_label/backups/` with a timestamp.
 
 If `PermissionError` (CSV open in Excel/Cursor): write `Custom_Label_Database_write_fallback.csv`, tell the supervisor to close the live file, then swap. Do not leave two competing live CSVs.
 

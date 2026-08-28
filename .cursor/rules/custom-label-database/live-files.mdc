@@ -1,20 +1,20 @@
 ﻿---
-description: Custom Label Database live vs helper paths
-alwaysApply: false
+description: CL live paths under database/ + app scripts
 globs: "Custom Label Database/**"
+alwaysApply: false
 ---
 
 # Live vs helper vs archive
 
-CL app owns its live catalog, support helpers, and apparel images. Resolve via `shared/paths.py`:
+CL app owns catalog **policy**; live files live under `database/`. Resolve via `shared/paths.py`:
 
 | Path | Role |
 |---|---|
-| `Custom Label Database/Custom_Label_Database.csv` | **Live** working DB |
-| `Custom Label Database/backups/` | Pre-change catalog snapshots |
-| `Custom Label Database/support/` | Size refs, shirts print sizes, mocks, Workbook restore |
-| `Custom Label Database/Apparel Images/` | Apparel image library |
-| `data/product_export/ProductExport.csv` | Product catalog (UID join) |
+| `database/shared/custom_label/Custom_Label_Database.csv` | **Live** working DB |
+| `database/shared/custom_label/backups/` | Pre-change catalog snapshots |
+| `database/custom-label-database/support/` | Size refs, shirts print sizes, mocks, Workbook restore |
+| `database/custom-label-database/Apparel Images/` | Apparel image library |
+| `database/shared/product_export/ProductExport.csv` | Product catalog (UID join) |
 
 Useful scripts (app `scripts/`): `fill_from_seeds.py`, `generate_from_mocks.py`, `download_apparel_images.py`, `fill_cl_database.py` (legacy template expand).
 

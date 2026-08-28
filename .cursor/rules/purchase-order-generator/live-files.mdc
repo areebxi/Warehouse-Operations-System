@@ -1,22 +1,22 @@
-﻿---
-description: PO live paths under the Purchase Order app folder
-globs: Purchase Order Generator/**
-alwaysApply: false
----
-
-# Purchase Order live files
-
-App owns data/assets/output/config.py. PE + Tags + ShipStation secrets are shared.
-
-| Path | Role |
-|------|------|
-| `Purchase Order Generator/data/Database.xlsx` | Product DB for slips |
-| `Purchase Order Generator/data/Packs Database.xlsx` | Packs |
-| `Purchase Order Generator/data/stock_levels_*.csv` | BTC free stock |
-| `data/shipstation/ShipStation_Tags.xlsx` | Shared tags |
-| `data/product_export/ProductExport.csv` | Shared PE |
-| `Custom Label Database/Custom_Label_Database.csv` | BTC SKU |
-| `Purchase Order Generator/assets/` | brand_logos / product_images |
-| `Purchase Order Generator/output/` | Run outputs |
-| `config/ShipStation/.env` | ShipStation `REAL_API_*` |
-| `Purchase Order Generator/config.py` | FTP/stock settings (never commit) |
+---
+description: PO live paths — database/ + app assets/output
+globs: Purchase Order Generator/**
+alwaysApply: false
+---
+
+# Purchase Order live files
+
+App DB in `database/purchase-order-generator/`. PE + Tags + CL + ShipStation secrets are shared.
+
+| Path | Role |
+|------|------|
+| `database/purchase-order-generator/Database.xlsx` | Product DB for slips |
+| `database/purchase-order-generator/Packs Database.xlsx` | Packs |
+| `database/purchase-order-generator/stock_levels_*.csv` | BTC free stock |
+| `database/shared/shipstation/ShipStation_Tags.xlsx` | Shared tags |
+| `database/shared/product_export/ProductExport.csv` | Shared PE |
+| `database/shared/custom_label/Custom_Label_Database.csv` | BTC SKU |
+| `Purchase Order Generator/assets/` | brand_logos / product_images |
+| `Purchase Order Generator/output/` | Run outputs |
+| `config/ShipStation/.env` | ShipStation `REAL_API_*` |
+| `Purchase Order Generator/config.py` | FTP/stock settings (never commit) |

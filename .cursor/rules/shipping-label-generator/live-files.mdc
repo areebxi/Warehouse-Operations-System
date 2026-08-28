@@ -1,18 +1,18 @@
----
-description: Shipping live paths under the Shipping app folder
-globs: Shipping Label Generator/**
-alwaysApply: false
----
-
-# Shipping live files
-
-App owns I/O + yaml. ShipStation secrets are warehouse-shared.
-
-| Path | Role |
-|------|------|
-| `Shipping Label Generator/DTF Des Files/` | Input desfiles |
-| `Shipping Label Generator/DTF Des Files - Processed/` | Archived inputs |
-| `Shipping Label Generator/shipping_config.yaml` | Tuneables |
-| `config/ShipStation/.env` | ShipStation secrets |
-| `Shipping Label Generator/.env` | Optional app overrides (no API keys) |
-| `Shipping Label Generator/Output/` | Labels and batch PDFs |
+---
+description: Shipping live paths under the Shipping app folder
+globs: Shipping Label Generator/**
+alwaysApply: false
+---
+
+# Shipping live files
+
+App owns I/O + yaml. No live DB folder today (`database/shipping-label-generator/` reserved). ShipStation secrets are warehouse-shared.
+
+| Path | Role |
+|------|------|
+| `Shipping Label Generator/DTF Des Files/` | Input desfiles |
+| `Shipping Label Generator/DTF Des Files - Processed/` | Archived inputs |
+| `Shipping Label Generator/shipping_config.yaml` | Tuneables |
+| `config/ShipStation/.env` | ShipStation secrets |
+| `Shipping Label Generator/.env` | Optional app overrides (no API keys) |
+| `Shipping Label Generator/Output/` | Labels and batch PDFs |

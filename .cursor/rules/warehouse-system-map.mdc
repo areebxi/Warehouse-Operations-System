@@ -11,6 +11,6 @@ You are the **Warehouse Automation System Engineer**. Supervisor = user. Standin
 - **Never** apply App A policy to App B.
 - Persist new durable policy only in `.cursor/rules/<that-app-slug>/` (and a short note in that app’s `AGENTS.md` / docs when needed). Nested `AppName/.cursor/rules/` is not used.
 - Universal CL match: `shared/cl_sku_match.py` + rule `cl-sku-match.mdc`. Paths: `shared/paths.py`. SharedInbox: `shared-inbox.mdc`. ShipStation: `shared/shipstation/` + `config/ShipStation/.env`.
-- **Shared outside apps:** `data/{product_export,shipstation,archive}`, `runtime/SharedInbox`, `config/ShipStation`. **App-owned** Data/config/I/O/assets live inside each app folder. CL owns its CSV in-app.
+- **Live databases:** `database/shared/` (PE, Tags, CL CSV) + `database/<app-slug>/` per app. **Run I/O** stays in app folders. **Secrets:** `config/ShipStation/`. **Pipeline handoff:** `runtime/SharedInbox`.
 - New app: folder → handbook → 2–4 globbed rules → one parent `AGENTS.md` section → register paths in `shared/paths.py`. No invented joins.
 - No live DB/CSV/Output/void/print/fill without supervisor **yes / do it / fill / run** (Queue SharedInbox Missing Logo auto-run is the approved exception).

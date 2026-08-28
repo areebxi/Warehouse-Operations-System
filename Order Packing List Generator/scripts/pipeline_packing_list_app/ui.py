@@ -244,41 +244,51 @@ def build_ui(app) -> None:
 
     add_row(10, "Workbook path:", app.workbook_var, browse_dir=False)
 
-    add_row(11, "Output directory:", app.output_dir_var, browse_dir=True)
+    ttk.Label(frm, text="Custom Label Database (CSV):").grid(
+        row=11, column=0, sticky="w", padx=(0, 10), pady=3
+    )
+    ttk.Entry(frm, textvariable=app.cl_csv_var, width=55).grid(
+        row=11, column=1, sticky="we", pady=3
+    )
+    ttk.Button(frm, text="Browse…", command=app._browse_cl_csv).grid(
+        row=11, column=2, padx=(8, 0), pady=3
+    )
 
-    add_row(12, "Apparel Image folder:", app.apparel_dir_var, browse_dir=True)
+    add_row(12, "Output directory:", app.output_dir_var, browse_dir=True)
 
-    add_row(13, "Normal Logo/Design folder:", app.logo_normal_dir_var, browse_dir=True)
+    add_row(13, "Apparel Image folder:", app.apparel_dir_var, browse_dir=True)
 
-    add_row(14, "Customise Single Position Logo/Design folder:", app.logo_custom_single_dir_var, browse_dir=True)
+    add_row(14, "Normal Logo/Design folder:", app.logo_normal_dir_var, browse_dir=True)
 
-    add_row(15, "Customise Double Position Logo/Design folder:", app.logo_custom_double_dir_var, browse_dir=True)
+    add_row(15, "Customise Single Position Logo/Design folder:", app.logo_custom_single_dir_var, browse_dir=True)
 
-    add_row(16, "PDF copy directory (optional):", app.pdf_copy_dir_var, browse_dir=True)
+    add_row(16, "Customise Double Position Logo/Design folder:", app.logo_custom_double_dir_var, browse_dir=True)
 
-    add_row(17, "Excel copy directory (optional):", app.excel_copy_dir_var, browse_dir=True)
+    add_row(17, "PDF copy directory (optional):", app.pdf_copy_dir_var, browse_dir=True)
 
-
-
-    ttk.Label(frm, text="Separate by Logo ID:").grid(row=18, column=0, sticky="w", padx=(0, 10), pady=3)
-
-    ttk.Checkbutton(frm, text="Enable", variable=app.separate_by_logo_id_var).grid(row=18, column=1, sticky="w", pady=3)
+    add_row(18, "Excel copy directory (optional):", app.excel_copy_dir_var, browse_dir=True)
 
 
 
-    ttk.Label(frm, text="Logo ID threshold:").grid(row=19, column=0, sticky="w", padx=(0, 10), pady=3)
+    ttk.Label(frm, text="Separate by Logo ID:").grid(row=19, column=0, sticky="w", padx=(0, 10), pady=3)
+
+    ttk.Checkbutton(frm, text="Enable", variable=app.separate_by_logo_id_var).grid(row=19, column=1, sticky="w", pady=3)
+
+
+
+    ttk.Label(frm, text="Logo ID threshold:").grid(row=20, column=0, sticky="w", padx=(0, 10), pady=3)
 
     app.logo_id_threshold_entry = ttk.Entry(frm, textvariable=app.logo_id_threshold_var, width=8)
 
-    app.logo_id_threshold_entry.grid(row=19, column=1, sticky="w", pady=3)
+    app.logo_id_threshold_entry.grid(row=20, column=1, sticky="w", pady=3)
 
 
 
-    ttk.Label(frm, text="Re-run pipeline:").grid(row=20, column=0, sticky="w", padx=(0, 10), pady=3)
+    ttk.Label(frm, text="Re-run pipeline:").grid(row=21, column=0, sticky="w", padx=(0, 10), pady=3)
 
     app.run_missing_logo_cb = ttk.Checkbutton(frm, text="Enable", variable=app.run_missing_logo_pipeline_var)
 
-    app.run_missing_logo_cb.grid(row=20, column=1, sticky="w", pady=3)
+    app.run_missing_logo_cb.grid(row=21, column=1, sticky="w", pady=3)
 
 
 
@@ -300,7 +310,7 @@ def build_ui(app) -> None:
 
         "Choose Input source (CSV file(s) or ShipStation tag(s)), set Date, Shift, "
 
-        "Workbook and image folders, then click Run pipeline.",
+        "Workbook (process sheets), Custom Label Database CSV, and image folders, then click Run pipeline.",
 
     )
 

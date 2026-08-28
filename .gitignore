@@ -12,16 +12,14 @@ config/ShipStation/.env
 # Packing app-local GUI settings
 Order Packing List Generator/config/*.json
 
-# Queue app-local settings + live workbook/refs
+# Queue app-local settings (workbook lives in database/)
 Production Design Queue Manager/config/queue_app_settings.json
-Production Design Queue Manager/config/Configuration Workbook.xlsx
-Production Design Queue Manager/config/*.xlsx
 Production Design Queue Manager/config/*.txt
 Production Design Queue Manager/config/*.png
 
-# PO secrets + live data
+# PO secrets + assets/output (DB lives in database/)
 Purchase Order Generator/config.py
-Purchase Order Generator/data/**
+Purchase Order Generator/config/gui_settings.json
 Purchase Order Generator/assets/**
 Purchase Order Generator/output/**
 
@@ -61,20 +59,13 @@ Desktop.ini
 .vscode/
 *.code-workspace
 
-# --- Shared live data (PE, tags, archive) ---
-data/**
-!data/README.md
-!data/**/README.md
+# --- Live databases (database/ at warehouse root) ---
+database/**
+!database/README.md
+!database/**/
+!database/**/README.md
 
-# CL app owns the live catalog + helpers + apparel images
-Custom Label Database/Custom_Label_Database.csv
-Custom Label Database/Custom_Label_Database.xlsx
-Custom Label Database/backups/
-Custom Label Database/support/
-Custom Label Database/Apparel Images/
-
-# --- Packing app live I/O + Data ---
-Order Packing List Generator/Data/**
+# --- Packing app live I/O (DB in database/order-packing-list-generator/) ---
 Order Packing List Generator/Input/**
 Order Packing List Generator/Output/**
 Order Packing List Generator/Logs/**

@@ -1,6 +1,6 @@
 ﻿# Custom Label Database — Agent snapshot
 
-**Updated:** 25 August 2026 (Size References reverse fill)  
+**Updated:** 28 August 2026 (M55 full SPC 61082)  
 **Standing brief:** `AGENTS.md` (handbook) · Parent map: `../AGENTS.md`  
 **Facts:** `docs/FINDINGS.md` · **Paths:** `docs/WORKSPACE.md` · **Policy:** parent `.cursor/rules/custom-label-database/` · **Chat copies:** `docs/chats/`
 
@@ -16,10 +16,54 @@ Warehouse Automation System Engineer on this catalog domain; user is supervisor.
 
 ## Live now
 
-Live catalog: `../Custom Label Database/Custom_Label_Database.csv` — **124,138** rows × **60** cols.  
-Helpers: `../support/` (`Size References.csv`, `Shirts Print Sizes.csv`, `Mocks Databse.csv`).
+Live catalog: `database/shared/custom_label/Custom_Label_Database.csv` — **124,762** rows × **60** cols.  
+Helpers: `../support/` (`Size References.csv` **97,203** rows), `Shirts Print Sizes.csv`, `Mocks Databse.csv`).
 
 Main filler: `python scripts/fill_from_seeds.py`. Size References reverse fill: `python scripts/fill_size_references_from_cl.py --dry-run`.
+
+### Customise rule enforced — 28 Aug 2026 06:51
+
+`-P{digit}-` in Custom Label ⇒ `Customise` = **Yes** (personalised; e.g. `M260-P5-*`, `N220-P3-*`). Plain mock+UID (`M55-{UID}`, `M56-{UID}`) ⇒ **blank** (not Yes). Fixed live CL: cleared **28,043** wrong `Yes`; set **2,063** missing `Yes` on `-P#-` rows. `fill_from_seeds.py` now has `--steps customise`. Backup: `backups/Custom_Label_Database_preFill_20260828_065100.csv`.
+
+### M55 full SPC 61082 — 28 Aug 2026 05:36
+
+Preflight unmatched `422991LG-M55-120852` / `421612LG-M55-3257` — UIDs existed as **M56** only. Policy: **all PE UIDs for SPC**. Seeded **132** more `M55-{UID}` (130 net new + 2 earlier) → **134/134** for SPC `61082` Original T; cloned from `M56-{UID}` peers; Front Center; print sizes filled. `fill_size_references_from_cl.py` +**130** keys `M55 ({UID})`. CL 124,630→**124,762**; SR 97,073→**97,203**. Backups: `backups/Custom_Label_Database_before_m55_spc61082_20260828_053615.csv`, `…_preFill_20260828_053638.csv`, `support/backups/Size_References_preFill_20260828_053655.csv`.
+
+### Size References ← N220 — 27 Aug 2026 15:02
+
+Appended **7** keys `N220-P3-{UID}` (**80×45**, Front Print). Also wrongly added product-code `DIAMOND` (not a SKU) — removed in fallback write. Live `Size References.csv` was locked; clean file: `support/Size_References_write_fallback.csv` (97,072→**97,071**, no DIAMOND). Backup: `support/backups/Size_References_preN220_20260827_150252.csv`.
+
+### Apparel Images ← recent adds — 27 Aug 2026 15:09
+
+Downloaded **84** unique PE `colour image 01` files for `iloc[124138:]` (N220 + M56 + M260-P3 + F/P) into `Apparel Images/`. 0 failed. Fixed `download_apparel_images.py` PE encoding fallback (utf-8 → cp1252/latin-1).
+
+### Size References ← M56 batch — 27 Aug 2026 14:59
+
+`fill_size_references_from_cl.py` appended **320** keys (`M56 ({UID})`) from the midday CL seed. 96,744 → **97,064** rows. Backup: `support/backups/Size_References_preFill_20260827_145900.csv`.  
+M260-P3 UIDs already had `M260 ({UID})` in SR (all 164). F/P compound not mock+UID — still not in SR.
+
+### M56 + M260-P3 + F/P-F8 compound — 27 Aug 2026 11:55
+
+Appended **485** rows (`iloc[124145:]`), then `fill_from_seeds` sku+pe+suppliers+image+print. Print Positions from `Mocks Databse.csv` (`M56`/`M260` = Front Print → **Front Center**). Seed Colour/Size/GA cloned from existing `M261-*` / `M260-*` peers for the same UID.
+
+| Block | Count | Custom Label |
+|--|--|--|
+| Old compound token | 1 | `F/P-F8-M-T-BLK-5XL 161121LG-B4-M-T-BLK-5XL` (F/P = Front Center + Front Left Pocket; 357×504 + 80×100) |
+| M56 SPC `61082` Original T | 134 | `M56-{UID}` |
+| M56 SPC `61430` Iconic 150 | 186 (2 already existed) | `M56-{UID}` → **188/188** |
+| M260-P3 SPC `61033` kids VW | 164 | `M260-P3-{UID}` |
+
+Backups: `backups/Custom_Label_Database_before_m56_m260p3_fp_20260827_115521.csv`, `…_preFill_20260827_115540.csv`.
+
+### N220 DIAMOND helmets — 27 Aug 2026 09:12
+
+Appended all **7** PE UIDs for SPC `DIAMOND` (Delta Plus Hi-Vis Baseball Safety Helmet) as `N220-P3-{UID}`. Design-prefix SKUs (`189381LG-…`) stay out of Custom Label. Seeds: Front Center / Yes / Standard Size / 80×45. Filled sku+pe+suppliers+image on `iloc[124138:]`.
+
+| | |
+|--|--|
+| Labels | `N220-P3-55708` … `55713`, `N220-P3-99823` |
+| Colours | Blue, Green, Red, Orange, White, Yellow, Black |
+| Backups | `backups/Custom_Label_Database_preN220Diamond_20260827_091234.csv`, `…_preFill_20260827_091247.csv` |
 
 ### Size References reverse fill — 25 Aug 2026 20:23
 

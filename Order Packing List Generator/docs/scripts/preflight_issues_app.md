@@ -9,7 +9,7 @@ Implementation: [`scripts/pipeline_preflight_issues/`](../../scripts/pipeline_pr
 For each selected ShipStation CSV:
 
 1. **Fetch** (Step 1) — same column mapping as the main pipeline, including **skip Discount** rows (`Item Name` contains `discount`).
-2. **Enrich** (Step 2) — CL Database lookup.
+2. **Enrich** (Step 2) — Custom Label Database CSV lookup (not Workbook).
 3. **Fill** (Step 3) — Prime, Apparel Image, Logo/Design Image, Logo ID.
 4. **Position** (Step 4) — Position Code + Multiple Positions logo expansion (in memory; no unmatched file move).
 5. **Expand by Item Quantity** — same helper as Step 6 (`_expand_df_by_quantity`): each unit becomes its own row with Item Quantity `"1"` (string, for pandas StringDtype compatibility).
@@ -29,8 +29,10 @@ If no rows have issues, the app reports success and does not write a CSV.
 
 ## Config
 
-- `config/preflight_issues_config.json` — workbook, output dir, image folders.
+- `config/preflight_issues_config.json` — workbook (process sheets), **Custom Label Database CSV**, output dir, image folders.
 - Falls back to reading `config/unmatched_skus_config.json` if the new file is missing (legacy Unmatched SKUs App).
+
+**Workbook vs CL CSV:** Workbook feeds Process Info / Multiple Positions / Logo IDs. Custom Label enrich always uses the separate **Custom Label Database (CSV)** path (default live `Custom_Label_Database.csv`).
 
 ## Usage
 

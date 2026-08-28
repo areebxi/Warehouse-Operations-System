@@ -8,6 +8,8 @@ globs: "Custom Label Database/**"
 
 Seed columns (user-filled; do not invent): `Custom Label`, `Gender Apparel`, `Colour`, `Size`, `Apparel Image`, `Print Positions`, `Customise`.
 
+**Customise:** derive from `Custom Label`, do not clone from a peer row. Token `-P{digit}-` (e.g. `M260-P5-17099`, `N220-P3-55712`) ⇒ `Yes` (personalised). Plain mock+UID (`M55-120852`, `M56-3257`) ⇒ leave blank — **not** `Yes`. `fill_from_seeds.py --steps customise` enforces this.
+
 `scripts/fill_from_seeds.py` then, blank-only unless asked to correct:
 
 1. **Supplier SKU** = last numeric UID on Custom Label (`M260-214332` → `214332`). No UID → skip (iron-ons, C800T tokens, `K-H-DHR-YXS`, `W-T-ATTHR-M`, `77123-BTC`, BG542, …).
@@ -18,7 +20,13 @@ Seed columns (user-filled; do not invent): `Custom Label`, `Gender Apparel`, `Co
 
 Do **not** fill unless asked: `Tags`, `Size (Dimensions)`.
 
+**New PE styles from packing SKUs:** Custom Label is the tail after the design prefix (`189381LG-N220-P3-55709` → `N220-P3-55709`). When the supervisor names unmatched SKUs (or a few UIDs) for a mock + BTC SPC, **always seed every PE UID for that SPC** as `{mock}-{UID}` — not only the named rows. Clone Gender Apparel / Colour / Size / Apparel Image / Print Positions from a same-UID peer when available; set **Customise** from the `-P{digit}-` rule above. Then run `fill_from_seeds.py` and `fill_size_references_from_cl.py` on the new block.
+
+**Print Positions:** confirm from `support/Mocks Databse.csv` (`Pasting Mocks ID` → `Printing Position`; Front Print → Front Center, Back Print → Back Center) before seeding a mock series. Do not guess from the packing SKU alone.
+
+**Old compound tokens:** one Custom Label can be two design tails in one cell (`F/P-F8-M-T-BLK-5XL 161121LG-B4-M-T-BLK-5XL`). `F/P` = Front Center + Front Left Pocket; `F8` = pocket size.
+
 ```text
 python scripts/fill_from_seeds.py --dry-run
-python scripts/fill_from_seeds.py --iloc-from 124109
+python scripts/fill_from_seeds.py --iloc-from 124138
 ```

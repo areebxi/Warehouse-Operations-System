@@ -11,7 +11,7 @@ A warehouse **custom-label catalog**: one row per printable SKU (garment, bag, p
 **Live file:** `Custom_Label_Database.csv`  
 **Archive Excel:** `Custom Label Database.xlsx` (not live)
 
-As of **24 Aug 2026 evening:** **124,138** data rows × **60** columns (header + 124,138). Original archive Excel was 127,741 × 48.
+As of **28 Aug 2026:** **124,762** data rows × **60** columns (+132 M55 SPC `61082` aliases cloned from M56). Original archive Excel was 127,741 × 48.
 
 ---
 
@@ -197,6 +197,28 @@ Dedicated BTC / Ralawise / Absolute columns copy from **Supplier Name** (keyword
 - Stock stays blank if the source is empty
 
 On 24 Aug 2026: tens of thousands of rows named BTC Activewear still had **blank BTC SKU / BTC Product Code**. Script exists (`fill_from_seeds.py --steps suppliers`); **ask before** a whole-file fill. Ralawise / Absolute named rows were **0**.
+
+---
+
+## Design-prefix SKUs → Custom Label (N220 helmets)
+
+Packing Item SKUs like `189381LG-N220-P3-55709` / `189382LG-N220-P3-55712` are **design-id + Custom Label**. Store the **tail only** in CL (`N220-P3-{UID}`), not the `digitsLG-` prefix — same garment serves multiple designs.
+
+| Fact | Value |
+|------|--------|
+| PE SPC | `DIAMOND` |
+| Product | Delta Plus Hi-Vis Baseball Safety Helmet |
+| UIDs (all 7) | `55708` Blue, `55709` Green, `55710` Red, `55711` Orange, `55712` White, `55713` Yellow, `99823` Black |
+| Custom Label | `N220-P3-{UID}` |
+| Gender Apparel | `DELTA Hi-Vis Baseball Safety Helmet` |
+| Size | `Standard Size` (PE `O/s`) |
+| Print Positions / Customise | `Front Center` / `Yes` (supervisor: token `P3` here ≠ garment mock Front+Back) |
+| Print mm | Cap-style **80×45** (no Size References `N220` row; not a shirt) |
+| PE taxonomy | Headwear / Safety Headwear; Brand Delta Plus; BTC Product Code `DIAMOND` |
+
+Added **27 Aug 2026** (iloc 124138–124144). Backups: `Custom_Label_Database_preN220Diamond_20260827_091234.csv`, then `…_preFill_20260827_091247.csv`.
+
+When a supervisor asks for a few UIDs of a BTC style, **prefer adding every PE UID for that SPC** unless they scope otherwise.
 
 ---
 

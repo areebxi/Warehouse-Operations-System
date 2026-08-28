@@ -99,6 +99,7 @@ def run_pipeline(
     excel_copy_dir: Optional[str | Path] = None,
     log: Optional[PipelineLog] = None,
     phases: PipelinePhase = "all",
+    cl_csv_path: Optional[str | Path] = None,
 ) -> Tuple[Path, Optional[Path], Optional[Path], Optional[str]]:
     """
     Run the packing pipeline for a single input CSV.
@@ -107,6 +108,9 @@ def run_pipeline(
       - ``all``: steps 1–8 (default)
       - ``excel``: steps 1–7 only (Excel); skip PDF
       - ``pdf``: Step 8 only (rediscover process CSVs in the token output folder)
+
+    Workbook = process/position sheets. Step 2 enrich uses ``cl_csv_path``
+    (default live Custom_Label_Database.csv).
 
     Returns:
         (output_root_for_token, unmatched_path_or_none, missing_logo_path_or_none,
@@ -118,6 +122,7 @@ def run_pipeline(
     input_csv_path = Path(input_csv)
     base_output_dir = Path(output_dir)
     workbook_path = Path(workbook_path)
+    cl_csv = Path(cl_csv_path) if cl_csv_path is not None else None
 
     if not input_csv_path.exists():
         raise FileNotFoundError(f"Input CSV not found: {input_csv_path}")
@@ -151,6 +156,10 @@ def run_pipeline(
         log.detail(f"  Output folder: {output_root.resolve()}")
         log.detail(f"  Dispatch date: {date_dd_mm_yyyy}   Shift: {shift_label}")
         log.detail(f"  Workbook:      {workbook_path.resolve()}")
+        if cl_csv is not None:
+            log.detail(f"  CL CSV:        {cl_csv.resolve()}")
+        else:
+            log.detail("  CL CSV:        (default live Custom_Label_Database.csv)")
         log.detail(f"  Options:       use_fixed_process_number={use_fixed_process_number}   fixed={fixed_process_number!r}")
         log.detail(f"                 separate_by_logo_id={separate_by_logo_id}   logo_id_threshold={logo_id_threshold}")
         log.detail("  Image dirs:")
@@ -245,7 +254,7 @@ def run_pipeline(
         log.step("Step 2/8: Enriching CL lookup...")
     t_step = time.perf_counter()
     step2_path = output_root / f"2_enrich_cl_lookup_{token}.csv"
-    df_step2 = enrich_packing_data(step1_path, workbook_path, log=lc)
+    df_step2 = enrich_packing_data(step1_path, workbook_path, log=lc, cl_csv_path=cl_csv)
     df_step2.to_csv(step2_path, index=False, encoding="utf-8")
     if log:
         log.detail(f"Step 2/8: Done ({len(df_step2)} rows) -> {step2_path.name}  [{time.perf_counter() - t_step:.2f}s]")

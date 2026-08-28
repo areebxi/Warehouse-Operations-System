@@ -44,6 +44,7 @@ from scripts.pipeline_shipstation.tags_process_lookup import (
 
 from .config import (
     CONFIG_DIR,
+    DEFAULT_CL_CSV,
     DEFAULT_OUTPUT_DIR,
     DEFAULT_WORKBOOK,
     NO_ISSUES,
@@ -61,6 +62,7 @@ class PreflightIssuesApp:
 
         self.input_paths: list[Path] = []
         self.workbook_var = StringVar(value=str(DEFAULT_WORKBOOK))
+        self.cl_csv_var = StringVar(value=str(DEFAULT_CL_CSV))
         self.output_dir_var = StringVar(value=str(DEFAULT_OUTPUT_DIR))
         self.apparel_dir_var = StringVar()
         self.logo_normal_dir_var = StringVar()
@@ -109,6 +111,7 @@ class PreflightIssuesApp:
         # ponytail: never restore date — always open as today (field stays editable)
         mapping = {
             "workbook_path": self.workbook_var,
+            "cl_csv_path": self.cl_csv_var,
             "output_dir": self.output_dir_var,
             "apparel_dir": self.apparel_dir_var,
             "logo_normal_dir": self.logo_normal_dir_var,
@@ -156,6 +159,7 @@ class PreflightIssuesApp:
         tags_payload, legacy_name, legacy_id = shipstation_tags_config_payload(self.selected_tags)
         data = {
             "workbook_path": (self.workbook_var.get() or "").strip(),
+            "cl_csv_path": (self.cl_csv_var.get() or "").strip(),
             "output_dir": (self.output_dir_var.get() or "").strip(),
             "apparel_dir": (self.apparel_dir_var.get() or "").strip(),
             "logo_normal_dir": (self.logo_normal_dir_var.get() or "").strip(),
@@ -510,27 +514,34 @@ class PreflightIssuesApp:
         self.remove_all_btn.pack(side="left")
 
         self._add_dir_row(frm, 9, "Workbook:", self.workbook_var, self._browse_workbook)
-        self._add_dir_row(frm, 10, "Output directory:", self.output_dir_var, self._browse_output_dir)
         self._add_dir_row(
-            frm, 11, "Apparel Image folder:", self.apparel_dir_var, self._browse_apparel_dir
+            frm,
+            10,
+            "Custom Label Database (CSV):",
+            self.cl_csv_var,
+            self._browse_cl_csv,
+        )
+        self._add_dir_row(frm, 11, "Output directory:", self.output_dir_var, self._browse_output_dir)
+        self._add_dir_row(
+            frm, 12, "Apparel Image folder:", self.apparel_dir_var, self._browse_apparel_dir
         )
         self._add_dir_row(
             frm,
-            12,
+            13,
             "Normal Logo/Design folder:",
             self.logo_normal_dir_var,
             self._browse_logo_normal_dir,
         )
         self._add_dir_row(
             frm,
-            13,
+            14,
             "Customise Single Position Logo/Design folder:",
             self.logo_custom_single_dir_var,
             self._browse_logo_custom_single_dir,
         )
         self._add_dir_row(
             frm,
-            14,
+            15,
             "Customise Double Position Logo/Design folder:",
             self.logo_custom_double_dir_var,
             self._browse_logo_custom_double_dir,
@@ -545,6 +556,7 @@ class PreflightIssuesApp:
         self.log.insert(
             END,
             "Choose Input source (CSV file(s) or ShipStation tag(s)), set Workbook "
+            "(process sheets) and Custom Label Database CSV "
             "(and image folders if checking logos/apparel), then Run.",
         )
 
@@ -597,6 +609,14 @@ class PreflightIssuesApp:
         )
         if path:
             self.workbook_var.set(path)
+
+    def _browse_cl_csv(self) -> None:
+        path = filedialog.askopenfilename(
+            title="Select Custom Label Database CSV",
+            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
+        )
+        if path:
+            self.cl_csv_var.set(path)
 
     def _browse_output_dir(self) -> None:
         path = filedialog.askdirectory(title="Select output directory")
@@ -685,6 +705,13 @@ class PreflightIssuesApp:
         if not workbook_path.is_file():
             messagebox.showerror("Workbook missing", f"Workbook not found:\n{workbook_path}")
             return
+        cl_csv_path = Path((self.cl_csv_var.get() or "").strip() or str(DEFAULT_CL_CSV))
+        if not cl_csv_path.is_file():
+            messagebox.showerror(
+                "Custom Label Database missing",
+                f"Custom Label Database CSV not found:\n{cl_csv_path}",
+            )
+            return
         if not self._validate_image_folders():
             return
 
@@ -769,6 +796,7 @@ class PreflightIssuesApp:
                     workbook_path,
                     output_dir,
                     log_callback=self._enqueue_log,
+                    cl_csv_path=cl_csv_path,
                     apparel_dir=apparel_dir,
                     logo_normal_dir=logo_normal_dir,
                     logo_custom_single_dir=logo_custom_single_dir,

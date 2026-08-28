@@ -69,7 +69,17 @@ def url_extension(url: str) -> str:
 
 def load_pe(path: Path) -> pd.DataFrame:
     if path.suffix.lower() == ".csv":
-        pe = pd.read_csv(path, dtype=str, low_memory=False)
+        # ponytail: PE is often Windows-1252; try utf-8 first then fall back
+        last_err: Exception | None = None
+        pe = None
+        for enc in ("utf-8", "utf-8-sig", "cp1252", "latin-1"):
+            try:
+                pe = pd.read_csv(path, dtype=str, low_memory=False, encoding=enc)
+                break
+            except UnicodeDecodeError as e:
+                last_err = e
+        if pe is None:
+            raise SystemExit(f"ProductExport decode failed: {path} ({last_err})")
     else:
         pe = pd.read_excel(path, sheet_name="staff", dtype=str)
         if len(pe) and str(pe.iloc[0].get("UID", "")).startswith("["):
