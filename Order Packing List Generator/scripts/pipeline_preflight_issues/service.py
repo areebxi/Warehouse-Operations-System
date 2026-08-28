@@ -40,6 +40,13 @@ from scripts.pipeline_split_position.transform_position_codes import build_posit
 from .config import NO_ISSUES, NO_UNMATCHED
 from .image_dry_run import build_preflight_stem_maps, flag_missing_images
 
+import sys
+
+_WAREHOUSE = Path(__file__).resolve().parent.parent.parent.parent
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared.demo_images import demo_image_lookup, effective_image_dirs  # noqa: E402
+
 # Parallel CSV prep — workbook cache is read-only shared state.
 _CSV_MAX_WORKERS = 4
 
@@ -155,6 +162,7 @@ def run_preflight_audit(
     logo_normal_dir: Optional[Path] = None,
     logo_custom_single_dir: Optional[Path] = None,
     logo_custom_double_dir: Optional[Path] = None,
+    use_demo_images: bool = False,
 ) -> PreflightResult | None | object:
     """
     Process each input CSV through steps 2–4, flag unmatched SKU + missing logo/apparel,
@@ -187,16 +195,33 @@ def run_preflight_audit(
     # --- Stage 1: image index ---
     log_callback("1/4  Indexing image folders…")
     t_img = time.perf_counter()
-    apparel_map, logo_normal_map, logo_custom_map, apparel_path, logo_normal_path, logo_custom_single_path, logo_custom_double_path = (
-        build_preflight_stem_maps(
-            apparel_dir,
-            logo_normal_dir,
-            logo_custom_single_dir,
-            logo_custom_double_dir,
-        )
+    use_demo = bool(use_demo_images)
+    (
+        resolved_apparel,
+        resolved_normal,
+        resolved_custom_single,
+        resolved_custom_double,
+    ) = effective_image_dirs(
+        use_demo,
+        apparel_dir,
+        logo_normal_dir,
+        logo_custom_single_dir,
+        logo_custom_double_dir,
     )
+    if use_demo:
+        log_callback("      Demo images enabled (Demo Images Database/)")
+    with demo_image_lookup(use_demo):
+        apparel_map, logo_normal_map, logo_custom_map, apparel_path, logo_normal_path, logo_custom_single_path, logo_custom_double_path = (
+            build_preflight_stem_maps(
+                resolved_apparel,
+                resolved_normal,
+                resolved_custom_single,
+                resolved_custom_double,
+            )
+        )
     image_checks_enabled = (
-        apparel_map is not None
+        use_demo
+        or apparel_map is not None
         or logo_normal_map is not None
         or logo_custom_map is not None
         or apparel_path is not None
@@ -294,16 +319,17 @@ def run_preflight_audit(
     )
 
     if image_checks_enabled:
-        missing_logo_flags, missing_apparel_flags = flag_missing_images(
-            df,
-            apparel_stem_map=apparel_map,
-            logo_normal_stem_map=logo_normal_map,
-            logo_custom_stem_map=logo_custom_map,
-            apparel_image_dir=apparel_path,
-            logo_normal_dir=logo_normal_path,
-            logo_custom_single_dir=logo_custom_single_path,
-            logo_custom_double_dir=logo_custom_double_path,
-        )
+        with demo_image_lookup(use_demo):
+            missing_logo_flags, missing_apparel_flags = flag_missing_images(
+                df,
+                apparel_stem_map=apparel_map,
+                logo_normal_stem_map=logo_normal_map,
+                logo_custom_stem_map=logo_custom_map,
+                apparel_image_dir=apparel_path,
+                logo_normal_dir=logo_normal_path,
+                logo_custom_single_dir=logo_custom_single_path,
+                logo_custom_double_dir=logo_custom_double_path,
+            )
         missing_logo_flags = expand_issue_mask_to_merge_groups(df, missing_logo_flags)
     else:
         missing_logo_flags = pd.Series(False, index=df.index, dtype=bool)

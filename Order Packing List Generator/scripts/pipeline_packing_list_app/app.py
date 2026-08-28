@@ -50,6 +50,7 @@ class PackingListApp:
         self.use_fixed_process_number_var = BooleanVar(value=False)
         self.fixed_process_number_var = StringVar()
         self.run_missing_logo_pipeline_var = BooleanVar(value=False)
+        self.use_demo_images_var = BooleanVar(value=False)
         self.input_mode_var = StringVar(value="file")  # "file" | "tag"
         self.shipstation_tag_var = StringVar()  # Combobox pick (not the selection list)
         self.selected_tags: list[tuple[int, str]] = []
@@ -413,6 +414,8 @@ class PackingListApp:
                 self.fixed_process_number_var.set(data[key])
             elif key == "run_missing_logo_pipeline" and isinstance(data[key], bool):
                 self.run_missing_logo_pipeline_var.set(data[key])
+            elif key == "use_demo_images" and isinstance(data[key], bool):
+                self.use_demo_images_var.set(data[key])
             elif key == "input_mode" and isinstance(data[key], str):
                 mode = data[key].strip().lower()
                 self.input_mode_var.set("tag" if mode == "tag" else "file")
@@ -443,6 +446,7 @@ class PackingListApp:
             "use_fixed_process_number": self.use_fixed_process_number_var.get(),
             "fixed_process_number": (self.fixed_process_number_var.get() or "").strip(),
             "run_missing_logo_pipeline": self.run_missing_logo_pipeline_var.get(),
+            "use_demo_images": self.use_demo_images_var.get(),
             "input_mode": "tag" if (self.input_mode_var.get() or "").strip() == "tag" else "file",
             "shipstation_tags": tags_payload,
             "shipstation_tag_name": legacy_name,

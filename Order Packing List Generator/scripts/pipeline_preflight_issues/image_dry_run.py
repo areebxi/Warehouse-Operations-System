@@ -30,6 +30,7 @@ from scripts.pipeline_generate_packing_list_pdf.images import (
     find_image_normal_logo_impl,
 )
 from scripts.pipeline_generate_packing_list_pdf.image_lookup import probe_exact_image_impl
+from shared.demo_images import demo_fallback_path
 from scripts.pipeline_generate_packing_list_pdf.reporting import build_order_counts_impl
 
 _safe_str = safe_str_impl
@@ -122,6 +123,8 @@ def _iter_fallback_dirs(
 def _make_find_exact(
     index: Optional[_StemIndex],
     fallback_dirs: Optional[List[Optional[Path]]] = None,
+    *,
+    demo_kind: str = "apparel",
 ):
     def _find(root_dir, base_name, stem_map, *, recursive: bool = False):
         if index is not None:
@@ -133,7 +136,7 @@ def _make_find_exact(
                 live = probe_exact_image_impl(directory, base_name)
                 if live is not None:
                     return index.remember(live.stem, live)
-            return None
+            return demo_fallback_path(demo_kind, base_name)
         return find_image_impl(root_dir, base_name, stem_map, recursive=recursive)
 
     return _find
@@ -143,6 +146,8 @@ def _make_find_prefix(
     index: Optional[_StemIndex],
     fallback_fn,
     fallback_dirs: Optional[List[Optional[Path]]] = None,
+    *,
+    demo_kind: str = "normal",
 ):
     def _find(root_dir, token, stem_map, *, recursive: bool = False):
         if index is not None:
@@ -153,7 +158,7 @@ def _make_find_prefix(
                 live = probe_exact_image_impl(directory, token)
                 if live is not None:
                     return index.remember(live.stem, live)
-            return None
+            return demo_fallback_path(demo_kind, token)
         return fallback_fn(root_dir, token, stem_map, recursive=recursive)
 
     return _find
@@ -359,17 +364,18 @@ def flag_missing_images(
     normal_index = _StemIndex(logo_normal_stem_map) if logo_normal_stem_map else None
     custom_index = _StemIndex(logo_custom_stem_map) if logo_custom_stem_map else None
 
-    find_apparel = _make_find_exact(apparel_index, [apparel_image_dir])
+    find_apparel = _make_find_exact(apparel_index, [apparel_image_dir], demo_kind="apparel")
     find_normal = _make_find_prefix(
-        normal_index, find_image_normal_logo_impl, [logo_normal_dir]
+        normal_index, find_image_normal_logo_impl, [logo_normal_dir], demo_kind="normal"
     )
     find_custom_exact = _make_find_exact(
-        custom_index, [logo_custom_single_dir, logo_custom_double_dir]
+        custom_index, [logo_custom_single_dir, logo_custom_double_dir], demo_kind="custom"
     )
     find_custom_logo = _make_find_prefix(
         custom_index,
         find_image_custom_logo_impl,
         [logo_custom_single_dir, logo_custom_double_dir],
+        demo_kind="custom",
     )
 
     def find_custom_fbpi(stem_map, candidate_stem):
@@ -383,7 +389,7 @@ def flag_missing_images(
                 live = probe_exact_image_impl(directory, candidate_stem)
                 if live is not None:
                     return custom_index.remember(live.stem, live)
-            return None
+            return demo_fallback_path("custom", candidate_stem)
         return find_image_custom_fbpi_impl(stem_map, candidate_stem)
 
     order_number_counts = _build_order_counts(df)

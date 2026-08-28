@@ -332,6 +332,7 @@ def on_run_clicked(app) -> None:
                     pdf_copy_dir=(app.pdf_copy_dir_var.get() or "").strip() or None,
                     excel_copy_dir=(app.excel_copy_dir_var.get() or "").strip() or None,
                     log=pl,
+                    use_demo_images=app.use_demo_images_var.get(),
                 )
                 app.output_root, app.unmatched_path, app.missing_logo_path, app._pipeline_results = (
                     output_root,
@@ -378,6 +379,7 @@ def on_run_clicked(app) -> None:
                         log=pl,
                         phases=phases,  # type: ignore[arg-type]
                         cl_csv_path=resolve_cl_csv_path(app),
+                        use_demo_images=app.use_demo_images_var.get(),
                     )
 
                 def _emit_batch_banner(message: str, logs: list[PipelineLog]) -> None:

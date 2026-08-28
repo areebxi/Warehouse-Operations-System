@@ -58,6 +58,7 @@ def run_step6_style_outputs(
     *,
     nest_pdf_under_shift: bool = True,
     nest_excel_under_shift: bool = True,
+    use_demo_images: bool = False,
 ) -> Path:
     date_dd_mm_yyyy = date_dd_mm_yyyy.replace("/", "-")
     try:
@@ -103,10 +104,19 @@ def run_step6_style_outputs(
     if log:
         log.detail(f"Wrote {len(df)} rows to {csv_path.name}")
 
-    apparel_dir_path = Path(apparel_dir) if apparel_dir else None
-    logo_custom_single_path = Path(logo_custom_single_dir) if logo_custom_single_dir else None
-    logo_custom_double_path = Path(logo_custom_double_dir) if logo_custom_double_dir else None
-    logo_normal_path = Path(logo_normal_dir) if logo_normal_dir else None
+    _wh = PROJECT_ROOT.parent
+    if str(_wh) not in sys.path:
+        sys.path.insert(0, str(_wh))
+    from shared.demo_images import demo_image_lookup, effective_image_dirs  # noqa: E402
+
+    use_demo = bool(use_demo_images)
+    apparel_dir_path, logo_normal_path, logo_custom_single_path, logo_custom_double_path = effective_image_dirs(
+        use_demo,
+        apparel_dir,
+        logo_normal_dir,
+        logo_custom_single_dir,
+        logo_custom_double_dir,
+    )
 
     if log:
         log.step("Step 7 (missing pipeline): Generating Excel outputs (Picking, Orders Details, DTF Des)...")
@@ -160,7 +170,6 @@ def run_step6_style_outputs(
     if log:
         log.step("Step 8 (missing pipeline): Generating PDF...")
     pdf_path = output_root / f"{name}.pdf"
-    _wh = PROJECT_ROOT.parent
     if str(_wh) not in sys.path:
         sys.path.insert(0, str(_wh))
     from shared import paths as wh
@@ -169,20 +178,21 @@ def run_step6_style_outputs(
         position_code_to_draw = load_position_code_to_draw(workbook_path) if workbook_path.exists() else {}
     except Exception:
         position_code_to_draw = {}
-    n_pages, _paths, _ml, _ma = csv_to_pdf(
-        csv_path,
-        pdf_path,
-        apparel_image_dir=apparel_dir_path,
-        logo_customise_dir=None,
-        logo_normal_dir=logo_normal_path,
-        apparel_stem_map=apparel_stem_map,
-        logo_custom_stem_map=logo_custom_stem_map or None,
-        logo_normal_stem_map=logo_normal_stem_map,
-        position_code_to_draw=position_code_to_draw,
-        show_process_item_count=show_process_item_count,
-        pdf_asset_log=lc,
-        date_dd_mm_yyyy=date_dd_mm_yyyy,
-    )
+    with demo_image_lookup(use_demo):
+        n_pages, _paths, _ml, _ma = csv_to_pdf(
+            csv_path,
+            pdf_path,
+            apparel_image_dir=apparel_dir_path,
+            logo_customise_dir=None,
+            logo_normal_dir=logo_normal_path,
+            apparel_stem_map=apparel_stem_map,
+            logo_custom_stem_map=logo_custom_stem_map or None,
+            logo_normal_stem_map=logo_normal_stem_map,
+            position_code_to_draw=position_code_to_draw,
+            show_process_item_count=show_process_item_count,
+            pdf_asset_log=lc,
+            date_dd_mm_yyyy=date_dd_mm_yyyy,
+        )
     if log:
         log.detail(f"Step 8 (missing pipeline): PDF written — {pdf_path.name} ({n_pages} page(s))")
 

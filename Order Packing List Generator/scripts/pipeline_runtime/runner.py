@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import sys
 import time
 from datetime import datetime
 from pathlib import Path
@@ -46,6 +47,10 @@ from scripts.pipeline_split_by_process_item.service import run as run_split_by_p
 from scripts.pipeline_split_position.service import run as run_split_and_assign_position_codes
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+_WAREHOUSE = PROJECT_ROOT.parent
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared.demo_images import demo_image_lookup, effective_image_dirs  # noqa: E402
 
 _run_step6_style_outputs = run_step6_style_outputs
 
@@ -100,6 +105,7 @@ def run_pipeline(
     log: Optional[PipelineLog] = None,
     phases: PipelinePhase = "all",
     cl_csv_path: Optional[str | Path] = None,
+    use_demo_images: bool = False,
 ) -> Tuple[Path, Optional[Path], Optional[Path], Optional[str]]:
     """
     Run the packing pipeline for a single input CSV.
@@ -126,6 +132,15 @@ def run_pipeline(
 
     if not input_csv_path.exists():
         raise FileNotFoundError(f"Input CSV not found: {input_csv_path}")
+
+    use_demo = bool(use_demo_images)
+    apparel_dir, logo_normal_dir, logo_custom_single_dir, logo_custom_double_dir = effective_image_dirs(
+        use_demo,
+        apparel_dir,
+        logo_normal_dir,
+        logo_custom_single_dir,
+        logo_custom_double_dir,
+    )
 
     date_dd_mm_yyyy = date_dd_mm_yyyy.replace("/", "-")
     try:
@@ -169,6 +184,8 @@ def run_pipeline(
         _log_path("Logo normal", logo_normal_dir, log)
         _log_path("PDF copy", pdf_copy_dir, log)
         _log_path("Excel copy", excel_copy_dir, log)
+        if use_demo:
+            log.detail("  Demo images: enabled (Demo Images Database/)")
         log.detail(f"  All Orders log file: {ALL_ORDERS_PATH.resolve()}")
         log.detail("----------")
 
@@ -180,24 +197,26 @@ def run_pipeline(
                 "The next log block may pause briefly while image folders are indexed."
             )
             log.detail(f"  PDF phase: rediscovered {len(step6_csvs)} process CSV(s) in {output_root}")
-        step8_missing_logos_report = run_step8_pdf_generation_impl(
-            step6_csvs=step6_csvs,
-            workbook_path=workbook_path,
-            apparel_dir=apparel_dir,
-            logo_custom_single_dir=logo_custom_single_dir,
-            logo_custom_double_dir=logo_custom_double_dir,
-            logo_normal_dir=logo_normal_dir,
-            build_image_stem_map=build_image_stem_map,
-            render_one_pdf=render_one_pdf,
-            csv_to_pdf=csv_to_pdf,
-            load_position_code_to_draw=load_position_code_to_draw,
-            format_missing_report=format_missing_report,
-            collect_image_match_details=collect_image_match_details,
-            format_image_match_log=format_image_match_log,
-            sanitize_process_for_filename=_sanitize_process_for_filename,
-            date_dd_mm_yyyy=date_dd_mm_yyyy,
-            log=log,
-        )
+        step8_missing_logos_report: Optional[str] = None
+        with demo_image_lookup(use_demo):
+            step8_missing_logos_report = run_step8_pdf_generation_impl(
+                step6_csvs=step6_csvs,
+                workbook_path=workbook_path,
+                apparel_dir=apparel_dir,
+                logo_custom_single_dir=logo_custom_single_dir,
+                logo_custom_double_dir=logo_custom_double_dir,
+                logo_normal_dir=logo_normal_dir,
+                build_image_stem_map=build_image_stem_map,
+                render_one_pdf=render_one_pdf,
+                csv_to_pdf=csv_to_pdf,
+                load_position_code_to_draw=load_position_code_to_draw,
+                format_missing_report=format_missing_report,
+                collect_image_match_details=collect_image_match_details,
+                format_image_match_log=format_image_match_log,
+                sanitize_process_for_filename=_sanitize_process_for_filename,
+                date_dd_mm_yyyy=date_dd_mm_yyyy,
+                log=log,
+            )
         copy_warnings: list[str] = []
         if pdf_copy_dir:
             copy_warnings = _copy_outputs_to_shift_dirs(
@@ -353,15 +372,16 @@ def run_pipeline(
     if log:
         log.step("Filtering missing logos (merge groups)...")
     t_miss = time.perf_counter()
-    step6_csvs, missing_logo_path, missing_logo_count = filter_step6_csvs_for_missing_logos(
-        step6_csvs,
-        output_root=output_root,
-        token=token,
-        logo_custom_single_dir=logo_custom_single_dir,
-        logo_custom_double_dir=logo_custom_double_dir,
-        logo_normal_dir=logo_normal_dir,
-        log=lc,
-    )
+    with demo_image_lookup(use_demo):
+        step6_csvs, missing_logo_path, missing_logo_count = filter_step6_csvs_for_missing_logos(
+            step6_csvs,
+            output_root=output_root,
+            token=token,
+            logo_custom_single_dir=logo_custom_single_dir,
+            logo_custom_double_dir=logo_custom_double_dir,
+            logo_normal_dir=logo_normal_dir,
+            log=lc,
+        )
     if missing_logo_path is not None:
         moved_missing = _move_missing_logo_to_root(missing_logo_path, date_dd_mm_yyyy, shift_label)
         if moved_missing is not None:
@@ -464,24 +484,26 @@ def run_pipeline(
             "The next log block may pause briefly while image folders are indexed."
         )
 
-    step8_missing_logos_report = run_step8_pdf_generation_impl(
-        step6_csvs=step6_csvs,
-        workbook_path=workbook_path,
-        apparel_dir=apparel_dir,
-        logo_custom_single_dir=logo_custom_single_dir,
-        logo_custom_double_dir=logo_custom_double_dir,
-        logo_normal_dir=logo_normal_dir,
-        build_image_stem_map=build_image_stem_map,
-        render_one_pdf=render_one_pdf,
-        csv_to_pdf=csv_to_pdf,
-        load_position_code_to_draw=load_position_code_to_draw,
-        format_missing_report=format_missing_report,
-        collect_image_match_details=collect_image_match_details,
-        format_image_match_log=format_image_match_log,
-        sanitize_process_for_filename=_sanitize_process_for_filename,
-        date_dd_mm_yyyy=date_dd_mm_yyyy,
-        log=log,
-    )
+    step8_missing_logos_report: Optional[str] = None
+    with demo_image_lookup(use_demo):
+        step8_missing_logos_report = run_step8_pdf_generation_impl(
+            step6_csvs=step6_csvs,
+            workbook_path=workbook_path,
+            apparel_dir=apparel_dir,
+            logo_custom_single_dir=logo_custom_single_dir,
+            logo_custom_double_dir=logo_custom_double_dir,
+            logo_normal_dir=logo_normal_dir,
+            build_image_stem_map=build_image_stem_map,
+            render_one_pdf=render_one_pdf,
+            csv_to_pdf=csv_to_pdf,
+            load_position_code_to_draw=load_position_code_to_draw,
+            format_missing_report=format_missing_report,
+            collect_image_match_details=collect_image_match_details,
+            format_image_match_log=format_image_match_log,
+            sanitize_process_for_filename=_sanitize_process_for_filename,
+            date_dd_mm_yyyy=date_dd_mm_yyyy,
+            log=log,
+        )
 
     if pdf_copy_dir or excel_copy_dir:
         copy_warnings = _copy_outputs_to_shift_dirs(

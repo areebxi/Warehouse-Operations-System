@@ -32,6 +32,7 @@ def run_missing_logos_pipeline(
     pdf_copy_dir: Optional[str | Path] = None,
     excel_copy_dir: Optional[str | Path] = None,
     log: Optional[PipelineLog] = None,
+    use_demo_images: bool = False,
 ) -> Path:
     path = Path(missing_logos_excel_path)
     if not path.exists():
@@ -94,6 +95,7 @@ def run_missing_logos_pipeline(
         pdf_copy_dir=pdf_copy_dir,
         excel_copy_dir=excel_copy_dir,
         log=log,
+        use_demo_images=use_demo_images,
     )
     if log:
         log.step("Done.")

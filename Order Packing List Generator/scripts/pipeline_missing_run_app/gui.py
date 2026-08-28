@@ -4,7 +4,7 @@ import sys
 import threading
 from datetime import date, datetime
 from pathlib import Path
-from tkinter import BOTH, DISABLED, END, NORMAL, StringVar, Tk, filedialog, messagebox, ttk
+from tkinter import BOTH, DISABLED, END, NORMAL, StringVar, BooleanVar, Tk, filedialog, messagebox, ttk
 
 from scripts.gui_theme import apply_theme, make_log_text, make_scrollable_form
 from scripts.pipeline_packing_list_app.config import logs_directory
@@ -40,6 +40,7 @@ class MissingRunApp:
         self.logo_normal_dir_var = StringVar()
         self.pdf_copy_dir_var = StringVar()
         self.excel_copy_dir_var = StringVar()
+        self.use_demo_images_var = BooleanVar(value=False)
         self._log_queue: queue.Queue[str | None] | None = None
         self._run_output_root: Path | None = None
         self._load_config()
@@ -69,11 +70,13 @@ class MissingRunApp:
         for key, var in [
             ("missing_input", self.missing_input_var), ("all_orders", self.all_orders_var), ("apparel_dir", self.apparel_dir_var),
             ("logo_custom_single_dir", self.logo_custom_single_dir_var), ("logo_custom_double_dir", self.logo_custom_double_dir_var),
-            ("logo_normal_dir", self.logo_normal_dir_var), ("pdf_copy_dir", self.pdf_copy_dir_var), ("excel_copy_dir", self.excel_copy_dir_var),
+            ("logo_normal_dir", self.logo_normal_dir_var),             ("pdf_copy_dir", self.pdf_copy_dir_var), ("excel_copy_dir", self.excel_copy_dir_var),
         ]:
             val = str(data.get(key, "")).strip()
             if val:
                 var.set(val)
+        if isinstance(data.get("use_demo_images"), bool):
+            self.use_demo_images_var.set(data["use_demo_images"])
         legacy_logo_custom = str(data.get("logo_custom_dir", "")).strip()
         if not self.logo_custom_single_dir_var.get() and legacy_logo_custom:
             self.logo_custom_single_dir_var.set(legacy_logo_custom)
@@ -92,6 +95,7 @@ class MissingRunApp:
             "logo_normal_dir": (self.logo_normal_dir_var.get() or "").strip(),
             "pdf_copy_dir": (self.pdf_copy_dir_var.get() or "").strip(),
             "excel_copy_dir": (self.excel_copy_dir_var.get() or "").strip(),
+            "use_demo_images": self.use_demo_images_var.get(),
         }
         try:
             CONFIG_DIR.mkdir(parents=True, exist_ok=True)
@@ -146,17 +150,23 @@ class MissingRunApp:
         ttk.Label(frm, text="All Orders CSV:").grid(row=7, column=0, sticky="w", padx=(0, 10), pady=3)
         ttk.Entry(frm, textvariable=self.all_orders_var, width=60).grid(row=7, column=1, sticky="we", pady=3)
         ttk.Button(frm, text="Browse…", command=self._browse_all_orders).grid(row=7, column=2, padx=(8, 0), pady=3)
-        add_row(8, "Apparel Image folder:", self.apparel_dir_var, browse_for_dir=True)
-        add_row(9, "Normal Logo/Design folder:", self.logo_normal_dir_var, browse_for_dir=True)
-        add_row(10, "Customise Single Position Logo/Design folder:", self.logo_custom_single_dir_var, browse_for_dir=True)
-        add_row(11, "Customise Double Position Logo/Design folder:", self.logo_custom_double_dir_var, browse_for_dir=True)
-        add_row(12, "PDF copy directory (optional):", self.pdf_copy_dir_var, browse_for_dir=True)
+        ttk.Label(frm, text="Use demo images:").grid(row=8, column=0, sticky="w", padx=(0, 10), pady=3)
+        ttk.Checkbutton(
+            frm,
+            text="Offline testing — placeholders from Demo Images Database/",
+            variable=self.use_demo_images_var,
+        ).grid(row=8, column=1, columnspan=2, sticky="w", pady=3)
+        add_row(9, "Apparel Image folder:", self.apparel_dir_var, browse_for_dir=True)
+        add_row(10, "Normal Logo/Design folder:", self.logo_normal_dir_var, browse_for_dir=True)
+        add_row(11, "Customise Single Position Logo/Design folder:", self.logo_custom_single_dir_var, browse_for_dir=True)
+        add_row(12, "Customise Double Position Logo/Design folder:", self.logo_custom_double_dir_var, browse_for_dir=True)
+        add_row(13, "PDF copy directory (optional):", self.pdf_copy_dir_var, browse_for_dir=True)
         ttk.Label(
             frm,
             text="PDFs copy into {PDF copy dir}/Missing Logo or …/Missing Apparel when set.",
             style="Muted.TLabel",
-        ).grid(row=13, column=1, columnspan=2, sticky="w", pady=(0, 3))
-        add_row(14, "Excel copy directory (optional):", self.excel_copy_dir_var, browse_for_dir=True)
+        ).grid(row=14, column=1, columnspan=2, sticky="w", pady=(0, 3))
+        add_row(15, "Excel copy directory (optional):", self.excel_copy_dir_var, browse_for_dir=True)
         frm.columnconfigure(1, weight=1)
 
         self.run_btn = ttk.Button(footer, text="Run missing pipeline", style="Accent.TButton", command=self._on_run)
@@ -235,7 +245,7 @@ class MissingRunApp:
         if not self.shift_var.get().strip():
             messagebox.showerror("Error", "Please select a shift.")
             return
-        if not (self.apparel_dir_var.get() or "").strip() and not (self.logo_normal_dir_var.get() or "").strip() and not (self.logo_custom_single_dir_var.get() or "").strip() and not (self.logo_custom_double_dir_var.get() or "").strip():
+        if not self.use_demo_images_var.get() and not (self.apparel_dir_var.get() or "").strip() and not (self.logo_normal_dir_var.get() or "").strip() and not (self.logo_custom_single_dir_var.get() or "").strip() and not (self.logo_custom_double_dir_var.get() or "").strip():
             messagebox.showwarning("No image directories", "Apparel/Logo folders are empty. PDFs will show placeholders.")
 
         shift = self.shift_var.get().strip()
@@ -299,6 +309,7 @@ class MissingRunApp:
                     pdf_copy_dir=pdf_copy_dir,
                     excel_copy_dir=excel_copy_dir,
                     log=pl,
+                    use_demo_images=self.use_demo_images_var.get(),
                 )
                 self._run_output_root = output_root
                 if self._log_queue is not None:

@@ -178,6 +178,7 @@ def run_missing_run_from_all_orders(
     pdf_copy_dir: str | Path | None = None,
     excel_copy_dir: str | Path | None = None,
     log: Optional[Callable[[str], None]] = None,
+    use_demo_images: bool = False,
 ) -> Path:
     if not date_dd_mm_yyyy:
         raise ValueError("date_dd_mm_yyyy is required (DD-MM-YYYY).")
@@ -216,4 +217,5 @@ def run_missing_run_from_all_orders(
         nest_pdf_under_shift=False,
         nest_excel_under_shift=True,
         log=_coerce_pipeline_log(log),
+        use_demo_images=use_demo_images,
     )

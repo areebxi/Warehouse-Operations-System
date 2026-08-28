@@ -13,6 +13,7 @@ from tkinter import (
     MULTIPLE,
     StringVar,
     Tk,
+    BooleanVar,
     filedialog,
     messagebox,
     ttk,
@@ -68,6 +69,7 @@ class PreflightIssuesApp:
         self.logo_normal_dir_var = StringVar()
         self.logo_custom_single_dir_var = StringVar()
         self.logo_custom_double_dir_var = StringVar()
+        self.use_demo_images_var = BooleanVar(value=False)
         self.date_var = StringVar(value=date.today().strftime("%d-%m-%Y"))
         self.shift_var = StringVar()
         self.process_number_var = StringVar()
@@ -128,6 +130,8 @@ class PreflightIssuesApp:
         self.input_mode_var.set("tag" if mode == "tag" else "file")
         self.selected_tags = parse_shipstation_tags_config(data)
         self.input_paths = self._parse_saved_input_files(data)
+        if isinstance(data.get("use_demo_images"), bool):
+            self.use_demo_images_var.set(data["use_demo_images"])
 
     @staticmethod
     def _parse_saved_input_files(data: dict) -> list[Path]:
@@ -165,6 +169,7 @@ class PreflightIssuesApp:
             "logo_normal_dir": (self.logo_normal_dir_var.get() or "").strip(),
             "logo_custom_single_dir": (self.logo_custom_single_dir_var.get() or "").strip(),
             "logo_custom_double_dir": (self.logo_custom_double_dir_var.get() or "").strip(),
+            "use_demo_images": self.use_demo_images_var.get(),
             "date": (self.date_var.get() or "").strip(),
             "shift": (self.shift_var.get() or "").strip(),
             "process_number": (self.process_number_var.get() or "").strip(),
@@ -522,26 +527,32 @@ class PreflightIssuesApp:
             self._browse_cl_csv,
         )
         self._add_dir_row(frm, 11, "Output directory:", self.output_dir_var, self._browse_output_dir)
+        ttk.Label(frm, text="Use demo images:").grid(row=12, column=0, sticky="w", padx=(0, 10), pady=3)
+        ttk.Checkbutton(
+            frm,
+            text="Offline testing — placeholders from Demo Images Database/",
+            variable=self.use_demo_images_var,
+        ).grid(row=12, column=1, columnspan=2, sticky="w", pady=3)
         self._add_dir_row(
-            frm, 12, "Apparel Image folder:", self.apparel_dir_var, self._browse_apparel_dir
+            frm, 13, "Apparel Image folder:", self.apparel_dir_var, self._browse_apparel_dir
         )
         self._add_dir_row(
             frm,
-            13,
+            14,
             "Normal Logo/Design folder:",
             self.logo_normal_dir_var,
             self._browse_logo_normal_dir,
         )
         self._add_dir_row(
             frm,
-            14,
+            15,
             "Customise Single Position Logo/Design folder:",
             self.logo_custom_single_dir_var,
             self._browse_logo_custom_single_dir,
         )
         self._add_dir_row(
             frm,
-            15,
+            16,
             "Customise Double Position Logo/Design folder:",
             self.logo_custom_double_dir_var,
             self._browse_logo_custom_double_dir,
@@ -801,6 +812,7 @@ class PreflightIssuesApp:
                     logo_normal_dir=logo_normal_dir,
                     logo_custom_single_dir=logo_custom_single_dir,
                     logo_custom_double_dir=logo_custom_double_dir,
+                    use_demo_images=self.use_demo_images_var.get(),
                 )
                 self._run_result = out
                 if self._log_queue is not None:

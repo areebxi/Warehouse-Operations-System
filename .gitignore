@@ -65,6 +65,12 @@ database/**
 !database/**/
 !database/**/README.md
 
+# --- Demo Images Database (offline test placeholders) ---
+Demo Images Database/**
+!Demo Images Database/README.md
+!Demo Images Database/**/
+!Demo Images Database/**/*.png
+
 # --- Packing app live I/O (DB in database/order-packing-list-generator/) ---
 Order Packing List Generator/Input/**
 Order Packing List Generator/Output/**

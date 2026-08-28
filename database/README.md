@@ -15,6 +15,8 @@ Live **database** files for the warehouse system. App folders hold code + run I/
 | `purchase-order-generator/` | Database.xlsx, packs, stock CSVs |
 | `shipping-label-generator/` | Reserved (no live DB today) |
 
+Offline demo placeholders live at warehouse root: `Demo Images Database/` (see its README).
+
 Resolve via `shared/paths.py`. Do not commit live files (see root `.gitignore`).
 
 Legacy `data/` at warehouse root is retired — contents moved here under `shared/`.

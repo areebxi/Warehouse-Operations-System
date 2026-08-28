@@ -355,6 +355,27 @@ def images_apparel_dir(from_path: object | None = None) -> Path:
     return custom_label_database_dir(from_path) / "Apparel Images"
 
 
+def demo_images_root(from_path: object | None = None) -> Path:
+    """Offline test placeholders (apparel + logo folders)."""
+    return warehouse_root_from(from_path) / "Demo Images Database"
+
+
+def demo_apparel_dir(from_path: object | None = None) -> Path:
+    return demo_images_root(from_path) / "Product Images"
+
+
+def demo_normal_design_dir(from_path: object | None = None) -> Path:
+    return demo_images_root(from_path) / "Normal Designs"
+
+
+def demo_custom_single_dir(from_path: object | None = None) -> Path:
+    return demo_images_root(from_path) / "Personalized Designs" / "Single Position"
+
+
+def demo_custom_double_dir(from_path: object | None = None) -> Path:
+    return demo_images_root(from_path) / "Personalized Designs" / "Double Position"
+
+
 def images_po_dir(from_path: object | None = None) -> Path:
     return po_app_dir(from_path) / "assets"
 
