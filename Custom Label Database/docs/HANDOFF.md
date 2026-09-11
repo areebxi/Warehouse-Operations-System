@@ -1,6 +1,6 @@
-﻿# Custom Label Database — Agent snapshot
+# Custom Label Database — Agent snapshot
 
-**Updated:** 28 August 2026 (M55 full SPC 61082)  
+**Updated:** 10 September 2026 (BTC shipping leak cleared; Customisation Type column present)  
 **Standing brief:** `AGENTS.md` (handbook) · Parent map: `../AGENTS.md`  
 **Facts:** `docs/FINDINGS.md` · **Paths:** `docs/WORKSPACE.md` · **Policy:** parent `.cursor/rules/custom-label-database/` · **Chat copies:** `docs/chats/`
 
@@ -12,18 +12,47 @@ Prior long chats: [Custom Label DB cleanup](4455a0cd-185b-4d3e-86d5-b1c620841dd4
 
 Warehouse Automation System Engineer on this catalog domain; user is supervisor. No production writes without **yes / do it / fill / run**. One problem at a time. Prefer CSV. **Save everything as we go** (parent CL rules + docs + `AGENTS.md`) — chat is not memory.
 
+**Standing fill chat (from 1 Sep 2026):** this thread is for Custom Label catalog fills and Size References fills. Live files: `database/shared/custom_label/Custom_Label_Database.csv` and `database/custom-label-database/support/Size References.csv`. Propose + dry-run, then wait for **yes / fill / run**. After a catalog seed, run `fill_from_seeds.py` then `fill_size_references_from_cl.py`.
+
 ---
 
 ## Live now
 
-Live catalog: `database/shared/custom_label/Custom_Label_Database.csv` — **124,762** rows × **60** cols.  
-Helpers: `../support/` (`Size References.csv` **97,203** rows), `Shirts Print Sizes.csv`, `Mocks Databse.csv`).
+Live catalog: `database/shared/custom_label/Custom_Label_Database.csv` — **131,892** rows × **66** columns (`Customisation Type` present, **0** filled; v1 grouping slot is `x`).  
+Helpers: `database/custom-label-database/support/` (`Size References.csv`, `Shirts Print Sizes.csv`, `Mocks Databse.csv`).
 
-Main filler: `python scripts/fill_from_seeds.py`. Size References reverse fill: `python scripts/fill_size_references_from_cl.py --dry-run`.
+### Supplier Name grouping — 9 Sep 2026
+
+Canonical cells: `BTC Activewear` / `Uneek Clothing` / `Absolute Apparels`. **Filled 2026-09-09.** CL: 123,948 / 6,992 / 499 Absolute / 453 in-house blank. Plain: 71,047 BTC / 6,992 Uneek. Packs: 38,452 BTC Activewear. Backups: `Custom_Label_Database.bak_20260909_185544.csv`, `Plain Database.bak_20260909_185710.xlsx`, `Packs Database.bak_20260909_185937.xlsx`. Rule: parent `supplier-name.mdc`. Code: `shared/supplier_name.py`.
+
+Main filler: `python scripts/fill_from_seeds.py`. Fast add: `python scripts/add_labels.py --skus …` (named-only, append-only). Size References reverse fill: `python scripts/fill_size_references_from_cl.py --dry-run`.
+
+### Customise = Yes token — 4 Sep 2026
+
+Supervisor: **`Yes` anywhere in our SKU/Custom Label = personalised** ⇒ `Customise` = **Yes** (e.g. `W101-SkyBe-O/S-Yes`, `M-T-NAVBE-3XL-Yes`). Still also `-P{digit}-`. Supervisor already set Customise Yes on `W101-SkyBe-O/S-Yes` and matching SKUs in live CL. `customise_for_label` / `--steps customise` updated for future adds.
+
+### Fast add_labels — 4 Sep 2026
+
+`scripts/add_labels.py`: same seed/fill rules as `fill_from_seeds`, but **does not rewrite** existing CL rows (append only). Default = named labels only; `--all-spc` for full BTC SPC series. Size References index cached as `support/Size References.index_cache.pkl` (rebuilds when the CSV changes). `fill_from_seeds` reuses one PE load for sizes (no double read).
+
+### Named packing SKUs — 4 Sep 2026
+
+Supervisor SKUs → Custom Label tails. **+136** rows (131,754 → **131,890**). `M281-P5-C800T-30-3>6` already existed (Print Positions blank → Front Center).
+
+| Packing SKU | Custom Label | Action |
+|---|---|---|
+| `10428ALG-M260-P3-3265` | `M260-P3-3265` | New. Policy: all PE UIDs for SPC **61082** as `M260-P3-{UID}` → **134** rows, cloned from `M260-P5-{UID}` (FOTL Mens Original T). Front Center, Customise Yes. |
+| `128967LG-W101-SkyBe-O/S-Yes` | `W101-SkyBe-O/S-Yes` | New. Sky Blue bag; peer `W101-ClaRd-O/S-Yes`. 320×350. **Customise Yes** (`Yes` token = personalised; supervisor corrected 4 Sep). |
+| `11828ALG-M281-P5-C800T-30-3>6` | `M281-P5-C800T-30-3>6` | Already in CL. Filled blank Print Positions / Position 1 Name = Front Center. |
+| `11434ALG-M281-P5-C800T-30-18-24` | `M281-P5-C800T-30-18-24` | New. White, 18-24 Months, 110×150. Cleared false Supplier SKU `24` (age token). |
+
+Backups: `backups/Custom_Label_Database_before_named_skus_20260904_182959.csv`, `…_preFill_20260904_183057.csv`. `fill_from_seeds.py --iloc-from 131754`. Size References reverse fill skips `M260-P3-*` (hybrid P-token; `M260 (3265)` already present).
 
 ### Customise rule enforced — 28 Aug 2026 06:51
 
 `-P{digit}-` in Custom Label ⇒ `Customise` = **Yes** (personalised; e.g. `M260-P5-*`, `N220-P3-*`). Plain mock+UID (`M55-{UID}`, `M56-{UID}`) ⇒ **blank** (not Yes). Fixed live CL: cleared **28,043** wrong `Yes`; set **2,063** missing `Yes` on `-P#-` rows. `fill_from_seeds.py` now has `--steps customise`. Backup: `backups/Custom_Label_Database_preFill_20260828_065100.csv`.
+
+**Extended 4 Sep 2026:** a `Yes` segment in the label also ⇒ Customise Yes (bags/personalised SKUs). See note above.
 
 ### M55 full SPC 61082 — 28 Aug 2026 05:36
 
@@ -117,13 +146,13 @@ Shirt Size = DB `Size`, else PE `Size` via UID. Pocket 80×100 (kids F8 `-K-` = 
 
 ## Current leftovers (ask before acting)
 
-1. **BTC dedicated cols** — `fill_from_seeds.py --steps suppliers --dry-run`, then blanks only. Largest remaining fill (~83k BTC SKU / BTC Product Code on 24 Aug).
+1. **BTC dedicated cols** — 10 Sep 2026 cleared Package Type / Weight / Service that had been copied into BTC SKU / Product Code / Supplier Stock (38,697 rows; backup `Custom_Label_Database.bak_20260910_190412.csv`). After that: BTC SKU **35,600**, BTC Product Code **35,771**. Remaining blanks are historical — `fill_from_seeds.py --steps suppliers --dry-run`, then blanks only, still needs ask.
 2. **Non-shirt Width 1 blanks** (~485 on 24 Aug): stickers, mugs, caps, bags, aprons, beanies, M251 / M290 / M307. Mock+UID keys are now in Size References; mm stay blank until the catalog (or an override) has Width/Height.
 3. **`--all-mocks` image download** — ~189 unique remaining `M##` Apparel Image files. Does not change the CSV.
 4. **`generate_from_mocks`** — ~293 guide IDs not in the DB. Pass current support CSV paths if script defaults still name old xlsx/guide files.
 5. **`Tags` / `Size (Dimensions)`** — still blank; not filled from PE unless asked.
 6. **24 Aug tail seed drift** (29 appended rows; duplicates kept): apostrophes in a few FOTL Gender Apparel values; `M281-P5-C800T-30-0>3` Size 3-6 Months vs 0-3; `K-H-DHR-YXS` Colour `Dark Heather` vs sibling `Dark Heather Grey`; 12/29 Print Positions blank.
-7. **No PE UID** — 5,908 rows stay blank on Category / Department / Brand (iron-ons, bags without trailing UID, etc.).
+7. **No PE UID** — ~5,908 rows stay blank on PE `Category` / `Department` / `Brand` (iron-ons, bags without trailing UID, etc.). Areeb on **every** CL row is warehouse `cl_standard` from Gender Apparel (Department = gender only; Product Style is not Brand). See `areeb-taxonomy.mdc`.
 8. **PE Department / Sub Department corrections** — when the product worksheet is fixed, run `--overwrite-pe-taxonomy` (dry-run first) so Category, Sub-Category, Department, and Sub-Department match the new PE. Brand stays blank-only.
 
 Shirt print sizes on the 24 Aug block are filled, including hoodie `M138-38262`, tank `77123-BTC`, and `K-H-DHR-YXS` → 176×250.

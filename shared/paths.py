@@ -1,7 +1,8 @@
 """
 Warehouse path registry — database/ live data + per-app code/I/O.
 
-Shared databases: database/shared/ (PE, Tags, CL CSV).
+Shared databases: database/shared/ (CL, Tags, BTC/Uneek/Absolute Product Data,
+Plain Database, Packs Database).
 App databases: database/<app-slug>/.
 Secrets: config/ShipStation. Pipeline I/O: runtime/SharedInbox + app Input/Output/Logs.
 """
@@ -96,12 +97,41 @@ def cl_backups_dir(from_path: object | None = None) -> Path:
     return database_shared_dir(from_path) / "custom_label" / "backups"
 
 
-def product_export_path(from_path: object | None = None) -> Path:
-    return database_shared_dir(from_path) / "product_export" / "ProductExport.csv"
+def btc_product_data_path(from_path: object | None = None) -> Path:
+    """Shared BTC supplier catalog (same role as Uneek Product Data)."""
+    return database_shared_dir(from_path) / "btc_product_data" / "BTC_Product_Data.csv"
+
+
+def uneek_product_data_path(from_path: object | None = None) -> Path:
+    """Shared Uneek supplier catalog (same role as BTC Product Data)."""
+    return database_shared_dir(from_path) / "uneek_product_data" / "Uneek_Product_Data.xlsx"
+
+
+def absolute_product_data_path(from_path: object | None = None) -> Path:
+    """Shared Absolute Apparels supplier catalog (same role as BTC / Uneek Product Data)."""
+    return database_shared_dir(from_path) / "absolute_product_data" / "Absolute_Product_Data.xlsx"
 
 
 def shipstation_tags_path(from_path: object | None = None) -> Path:
     return database_shared_dir(from_path) / "shipstation" / "ShipStation_Tags.xlsx"
+
+
+def plain_database_path(from_path: object | None = None) -> Path:
+    """Shared Plain Database (grouping + PO slips; not PO-app-owned)."""
+    return database_shared_dir(from_path) / "plain" / "Plain Database.xlsx"
+
+
+def plain_database_archive_dir(from_path: object | None = None) -> Path:
+    return database_shared_dir(from_path) / "plain" / "archive"
+
+
+def packs_database_path(from_path: object | None = None) -> Path:
+    """Shared Packs Database (grouping + PO slips; not PO-app-owned)."""
+    return database_shared_dir(from_path) / "packs" / "Packs Database.xlsx"
+
+
+def packs_database_archive_dir(from_path: object | None = None) -> Path:
+    return database_shared_dir(from_path) / "packs" / "archive"
 
 
 def data_archive_dir(from_path: object | None = None) -> Path:
@@ -237,11 +267,13 @@ def po_data_dir(from_path: object | None = None) -> Path:
 
 
 def po_database_path(from_path: object | None = None) -> Path:
-    return po_data_dir(from_path) / "Database.xlsx"
+    """Alias for plain_database_path (legacy PO name)."""
+    return plain_database_path(from_path)
 
 
 def po_packs_database_path(from_path: object | None = None) -> Path:
-    return po_data_dir(from_path) / "Packs Database.xlsx"
+    """Alias for packs_database_path (legacy PO name)."""
+    return packs_database_path(from_path)
 
 
 def po_stock_csv_path(
@@ -356,7 +388,7 @@ def images_apparel_dir(from_path: object | None = None) -> Path:
 
 
 def demo_images_root(from_path: object | None = None) -> Path:
-    """Offline test placeholders (apparel + logo folders)."""
+    """Testing-mode placeholders (apparel + logo folders)."""
     return warehouse_root_from(from_path) / "Demo Images Database"
 
 

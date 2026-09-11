@@ -149,6 +149,11 @@ def find_design_file(sku: Union[str, pd.Series, None], designs_folder: Optional[
                 )
                 return file_path
 
+    fb = _demo_design_fallback("normal", sku_str)
+    if fb:
+        logger.debug("find_design_file: demo fallback -> %s", fb)
+        return fb
+
     logger.warning(
         "find_design_file: no design file found for sku=%s in designs_folder=%s "
         "(tried code, SKU, and code-without-size strategies)",
@@ -156,4 +161,14 @@ def find_design_file(sku: Union[str, pd.Series, None], designs_folder: Optional[
         designs_folder,
     )
     return None
+
+
+def _demo_design_fallback(kind: str, token: str) -> Optional[str]:
+    try:
+        from shared.demo_images import demo_fallback_path
+
+        path = demo_fallback_path(kind, token)
+        return str(path) if path else None
+    except ImportError:
+        return None
 

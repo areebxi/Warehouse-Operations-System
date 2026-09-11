@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Fill BTC Stock ID in Custom Label Database.csv from ProductExport.csv.
+Fill BTC Stock ID in Custom Label Database.csv from BTC Product Data.
 
 Match keys (all required):
-  - Custom Label Database.BTC Product Code  ->  ProductExport.SPC
-  - Custom Label Database.Colour Name       ->  ProductExport.Colour Name
-  - Custom Label Database.Size (mapped)     ->  ProductExport.Size
+  - Custom Label Database.BTC Product Code  ->  BTC Product Data.SPC
+  - Custom Label Database.Colour Name       ->  BTC Product Data.Colour Name
+  - Custom Label Database.Size (mapped)     ->  BTC Product Data.Size
 
-Value copied: ProductExport.UID -> Custom Label Database.BTC Stock ID
+Value copied: BTC Product Data.UID -> Custom Label Database.BTC Stock ID
 
 Existing BTC Stock ID values are overwritten when a match is found.
 """
@@ -24,7 +24,7 @@ import app_paths  # noqa: F401
 
 from app_paths import data_path
 
-# Custom Label full name -> ProductExport abbreviation
+# Custom Label full name -> BTC Product Data abbreviation
 SIZE_TO_PRODUCT_EXPORT: dict[str, str] = {
     "small": "S",
     "medium": "M",
@@ -43,7 +43,7 @@ SIZE_TO_PRODUCT_EXPORT: dict[str, str] = {
     "standard size": "O/S",
 }
 
-# Youth SPCs: Custom Label age label -> ProductExport letter size (18000B, 18500B, SF500B)
+# Youth SPCs: Custom Label age label -> BTC Product Data letter size (18000B, 18500B, SF500B)
 YOUTH_LETTER_SPCS = frozenset(x.casefold() for x in ("18000B", "18500B", "SF500B"))
 YOUTH_AGE_TO_LETTER_SIZE: dict[str, str] = {
     "3-4 years": "XS",
@@ -67,7 +67,7 @@ YOUTH_AGE_TO_LETTER_SIZE: dict[str, str] = {
     "18-24 months": "XS",
 }
 
-# Baby/toddler SPCs: age label -> ProductExport month/year code (BZ02, BZ10)
+# Baby/toddler SPCs: age label -> BTC Product Data month/year code (BZ02, BZ10)
 BZ_MONTH_SPCS = frozenset(x.casefold() for x in ("BZ02", "BZ10"))
 BZ_AGE_TO_MONTH_CODE: dict[str, str] = {
     "0-3 months": "0-3",
@@ -78,7 +78,7 @@ BZ_AGE_TO_MONTH_CODE: dict[str, str] = {
     "2-3 years": "2-3",
 }
 
-# Custom Label colour name -> ProductExport Colour Name (lookup only; CSV unchanged)
+# Custom Label colour name -> BTC Product Data Colour Name (lookup only; CSV unchanged)
 COLOUR_ALIASES: dict[str, str] = {
     "navy": "Navy Blue",
     "royal blue": "Royal",
@@ -106,7 +106,7 @@ COLOUR_ALIASES: dict[str, str] = {
 }
 
 DEFAULT_CUSTOM_LABEL = data_path("Custom Label Database.csv")
-DEFAULT_PRODUCT_EXPORT = data_path("ProductExport.csv")
+DEFAULT_BTC_PRODUCT_DATA = data_path("BTC_Product_Data.csv")
 
 
 def norm(value: str) -> str:
@@ -127,7 +127,7 @@ def load_csv(path: Path) -> tuple[list[str], list[dict[str, str]], str]:
 
 
 def cl_size_to_pe(size: str, spc: str = "") -> tuple[str, bool]:
-    """Map Custom Label size to ProductExport size. Returns (pe_size, used_kids_map)."""
+    """Map Custom Label size to BTC Product Data size. Returns (pe_size, used_kids_map)."""
     key = norm(size)
     ns = norm(spc)
 
@@ -221,7 +221,7 @@ def fill_stock_ids(
 
         if not uid:
             unchanged_no_match += 1
-            skip_reasons["no_match_in_product_export"] += 1
+            skip_reasons["no_match_in_btc_product_data"] += 1
             continue
 
         row["BTC Stock ID"] = uid
@@ -255,7 +255,7 @@ def write_csv(
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Fill BTC Stock ID from ProductExport.csv using SPC + colour + size."
+        description="Fill BTC Stock ID from BTC Product Data using SPC + colour + size."
     )
     parser.add_argument(
         "--custom-label",
@@ -264,10 +264,10 @@ def main() -> int:
         help="Path to Custom Label Database.csv",
     )
     parser.add_argument(
-        "--product-export",
+        "--btc-product-data",
         type=Path,
-        default=DEFAULT_PRODUCT_EXPORT,
-        help="Path to ProductExport.csv",
+        default=DEFAULT_BTC_PRODUCT_DATA,
+        help="Path to BTC_Product_Data.csv",
     )
     parser.add_argument(
         "--no-backup",
@@ -288,7 +288,7 @@ def main() -> int:
     args = parser.parse_args()
 
     custom_path: Path = args.custom_label
-    product_path: Path = args.product_export
+    product_path: Path = args.btc_product_data
 
     if not custom_path.is_file():
         print(f"Error: file not found: {custom_path}")
@@ -320,7 +320,7 @@ def main() -> int:
     print(f"Custom label rows: {len(cl_rows)}")
     print(f"Product export lookup keys: {len(lookup)}")
     if duplicates:
-        print(f"Warning: {len(duplicates)} duplicate ProductExport keys (last row wins)")
+        print(f"Warning: {len(duplicates)} duplicate BTC Product Data keys (last row wins)")
     print()
     print(f"BTC Stock ID updated: {filled}")
     print(f"  via colour alias: {filled_via_alias}")

@@ -10,7 +10,6 @@ from src.core.design_processing_helpers import (
     apply_print_size_override_to_entries,
 )
 from src.core.image_utils import DEFAULT_DESIGN_PADDING
-from src.core.multi_position_logic import get_position_size_entries
 from src.core.cl_print_sizes import get_cl_position_size_entries
 from src.core.size_code_extractor import PrintSizeOverrides
 from src.io.file_handlers import find_design_file_vba_logic
@@ -23,7 +22,6 @@ def process_personalised_designs(
     is_duplicate_order: bool,
     single_designs_folder: Optional[str],
     double_designs_folder: Optional[str],
-    size_reference_df: Optional[pd.DataFrame],
     mm_to_pixel_factor: float,
     canvas_width_mm: float,
     design_padding: Optional[int] = None,
@@ -31,29 +29,22 @@ def process_personalised_designs(
     canvas_height_mm: Optional[float] = None,
     force_single: bool = False,
     print_size_overrides: Optional[Union[Set[str], PrintSizeOverrides]] = None,
+    cl_csv_path: Optional[object] = None,
 ) -> List[Dict[str, Any]]:
     if design_padding is None:
         design_padding = DEFAULT_DESIGN_PADDING
 
     overrides = print_size_overrides if print_size_overrides is not None else pocket_design_ids_set
-    size_code, base_code_for_lookup, lookup_size_code = resolve_size_lookup_context(
-        item_sku, size_reference_df, overrides
-    )
+    size_code, _, _ = resolve_size_lookup_context(item_sku, None, overrides)
     cl_entries = get_cl_position_size_entries(
-        item_sku, mm_to_pixel_factor, force_single=force_single
+        item_sku, mm_to_pixel_factor, force_single=force_single, cl_csv_path=cl_csv_path
     )
     if cl_entries is not None:
         entries = cl_entries
         if size_code is None:
             size_code = str(item_sku).strip()
     else:
-        entries = get_position_size_entries(
-            size_reference_df,
-            lookup_size_code,
-            mm_to_pixel_factor,
-            base_code=base_code_for_lookup,
-            force_single=force_single,
-        )
+        entries = [{"position": None, "size_info": None}]
     entries = apply_print_size_override_to_entries(
         item_sku, entries, overrides, mm_to_pixel_factor
     )

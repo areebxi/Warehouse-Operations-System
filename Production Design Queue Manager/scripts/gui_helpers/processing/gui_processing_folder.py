@@ -18,7 +18,7 @@ from .gui_processing_core_missing_logo import (
 )
 from gui_helpers.common.gui_progress import update_progress
 from .gui_processing_helpers_folder import (
-    find_dtf_des_files,
+    get_selected_input_files,
     load_dataframe_from_file,
     process_file_in_folder_standard,
     process_file_in_folder_personalised,
@@ -30,25 +30,23 @@ from .gui_processing_helpers_folder_finalize import (
 
 
 def process_folder(gui):
-    """Process all DTF Des files in selected folder.
+    """Process all selected DTF Des files (multi-file / batch).
 
     DTF Des files are Excel Worksheets (.xlsx, .xls, or .csv) containing order information
     with columns: Order - Number, Item - Qty, Item - SKU, Item - Name, Ship To - Name,
     Notes - From Buyer, Ship To - Postal Code, Source, Process Num, Genre, Order Type,
     Orders Type Abbrevation, Condition
     """
-    if not gui.input_folder_path:
+    excel_files = get_selected_input_files(gui)
+    if not excel_files:
+        messagebox.showwarning("Warning", "Please select DTF Des file(s) first!")
         return
 
     if not gui.designs_folder:
         messagebox.showwarning("Warning", "Please select a designs folder first!")
         return
 
-    # Find all DTF Des files
-    excel_files = find_dtf_des_files(gui.input_folder_path)
-    if not excel_files:
-        messagebox.showwarning("Warning", "No DTF Des files found in selected folder!")
-        return
+    gui.folder_file_batches = {}
 
     # Process each file and collect all designs for combined preview
     success_count = 0
@@ -97,8 +95,10 @@ def process_folder(gui):
 
 
 def process_folder_personalised(gui):
-    """Process all DTF Des files in selected folder using personalised mode."""
-    if not gui.input_folder_path:
+    """Process all selected DTF Des files using personalised mode."""
+    excel_files = get_selected_input_files(gui)
+    if not excel_files:
+        messagebox.showwarning("Warning", "Please select DTF Des file(s) first!")
         return
 
     if not gui.single_designs_folder:
@@ -109,11 +109,7 @@ def process_folder_personalised(gui):
         messagebox.showwarning("Warning", "Please select a Double Design Folder first!")
         return
 
-    # Find all DTF Des files
-    excel_files = find_dtf_des_files(gui.input_folder_path)
-    if not excel_files:
-        messagebox.showwarning("Warning", "No DTF Des files found in selected folder!")
-        return
+    gui.folder_file_batches = {}
 
     # Process each file and collect all designs for combined preview
     success_count = 0
@@ -162,8 +158,10 @@ def process_folder_personalised(gui):
 
 
 def process_folder_missing_logo(gui):
-    """Process all DTF Des files in selected folder using Missing Logo mode."""
-    if not gui.input_folder_path:
+    """Process all selected DTF Des files using Missing Logo / Run mode."""
+    excel_files = get_selected_input_files(gui)
+    if not excel_files:
+        messagebox.showwarning("Warning", "Please select DTF Des file(s) first!")
         return
 
     # Check if at least one folder is selected (personalized or all in one go)
@@ -174,11 +172,7 @@ def process_folder_missing_logo(gui):
         )
         return
 
-    # Find all DTF Des files
-    excel_files = find_dtf_des_files(gui.input_folder_path)
-    if not excel_files:
-        messagebox.showwarning("Warning", "No DTF Des files found in selected folder!")
-        return
+    gui.folder_file_batches = {}
 
     # Process each file and collect all designs for combined preview
     success_count = 0

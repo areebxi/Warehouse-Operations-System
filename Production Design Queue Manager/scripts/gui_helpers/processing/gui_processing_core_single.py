@@ -47,16 +47,22 @@ def process_single_file_for_folder(gui, df, column, file_path):
         for sku, customise in zip(skus, customise_vals):
             if is_plainlg_sku(sku):
                 continue
+            if gui.sku_missing_cl_print_size(sku):
+                missing_entry = str(sku)
+                if missing_entry not in missing_sizes:
+                    missing_sizes.append(missing_entry)
+                    track_missing_size_reference(df, column, sku, missing_size_row_indices)
+
             design_items = process_single_designs(
                 sku,
                 gui.designs_folder,
-                gui.size_reference_df,
                 gui.mm_to_pixel,
                 getattr(gui, "print_size_overrides", None) or gui.pocket_design_ids_set,
                 canvas_width_mm=gui.canvas_width_mm,
                 canvas_height_mm=gui.canvas_height_mm,
                 design_padding=gui.design_padding,
                 force_single=is_customise_yes(customise),
+                cl_csv_path=getattr(gui, "cl_csv_path", None),
             )
 
             if design_items:

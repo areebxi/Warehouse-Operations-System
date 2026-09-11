@@ -9,6 +9,7 @@ import tkinter as tk
 from tkinter import ttk
 from gui_helpers.canvas.gui_ui_builder_preview import build_preview_panel
 from gui_helpers.common import gui_theme
+from gui_helpers.settings import gui_settings
 from src.system.logging.run_logger import log_run_event
 
 
@@ -78,25 +79,40 @@ def create_ui(gui):
     # Use left_scrollable_frame for widgets
     left_panel = left_scrollable_frame
 
+    offline_frame = ttk.Frame(left_panel)
+    offline_frame.pack(fill=tk.X, pady=(0, 10))
+    gui.use_demo_images_var = tk.BooleanVar(
+        value=bool(getattr(gui, "saved_settings", {}).get("use_demo_images"))
+    )
+    ttk.Checkbutton(
+        offline_frame,
+        text="Testing",
+        variable=gui.use_demo_images_var,
+        command=lambda: gui_settings.on_offline_testing_toggle(gui),
+    ).pack(anchor=tk.W)
+
+    db_frame = ttk.LabelFrame(left_panel, text="Database", padding="10")
+    db_frame.pack(fill=tk.X, pady=(0, 10))
+
+    ttk.Label(db_frame, text="Custom Label Database (CSV):").pack(anchor=tk.W)
+    cl_row = ttk.Frame(db_frame)
+    cl_row.pack(fill=tk.X, pady=(2, 6))
+    ttk.Entry(cl_row, textvariable=gui.cl_csv_var).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 6))
+    ttk.Button(cl_row, text="Browse…", command=gui.select_cl_csv).pack(side=tk.LEFT)
+
+    ttk.Label(db_frame, text="Configuration Workbook:").pack(anchor=tk.W)
+    wb_row = ttk.Frame(db_frame)
+    wb_row.pack(fill=tk.X, pady=(2, 0))
+    ttk.Entry(wb_row, textvariable=gui.config_workbook_var).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 6))
+    ttk.Button(wb_row, text="Browse…", command=gui.select_config_workbook).pack(side=tk.LEFT)
+
     # Action buttons
     action_frame = ttk.LabelFrame(left_panel, text="Actions", padding="10")
     action_frame.pack(fill=tk.X, pady=(0, 10))
 
     ttk.Button(
         action_frame,
-        text="Normal",
-        style="Accent.TButton",
-        command=gui.arrange_designs,
-    ).pack(fill=tk.X, pady=(0, 6))
-    ttk.Button(
-        action_frame,
-        text="Personalised",
-        style="Accent.TButton",
-        command=gui.arrange_personalised_designs,
-    ).pack(fill=tk.X, pady=(0, 6))
-    ttk.Button(
-        action_frame,
-        text="Missing Logo",
+        text="Run",
         style="Accent.TButton",
         command=gui.arrange_missing_logo_designs,
     ).pack(fill=tk.X, pady=(0, 6))
@@ -143,26 +159,53 @@ def create_ui(gui):
     )
     gui.progress_label.pack(fill=tk.X, pady=(0, 5))
 
-    # File selection
-    file_frame = ttk.LabelFrame(left_panel, text="Input File / Folder", padding="10")
+    # File selection (multi-select, same pattern as Packing List)
+    file_frame = ttk.LabelFrame(left_panel, text="Input Files", padding="10")
     file_frame.pack(fill=tk.X, pady=(0, 10))
+
+    list_frame = ttk.Frame(file_frame)
+    list_frame.pack(fill=tk.BOTH, expand=True)
+    gui.input_listbox = tk.Listbox(
+        list_frame,
+        height=4,
+        selectmode=tk.EXTENDED,
+        exportselection=False,
+        bg=gui_theme.SURFACE,
+        fg=gui_theme.FG,
+        highlightthickness=1,
+        highlightbackground=gui_theme.BORDER,
+        relief="flat",
+        font=gui_theme.FONT_HINT,
+    )
+    gui.input_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    input_scroll = ttk.Scrollbar(
+        list_frame, orient="vertical", command=gui.input_listbox.yview
+    )
+    input_scroll.pack(side=tk.RIGHT, fill=tk.Y)
+    gui.input_listbox.config(yscrollcommand=input_scroll.set)
 
     ttk.Button(
         file_frame,
-        text="Select DTF Des File",
-        command=gui.select_input_file,
-    ).pack(fill=tk.X, pady=(0, 6))
+        text="Add files…",
+        command=gui.add_input_files,
+    ).pack(fill=tk.X, pady=(6, 0))
     ttk.Button(
         file_frame,
-        text="Select Input Folder",
-        command=gui.select_input_folder,
-    ).pack(fill=tk.X, pady=(0, 6))
+        text="Remove selected",
+        command=gui.remove_selected_input_files,
+    ).pack(fill=tk.X, pady=(6, 0))
+    ttk.Button(
+        file_frame,
+        text="Remove all",
+        command=gui.remove_all_input_files,
+    ).pack(fill=tk.X, pady=(6, 0))
+
     gui.file_label = ttk.Label(
         file_frame,
-        text="No file/folder selected",
+        text="No files selected",
         style="Muted.TLabel",
     )
-    gui.file_label.pack(pady=(2, 0))
+    gui.file_label.pack(anchor=tk.W, pady=(6, 0))
 
     # Design folder selection
     folder_frame = ttk.LabelFrame(left_panel, text="Normal Designs Folder", padding="10")
@@ -228,7 +271,7 @@ def create_ui(gui):
     ttk.Button(
         dtf_queues_frame,
         text="Remove DTF Queues Folder",
-        style="Quiet.TButton",
+        style="Secondary.TButton",
         command=gui.remove_dtf_queues_folder,
     ).pack(fill=tk.X, pady=(0, 6))
     gui.dtf_queues_label = ttk.Label(

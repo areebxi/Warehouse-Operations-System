@@ -1,4 +1,4 @@
-﻿"""
+"""
 Reusable filler for Custom Label Database.csv (preferred) or .xlsx
 
 Use when you add rows with seed columns only:
@@ -8,7 +8,7 @@ Use when you add rows with seed columns only:
 Fills what it can:
   1) Supplier SKU  <- last numeric UID from Custom Label
         (M260-214332 / M261-P4-24786 -> 214332 / 24786)
-  2) ProductExport enrich: Supplier Name, SPC, Brand (blank only);
+  2) BTC Product Data enrich: Supplier Name, SPC, Brand (blank only);
      Category / Department ← PE Department, Sub-Category / Sub-Department
      ← PE Sub Department (blank only, or --overwrite-pe-taxonomy after PE corrections)
   3) Dedicated supplier cols (BTC / Ralawise / Absolute) from Supplier Name
@@ -21,7 +21,7 @@ Examples (from repo root):
 
   python scripts/fill_from_seeds.py
   python scripts/fill_from_seeds.py --dry-run
-  python scripts/fill_from_seeds.py --steps sku,pe,suppliers,image,print
+  python scripts/fill_from_seeds.py --steps sku,pe,suppliers,image,print,customise,areeb,supply,printing_type,supplier_name
   python scripts/fill_from_seeds.py --steps print --only-missing-wh
   python scripts/fill_from_seeds.py --iloc-from 124109
   python scripts/fill_from_seeds.py --steps sku,pe --overwrite-pe-taxonomy --dry-run
@@ -49,7 +49,7 @@ from size_code_logic import (  # noqa: E402
 )
 
 # ---------------------------------------------------------------------------
-# Paths — CL app CSV + support/ + data/product_export
+# Paths — CL app CSV + support/ + shared BTC Product Data
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = Path(__file__).resolve().parent
 _WAREHOUSE = SCRIPT_DIR.parent.parent
@@ -62,7 +62,7 @@ SUPPORT = wh.custom_label_support_dir()
 BACKUPS = wh.cl_backups_dir()
 
 DEFAULT_DB = wh.cl_csv_path()
-DEFAULT_PE = wh.product_export_path()
+DEFAULT_PE = wh.btc_product_data_path()
 DEFAULT_CONFIG = SUPPORT / "Size References.csv"
 DEFAULT_PRINT_SIZES = SUPPORT / "Shirts Print Sizes.csv"
 
@@ -208,7 +208,7 @@ KNOWN_HUMAN = {
     "inside",
 }
 
-ALL_STEPS = ("sku", "pe", "suppliers", "image", "print", "customise")
+ALL_STEPS = ("sku", "pe", "suppliers", "image", "print", "customise", "areeb", "supply", "printing_type", "supplier_name")
 
 # Supplier Name keyword -> (SKU col, Product Code col, Stock col)
 DEDICATED_SUPPLIERS = (
@@ -252,14 +252,32 @@ def mm_str(val) -> str:
 
 
 def uid_from_custom_label(label: str) -> str:
-    """Last numeric segment: M260-P6-349876 -> 349876."""
-    m = RE_UID.search(clean(label))
+    """Last numeric segment: M260-P6-349876 -> 349876.
+
+    Skip C800T age tokens (``M281-P5-C800T-30-18-24`` ends in 24, not a PE UID).
+    """
+    s = clean(label)
+    if not s or "C800T" in s.upper():
+        return ""
+    m = RE_UID.search(s)
     return m.group(1) if m else ""
 
 
 def customise_for_label(label: str) -> str:
-    """-P{digit}- in Custom Label => personalised (Yes); else blank."""
-    return "Yes" if RE_P_PERSONAL.search(clean(label)) else ""
+    """Personalised => Yes: ``-P{digit}-`` or a ``Yes`` token in the label.
+
+    Supervisor (4 Sep 2026): any ``Yes`` in our SKU/Custom Label means personalised
+    (e.g. ``W101-SkyBe-O/S-Yes``, ``M-T-NAVBE-3XL-Yes``), not only ``-P#-``.
+    """
+    s = clean(label)
+    if not s:
+        return ""
+    if RE_P_PERSONAL.search(s):
+        return "Yes"
+    # Exact Yes segment (dash or slash separators), case-insensitive
+    if any(p.casefold() == "yes" for p in re.split(r"[-/]", s) if p):
+        return "Yes"
+    return ""
 
 
 def g1_format(text: str) -> str:
@@ -488,15 +506,22 @@ def load_pe_index(pe_path: Path) -> pd.DataFrame:
     return pe.drop_duplicates("UID").set_index("UID", drop=False)
 
 
+def pe_sizes_from_index(pe_index: pd.DataFrame) -> dict[str, str]:
+    """Size lookup from an already-loaded PE index (avoids a second PE read)."""
+    out: dict[str, str] = {}
+    if "UID" not in pe_index.columns or "Size" not in pe_index.columns:
+        return out
+    for uid, size in zip(pe_index["UID"].map(clean), pe_index["Size"].map(clean)):
+        if uid and uid not in out:
+            out[uid] = size
+    return out
+
+
 def load_pe_sizes(pe_path: Path) -> dict[str, str]:
     pe = _read_pe_table(pe_path, usecols=["UID", "Size"])
     if str(pe.iloc[0].get("UID", "")).startswith("["):
         pe = pe.iloc[1:].reset_index(drop=True)
-    out: dict[str, str] = {}
-    for uid, size in zip(pe["UID"].map(clean), pe["Size"].map(clean)):
-        if uid and uid not in out:
-            out[uid] = size
-    return out
+    return pe_sizes_from_index(pe)
 
 
 def load_print_sizes(path: Path) -> dict[str, dict[str, tuple[int, int]]]:
@@ -722,7 +747,7 @@ def lookup_sr(
 # Fill steps
 # ---------------------------------------------------------------------------
 def step_customise(df: pd.DataFrame, counts: dict) -> None:
-    """Customise from Custom Label: -P{digit}- => Yes; otherwise not Yes."""
+    """Customise from Custom Label: -P{digit}- or Yes token => Yes; else not Yes."""
     if "Customise" not in df.columns:
         df["Customise"] = ""
     for idx in df.index:
@@ -738,6 +763,79 @@ def step_customise(df: pd.DataFrame, counts: dict) -> None:
         elif current.lower() == "yes":
             df.at[idx, "Customise"] = ""
             counts["customise_cleared_yes"] += 1
+
+
+def step_areeb(df: pd.DataFrame, counts: dict) -> None:
+    """Areeb 30-chain from Gender Apparel warehouse standard. Overwrites the four cells."""
+    from shared.areeb_taxonomy import AREEB_COLS, apply_areeb, classify_cl
+
+    for col in AREEB_COLS:
+        if col not in df.columns:
+            df[col] = ""
+    for idx in df.index:
+        row = {c: clean(df.at[idx, c]) if c in df.columns else "" for c in df.columns}
+        values = classify_cl(row)
+        patch = apply_areeb(row, values)
+        if not patch:
+            continue
+        for col, val in patch.items():
+            df.at[idx, col] = val
+        counts["areeb_rows"] += 1
+        counts[f"areeb_{values.source or 'none'}"] += 1
+
+
+def step_supply(df: pd.DataFrame, counts: dict) -> None:
+    """Supply Method from FOTL t-shirt / iron-on+sticker / everything-else lock. Overwrites."""
+    from shared.supply_method import COL, classify_cl_row
+
+    if COL not in df.columns:
+        df[COL] = ""
+    for idx in df.index:
+        row = {c: clean(df.at[idx, c]) if c in df.columns else "" for c in df.columns}
+        value = classify_cl_row(row)
+        prev = clean(df.at[idx, COL]) if COL in df.columns else ""
+        df.at[idx, COL] = value
+        counts["supply_rows"] += 1
+        counts[f"supply_{value}"] += 1
+        if prev != value:
+            counts["supply_changed"] += 1
+
+
+def step_printing_type(df: pd.DataFrame, counts: dict) -> None:
+    """Printing Type: mock DTF/Sublimation, else mugs Sublimation, else DTF. Overwrites."""
+    from shared.printing_type import COL, classify_cl_row, load_mock_printing_types
+
+    if COL not in df.columns:
+        df[COL] = ""
+    mock_types = load_mock_printing_types()
+    for idx in df.index:
+        row = {c: clean(df.at[idx, c]) if c in df.columns else "" for c in df.columns}
+        value = classify_cl_row(row, mock_types=mock_types)
+        prev = clean(df.at[idx, COL]) if COL in df.columns else ""
+        df.at[idx, COL] = value
+        counts["printing_type_rows"] += 1
+        counts[f"printing_type_{value}"] += 1
+        if prev != value:
+            counts["printing_type_changed"] += 1
+
+
+def step_supplier_name(df: pd.DataFrame, counts: dict) -> None:
+    """Supplier Name: Absolute babysuits, else Uneek, else BTC. In-house blank. Overwrites."""
+    from shared.areeb_taxonomy import load_catalogs
+    from shared.supplier_name import COL, classify_cl_row
+
+    if COL not in df.columns:
+        df[COL] = ""
+    cat = load_catalogs()
+    for idx in df.index:
+        row = {c: clean(df.at[idx, c]) if c in df.columns else "" for c in df.columns}
+        value = classify_cl_row(row, cat)
+        prev = clean(df.at[idx, COL]) if COL in df.columns else ""
+        df.at[idx, COL] = value
+        counts["supplier_name_rows"] += 1
+        counts[f"supplier_name_{value or 'blank'}"] += 1
+        if prev != value:
+            counts["supplier_name_changed"] += 1
 
 
 def step_supplier_sku(df: pd.DataFrame, counts: dict) -> None:
@@ -937,7 +1035,7 @@ def step_print_sizes(
     """
     Fill blank print sizes.
     Shirts (t-shirt / polo / M-T W-T K-T): Shirts Print Sizes A4 by size band
-    (DB Size, else Product Export Size), unless Size References has an exact
+    (DB Size, else BTC Product Data Size), unless Size References has an exact
     mock+UID row. Everything else: Size References size-code pipeline.
     Positions from Print Positions (CSV). Number of Designs drives slot count.
     """
@@ -1108,7 +1206,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=DEFAULT_DB,
         help=f"Working DB (default: {DEFAULT_DB.name})",
     )
-    p.add_argument("--pe", type=Path, default=DEFAULT_PE, help="ProductExport CSV/XLSX")
+    p.add_argument("--pe", type=Path, default=DEFAULT_PE, help="BTC Product Data CSV/XLSX")
     p.add_argument(
         "--config",
         type=Path,
@@ -1124,7 +1222,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument(
         "--steps",
         default=",".join(ALL_STEPS),
-        help="Comma list: sku,pe,suppliers,image,print,customise (default: all)",
+        help="Comma list: sku,pe,suppliers,image,print,customise,areeb,supply,printing_type (default: all)",
     )
     p.add_argument(
         "--only-missing-wh",
@@ -1188,19 +1286,19 @@ def main(argv: list[str] | None = None) -> int:
         print(f"DB not found: {db_path}", file=sys.stderr)
         return 1
     for label, path in (
-        ("ProductExport", args.pe),
+        ("BTC Product Data", args.pe),
         ("Size References", args.config),
         ("Shirts Print Sizes", args.print_sizes),
     ):
-        if "pe" in steps and label == "ProductExport" and not path.exists():
+        if "pe" in steps and label == "BTC Product Data" and not path.exists():
             print(f"Missing {label}: {path}", file=sys.stderr)
             return 1
-        if "print" in steps and label != "ProductExport" and not path.exists():
+        if "print" in steps and label != "BTC Product Data" and not path.exists():
             print(f"Missing {label}: {path}", file=sys.stderr)
             return 1
         if (
             "print" in steps
-            and label == "ProductExport"
+            and label == "BTC Product Data"
             and args.shirts_only
             and not path.exists()
         ):
@@ -1235,10 +1333,10 @@ def main(argv: list[str] | None = None) -> int:
 
     pe_index = None
     if "pe" in steps:
-        print(f"Loading ProductExport: {args.pe}", flush=True)
+        print(f"Loading BTC Product Data: {args.pe}", flush=True)
         pe_index = load_pe_index(args.pe)
         print(f"  PE UIDs={len(pe_index):,}", flush=True)
-        print("Step: ProductExport enrich...", flush=True)
+        print("Step: BTC Product Data enrich...", flush=True)
         if args.overwrite_pe_taxonomy:
             print(
                 "  overwrite Category / Sub-Category / Department / Sub-Department from PE",
@@ -1267,7 +1365,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"  loading Shirts Print Sizes: {args.print_sizes}", flush=True)
         ps_table = load_print_sizes(args.print_sizes)
         pe_sizes: dict = {}
-        if args.pe.exists():
+        if pe_index is not None:
+            pe_sizes = pe_sizes_from_index(pe_index)
+            print(f"  PE size UIDs={len(pe_sizes):,} (from loaded PE)", flush=True)
+        elif args.pe.exists():
             print(f"  loading PE sizes: {args.pe}", flush=True)
             pe_sizes = load_pe_sizes(args.pe)
             print(f"  PE size UIDs={len(pe_sizes):,}", flush=True)
@@ -1293,8 +1394,24 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     if "customise" in steps:
-        print("Step: Customise from Custom Label (-P{digit}- => Yes)...", flush=True)
+        print("Step: Customise from Custom Label (-P{digit}- or Yes token => Yes)...", flush=True)
         step_customise(work, counts)
+
+    if "areeb" in steps:
+        print("Step: Areeb 30-chain from Gender Apparel warehouse standard...", flush=True)
+        step_areeb(work, counts)
+
+    if "supply" in steps:
+        print("Step: Supply Method (FOTL t-shirts / iron-on+sticker / on-demand)...", flush=True)
+        step_supply(work, counts)
+
+    if "printing_type" in steps:
+        print("Step: Printing Type (DTF / mug Sublimation)...", flush=True)
+        step_printing_type(work, counts)
+
+    if "supplier_name" in steps:
+        print("Step: Supplier Name (Absolute babysuits / Uneek / BTC)...", flush=True)
+        step_supplier_name(work, counts)
 
     if args.iloc_from is not None:
         for c in work.columns:

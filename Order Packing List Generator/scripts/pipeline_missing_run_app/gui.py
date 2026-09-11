@@ -27,7 +27,7 @@ from .core import (
 class MissingRunApp:
     def __init__(self, root: Tk) -> None:
         self.root = root
-        self.root.title("Missing Run App")
+        self.root.title("Order Packing List Generator — Missing Run")
         self.date_var = StringVar(value=date.today().strftime("%d-%m-%Y"))
         self.shift_var = StringVar()
         self.process_name_var = StringVar()
@@ -128,38 +128,38 @@ class MissingRunApp:
             if browse_for_dir:
                 ttk.Button(frm, text="Browse…", command=lambda v=var: self._browse_directory(v)).grid(row=row, column=2, padx=(8, 0), pady=3)
 
-        ttk.Label(frm, text="Missing type:").grid(row=2, column=0, sticky="w", padx=(0, 10), pady=3)
+        ttk.Checkbutton(
+            frm,
+            text="Testing",
+            variable=self.use_demo_images_var,
+        ).grid(row=2, column=0, columnspan=3, sticky="w", pady=(0, 6))
+
+        ttk.Label(frm, text="Missing type:").grid(row=3, column=0, sticky="w", padx=(0, 10), pady=3)
         type_frame = ttk.Frame(frm)
-        type_frame.grid(row=2, column=1, columnspan=2, sticky="w", pady=3)
+        type_frame.grid(row=3, column=1, columnspan=2, sticky="w", pady=3)
         ttk.Radiobutton(
             type_frame, text="Missing Logo", variable=self.missing_type_var, value="Missing Logo"
         ).pack(side="left", padx=(0, 16))
         ttk.Radiobutton(
             type_frame, text="Missing Apparel", variable=self.missing_type_var, value="Missing Apparel"
         ).pack(side="left")
-        ttk.Label(frm, text="Date (DD-MM-YYYY):").grid(row=3, column=0, sticky="w", padx=(0, 10), pady=3)
-        ttk.Entry(frm, textvariable=self.date_var, width=25).grid(row=3, column=1, sticky="w", pady=3)
-        ttk.Label(frm, text="Shift:").grid(row=4, column=0, sticky="w", padx=(0, 10), pady=3)
+        ttk.Label(frm, text="Date (DD-MM-YYYY):").grid(row=4, column=0, sticky="w", padx=(0, 10), pady=3)
+        ttk.Entry(frm, textvariable=self.date_var, width=25).grid(row=4, column=1, sticky="w", pady=3)
+        ttk.Label(frm, text="Shift:").grid(row=5, column=0, sticky="w", padx=(0, 10), pady=3)
         self.shift_cb = ttk.Combobox(frm, textvariable=self.shift_var, values=["1st", "2nd", "3rd", "4th", "5th"], state="readonly", width=10)
-        self.shift_cb.grid(row=4, column=1, sticky="w", pady=3)
-        ttk.Label(frm, text="Process name:").grid(row=5, column=0, sticky="w", padx=(0, 10), pady=3)
-        ttk.Entry(frm, textvariable=self.process_name_var, width=60).grid(row=5, column=1, sticky="we", pady=3, columnspan=2)
-        ttk.Label(frm, text="Missing Input CSV:").grid(row=6, column=0, sticky="w", padx=(0, 10), pady=3)
-        ttk.Entry(frm, textvariable=self.missing_input_var, width=60).grid(row=6, column=1, sticky="we", pady=3)
-        ttk.Button(frm, text="Browse…", command=self._browse_missing_input).grid(row=6, column=2, padx=(8, 0), pady=3)
-        ttk.Label(frm, text="All Orders CSV:").grid(row=7, column=0, sticky="w", padx=(0, 10), pady=3)
-        ttk.Entry(frm, textvariable=self.all_orders_var, width=60).grid(row=7, column=1, sticky="we", pady=3)
-        ttk.Button(frm, text="Browse…", command=self._browse_all_orders).grid(row=7, column=2, padx=(8, 0), pady=3)
-        ttk.Label(frm, text="Use demo images:").grid(row=8, column=0, sticky="w", padx=(0, 10), pady=3)
-        ttk.Checkbutton(
-            frm,
-            text="Offline testing — placeholders from Demo Images Database/",
-            variable=self.use_demo_images_var,
-        ).grid(row=8, column=1, columnspan=2, sticky="w", pady=3)
+        self.shift_cb.grid(row=5, column=1, sticky="w", pady=3)
+        ttk.Label(frm, text="Process name:").grid(row=6, column=0, sticky="w", padx=(0, 10), pady=3)
+        ttk.Entry(frm, textvariable=self.process_name_var, width=60).grid(row=6, column=1, sticky="we", pady=3, columnspan=2)
+        ttk.Label(frm, text="Missing Input CSV:").grid(row=7, column=0, sticky="w", padx=(0, 10), pady=3)
+        ttk.Entry(frm, textvariable=self.missing_input_var, width=60).grid(row=7, column=1, sticky="we", pady=3)
+        ttk.Button(frm, text="Browse…", command=self._browse_missing_input).grid(row=7, column=2, padx=(8, 0), pady=3)
+        ttk.Label(frm, text="All Orders CSV:").grid(row=8, column=0, sticky="w", padx=(0, 10), pady=3)
+        ttk.Entry(frm, textvariable=self.all_orders_var, width=60).grid(row=8, column=1, sticky="we", pady=3)
+        ttk.Button(frm, text="Browse…", command=self._browse_all_orders).grid(row=8, column=2, padx=(8, 0), pady=3)
         add_row(9, "Apparel Image folder:", self.apparel_dir_var, browse_for_dir=True)
-        add_row(10, "Normal Logo/Design folder:", self.logo_normal_dir_var, browse_for_dir=True)
-        add_row(11, "Customise Single Position Logo/Design folder:", self.logo_custom_single_dir_var, browse_for_dir=True)
-        add_row(12, "Customise Double Position Logo/Design folder:", self.logo_custom_double_dir_var, browse_for_dir=True)
+        add_row(10, "Normal Design folder:", self.logo_normal_dir_var, browse_for_dir=True)
+        add_row(11, "Customise Single Position Design folder:", self.logo_custom_single_dir_var, browse_for_dir=True)
+        add_row(12, "Customise Double Position Design folder:", self.logo_custom_double_dir_var, browse_for_dir=True)
         add_row(13, "PDF copy directory (optional):", self.pdf_copy_dir_var, browse_for_dir=True)
         ttk.Label(
             frm,
@@ -246,7 +246,7 @@ class MissingRunApp:
             messagebox.showerror("Error", "Please select a shift.")
             return
         if not self.use_demo_images_var.get() and not (self.apparel_dir_var.get() or "").strip() and not (self.logo_normal_dir_var.get() or "").strip() and not (self.logo_custom_single_dir_var.get() or "").strip() and not (self.logo_custom_double_dir_var.get() or "").strip():
-            messagebox.showwarning("No image directories", "Apparel/Logo folders are empty. PDFs will show placeholders.")
+            messagebox.showwarning("No image directories", "Apparel/Design folders are empty. PDFs will show placeholders.")
 
         shift = self.shift_var.get().strip()
         missing_type = self.missing_type_var.get().strip() or DEFAULT_MISSING_TYPE

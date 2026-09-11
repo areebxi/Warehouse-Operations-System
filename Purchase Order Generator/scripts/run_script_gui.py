@@ -101,7 +101,7 @@ def load_tag_mapping():
 class ShipStationGUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("Purchase Order App")
+        self.root.title("Purchase Order Generator")
         self.root.geometry("800x640")
         self.root.resizable(True, True)
 

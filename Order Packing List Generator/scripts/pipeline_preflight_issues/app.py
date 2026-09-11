@@ -59,7 +59,7 @@ from .service import PreflightResult, run_preflight_audit
 class PreflightIssuesApp:
     def __init__(self, root: Tk) -> None:
         self.root = root
-        self.root.title("Preflight Issues App")
+        self.root.title("Order Packing List Generator — Preflight Issues")
 
         self.input_paths: list[Path] = []
         self.workbook_var = StringVar(value=str(DEFAULT_WORKBOOK))
@@ -431,9 +431,15 @@ class PreflightIssuesApp:
             style="Muted.TLabel",
         ).grid(row=1, column=0, columnspan=3, sticky="w", pady=(0, 10))
 
-        ttk.Label(frm, text="Input source:").grid(row=2, column=0, sticky="w", padx=(0, 10), pady=3)
+        ttk.Checkbutton(
+            frm,
+            text="Testing",
+            variable=self.use_demo_images_var,
+        ).grid(row=2, column=0, columnspan=3, sticky="w", pady=(0, 6))
+
+        ttk.Label(frm, text="Input source:").grid(row=3, column=0, sticky="w", padx=(0, 10), pady=3)
         mode_frame = ttk.Frame(frm)
-        mode_frame.grid(row=2, column=1, columnspan=2, sticky="w", pady=3)
+        mode_frame.grid(row=3, column=1, columnspan=2, sticky="w", pady=3)
         ttk.Radiobutton(
             mode_frame,
             text="CSV file(s)",
@@ -448,9 +454,9 @@ class PreflightIssuesApp:
         ).pack(side="left")
 
         self.tag_label = ttk.Label(frm, text="ShipStation tag(s):")
-        self.tag_label.grid(row=3, column=0, sticky="nw", padx=(0, 10), pady=3)
+        self.tag_label.grid(row=4, column=0, sticky="nw", padx=(0, 10), pady=3)
         tag_outer = ttk.Frame(frm)
-        tag_outer.grid(row=3, column=1, columnspan=2, sticky="we", pady=3)
+        tag_outer.grid(row=4, column=1, columnspan=2, sticky="we", pady=3)
 
         pick_frame = ttk.Frame(tag_outer)
         pick_frame.pack(fill="x")
@@ -476,12 +482,12 @@ class PreflightIssuesApp:
         self.remove_all_tags_btn.pack(side="left")
 
         ttk.Label(frm, text="Date (DD-MM-YYYY):").grid(
-            row=4, column=0, sticky="w", padx=(0, 10), pady=3
+            row=5, column=0, sticky="w", padx=(0, 10), pady=3
         )
         self.date_entry = ttk.Entry(frm, textvariable=self.date_var, width=20)
-        self.date_entry.grid(row=4, column=1, sticky="w", pady=3)
+        self.date_entry.grid(row=5, column=1, sticky="w", pady=3)
 
-        ttk.Label(frm, text="Shift:").grid(row=5, column=0, sticky="w", padx=(0, 10), pady=3)
+        ttk.Label(frm, text="Shift:").grid(row=6, column=0, sticky="w", padx=(0, 10), pady=3)
         self.shift_cb = ttk.Combobox(
             frm,
             textvariable=self.shift_var,
@@ -489,17 +495,17 @@ class PreflightIssuesApp:
             state="readonly",
             width=10,
         )
-        self.shift_cb.grid(row=5, column=1, sticky="w", pady=3)
+        self.shift_cb.grid(row=6, column=1, sticky="w", pady=3)
 
         self.process_label = ttk.Label(frm, text="Process number:")
-        self.process_label.grid(row=6, column=0, sticky="w", padx=(0, 10), pady=3)
+        self.process_label.grid(row=7, column=0, sticky="w", padx=(0, 10), pady=3)
         self.process_entry = ttk.Entry(frm, textvariable=self.process_number_var, width=20)
-        self.process_entry.grid(row=6, column=1, sticky="w", pady=3)
+        self.process_entry.grid(row=7, column=1, sticky="w", pady=3)
 
         self.input_files_label = ttk.Label(frm, text="Input CSV(s):")
-        self.input_files_label.grid(row=7, column=0, sticky="w", padx=(0, 10), pady=3)
+        self.input_files_label.grid(row=8, column=0, sticky="w", padx=(0, 10), pady=3)
         list_frame = ttk.Frame(frm)
-        list_frame.grid(row=7, column=1, sticky="nsew", pady=3)
+        list_frame.grid(row=8, column=1, sticky="nsew", pady=3)
         self.listbox = style_listbox(
             Listbox(list_frame, height=6, width=70, selectmode=MULTIPLE, exportselection=False)
         )
@@ -508,7 +514,7 @@ class PreflightIssuesApp:
         scroll.pack(side="right", fill="y")
         self.listbox.config(yscrollcommand=scroll.set)
         btn_frame = ttk.Frame(frm)
-        btn_frame.grid(row=8, column=1, sticky="w", pady=(0, 6))
+        btn_frame.grid(row=9, column=1, sticky="w", pady=(0, 6))
         self.add_files_btn = ttk.Button(btn_frame, text="Add files…", command=self._add_files)
         self.add_files_btn.pack(side="left", padx=(0, 6))
         self.remove_selected_btn = ttk.Button(
@@ -518,42 +524,36 @@ class PreflightIssuesApp:
         self.remove_all_btn = ttk.Button(btn_frame, text="Remove all", command=self._remove_all)
         self.remove_all_btn.pack(side="left")
 
-        self._add_dir_row(frm, 9, "Workbook:", self.workbook_var, self._browse_workbook)
+        self._add_dir_row(frm, 10, "Workbook:", self.workbook_var, self._browse_workbook)
         self._add_dir_row(
             frm,
-            10,
+            11,
             "Custom Label Database (CSV):",
             self.cl_csv_var,
             self._browse_cl_csv,
         )
-        self._add_dir_row(frm, 11, "Output directory:", self.output_dir_var, self._browse_output_dir)
-        ttk.Label(frm, text="Use demo images:").grid(row=12, column=0, sticky="w", padx=(0, 10), pady=3)
-        ttk.Checkbutton(
-            frm,
-            text="Offline testing — placeholders from Demo Images Database/",
-            variable=self.use_demo_images_var,
-        ).grid(row=12, column=1, columnspan=2, sticky="w", pady=3)
+        self._add_dir_row(frm, 12, "Output directory:", self.output_dir_var, self._browse_output_dir)
         self._add_dir_row(
             frm, 13, "Apparel Image folder:", self.apparel_dir_var, self._browse_apparel_dir
         )
         self._add_dir_row(
             frm,
             14,
-            "Normal Logo/Design folder:",
+            "Normal Design folder:",
             self.logo_normal_dir_var,
             self._browse_logo_normal_dir,
         )
         self._add_dir_row(
             frm,
             15,
-            "Customise Single Position Logo/Design folder:",
+            "Customise Single Position Design folder:",
             self.logo_custom_single_dir_var,
             self._browse_logo_custom_single_dir,
         )
         self._add_dir_row(
             frm,
             16,
-            "Customise Double Position Logo/Design folder:",
+            "Customise Double Position Design folder:",
             self.logo_custom_double_dir_var,
             self._browse_logo_custom_double_dir,
         )
@@ -640,26 +640,26 @@ class PreflightIssuesApp:
             self.apparel_dir_var.set(path)
 
     def _browse_logo_normal_dir(self) -> None:
-        path = filedialog.askdirectory(title="Select Normal Logo/Design folder")
+        path = filedialog.askdirectory(title="Select Normal Design folder")
         if path:
             self.logo_normal_dir_var.set(path)
 
     def _browse_logo_custom_single_dir(self) -> None:
-        path = filedialog.askdirectory(title="Select Customise Single Position Logo/Design folder")
+        path = filedialog.askdirectory(title="Select Customise Single Position Design folder")
         if path:
             self.logo_custom_single_dir_var.set(path)
 
     def _browse_logo_custom_double_dir(self) -> None:
-        path = filedialog.askdirectory(title="Select Customise Double Position Logo/Design folder")
+        path = filedialog.askdirectory(title="Select Customise Double Position Design folder")
         if path:
             self.logo_custom_double_dir_var.set(path)
 
     def _validate_image_folders(self) -> bool:
         folders = (
             ("Apparel Image folder", self.apparel_dir_var.get()),
-            ("Normal Logo/Design folder", self.logo_normal_dir_var.get()),
-            ("Customise Single Position Logo/Design folder", self.logo_custom_single_dir_var.get()),
-            ("Customise Double Position Logo/Design folder", self.logo_custom_double_dir_var.get()),
+            ("Normal Design folder", self.logo_normal_dir_var.get()),
+            ("Customise Single Position Design folder", self.logo_custom_single_dir_var.get()),
+            ("Customise Double Position Design folder", self.logo_custom_double_dir_var.get()),
         )
         for label, raw in folders:
             path_str = (raw or "").strip()

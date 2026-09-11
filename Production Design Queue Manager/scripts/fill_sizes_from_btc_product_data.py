@@ -1,7 +1,7 @@
 """
-Fill empty Size cells on Size References from ProductExport.
+Fill empty Size cells on Size References from BTC Product Data (archive xlsx).
 
-Matches the last numeric (...) group in SKU Value to ProductExport UID.
+Matches the last numeric (...) group in SKU Value to BTC Product Data UID.
 Re-run anytime after adding Size References rows; existing Size values are left alone.
 Close Configuration Workbook.xlsx in Excel before running.
 """
@@ -20,13 +20,13 @@ if str(_WAREHOUSE) not in sys.path:
 from shared import paths as wh  # noqa: E402
 
 WORKBOOK_PATH = wh.queue_config_workbook_path()
-PRODUCT_EXPORT_PATH = wh.data_archive_dir() / "Queue_ProductExport.xlsx"
-if not PRODUCT_EXPORT_PATH.exists():
-    # Prefer shared CSV PE via openpyxl only for xlsx; archive holds Queue xlsx
-    PRODUCT_EXPORT_PATH = wh.data_archive_dir() / "PO_ProductExport.xlsx"
+# Archive xlsx (openpyxl); live catalog is CSV via btc_product_data_path()
+BTC_PRODUCT_DATA_PATH = wh.data_archive_dir() / "Queue_ProductExport.xlsx"
+if not BTC_PRODUCT_DATA_PATH.exists():
+    BTC_PRODUCT_DATA_PATH = wh.data_archive_dir() / "PO_ProductExport.xlsx"
 
 SIZE_REFERENCES_SHEET = "Size References"
-PRODUCT_EXPORT_SHEET = "staff"
+BTC_PRODUCT_DATA_SHEET = "staff"
 
 SKU_COL = 2  # B
 SIZE_COL = 7  # G
@@ -50,7 +50,7 @@ def extract_uid(sku) -> str | None:
 def load_uid_to_size(path: Path) -> dict[str, str]:
     wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
     try:
-        ws = wb[PRODUCT_EXPORT_SHEET]
+        ws = wb[BTC_PRODUCT_DATA_SHEET]
         uid_to_size: dict[str, str] = {}
         # Rows 1-2 are headers / placeholders
         for row in ws.iter_rows(min_row=3, values_only=True):
@@ -111,12 +111,12 @@ def main() -> int:
     if not WORKBOOK_PATH.exists():
         print(f"Missing: {WORKBOOK_PATH}", file=sys.stderr)
         return 1
-    if not PRODUCT_EXPORT_PATH.exists():
-        print(f"Missing: {PRODUCT_EXPORT_PATH}", file=sys.stderr)
+    if not BTC_PRODUCT_DATA_PATH.exists():
+        print(f"Missing: {BTC_PRODUCT_DATA_PATH}", file=sys.stderr)
         return 1
 
-    print(f"Loading sizes from {PRODUCT_EXPORT_PATH.name}...")
-    uid_to_size = load_uid_to_size(PRODUCT_EXPORT_PATH)
+    print(f"Loading sizes from {BTC_PRODUCT_DATA_PATH.name}...")
+    uid_to_size = load_uid_to_size(BTC_PRODUCT_DATA_PATH)
     print(f"  {len(uid_to_size)} UID -> Size entries")
 
     print(f"Updating {WORKBOOK_PATH.name} / {SIZE_REFERENCES_SHEET}...")

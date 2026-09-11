@@ -1,4 +1,4 @@
-"""Single-design processing flow."""
+"""Process single-design flow."""
 
 from typing import Optional, Dict, Any, Set, Union, List
 
@@ -9,7 +9,7 @@ from src.core.design_processing_helpers import (
     load_and_resize_design,
     apply_print_size_override_to_entries,
 )
-from src.core.multi_position_logic import get_position_size_entries, build_positioned_stems
+from src.core.multi_position_logic import build_positioned_stems
 from src.core.cl_print_sizes import get_cl_position_size_entries
 from src.core.size_code_extractor import PrintSizeOverrides
 from src.io.file_handlers import find_design_file
@@ -21,7 +21,6 @@ from src.system.logging.utils import get_run_logger
 def process_single_designs(
     sku: Union[str, pd.Series],
     designs_folder: str,
-    size_reference_df: Optional[pd.DataFrame],
     mm_to_pixel_factor: float,
     pocket_design_ids_set: Optional[Union[Set[str], PrintSizeOverrides]] = None,
     canvas_width_mm: Optional[float] = None,
@@ -29,28 +28,23 @@ def process_single_designs(
     design_padding: int = 25,
     force_single: bool = False,
     print_size_overrides: Optional[Union[Set[str], PrintSizeOverrides]] = None,
+    cl_csv_path: Optional[object] = None,
 ) -> List[Dict[str, Any]]:
     logger = get_run_logger()
     overrides = print_size_overrides if print_size_overrides is not None else pocket_design_ids_set
-    size_code, base_code_for_lookup, lookup_size_code = resolve_size_lookup_context(
-        sku, size_reference_df, overrides
-    )
-    # Prefer live CL CSV print sizes (option B); Size References sheet is archive for sizing.
+    size_code, _, _ = resolve_size_lookup_context(sku, None, overrides)
     cl_entries = get_cl_position_size_entries(
-        sku, mm_to_pixel_factor, force_single=force_single
+        sku,
+        mm_to_pixel_factor,
+        force_single=force_single,
+        cl_csv_path=cl_csv_path,
     )
     if cl_entries is not None:
         entries = cl_entries
         if size_code is None:
             size_code = str(sku).strip()
     else:
-        entries = get_position_size_entries(
-            size_reference_df,
-            lookup_size_code,
-            mm_to_pixel_factor,
-            base_code=base_code_for_lookup,
-            force_single=force_single,
-        )
+        entries = [{"position": None, "size_info": None}]
     entries = apply_print_size_override_to_entries(
         sku, entries, overrides, mm_to_pixel_factor
     )

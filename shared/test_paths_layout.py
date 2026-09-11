@@ -13,11 +13,17 @@ def main() -> None:
     assert wh.packing_workbook_path() == db / "order-packing-list-generator" / "Workbook.xlsx"
     assert wh.queue_config_workbook_path() == db / "production-design-queue-manager" / "Configuration Workbook.xlsx"
     assert wh.po_data_dir() == db / "purchase-order-generator"
+    assert wh.plain_database_path() == db / "shared" / "plain" / "Plain Database.xlsx"
+    assert wh.packs_database_path() == db / "shared" / "packs" / "Packs Database.xlsx"
+    assert wh.po_database_path() == wh.plain_database_path()
+    assert wh.po_packs_database_path() == wh.packs_database_path()
     assert wh.po_gui_settings_path().is_relative_to(wh.po_app_dir() / "config")
     assert wh.cl_csv_path() == db / "shared" / "custom_label" / "Custom_Label_Database.csv"
     assert wh.custom_label_support_dir() == db / "custom-label-database" / "support"
     assert wh.images_apparel_dir() == db / "custom-label-database" / "Apparel Images"
-    assert wh.product_export_path() == db / "shared" / "product_export" / "ProductExport.csv"
+    assert wh.btc_product_data_path() == db / "shared" / "btc_product_data" / "BTC_Product_Data.csv"
+    assert wh.uneek_product_data_path() == db / "shared" / "uneek_product_data" / "Uneek_Product_Data.xlsx"
+    assert wh.absolute_product_data_path() == db / "shared" / "absolute_product_data" / "Absolute_Product_Data.xlsx"
     assert wh.shipstation_tags_path() == db / "shared" / "shipstation" / "ShipStation_Tags.xlsx"
     assert wh.shipstation_env_path().is_relative_to(root / "config" / "ShipStation")
     assert wh.shared_inbox_dtf_des_root().is_relative_to(root / "runtime" / "SharedInbox")

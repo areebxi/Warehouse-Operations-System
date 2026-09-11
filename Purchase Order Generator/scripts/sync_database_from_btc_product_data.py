@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Append missing SKUs to Database.xlsx from ProductExport.csv.
+Append missing SKUs to Database.xlsx from BTC Product Data.
 
-Database.xlsx.SKU == ProductExport.UID (BTC stock id).
+Database.xlsx.SKU == BTC Product Data UID (BTC stock id).
 Existing rows are never modified. New rows get Package left blank.
 """
 
@@ -17,10 +17,15 @@ import pandas as pd
 
 import app_paths  # noqa: F401
 
-from app_paths import DATA_DIR, PRODUCT_DATABASE_FILENAME, data_path, product_database_path
+from app_paths import (
+    PRODUCT_DATABASE_FILENAME,
+    data_path,
+    product_database_archive_dir,
+    product_database_path,
+)
 
 DEFAULT_DATABASE = product_database_path()
-DEFAULT_PRODUCT_EXPORT = data_path("ProductExport.csv")
+DEFAULT_BTC_PRODUCT_DATA = data_path("BTC_Product_Data.csv")
 
 CORE_COLUMNS = [
     "SKU",
@@ -56,7 +61,7 @@ def filename_from_url(value: object) -> str:
     return Path(s.replace("\\", "/")).name
 
 
-def load_product_export(path: Path) -> pd.DataFrame:
+def load_btc_product_data(path: Path) -> pd.DataFrame:
     last_err: Exception | None = None
     df = None
     for encoding in ("utf-8-sig", "utf-8", "cp1252", "latin-1"):
@@ -73,7 +78,7 @@ def load_product_export(path: Path) -> pd.DataFrame:
             last_err = exc
             continue
     if df is None:
-        raise last_err or RuntimeError(f"Could not decode ProductExport: {path}")
+        raise last_err or RuntimeError(f"Could not decode BTC Product Data: {path}")
     df["UID"] = df["UID"].astype(str).str.strip()
     df = df[~df["UID"].str.startswith("[", na=False)]
     df = df[df["UID"].astype(str) != ""]
@@ -130,7 +135,7 @@ def build_missing_rows(db_df: pd.DataFrame, pe_df: pd.DataFrame) -> pd.DataFrame
 
 
 def backup_database(path: Path) -> Path:
-    archive_dir = DATA_DIR / "archive"
+    archive_dir = product_database_archive_dir()
     archive_dir.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     backup_path = archive_dir / f"{PRODUCT_DATABASE_FILENAME}.bak_{stamp}"
@@ -140,7 +145,7 @@ def backup_database(path: Path) -> Path:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Append missing SKUs to Database.xlsx from ProductExport.csv (SKU = UID)."
+        description="Append missing SKUs to Database.xlsx from BTC Product Data (SKU = UID)."
     )
     parser.add_argument(
         "--database",
@@ -149,10 +154,10 @@ def main() -> int:
         help="Path to Database.xlsx",
     )
     parser.add_argument(
-        "--product-export",
+        "--btc-product-data",
         type=Path,
-        default=DEFAULT_PRODUCT_EXPORT,
-        help="Path to ProductExport.csv",
+        default=DEFAULT_BTC_PRODUCT_DATA,
+        help="Path to BTC_Product_Data.csv",
     )
     parser.add_argument(
         "--output",
@@ -173,7 +178,7 @@ def main() -> int:
     args = parser.parse_args()
 
     db_path: Path = args.database
-    pe_path: Path = args.product_export
+    pe_path: Path = args.btc_product_data
 
     if not db_path.is_file():
         print(f"Error: file not found: {db_path}")
@@ -183,7 +188,7 @@ def main() -> int:
         return 1
 
     db_df = load_database(db_path)
-    pe_df = load_product_export(pe_path)
+    pe_df = load_btc_product_data(pe_path)
     new_df = build_missing_rows(db_df, pe_df)
 
     existing_count = len(db_df)

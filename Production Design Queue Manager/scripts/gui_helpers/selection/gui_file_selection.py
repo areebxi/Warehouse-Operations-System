@@ -5,122 +5,149 @@ GUI file selection helper functions.
 import os
 from tkinter import filedialog, messagebox
 
-import pandas as pd
 from src.system.logging.run_logger import log_run_event
 
 from gui_helpers.common import gui_theme
 from gui_helpers.common.gui_common import (
-    select_file_common,
     select_folder_common,
     update_label_with_path,
 )
 
 
-def select_input_file(gui):
-    """Select a DTF Des file (Excel Worksheet containing order information)"""
+def _sync_legacy_input_file_path(gui):
+    """Keep input_file_path as the sole path when exactly one file is selected."""
+    paths = getattr(gui, "input_file_paths", None) or []
+    gui.input_file_path = paths[0] if len(paths) == 1 else None
+    gui.input_folder_path = None
+    gui.df = None
 
-    def load_input_file(file_path):
-        """Load the input file into gui.df"""
-        if file_path.endswith(".csv"):
-            gui.df = pd.read_csv(file_path)
+
+def refresh_input_listbox(gui):
+    """Refresh the input listbox and summary label from gui.input_file_paths."""
+    paths = getattr(gui, "input_file_paths", None) or []
+    if hasattr(gui, "input_listbox"):
+        gui.input_listbox.delete(0, "end")
+        for path in paths:
+            gui.input_listbox.insert("end", path)
+    if hasattr(gui, "file_label"):
+        if not paths:
+            gui.file_label.config(text="No files selected", foreground=gui_theme.MUTED)
+        elif len(paths) == 1:
+            update_label_with_path(gui, "file_label", paths[0])
         else:
-            gui.df = pd.read_excel(file_path)
-        log_run_event(
-            "file_loaded",
-            mode="single_file",
-            file_path=file_path,
-            rows_total=len(gui.df),
-            columns_total=len(gui.df.columns),
-        )
-        messagebox.showinfo("Success", f"File loaded successfully!\nRows: {len(gui.df)}")
+            gui.file_label.config(
+                text=f"{len(paths)} files selected",
+                foreground=gui_theme.FG,
+            )
 
-    select_file_common(
-        gui,
-        setting_key="input_file",
-        gui_attr="input_file_path",
-        label_attr="file_label",
-        title="Select Input File",
+
+def add_input_files(gui):
+    """Add one or more DTF Des files (multi-select dialog)."""
+    initialdir = None
+    paths = getattr(gui, "input_file_paths", None) or []
+    if paths:
+        initialdir = os.path.dirname(paths[-1])
+    elif gui.saved_settings.get("input_file"):
+        first = str(gui.saved_settings.get("input_file") or "").split(";")[0].strip()
+        if first:
+            initialdir = os.path.dirname(first)
+
+    selected = filedialog.askopenfilenames(
+        title="Select DTF Des File(s)",
+        initialdir=initialdir,
         filetypes=[("DTF Des files", "*.xlsx *.xls *.csv"), ("All files", "*.*")],
-        on_selected=load_input_file,
-        clear_attrs=[("input_folder_path", None)],
     )
+    if not selected:
+        return None
 
+    if not hasattr(gui, "input_file_paths") or gui.input_file_paths is None:
+        gui.input_file_paths = []
 
-def select_input_folder(gui):
-    """Select a folder containing DTF Des files"""
+    added = 0
+    for path in selected:
+        if path and path not in gui.input_file_paths:
+            gui.input_file_paths.append(path)
+            added += 1
 
-    def after_folder_selected(folder_path):
-        """Handle folder selection - find DTF Des files and show message"""
-        excel_files = []
-        for file in os.listdir(folder_path):
-            # Check if file has "DTF Des" in name and is a valid Excel/CSV file
-            if (
-                "dtf des" in file.lower()
-                and file.endswith((".xlsx", ".xls", ".csv"))
-                and not file.startswith("~$")
-            ):
-                excel_files.append(os.path.join(folder_path, file))
-
-        if excel_files:
-            log_run_event(
-                "folder_selected",
-                folder_path=folder_path,
-                dtf_files_count=len(excel_files),
-            )
-            messagebox.showinfo(
-                "Folder Selected",
-                f"Found {len(excel_files)} DTF Des file(s) in folder.\n\nClick 'Normal' or 'Personalised' to process all files.",
-            )
-        else:
-            log_run_event(
-                "folder_selected",
-                level="warning",
-                folder_path=folder_path,
-                dtf_files_count=0,
-            )
-            messagebox.showwarning("Warning", "No DTF Des file(s) found in selected folder!")
-
-    folder_path = select_folder_common(
-        gui,
-        setting_key="input_file",
-        gui_attr="input_folder_path",
-        label_attr="file_label",
-        title="Select Input Folder",
-        fallback_setting_key=None,
-        clear_attrs=[("input_file_path", None), ("df", None)],
+    _sync_legacy_input_file_path(gui)
+    refresh_input_listbox(gui)
+    gui.save_settings()
+    log_run_event(
+        "files_selected",
+        mode="multi_file",
+        files_count=len(gui.input_file_paths),
+        added=added,
     )
+    return list(selected)
 
-    if folder_path:
-        # Update label with "Folder: " prefix
-        update_label_with_path(gui, "file_label", folder_path, prefix="Folder: ")
-        after_folder_selected(folder_path)
+
+def remove_selected_input_files(gui):
+    """Remove highlighted files from the input list."""
+    if not hasattr(gui, "input_listbox"):
+        return
+    sel = set(gui.input_listbox.curselection())
+    if not sel:
+        return
+    gui.input_file_paths = [
+        p for i, p in enumerate(gui.input_file_paths or []) if i not in sel
+    ]
+    _sync_legacy_input_file_path(gui)
+    refresh_input_listbox(gui)
+    gui.save_settings()
+
+
+def remove_all_input_files(gui):
+    """Clear all selected input files."""
+    gui.input_file_paths = []
+    _sync_legacy_input_file_path(gui)
+    refresh_input_listbox(gui)
+    gui.save_settings()
+
+
+def select_input_file(gui):
+    """Compatibility alias — multi-select Add files…"""
+    return add_input_files(gui)
+
+
+def select_cl_csv(gui):
+    """Select Custom Label Database CSV for print sizes."""
+    initial = gui.cl_csv_var.get() if hasattr(gui, "cl_csv_var") else ""
+    file_path = filedialog.askopenfilename(
+        title="Select Custom Label Database (CSV)",
+        initialdir=os.path.dirname(initial) if initial else None,
+        initialfile=os.path.basename(initial) if initial else None,
+        filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
+    )
+    if not file_path:
+        return None
+    gui.cl_csv_var.set(file_path)
+    gui._reload_data_sources()
+    gui.save_settings()
+    messagebox.showinfo("Success", f"CL database set to:\n{file_path}")
+    return file_path
 
 
 def select_size_reference_file(gui):
-    """Select size reference file"""
+    """Legacy alias — select Configuration Workbook."""
+    select_config_workbook(gui)
 
-    from src.io.file_loaders import _prepare_size_reference_df
 
-    def load_size_reference(file_path):
-        """Load the size reference file"""
-        gui.size_reference_df = _prepare_size_reference_df(pd.read_excel(file_path))
-        gui.size_reference_path = file_path
-
-        messagebox.showinfo(
-            "Success", f"Size Reference loaded!\n{len(gui.size_reference_df)} entries found."
-        )
-
-    from gui_helpers.common.gui_common import select_file_common
-
-    select_file_common(
-        gui,
-        setting_key="size_reference_file",
-        gui_attr="size_reference_path",
-        label_attr=None,  # No label in GUI since auto-loaded
-        title="Select Size Reference File",
+def select_config_workbook(gui):
+    """Select Configuration Workbook."""
+    initial = gui.config_workbook_var.get() if hasattr(gui, "config_workbook_var") else ""
+    file_path = filedialog.askopenfilename(
+        title="Select Configuration Workbook",
+        initialdir=os.path.dirname(initial) if initial else None,
+        initialfile=os.path.basename(initial) if initial else None,
         filetypes=[("Excel files", "*.xlsx *.xls"), ("All files", "*.*")],
-        on_selected=load_size_reference,
     )
+    if not file_path:
+        return None
+    gui.config_workbook_var.set(file_path)
+    gui._reload_data_sources()
+    gui.save_settings()
+    messagebox.showinfo("Success", f"Configuration Workbook set to:\n{file_path}")
+    return file_path
 
 
 def select_designs_folder(gui):
@@ -189,4 +216,3 @@ def remove_dtf_queues_folder(gui):
         "Success",
         "DTF Queues folder has been removed. Files will no longer be sent to DTF Queues folder.",
     )
-

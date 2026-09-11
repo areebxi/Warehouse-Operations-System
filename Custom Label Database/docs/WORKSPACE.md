@@ -11,7 +11,9 @@ database/
 │   ├── custom_label/
 │   │   ├── Custom_Label_Database.csv   ← LIVE catalog
 │   │   └── backups/
-│   └── product_export/ProductExport.csv
+│   ├── btc_product_data/BTC_Product_Data.csv
+│   ├── uneek_product_data/Uneek_Product_Data.xlsx
+│   └── absolute_product_data/Absolute_Product_Data.xlsx
 └── custom-label-database/
     ├── support/                  ← Size References, Shirts Print Sizes, Mocks, Workbook
     └── Apparel Images/

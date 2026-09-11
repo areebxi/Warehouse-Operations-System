@@ -1,4 +1,4 @@
-﻿# Custom Label Database — Key findings
+# Custom Label Database — Key findings
 
 Facts and locked lessons. Snapshot numbers that can drift are dated. Policy that must not be forgotten is also in `.cursor/rules/`.
 
@@ -6,7 +6,7 @@ Facts and locked lessons. Snapshot numbers that can drift are dated. Policy that
 
 ## What this is
 
-A warehouse **custom-label catalog**: one row per printable SKU (garment, bag, paper/iron-on, mug, cap, etc.). The supervisor seeds a few columns; scripts fill the rest from Product Export, Shirts Print Sizes, and Size References.
+A warehouse **custom-label catalog**: one row per printable SKU (garment, bag, paper/iron-on, mug, cap, etc.). The supervisor seeds a few columns; scripts fill the rest from BTC Product Data, Shirts Print Sizes, and Size References.
 
 **Live file:** `Custom_Label_Database.csv`  
 **Archive Excel:** `Custom Label Database.xlsx` (not live)
@@ -20,6 +20,8 @@ As of **28 Aug 2026:** **124,762** data rows × **60** columns (+132 M55 SPC `61
 **Seed (user-filled, do not invent):**  
 `Custom Label`, `Gender Apparel`, `Colour`, `Size`, `Apparel Image`, `Print Positions`, `Customise`
 
+**Customise** (derived from Custom Label, not cloned from peers): `Yes` when the label has `-P{digit}-` **or** a `Yes` segment (supervisor 4 Sep 2026: `Yes` in our SKU = personalised; e.g. `W101-SkyBe-O/S-Yes`). Plain mock+UID stays blank.
+
 **Print slots (max 4):**  
 `Position N Name`, `Print Size N`, `Width N (mm)`, `Height N (mm)` — N = 1..4. Slot count follows **Number of Designs** when present, else positions listed in `Print Positions`. Position **names** come from the DB `Print Positions` text, not from Size References suffixes.
 
@@ -27,7 +29,7 @@ As of **28 Aug 2026:** **124,762** data rows × **60** columns (+132 M55 SPC `61
 `Supplier Name`, `Supplier SKU`, `Supplier Product Code`, `Supplier Stock`  
 plus dedicated **BTC / Ralawise / Absolute** SKU, Product Code, Supplier Stock.
 
-**From Product Export:**  
+**From BTC Product Data:**  
 `Category` and `Department` ← PE `Department` (title case).  
 `Sub-Category` and `Sub-Department` ← PE `Sub Department` (title case).  
 `Brand` ← PE `Brand` (as-is, blank-only).
@@ -48,11 +50,11 @@ First fill is blank-only. Some PE Department / Sub Department rows are wrong; wh
 | `Supplier SKU` → PE `UID` | Same UID when already filled. |
 | `Supplier Product Code` → PE `SPC` | Weak overlap historically; not the main join. |
 
-**UID extraction misses** labels with **no trailing digits:** iron-ons (`M260-P5-IronOn-A4`), C800T age tokens (`M281-P5-C800T-30-0>3`), bag codes (`BG-BG542-BLK-O/S-YES`), size-in-label SKUs (`K-H-DHR-YXS`, `W-T-ATTHR-M`), and `77123-BTC` (UID is the prefix; existing mocks of that garment are `M38-77123`). Do not invent a UID for those.
+**UID extraction misses** labels with **no trailing digits:** iron-ons (`M260-P5-IronOn-A4`), C800T age tokens (`M281-P5-C800T-30-0>3`, `M281-P5-C800T-30-18-24` — the `24` is an age, not a PE UID), bag codes (`BG-BG542-BLK-O/S-YES`), size-in-label SKUs (`K-H-DHR-YXS`, `W-T-ATTHR-M`), and `77123-BTC` (UID is the prefix; existing mocks of that garment are `M38-77123`). Do not invent a UID for those. `fill_from_seeds.uid_from_custom_label` skips any label containing `C800T`.
 
 PE sizes are often letters (`S`/`M`/`L`). DB sizes are often words (`Small`/`Medium`/`Large`) or age bands (`9-11 Years`). Map; do not blindly overwrite DB Size with PE Size.
 
-`BTC Product Export.csv` is **not always UTF-8** (e.g. byte `0xB2`). Loaders try `utf-8`, `utf-8-sig`, `cp1252`, `latin-1` and may `replace` bad bytes.
+`BTC_Product_Data.csv` is **not always UTF-8** (e.g. byte `0xB2`). Loaders try `utf-8`, `utf-8-sig`, `cp1252`, `latin-1` and may `replace` bad bytes.
 
 ---
 
@@ -198,6 +200,26 @@ Dedicated BTC / Ralawise / Absolute columns copy from **Supplier Name** (keyword
 
 On 24 Aug 2026: tens of thousands of rows named BTC Activewear still had **blank BTC SKU / BTC Product Code**. Script exists (`fill_from_seeds.py --steps suppliers`); **ask before** a whole-file fill. Ralawise / Absolute named rows were **0**.
 
+### Grouping fill study — 9 Sep 2026
+
+Canonical grouping cells: **`BTC Activewear`**, **`Uneek Clothing`**, **`Absolute Apparels`**. Uneek Product Data `Company` is 100% `Uneek Clothing`. Packs `BTC` was normalized to `BTC Activewear` on fill.
+
+**Absolute Product Data** added 9 Sep 2026 (`database/shared/absolute_product_data/Absolute_Product_Data.xlsx`, 27,015 rows / 629 styles). Warehouse **only buys babysuits** from Absolute: styles `C800T` / `C8020T` / `C8030T` (48 sheet rows). Do not treat the rest of that price list as warehouse suppliers. `BZ10-Body Suit` (7) is not Absolute.
+
+**Filled 2026-09-09** (`python scripts/fill_supplier_name.py`):
+
+| File | BTC Activewear | Uneek Clothing | Absolute Apparels | Blank | Cells written | Backup |
+|---|---:|---:|---:|---:|---:|---|
+| Custom Label | 123,948 | 6,992 | 499 | 453 (in-house) | 5,430 | `Custom_Label_Database.bak_20260909_185544.csv` |
+| Plain Database | 71,047 | 6,992 | 0 | 0 | 78,039 | `Plain Database.bak_20260909_185710.xlsx` |
+| Packs | 38,452 | 0 | 0 | 0 | 38,452 | `Packs Database.bak_20260909_185937.xlsx` |
+
+### BTC columns held shipping data — 10 Sep 2026
+
+`BTC SKU` / `BTC Product Code` / `BTC Supplier Stock` had copies of `Package Type` / `Weight` / `Service` (`Large Letter`, gram weights, `Royal Mail48`). Not a whole-file column shift: Ralawise/Absolute empty; other columns clean. Height mm matching Weight (pocket 80×100) is coincidence — left alone.
+
+**Fixed** (`python scripts/fix_cl_btc_leaked_shipping.py`): 38,697 rows. Leaked cells cleared; 24 orphan Package Type / Weight / Service restored; BTC fields on those rows refilled from Supplier SKU / Product Code / Stock when present. Real UIDs (776) kept. Backup `Custom_Label_Database.bak_20260910_190412.csv`. After: BTC SKU 35,600 / BTC Product Code 35,771 (SPCs like `61082`); remaining BTC blanks are historical, not this leak.
+
 ---
 
 ## Design-prefix SKUs → Custom Label (N220 helmets)
@@ -251,9 +273,11 @@ Script **defaults** may still point at old names (`ProductExport.xlsx`, `14-01-M
 | Apparel Image bulk rewrite | Blanks only; never overwrite names |
 | Generic `M96` Size References match | Never use mock prefix without this UID |
 | Hoodie/sweat/tank skipped as “not shirts” | All shirt kinds + mappable Size → Print Sizes first |
+| BTC SKU = Large Letter / Royal Mail48 | Dedicated BTC cols are UID/SPC/stock. If they look like Package Type / Weight / Service, they leaked — restore packaging cols if blank, then refill from Supplier SKU/PC/Stock |
 | Live CSV locked in editor | Write fallback, swap after close |
 | Category/Sub-Category withheld from PE | Reversed 24 Aug 2026: fill from PE Department / Sub Department |
 | NocoDB name-normalization | Reverted; supervisor maps uploads |
+| BTC SKU = Large Letter / Royal Mail48 | Dedicated BTC cols are UID/SPC/stock. If they look like Package Type / Weight / Service, they leaked — restore packaging cols if blank, then refill from Supplier SKU/PC/Stock |
 
 ---
 

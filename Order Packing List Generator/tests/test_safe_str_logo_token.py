@@ -26,7 +26,10 @@ class SafeStrLogoTokenTests(unittest.TestCase):
         self.assertTrue(is_plain_order_sku_impl("ABC-PLAINLG-01"))
         self.assertTrue(is_plain_order_sku_impl("ABC-plain-01"))
         self.assertTrue(is_plain_order_sku_impl("PLAIN"))
+        self.assertTrue(is_plain_order_sku_impl("711WHXL"))  # no dash
+        self.assertTrue(is_plain_order_sku_impl("UC711-WHXL"))  # one dash
         self.assertFalse(is_plain_order_sku_impl("ABC-8513LG-01"))
+        self.assertFalse(is_plain_order_sku_impl("304039LG-M211-220280"))
         self.assertFalse(is_plain_order_sku_impl(""))
 
 

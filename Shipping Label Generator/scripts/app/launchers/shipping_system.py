@@ -38,7 +38,7 @@ def _pause() -> None:
 
 def _print_header() -> None:
     print("=" * 60)
-    print("Shipping Label App")
+    print("Shipping Label Generator")
     print("=" * 60)
     print(f"Workspace: {_repo_root()}")
     print(f"Python: {sys.executable}")

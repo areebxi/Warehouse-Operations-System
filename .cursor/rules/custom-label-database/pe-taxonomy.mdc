@@ -1,12 +1,12 @@
 ---
-description: Fill and refresh PE taxonomy columns from Product Export
+description: Fill and refresh taxonomy columns from BTC Product Data
 alwaysApply: false
 globs: "Custom Label Database/**"
 ---
 
-# PE taxonomy columns
+# PE taxonomy columns (BTC Product Data)
 
-Source: `support/BTC Product Export.csv` (the product worksheet). Join: Supplier SKU → PE UID, else Custom Label numeric suffix.
+Source: **BTC Product Data** (live: `database/shared/btc_product_data/BTC_Product_Data.csv`; same role as Uneek Product Data). Join: Supplier SKU → BTC UID, else Custom Label numeric suffix.
 
 | DB column | PE column | Format | First fill | After PE corrections |
 |-----------|-----------|--------|------------|----------------------|

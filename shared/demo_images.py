@@ -48,6 +48,36 @@ def demo_image_lookup(enabled: bool = True) -> Iterator[None]:
         _paths = {}
 
 
+def effective_design_dirs(
+    use_demo: bool,
+    designs: object | None,
+    single: object | None,
+    double: object | None,
+    *,
+    from_path: object | None = None,
+) -> tuple[Optional[Path], Optional[Path], Optional[Path]]:
+    """Resolve Queue design folder paths; demo folders when ``use_demo`` is True."""
+    if use_demo:
+        ensure_demo_images(from_path=from_path)
+        return (
+            wh.demo_normal_design_dir(from_path),
+            wh.demo_custom_single_dir(from_path),
+            wh.demo_custom_double_dir(from_path),
+        )
+
+    def _opt(value: object | None) -> Optional[Path]:
+        if value is None:
+            return None
+        text = str(value).strip()
+        return Path(text) if text else None
+
+    return (
+        _opt(designs),
+        _opt(single),
+        _opt(double),
+    )
+
+
 def effective_image_dirs(
     use_demo: bool,
     apparel: object | None,

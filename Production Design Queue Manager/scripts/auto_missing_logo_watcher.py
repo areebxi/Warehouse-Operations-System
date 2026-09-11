@@ -40,12 +40,9 @@ from shared.cl_sku_match import shared_inbox_dtf_des_root  # noqa: E402
 from shared import paths as wh  # noqa: E402
 from src.core.canvas_arranger import pack_designs  # noqa: E402
 from src.core.canvas_creation import create_canvas_image, save_canvas_image  # noqa: E402
-from src.core.design_processor import (  # noqa: E402
-    process_personalised_designs,
-    process_single_designs,
-)
+from src.core.design_folder_routing import find_designs_for_dtf_row  # noqa: E402
 from src.core import DEFAULT_DESIGN_PADDING  # noqa: E402
-from src.io import load_color_bar_from_app_dir, load_configuration_workbook  # noqa: E402
+from src.io import load_color_bar_from_app_dir, load_queue_data_sources  # noqa: E402
 from src.system import create_settings_manager, setup_error_logging  # noqa: E402
 from gui_helpers.processing.gui_processing_helpers_folder import (  # noqa: E402
     auto_detect_customise_column,
@@ -54,7 +51,6 @@ from gui_helpers.processing.gui_processing_helpers_folder import (  # noqa: E402
     load_dataframe_from_file,
 )
 from gui_helpers.processing.gui_processing_helpers_messages import (  # noqa: E402
-    is_customise_yes,
     is_plainlg_sku,
 )
 
@@ -153,20 +149,37 @@ def _move_to(path: Path, inbox_root: Path, bucket: str) -> Path:
 
 
 def _build_ctx(settings: dict) -> SimpleNamespace:
-    size_df, size_path, overrides = load_configuration_workbook(str(APP_ROOT))
+    cl_csv_path, overrides, config_workbook_path = load_queue_data_sources(
+        settings.get("cl_csv_path"),
+        settings.get("config_workbook_path"),
+        app_dir=str(APP_ROOT),
+    )
     color_bar_image, color_bar_path = load_color_bar_from_app_dir(str(APP_ROOT))
     dpi = 300
+    use_demo = bool(settings.get("use_demo_images"))
+    if str(WAREHOUSE_ROOT) not in sys.path:
+        sys.path.insert(0, str(WAREHOUSE_ROOT))
+    from shared.demo_images import effective_design_dirs
+
+    designs, single, double = effective_design_dirs(
+        use_demo,
+        settings.get("designs_folder"),
+        settings.get("single_designs_folder"),
+        settings.get("double_designs_folder"),
+        from_path=WAREHOUSE_ROOT,
+    )
     return SimpleNamespace(
         canvas_width_mm=570.0,
         canvas_height_mm=3000.0,
         dpi=dpi,
         mm_to_pixel=dpi / 25.4,
         design_padding=DEFAULT_DESIGN_PADDING,
-        designs_folder=settings.get("designs_folder") or None,
-        single_designs_folder=settings.get("single_designs_folder") or None,
-        double_designs_folder=settings.get("double_designs_folder") or None,
-        size_reference_df=size_df,
-        size_reference_path=size_path,
+        designs_folder=str(designs) if designs else None,
+        single_designs_folder=str(single) if single else None,
+        double_designs_folder=str(double) if double else None,
+        use_demo_images=use_demo,
+        cl_csv_path=cl_csv_path,
+        config_workbook_path=config_workbook_path,
         print_size_overrides=overrides or {},
         pocket_design_ids_set=set((overrides or {}).keys()),
         color_bar_image=color_bar_image,
@@ -219,8 +232,9 @@ def process_missing_logo_file_headless(ctx: SimpleNamespace, file_path: Path) ->
         ctx.single_designs_folder or ctx.double_designs_folder or ctx.designs_folder
     ):
         raise ValueError(
-            "No design folders in queue_app_settings.json "
-            "(designs_folder / single_designs_folder / double_designs_folder)"
+            "No design folders configured "
+            "(enable Testing in Queue settings or set designs_folder / "
+            "single_designs_folder / double_designs_folder)"
         )
 
     customise_col = auto_detect_customise_column(df)
@@ -243,36 +257,22 @@ def process_missing_logo_file_headless(ctx: SimpleNamespace, file_path: Path) ->
         order_occurrences[order_number] = order_occurrences.get(order_number, 0) + 1
         duplicate_index = order_occurrences[order_number] - 1
         is_duplicate_order = order_total_counts.get(order_number, 0) > 1
-        force_single = is_customise_yes(customise)
-        design_items = []
-        if ctx.single_designs_folder or ctx.double_designs_folder:
-            design_items = process_personalised_designs(
-                order_number,
-                item_sku,
-                duplicate_index,
-                is_duplicate_order,
-                ctx.single_designs_folder,
-                ctx.double_designs_folder,
-                ctx.size_reference_df,
-                ctx.mm_to_pixel,
-                ctx.canvas_width_mm,
-                ctx.design_padding,
-                ctx.print_size_overrides or ctx.pocket_design_ids_set,
-                canvas_height_mm=ctx.canvas_height_mm,
-                force_single=force_single,
-            )
-        if not design_items and ctx.designs_folder:
-            design_items = process_single_designs(
-                item_sku,
-                ctx.designs_folder,
-                ctx.size_reference_df,
-                ctx.mm_to_pixel,
-                ctx.print_size_overrides or ctx.pocket_design_ids_set,
-                canvas_width_mm=ctx.canvas_width_mm,
-                canvas_height_mm=ctx.canvas_height_mm,
-                design_padding=ctx.design_padding,
-                force_single=force_single,
-            )
+        design_items, _source = find_designs_for_dtf_row(
+            order_number=order_number,
+            item_sku=item_sku,
+            customise=customise,
+            duplicate_index=duplicate_index,
+            is_duplicate_order=is_duplicate_order,
+            designs_folder=ctx.designs_folder,
+            single_designs_folder=ctx.single_designs_folder,
+            double_designs_folder=ctx.double_designs_folder,
+            mm_to_pixel=ctx.mm_to_pixel,
+            canvas_width_mm=ctx.canvas_width_mm,
+            canvas_height_mm=ctx.canvas_height_mm,
+            design_padding=ctx.design_padding,
+            print_size_overrides=ctx.print_size_overrides or ctx.pocket_design_ids_set,
+            cl_csv_path=getattr(ctx, "cl_csv_path", None),
+        )
         for design_data in design_items:
             designs.append(
                 {
@@ -307,7 +307,12 @@ def process_one(path: Path, ctx: SimpleNamespace, inbox_root: Path) -> bool:
         if not _wait_stable(path):
             LOG.warning("File not stable yet, will retry: %s", path)
             return False
-        saved = process_missing_logo_file_headless(ctx, path)
+        if str(WAREHOUSE_ROOT) not in sys.path:
+            sys.path.insert(0, str(WAREHOUSE_ROOT))
+        from shared.demo_images import demo_image_lookup
+
+        with demo_image_lookup(getattr(ctx, "use_demo_images", False)):
+            saved = process_missing_logo_file_headless(ctx, path)
         dest = _move_to(path, inbox_root, "Processed")
         LOG.info("Saved %s PNG(s); moved to %s", len(saved), dest)
         for p in saved:
@@ -349,7 +354,8 @@ def watch_loop() -> None:
     inbox_root = _inbox_root()
     LOG.info("Watching %s (Missing Logo auto-run)", inbox_root)
     LOG.info(
-        "Folders: designs=%s single=%s double=%s",
+        "Testing=%s  Folders: designs=%s single=%s double=%s",
+        getattr(ctx, "use_demo_images", False),
         ctx.designs_folder,
         ctx.single_designs_folder,
         ctx.double_designs_folder,
@@ -388,6 +394,9 @@ def main() -> None:
     if args.once:
         n = run_once()
         raise SystemExit(0 if n >= 0 else 1)
+    from shared.missing_logo_watcher import claim_this_process
+
+    claim_this_process()
     watch_loop()
 
 

@@ -1,9 +1,10 @@
 @echo off
 setlocal
 cd /d "%~dp0"
+title Purchase Order Generator
 
 echo ========================================
-echo   ShipStation GUI - setup and run
+echo   Purchase Order Generator
 echo ========================================
 echo.
 

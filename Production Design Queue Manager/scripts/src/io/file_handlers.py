@@ -32,6 +32,8 @@ from src.io.file_loaders import (
     load_configuration_workbook,
     load_pocket_design_ids_database,
     load_print_size_overrides,
+    load_print_size_overrides_from_workbook,
+    load_queue_data_sources,
     load_size_reference_from_app_dir,
 )
 
@@ -50,6 +52,8 @@ __all__ = [
     # File loader functions
     "load_color_bar_from_app_dir",
     "load_configuration_workbook",
+    "load_queue_data_sources",
+    "load_print_size_overrides_from_workbook",
     "load_pocket_design_ids_database",
     "load_print_size_overrides",
     "load_size_reference_from_app_dir",

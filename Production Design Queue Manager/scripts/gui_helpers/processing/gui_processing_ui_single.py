@@ -77,25 +77,22 @@ def process_single_file(gui, df, column, file_path=None, show_progress=True):
                 progress = (idx / total_skus) * 50
                 update_progress(gui, progress, f"Loading designs: {idx+1}/{total_skus}")
 
-            size_code = gui.extract_size_code(sku)
-            if gui.size_reference_df is not None and size_code:
-                size_info = gui.get_size_from_reference(size_code)
-                if not size_info:
-                    missing_entry = f"{sku} ({size_code})"
-                    if missing_entry not in missing_sizes:
-                        missing_sizes.append(missing_entry)
-                        track_missing_size_reference(df, column, sku, missing_size_row_indices)
+            if gui.sku_missing_cl_print_size(sku):
+                missing_entry = str(sku)
+                if missing_entry not in missing_sizes:
+                    missing_sizes.append(missing_entry)
+                    track_missing_size_reference(df, column, sku, missing_size_row_indices)
 
             design_items = process_single_designs(
                 sku,
                 gui.designs_folder,
-                gui.size_reference_df,
                 gui.mm_to_pixel,
                 getattr(gui, "print_size_overrides", None) or gui.pocket_design_ids_set,
                 canvas_width_mm=gui.canvas_width_mm,
                 canvas_height_mm=gui.canvas_height_mm,
                 design_padding=gui.design_padding,
                 force_single=is_customise_yes(customise),
+                cl_csv_path=getattr(gui, "cl_csv_path", None),
             )
 
             if design_items:

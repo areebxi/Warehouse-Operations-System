@@ -44,7 +44,11 @@ def build_ui(app) -> None:
 
     ).grid(row=1, column=0, columnspan=3, sticky="w", pady=(0, 10))
 
-
+    ttk.Checkbutton(
+        frm,
+        text="Testing",
+        variable=app.use_demo_images_var,
+    ).grid(row=2, column=0, columnspan=3, sticky="w", pady=(0, 6))
 
     def add_row(row: int, label: str, var, browse_dir: bool | None) -> None:
 
@@ -68,11 +72,11 @@ def build_ui(app) -> None:
 
 
 
-    ttk.Label(frm, text="Input source:").grid(row=2, column=0, sticky="w", padx=(0, 10), pady=3)
+    ttk.Label(frm, text="Input source:").grid(row=3, column=0, sticky="w", padx=(0, 10), pady=3)
 
     mode_frame = ttk.Frame(frm)
 
-    mode_frame.grid(row=2, column=1, columnspan=2, sticky="w", pady=3)
+    mode_frame.grid(row=3, column=1, columnspan=2, sticky="w", pady=3)
 
     app.input_mode_file_rb = ttk.Radiobutton(
 
@@ -106,11 +110,11 @@ def build_ui(app) -> None:
 
     app.tag_label = ttk.Label(frm, text="ShipStation tag(s):")
 
-    app.tag_label.grid(row=3, column=0, sticky="nw", padx=(0, 10), pady=3)
+    app.tag_label.grid(row=4, column=0, sticky="nw", padx=(0, 10), pady=3)
 
     tag_outer = ttk.Frame(frm)
 
-    tag_outer.grid(row=3, column=1, columnspan=2, sticky="we", pady=3)
+    tag_outer.grid(row=4, column=1, columnspan=2, sticky="we", pady=3)
 
 
 
@@ -160,11 +164,11 @@ def build_ui(app) -> None:
 
 
 
-    add_row(4, "Date (DD-MM-YYYY):", app.date_var, browse_dir=None)
+    add_row(5, "Date (DD-MM-YYYY):", app.date_var, browse_dir=None)
 
 
 
-    ttk.Label(frm, text="Shift:").grid(row=5, column=0, sticky="w", padx=(0, 10), pady=3)
+    ttk.Label(frm, text="Shift:").grid(row=6, column=0, sticky="w", padx=(0, 10), pady=3)
 
     app.shift_cb = ttk.Combobox(
 
@@ -172,33 +176,33 @@ def build_ui(app) -> None:
 
     )
 
-    app.shift_cb.grid(row=5, column=1, sticky="w", pady=3)
+    app.shift_cb.grid(row=6, column=1, sticky="w", pady=3)
 
 
 
-    ttk.Label(frm, text="Use fixed process number:").grid(row=6, column=0, sticky="w", padx=(0, 10), pady=3)
+    ttk.Label(frm, text="Use fixed process number:").grid(row=7, column=0, sticky="w", padx=(0, 10), pady=3)
 
     app.use_fixed_process_cb = ttk.Checkbutton(frm, text="Enable", variable=app.use_fixed_process_number_var)
 
-    app.use_fixed_process_cb.grid(row=6, column=1, sticky="w", pady=3)
+    app.use_fixed_process_cb.grid(row=7, column=1, sticky="w", pady=3)
 
 
 
-    ttk.Label(frm, text="Process number:").grid(row=7, column=0, sticky="w", padx=(0, 10), pady=3)
+    ttk.Label(frm, text="Process number:").grid(row=8, column=0, sticky="w", padx=(0, 10), pady=3)
 
     app.fixed_process_entry = ttk.Entry(frm, textvariable=app.fixed_process_number_var, width=20)
 
-    app.fixed_process_entry.grid(row=7, column=1, sticky="w", pady=3)
+    app.fixed_process_entry.grid(row=8, column=1, sticky="w", pady=3)
 
 
 
     app.input_label = ttk.Label(frm, text="Input CSV(s):")
 
-    app.input_label.grid(row=8, column=0, sticky="nw", padx=(0, 10), pady=3)
+    app.input_label.grid(row=9, column=0, sticky="nw", padx=(0, 10), pady=3)
 
     list_frame = ttk.Frame(frm)
 
-    list_frame.grid(row=8, column=1, columnspan=2, sticky="nsew", pady=3)
+    list_frame.grid(row=9, column=1, columnspan=2, sticky="nsew", pady=3)
 
     app.input_listbox = style_listbox(
 
@@ -218,7 +222,7 @@ def build_ui(app) -> None:
 
     input_btn_frame = ttk.Frame(frm)
 
-    input_btn_frame.grid(row=9, column=1, columnspan=2, sticky="w", pady=(0, 6))
+    input_btn_frame.grid(row=10, column=1, columnspan=2, sticky="w", pady=(0, 6))
 
     app.add_files_btn = ttk.Button(input_btn_frame, text="Add files…", command=app._add_files)
 
@@ -242,34 +246,27 @@ def build_ui(app) -> None:
 
 
 
-    add_row(10, "Workbook path:", app.workbook_var, browse_dir=False)
+    add_row(11, "Workbook path:", app.workbook_var, browse_dir=False)
 
     ttk.Label(frm, text="Custom Label Database (CSV):").grid(
-        row=11, column=0, sticky="w", padx=(0, 10), pady=3
+        row=12, column=0, sticky="w", padx=(0, 10), pady=3
     )
     ttk.Entry(frm, textvariable=app.cl_csv_var, width=55).grid(
-        row=11, column=1, sticky="we", pady=3
+        row=12, column=1, sticky="we", pady=3
     )
     ttk.Button(frm, text="Browse…", command=app._browse_cl_csv).grid(
-        row=11, column=2, padx=(8, 0), pady=3
+        row=12, column=2, padx=(8, 0), pady=3
     )
 
-    add_row(12, "Output directory:", app.output_dir_var, browse_dir=True)
-
-    ttk.Label(frm, text="Use demo images:").grid(row=13, column=0, sticky="w", padx=(0, 10), pady=3)
-    ttk.Checkbutton(
-        frm,
-        text="Offline testing — placeholders from Demo Images Database/",
-        variable=app.use_demo_images_var,
-    ).grid(row=13, column=1, columnspan=2, sticky="w", pady=3)
+    add_row(13, "Output directory:", app.output_dir_var, browse_dir=True)
 
     add_row(14, "Apparel Image folder:", app.apparel_dir_var, browse_dir=True)
 
-    add_row(15, "Normal Logo/Design folder:", app.logo_normal_dir_var, browse_dir=True)
+    add_row(15, "Normal Design folder:", app.logo_normal_dir_var, browse_dir=True)
 
-    add_row(16, "Customise Single Position Logo/Design folder:", app.logo_custom_single_dir_var, browse_dir=True)
+    add_row(16, "Customise Single Position Design folder:", app.logo_custom_single_dir_var, browse_dir=True)
 
-    add_row(17, "Customise Double Position Logo/Design folder:", app.logo_custom_double_dir_var, browse_dir=True)
+    add_row(17, "Customise Double Position Design folder:", app.logo_custom_double_dir_var, browse_dir=True)
 
     add_row(18, "PDF copy directory (optional):", app.pdf_copy_dir_var, browse_dir=True)
 

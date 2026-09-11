@@ -8,7 +8,7 @@
 - Launch: `Run_GUI.bat` (creates `.venv`, runs GUI).
 - Data under `data/`; outputs under `output/`.
 - Stock CL map: `Custom Label Database/Custom_Label_Database.csv` (`BTC SKU`).
-- Sync DB from ProductExport / download images with scripts when asked (`--dry-run` first).
+- Sync DB from BTC Product Data / download images with scripts when asked (`--dry-run` first).
 
 ## Watch
 

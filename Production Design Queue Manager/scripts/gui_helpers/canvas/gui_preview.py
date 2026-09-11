@@ -62,7 +62,6 @@ def clear_preview(gui):
     gui.preview_canvas.delete("all")
     gui.arranged_designs = []
     gui.all_batches = []
-    gui.input_folder_path = None
     gui.folder_file_batches = {}
     if hasattr(gui, "stats_label"):
         gui.stats_label.config(text="No designs loaded", foreground=gui_theme.MUTED)

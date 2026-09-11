@@ -1,4 +1,4 @@
-﻿# Custom Label Database — handbook
+# Custom Label Database — handbook
 
 Domain handbook for the **Warehouse Automation System Engineer**. Supervisor = user. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/custom-label-database/`. Facts: `docs/FINDINGS.md`, `docs/HANDOFF.md`, `docs/WORKSPACE.md`.
 
@@ -9,7 +9,13 @@ This app folder holds **scripts and docs**. Live catalog + helpers live under wa
 ## Live work
 
 - Edit **`database/shared/custom_label/Custom_Label_Database.csv`** only (via `shared.paths.cl_csv_path()`).
-- Helpers: `database/custom-label-database/support/`. PE: `database/shared/product_export/ProductExport.csv`.
+- Areeb 30-chain (`Category (Areeb)` / `Product Type (Areeb)` / `Product Style (Areeb)` / `Department (Areeb)`): warehouse `cl_standard` from Gender Apparel (`python scripts/fill_areeb_taxonomy.py --target cl` from warehouse root, or `fill_from_seeds.py --steps areeb`). Never BTC/Uneek. Department = gender only. Rule: parent `.cursor/rules/custom-label-database/areeb-taxonomy.mdc`.
+- **Supply Method**: `Warehouse Stock` (FOTL men/women/kids t-shirts only) / `In House Manufacture` (SKU or Gender Apparel contains iron on / ironon / iron-on / sticker) / `Supplier On Demand` (Gildan + everything else). `python scripts/fill_supply_method.py` from warehouse root, or `fill_from_seeds.py --steps supply`. Do not reuse `Warehouse Stock`. Rule: `supply-method.mdc`.
+- **Printing Type**: `DTF` default; `Sublimation` = mugs. `python scripts/fill_printing_type.py` from warehouse root, or `fill_from_seeds.py --steps printing_type`. Do not fill Design Type. Rule: `printing-type.mdc`.
+- **Supplier Name**: `BTC Activewear` / `Uneek Clothing` / `Absolute Apparels`. Absolute = babysuits only (`C800T` / `C8020T` / `C8030T`). In-house iron-on/sticker stay blank. Filled 2026-09-09. `python scripts/fill_supplier_name.py` from warehouse root, or `fill_from_seeds.py --steps supplier_name`. Rule: `supplier-name.mdc`.
+- **Customisation Type**: column exists; values empty; grouping split off in v1. Do not fill until a rule is locked.
+- **BTC SKU / Product Code / Supplier Stock**: must be UID / SPC / stock — never Package Type, Weight, or Service. Leak cleared 2026-09-10 (`scripts/fix_cl_btc_leaked_shipping.py`).
+- Helpers: `database/custom-label-database/support/`. **BTC Product Data**: `database/shared/btc_product_data/BTC_Product_Data.csv`. **Uneek Product Data**: `database/shared/uneek_product_data/Uneek_Product_Data.xlsx`. **Absolute Product Data**: `database/shared/absolute_product_data/Absolute_Product_Data.xlsx`.
 - Run Python from this app folder. Prefer scripts over opening the full CSV in the editor.
 
 ## Approval
@@ -18,7 +24,7 @@ No production writes unless the supervisor already said **yes / do it / fill / r
 
 Tackle **one problem at a time**.
 
-**Unmatched packing SKUs:** seed **every PE UID** for the item’s BTC SPC as `{mock}-{UID}` (not only the named rows); clone GA/Colour/Size/Image/Print Positions from a same-UID peer when possible; **Customise** = `Yes` only when Custom Label contains `-P{digit}-` (e.g. `M260-P5-*`); plain `M55-{UID}` stays blank. Then `fill_from_seeds.py` + `fill_size_references_from_cl.py`.
+**Unmatched packing SKUs (fast path):** `python scripts/add_labels.py --skus …` — named labels only, same fill rules, **append-only** (does not rewrite existing rows). Use `--all-spc` when you want every PE UID for that BTC SPC as `{mock}-{UID}` (catalog completeness; slower). Clone GA/Colour/Size/Image/Print Positions from a same-UID peer when possible; **Customise** = `Yes` when Custom Label has `-P{digit}-` **or** a `Yes` token (e.g. `W101-SkyBe-O/S-Yes`). Then optional `fill_size_references_from_cl.py` for plain `M##-{UID}` keys.
 
 ## Hard do-nots
 

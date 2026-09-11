@@ -49,26 +49,29 @@ ASSETS_DIR = wh.images_po_dir()
 OUTPUT_DIR = wh.po_output_dir()
 DONE_DIR = APP_ROOT / "00-Done"
 
+PRODUCT_DATABASE_FILENAME = "Plain Database.xlsx"
+SHIPSTATION_TAGS_FILENAME = "ShipStation Tags.xlsx"
+PACKS_DATABASE_FILENAME = "Packs Database.xlsx"
+
 
 def data_path(filename: str) -> Path:
-    """Resolve a file under this app's data/ (or shared ProductExport / Tags)."""
-    if filename in ("ProductExport.csv", "ProductExport.xlsx"):
-        return wh.product_export_path() if filename.endswith(".csv") else wh.data_archive_dir() / "PO_ProductExport.xlsx"
+    """Resolve shared catalogs or a file under this app's database/ folder."""
+    if filename == "BTC_Product_Data.csv":
+        return wh.btc_product_data_path()
     if filename in ("ShipStation Tags.xlsx", "ShipStation_Tags.xlsx"):
         return wh.shipstation_tags_path()
+    if filename == PRODUCT_DATABASE_FILENAME:
+        return wh.plain_database_path()
+    if filename == PACKS_DATABASE_FILENAME:
+        return wh.packs_database_path()
     in_data = DATA_DIR / filename
     if in_data.exists():
         return in_data
     return in_data
 
 
-PRODUCT_DATABASE_FILENAME = "Database.xlsx"
-SHIPSTATION_TAGS_FILENAME = "ShipStation Tags.xlsx"
-PACKS_DATABASE_FILENAME = "Packs Database.xlsx"
-
-
 def product_database_path() -> Path:
-    return wh.po_database_path()
+    return wh.plain_database_path()
 
 
 def shipstation_tags_path() -> Path:
@@ -76,7 +79,11 @@ def shipstation_tags_path() -> Path:
 
 
 def packs_database_path() -> Path:
-    return wh.po_packs_database_path()
+    return wh.packs_database_path()
+
+
+def product_database_archive_dir() -> Path:
+    return wh.plain_database_archive_dir()
 
 
 def asset_path(*parts: str) -> Path:

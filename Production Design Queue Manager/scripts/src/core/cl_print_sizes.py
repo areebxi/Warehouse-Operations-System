@@ -97,6 +97,20 @@ def resolve_cl_row(item_sku: Union[str, pd.Series], cl_csv_path: Optional[Path] 
     return _CL_DF.iloc[_CL_INDEX[key]]
 
 
+def cl_sku_has_print_size(
+    item_sku: Union[str, pd.Series],
+    cl_csv_path: Optional[Path] = None,
+) -> bool:
+    """True when Item SKU matches CL CSV and has at least one Width/Height slot."""
+    try:
+        row = resolve_cl_row(item_sku, cl_csv_path=cl_csv_path)
+    except FileNotFoundError:
+        return False
+    if row is None:
+        return False
+    return bool(_slots_from_row(row))
+
+
 def get_cl_position_size_entries(
     item_sku: Union[str, pd.Series],
     mm_to_pixel_factor: float,

@@ -1,9 +1,10 @@
 @echo off
 setlocal
 cd /d "%~dp0"
+title Order Packing List Generator
 
 echo ========================================
-echo  Packing List App - Setup and Launch
+echo   Order Packing List Generator
 echo ========================================
 echo.
 
@@ -17,6 +18,6 @@ if %ERRORLEVEL% NEQ 0 (
 )
 
 echo.
-echo Starting Packing List App...
+echo Starting Order Packing List Generator...
 start "" /D "%~dp0" pythonw packing_list_app.py
 exit /b 0

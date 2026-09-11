@@ -1,9 +1,11 @@
 @echo off
 setlocal
 cd /d "%~dp0"
+title Order Packing List Generator - Preflight Issues
 
 echo ========================================
-echo  Preflight Issues App - Setup and Launch
+echo   Order Packing List Generator
+echo   Preflight Issues
 echo ========================================
 echo.
 
@@ -17,6 +19,6 @@ if %ERRORLEVEL% NEQ 0 (
 )
 
 echo.
-echo Starting Preflight Issues App...
+echo Starting Preflight Issues...
 start "" /D "%~dp0" pythonw preflight_issues_app.py
 exit /b 0

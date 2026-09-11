@@ -19,29 +19,29 @@
 | `pdf_generator.py` | Packing slip PDFs |
 | `stock_resolver.py` | Custom label → stock ID |
 | `app_paths.py` | Path helpers for `data/`, `assets/`, `output/` |
-| `fill_btc_stock_id.py`, `validate_btc_product_codes.py`, `sync_database_from_product_export.py`, `download_product_images.py`, etc. | Maintenance tools |
+| `fill_btc_stock_id.py`, `validate_btc_product_codes.py`, `sync_database_from_btc_product_data.py`, `download_product_images.py`, etc. | Maintenance tools |
 
 Run any script from the app root, for example:
 
 ```bat
 .venv\Scripts\python.exe scripts\run_script_gui.py
 .venv\Scripts\python.exe scripts\validate_btc_product_codes.py
-.venv\Scripts\python.exe scripts\sync_database_from_product_export.py
+.venv\Scripts\python.exe scripts\sync_database_from_btc_product_data.py
 ```
 
-### Sync `Database.xlsx` from ProductExport
+### Sync `Plain Database.xlsx` from ProductExport
 
-Packing slip PDFs look up product details in `data/Database.xlsx` by **SKU** (same as BTC **UID** / stock id). After you receive an updated `ProductExport.csv`, append any missing SKUs:
+Packing slip PDFs look up product details in `Plain Database.xlsx` by **SKU** (same as BTC **UID** / stock id). After you receive updated **BTC Product Data**, append any missing SKUs:
 
 ```bat
-.venv\Scripts\python.exe scripts\sync_database_from_product_export.py
+.venv\Scripts\python.exe scripts\sync_database_from_btc_product_data.py
 ```
 
-Options: `--dry-run` (counts only), `--no-backup`, `--output path\to\Database.xlsx`. A backup is written to `data/archive/Database.xlsx.bak_YYYYMMDD_HHMMSS` before overwrite. Existing rows are unchanged; **Package** is left blank for newly added SKUs.
+Options: `--dry-run` (counts only), `--no-backup`, `--output path\to\Plain Database.xlsx`. A backup is written to `database/shared/plain/archive/` before overwrite. Existing rows are unchanged; **Package** is left blank for newly added SKUs.
 
 ### Download product images for PDFs
 
-`Database.xlsx` stores image **filenames** only; packing slips load files from `assets/product_images/` and `assets/brand_logos/`. After syncing the database, download any missing images from ProductExport URLs:
+`Plain Database.xlsx` stores image **filenames** only; packing slips load files from `assets/product_images/` and `assets/brand_logos/`. After syncing the database, download any missing images from ProductExport URLs:
 
 ```bat
 .venv\Scripts\python.exe scripts\download_product_images.py --database-only
@@ -49,14 +49,13 @@ Options: `--dry-run` (counts only), `--no-backup`, `--output path\to\Database.xl
 
 Use `--dry-run` to preview, `--sku 218408` for one stock id, or `--no-brands` for product images only.
 
-## `data/` — databases & stock files
+## Live databases (via `shared/paths.py`)
 
-- `Packs Database.xlsx`, `Database.xlsx`, `ShipStation Tags.xlsx`
-- `Custom Label Database.csv`, `ProductExport.csv`, `stock_levels_stock_id_fully_quoted.csv`
-- `outlet_products.xlsx`, `invalid_btc_product_codes.csv`
-- `archive/` — backups (e.g. `.bak` copies)
+- Shared: `database/shared/plain/Plain Database.xlsx`, `database/shared/packs/Packs Database.xlsx`, Tags, CL, BTC/Uneek/Absolute Product Data
+- PO app DB: `database/purchase-order-generator/` — stock CSV (+ Movie Poster SKUs)
+- Archives: `database/shared/plain/archive/`, `database/shared/packs/archive/`
 
-FTP/SFTP downloads the configured stock CSV into `data/` automatically (see below).
+FTP/SFTP downloads the configured stock CSV into `database/purchase-order-generator/` automatically (see below).
 
 ### Changing the BTC stock file
 

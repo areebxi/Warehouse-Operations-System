@@ -6,9 +6,9 @@ Creates rows with ONLY these seed columns filled:
 
 Rules:
   - Custom Label = {Pasting Mocks ID}-{UID}  (e.g. M01-120877)
-  - UID comes from ProductExport rows whose SPC matches a Product Code on the mock
+  - UID comes from BTC Product Data rows whose SPC matches a Product Code on the mock
   - Gender Apparel = "{Brand Code} {Description}" (Men's->Mens, Kid's->Kids, Ladies'->Ladies)
-  - Colour / Size from ProductExport (with Phase-2 style size/colour normalize)
+  - Colour / Size from BTC Product Data (with Phase-2 style size/colour normalize)
   - Apparel Image = slug(Gender Apparel + Colour)
   - Print Positions mapped from mock Printing Position
   - Skip entire mock IDs already present in the Custom Label Database
@@ -44,7 +44,7 @@ SUPPORT = wh.custom_label_support_dir()
 BACKUPS = wh.cl_backups_dir()
 
 DEFAULT_DB = wh.cl_csv_path()
-DEFAULT_PE = wh.product_export_path()
+DEFAULT_PE = wh.btc_product_data_path()
 DEFAULT_MOCKS = SUPPORT / "Mocks Databse.csv"
 SHEET = "Data"
 
@@ -299,7 +299,7 @@ def generate_rows(
 
         if not variants:
             stats["skipped_mock_no_pe_hits"] += 1
-            skip_reasons[mock_id] = f"no ProductExport SPC hits for {codes}"
+            skip_reasons[mock_id] = f"no BTC Product Data SPC hits for {codes}"
             continue
 
         pe_hits = pd.concat(variants, ignore_index=True).drop_duplicates(subset=["UID"])
@@ -401,9 +401,9 @@ def append_to_db(db_path: Path, new_rows: pd.DataFrame, backup: bool) -> None:
 
 
 def main() -> int:
-    p = argparse.ArgumentParser(description="Generate seed rows from Mocks Guide + ProductExport")
+    p = argparse.ArgumentParser(description="Generate seed rows from Mocks Guide + BTC Product Data")
     p.add_argument("--file", type=Path, default=DEFAULT_DB, help="Custom_Label_Database.csv (or .xlsx)")
-    p.add_argument("--pe", type=Path, default=DEFAULT_PE, help="ProductExport.xlsx")
+    p.add_argument("--pe", type=Path, default=DEFAULT_PE, help="BTC Product Data CSV/XLSX")
     p.add_argument("--mocks", type=Path, default=DEFAULT_MOCKS, help="Mocks Database Guide CSV")
     p.add_argument("--mock", default="", help="Comma list of mock IDs to process (default: all eligible)")
     p.add_argument("--dry-run", action="store_true", help="Report only; do not write")

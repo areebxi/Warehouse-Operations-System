@@ -52,9 +52,20 @@ def parse_process_and_item_impl(
 
 
 def is_plain_order_sku_impl(item_sku: str) -> bool:
-    """True when Item SKU marks a plain order (PDF skips logo image lookup/draw)."""
-    s = (item_sku or "").lower()
-    return "plainlg" in s or "plain" in s
+    """True when Item SKU marks a plain order (PDF skips logo image lookup/draw).
+
+    Plain when:
+    - SKU contains ``plainlg`` or ``plain`` (case-insensitive), or
+    - SKU has fewer than two dashes (0 or 1) — Uneek / supplier-style plain garments.
+    Branded print SKUs use two+ dashes (e.g. ``304039LG-M211-220280``).
+    """
+    s = (item_sku or "").strip()
+    if not s:
+        return False
+    lower = s.lower()
+    if "plainlg" in lower or "plain" in lower:
+        return True
+    return s.count("-") < 2
 
 
 def logo_design_tokens_impl(

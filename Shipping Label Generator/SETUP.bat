@@ -2,10 +2,12 @@
 setlocal EnableExtensions
 
 cd /d "%~dp0"
+title Shipping Label Generator - First-time Setup
 
 echo.
 echo ============================================================
-echo Shipping Label App - First-time Setup
+echo   Shipping Label Generator
+echo   First-time Setup
 echo ============================================================
 echo.
 

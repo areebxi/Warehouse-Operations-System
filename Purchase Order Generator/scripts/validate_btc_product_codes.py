@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Validate that every BTC Product Code in Custom Label Database.csv
-exists as SPC in ProductExport.csv.
+exists as SPC in BTC Product Data.
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ import app_paths  # noqa: F401
 from app_paths import data_path
 
 DEFAULT_CUSTOM_LABEL = data_path("Custom Label Database.csv")
-DEFAULT_PRODUCT_EXPORT = data_path("ProductExport.csv")
+DEFAULT_BTC_PRODUCT_DATA = data_path("BTC_Product_Data.csv")
 
 
 def load_csv(path: Path) -> list[dict[str, str]]:
@@ -31,10 +31,10 @@ def load_csv(path: Path) -> list[dict[str, str]]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Validate BTC Product Code values against ProductExport SPC."
+        description="Validate BTC Product Code values against BTC Product Data SPC."
     )
     parser.add_argument("--custom-label", type=Path, default=DEFAULT_CUSTOM_LABEL)
-    parser.add_argument("--product-export", type=Path, default=DEFAULT_PRODUCT_EXPORT)
+    parser.add_argument("--btc-product-data", type=Path, default=DEFAULT_BTC_PRODUCT_DATA)
     parser.add_argument(
         "--export-missing",
         type=Path,
@@ -44,7 +44,7 @@ def main() -> int:
     args = parser.parse_args()
 
     cl_rows = load_csv(args.custom_label)
-    pe_rows = load_csv(args.product_export)
+    pe_rows = load_csv(args.btc_product_data)
 
     spc_values = {(r.get("SPC") or "").strip() for r in pe_rows if (r.get("SPC") or "").strip()}
     spc_lookup = {s.casefold(): s for s in spc_values}
@@ -69,7 +69,7 @@ def main() -> int:
     missing_codes = sorted(c for c in unique_codes if c.casefold() not in spc_lookup)
 
     print(f"Custom label rows: {len(cl_rows)}")
-    print(f"ProductExport unique SPC values: {len(spc_values)}")
+    print(f"BTC Product Data unique SPC values: {len(spc_values)}")
     print()
     print(f"Rows with empty BTC Product Code: {empty_rows}")
     print(f"Rows with BTC Product Code: {len(cl_rows) - empty_rows}")

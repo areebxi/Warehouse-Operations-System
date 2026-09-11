@@ -86,14 +86,13 @@ def process_personalised_file(gui, df, order_column, sku_column, file_path=None,
             duplicate_index = order_occurrences[order_number] - 1
             is_duplicate_order = order_total_counts.get(order_number, 0) > 1
 
-            size_code = gui.extract_size_code(item_sku)
-            if gui.size_reference_df is not None and size_code:
-                size_info = gui.get_size_from_reference(size_code)
-                if not size_info:
-                    missing_entry = f"{order_number} ({item_sku} - {size_code})"
-                    if missing_entry not in missing_sizes:
-                        missing_sizes.append(missing_entry)
-                        track_missing_size_reference_multi(df, order_column, sku_column, order_number, item_sku, missing_size_row_indices)
+            if gui.sku_missing_cl_print_size(item_sku):
+                missing_entry = f"{order_number} ({item_sku})"
+                if missing_entry not in missing_sizes:
+                    missing_sizes.append(missing_entry)
+                    track_missing_size_reference_multi(
+                        df, order_column, sku_column, order_number, item_sku, missing_size_row_indices
+                    )
 
             design_items = process_personalised_designs(
                 order_number,
@@ -102,13 +101,13 @@ def process_personalised_file(gui, df, order_column, sku_column, file_path=None,
                 is_duplicate_order,
                 gui.single_designs_folder,
                 gui.double_designs_folder,
-                gui.size_reference_df,
                 gui.mm_to_pixel,
                 gui.canvas_width_mm,
                 gui.design_padding,
                 getattr(gui, "print_size_overrides", None) or gui.pocket_design_ids_set,
                 canvas_height_mm=gui.canvas_height_mm,
                 force_single=is_customise_yes(customise),
+                cl_csv_path=getattr(gui, "cl_csv_path", None),
             )
 
             if design_items:

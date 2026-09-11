@@ -6,15 +6,17 @@ alwaysApply: false
 
 # Purchase Order live files
 
-App DB in `database/purchase-order-generator/`. PE + Tags + CL + ShipStation secrets are shared.
+App DB in `database/purchase-order-generator/` (stock only). Plain / Packs / BTC / Uneek / Absolute Product Data + Tags + CL + ShipStation secrets are shared.
 
 | Path | Role |
 |------|------|
-| `database/purchase-order-generator/Database.xlsx` | Product DB for slips |
-| `database/purchase-order-generator/Packs Database.xlsx` | Packs |
+| `database/shared/plain/Plain Database.xlsx` | Shared plain catalog (slips + grouping). `Supplier Name` filled 2026-09-09. |
+| `database/shared/packs/Packs Database.xlsx` | Shared packs catalog |
 | `database/purchase-order-generator/stock_levels_*.csv` | BTC free stock |
 | `database/shared/shipstation/ShipStation_Tags.xlsx` | Shared tags |
-| `database/shared/product_export/ProductExport.csv` | Shared PE |
+| `database/shared/btc_product_data/BTC_Product_Data.csv` | Shared BTC Product Data |
+| `database/shared/uneek_product_data/Uneek_Product_Data.xlsx` | Shared Uneek Product Data |
+| `database/shared/absolute_product_data/Absolute_Product_Data.xlsx` | Shared Absolute Product Data (babysuits only) |
 | `database/shared/custom_label/Custom_Label_Database.csv` | BTC SKU |
 | `Purchase Order Generator/assets/` | brand_logos / product_images |
 | `Purchase Order Generator/output/` | Run outputs |

@@ -32,7 +32,7 @@ from .ui import build_ui, on_fixed_process_toggle, on_separate_by_logo_toggle
 class PackingListApp:
     def __init__(self, root: Tk) -> None:
         self.root = root
-        self.root.title("Packing List App")
+        self.root.title("Order Packing List Generator")
         self.input_csv_var = StringVar()
         self.date_var = StringVar(value=date.today().strftime("%d-%m-%Y"))
         self.shift_var = StringVar()
@@ -70,12 +70,28 @@ class PackingListApp:
 
         build_ui(self)
         self.root.protocol("WM_DELETE_WINDOW", self._on_closing)
+        self.root.after(300, self._ensure_missing_logo_watcher)
 
     def is_tag_mode(self) -> bool:
         """True when ShipStation tag is the selected input source (not missing pipeline)."""
         if self.run_missing_logo_pipeline_var.get():
             return False
         return (self.input_mode_var.get() or "").strip() == "tag"
+
+    def _ensure_missing_logo_watcher(self) -> None:
+        """Start Queue SharedInbox watcher if it is not already running."""
+        try:
+            from shared.missing_logo_watcher import ensure_running
+
+            status, message = ensure_running()
+            print(message, flush=True)
+            if status == "failed":
+                try:
+                    messagebox.showwarning("Missing Logo watcher", message)
+                except Exception:
+                    pass
+        except Exception as exc:
+            print(f"Could not ensure Missing Logo watcher: {exc}", flush=True)
 
     def _on_fixed_process_toggle(self, *args: object) -> None:
         on_fixed_process_toggle(self, *args)

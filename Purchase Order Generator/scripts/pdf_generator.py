@@ -48,7 +48,7 @@ COLUMN_NAMES = {
 # --- File Paths ---
 PLAIN_ITEMS_CSV = "packing_list_tag_30885_20250908_130713.csv"  # Example only (CLI mode)
 PRODUCT_DATABASE_FILE = product_database_path()
-PRODUCT_EXPORT_FILE = data_path("ProductExport.csv")
+BTC_PRODUCT_DATA_FILE = data_path("BTC_Product_Data.csv")
 PACKS_DATABASE_FILE = packs_database_path()
 
 SCRIPT_DIR = APP_ROOT
@@ -410,7 +410,7 @@ def _safe_add_single_page(pdf: 'PDF', item_data, product_data, item_count, total
         pdf._draw_product_details(item_data, product_data or {}, total_items)
 
 def _image_filename_from_url(url: object) -> str:
-    """Extract image filename from a ProductExport URL for assets/product_images lookup."""
+    """Extract image filename from a BTC Product Data URL for assets/product_images lookup."""
     if url is None or (isinstance(url, float) and pd.isna(url)):
         return ""
     s = str(url).strip()
@@ -422,28 +422,28 @@ def _image_filename_from_url(url: object) -> str:
 _COLOUR_IMAGE_BY_UID_CACHE: dict[str, str] | None = None
 
 
-def _read_product_export_csv(**kwargs) -> tuple[pd.DataFrame, str]:
-    """Load ProductExport.csv trying common encodings (exports may be cp1252)."""
+def _read_btc_product_data_csv(**kwargs) -> tuple[pd.DataFrame, str]:
+    """Load BTC Product Data trying common encodings (exports may be cp1252)."""
     last_err: Exception | None = None
     for encoding in ("utf-8-sig", "utf-8", "cp1252", "latin-1"):
         try:
-            return pd.read_csv(PRODUCT_EXPORT_FILE, encoding=encoding, low_memory=False, **kwargs), encoding
+            return pd.read_csv(BTC_PRODUCT_DATA_FILE, encoding=encoding, low_memory=False, **kwargs), encoding
         except UnicodeDecodeError as exc:
             last_err = exc
             continue
     if last_err is not None:
         raise last_err
-    raise RuntimeError(f"Could not read ProductExport.csv: {PRODUCT_EXPORT_FILE}")
+    raise RuntimeError(f"Could not read BTC Product Data: {BTC_PRODUCT_DATA_FILE}")
 
 
 def _load_colour_image_basenames_by_uid() -> dict[str, str]:
-    """UID -> colour image 01 basename from ProductExport (colour-specific product shot)."""
+    """UID -> colour image 01 basename from BTC Product Data (colour-specific product shot)."""
     global _COLOUR_IMAGE_BY_UID_CACHE
     if _COLOUR_IMAGE_BY_UID_CACHE is not None:
         return _COLOUR_IMAGE_BY_UID_CACHE
     out: dict[str, str] = {}
     try:
-        export_df, _encoding = _read_product_export_csv(
+        export_df, _encoding = _read_btc_product_data_csv(
             usecols=["UID", "colour image 01"],
             dtype={"UID": str},
         )
@@ -470,7 +470,7 @@ def _resolve_product_image_path(
     *,
     colour_img_by_uid: dict[str, str] | None = None,
 ) -> tuple[Path | None, str, str]:
-    """Prefer colour-specific ProductExport shot, then Database product image, then SKU.ext."""
+    """Prefer colour-specific BTC Product Data shot, then Database product image, then SKU.ext."""
     sku_str = str(sku_value or "").strip()
     colour_map = (
         colour_img_by_uid
@@ -494,14 +494,14 @@ def _resolve_product_image_path(
     return None, "none", ""
 
 
-def _load_product_export_by_uid() -> dict[str, dict]:
+def _load_btc_product_data_by_uid() -> dict[str, dict]:
     """Map BTC stock id (UID) to product fields when Database.xlsx has no row."""
     try:
-        export_df, _enc = _read_product_export_csv(dtype={"UID": str})
+        export_df, _enc = _read_btc_product_data_csv(dtype={"UID": str})
     except FileNotFoundError:
         return {}
     except Exception as e:
-        print(f"[PDF] Warning: Could not load ProductExport.csv fallback: {e}")
+        print(f"[PDF] Warning: Could not load BTC Product Data fallback: {e}")
         return {}
 
     if "UID" not in export_df.columns:
@@ -541,7 +541,7 @@ def _lookup_product_details(
     sku: str,
     export_by_uid: dict[str, dict] | None = None,
 ) -> dict:
-    """Resolve product row from Database.xlsx, then ProductExport.csv (UID = stock id)."""
+    """Resolve product row from Database.xlsx, then BTC Product Data (UID = stock id)."""
     if not sku or (isinstance(sku, float) and pd.isna(sku)):
         return {}
     sku_str = str(sku).strip()
@@ -555,7 +555,7 @@ def _lookup_product_details(
 
     fallback = (export_by_uid or {}).get(sku_str)
     if fallback:
-        print(f"     Using ProductExport fallback for SKU '{sku_str}' (not in Database.xlsx)")
+        print(f"     Using BTC Product Data fallback for SKU '{sku_str}' (not in Database.xlsx)")
         return dict(fallback)
     return {}
 
@@ -628,7 +628,7 @@ def generate_packing_slips_for_tag(csv_filename, tag_id, output_path=None):
         # Load Pack Names and Titles maps via openpyxl
         pack_names_map = _load_pack_names_map(PACKS_DATABASE_FILE)
         pack_titles_map = _load_pack_titles_map(PACKS_DATABASE_FILE)
-        export_by_uid = _load_product_export_by_uid()
+        export_by_uid = _load_btc_product_data_by_uid()
         try:
             from run_script import load_packs_database
             packs_components_map = load_packs_database(str(PACKS_DATABASE_FILE))
@@ -640,7 +640,7 @@ def generate_packing_slips_for_tag(csv_filename, tag_id, output_path=None):
         
         print(f"[PDF] Loaded {len(orders_df)} order items and {len(products_df)} products.")
         if export_by_uid:
-            print(f"[PDF] ProductExport fallback: {len(export_by_uid)} SKUs available.")
+            print(f"[PDF] BTC Product Data fallback: {len(export_by_uid)} SKUs available.")
     except FileNotFoundError as e:
         print(f"\n[ERROR] FATAL: Required file not found. Please check paths.\n    Details: {e}")
         return False
@@ -806,7 +806,7 @@ def generate_packing_slips():
         # Load Pack Names and Titles maps via openpyxl
         pack_names_map = _load_pack_names_map(PACKS_DATABASE_FILE)
         pack_titles_map = _load_pack_titles_map(PACKS_DATABASE_FILE)
-        export_by_uid = _load_product_export_by_uid()
+        export_by_uid = _load_btc_product_data_by_uid()
         
         products_df = products_df.drop_duplicates(subset=[COLUMN_NAMES['db_sku']], keep='first')
         products_df = products_df.set_index(COLUMN_NAMES['db_sku'])

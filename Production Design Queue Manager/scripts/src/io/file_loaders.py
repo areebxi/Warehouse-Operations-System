@@ -259,39 +259,101 @@ def load_pocket_design_ids_database(app_dir: Optional[str] = None) -> Set[str]:
         return set()
 
 
-def load_configuration_workbook(
+def _load_override_sheet(workbook_path: str) -> Tuple[Optional[pd.DataFrame], Optional[str]]:
+    """Read Override Print Size (or legacy Pocket sheet) from Configuration Workbook."""
+    if not os.path.exists(workbook_path):
+        return None, None
+    xl = pd.ExcelFile(workbook_path)
+    sheet_names = set(xl.sheet_names)
+    if "Override Print Size" in sheet_names:
+        return pd.read_excel(xl, sheet_name="Override Print Size"), "Override Print Size"
+    if "Pocket Design IDs Database" in sheet_names:
+        return pd.read_excel(xl, sheet_name="Pocket Design IDs Database"), "Pocket Design IDs Database"
+    if len(xl.sheet_names) > 1:
+        return pd.read_excel(xl, sheet_name=1), "Sheet 2"
+    return None, None
+
+
+def load_print_size_overrides_from_workbook(
+    config_workbook_path: Optional[str] = None,
     app_dir: Optional[str] = None,
-) -> Tuple[Optional[pd.DataFrame], Optional[str], PrintSizeOverrides]:
-    """
-    Load Size Reference + Override Print Size from Configuration Workbook in one open.
-
-    Returns:
-        (size_reference_df, workbook_path, print_size_overrides)
-    """
+) -> Tuple[PrintSizeOverrides, Optional[str], Optional[str]]:
+    """Load pocket / Override Print Size only (not Size References archive)."""
+    wh = _warehouse_queue_paths()
+    workbook_path = config_workbook_path or str(wh.queue_config_workbook_path())
     try:
-        config_workbook_path, size_df, override_df, size_sheet_info, override_sheet_info = (
-            _load_configuration_workbook_sheets(app_dir)
-        )
-
-        if size_df is None:
-            print(f"Configuration Workbook.xlsx not found at: {config_workbook_path}")
-            print("  Continuing without size reference (you can load it manually)")
-            return None, None, {}
-
-        df = _prepare_size_reference_df(size_df)
-        print(f"Size Reference loaded from: {config_workbook_path} ({size_sheet_info})")
-        print(f"  Found {len(df)} entries")
-
+        override_df, sheet_info = _load_override_sheet(workbook_path)
+        if override_df is None:
+            print(f"Pocket overrides: workbook not found -> {workbook_path}")
+            return {}, workbook_path, None
         overrides = _parse_print_size_overrides(override_df)
         if overrides:
             print(
-                f"Override Print Size loaded from: {config_workbook_path} ({override_sheet_info})"
+                f"Pocket overrides: Configuration Workbook -> {workbook_path} "
+                f"({sheet_info}, {len(overrides)} SKU Contain entries)"
             )
-            print(f"  Found {len(overrides)} SKU Contain entries")
         else:
-            print(f"Warning: Override Print Size sheet missing/empty: {config_workbook_path}")
+            print(
+                f"Pocket overrides: Override Print Size sheet missing/empty -> {workbook_path}"
+            )
+        return overrides, workbook_path, sheet_info
+    except Exception as exc:
+        print(f"Pocket overrides: error loading {workbook_path} -> {exc}")
+        return {}, workbook_path, None
 
-        return df, config_workbook_path, overrides
+
+def load_queue_data_sources(
+    cl_csv_path: Optional[str] = None,
+    config_workbook_path: Optional[str] = None,
+    app_dir: Optional[str] = None,
+) -> Tuple[str, PrintSizeOverrides, str]:
+    """
+    Load live Queue data sources with clear startup logging.
+
+    Print sizes come from CL CSV only. Configuration Workbook supplies pocket overrides.
+    """
+    from pathlib import Path
+
+    from src.core.cl_print_sizes import clear_cl_size_cache, load_cl_size_table
+
+    wh = _warehouse_queue_paths()
+    cl_path = Path(cl_csv_path) if cl_csv_path else wh.cl_csv_path()
+    wb_path = config_workbook_path or str(wh.queue_config_workbook_path())
+
+    clear_cl_size_cache()
+    try:
+        df = load_cl_size_table(cl_path)
+        print(f"Print sizes: Custom Label Database -> {cl_path} ({len(df):,} rows)")
+    except FileNotFoundError:
+        print(f"Print sizes: CL database not found -> {cl_path}")
+        print("  Unmatched SKUs will export to Missing Size Reference")
+    except ValueError as exc:
+        print(f"Print sizes: CL database error -> {exc}")
+
+    overrides, _, _ = load_print_size_overrides_from_workbook(wb_path, app_dir=app_dir)
+    return str(cl_path), overrides, wb_path
+
+
+def load_configuration_workbook(
+    app_dir: Optional[str] = None,
+    *,
+    cl_csv_path: Optional[str] = None,
+    config_workbook_path: Optional[str] = None,
+) -> Tuple[Optional[pd.DataFrame], Optional[str], PrintSizeOverrides, str, str]:
+    """
+    Load Queue data sources. Size References sheet is not loaded (CL CSV is live).
+
+    Returns:
+        (None, workbook_path, print_size_overrides, cl_csv_path, config_workbook_path)
+    """
+    try:
+        cl_path, overrides, wb_path = load_queue_data_sources(
+            cl_csv_path=cl_csv_path,
+            config_workbook_path=config_workbook_path,
+            app_dir=app_dir,
+        )
+        return None, wb_path, overrides, cl_path, wb_path
     except Exception as e:
-        print(f"Error loading Configuration Workbook: {e}")
-        return None, None, {}
+        print(f"Error loading Queue data sources: {e}")
+        wh = _warehouse_queue_paths()
+        return None, None, {}, str(wh.cl_csv_path()), str(wh.queue_config_workbook_path())

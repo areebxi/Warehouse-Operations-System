@@ -1,6 +1,6 @@
 # Demo Images Database
 
-Placeholder images for **offline testing** when UK design/apparel storage is unavailable.
+Placeholder images for **Testing** mode when UK design/apparel storage is unavailable.
 
 | Folder | Role |
 |--------|------|

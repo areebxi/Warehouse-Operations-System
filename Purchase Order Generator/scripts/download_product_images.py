@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Download product (and optional brand) images into assets/ from ProductExport.csv URLs.
+Download product (and optional brand) images into assets/ from BTC Product Data URLs.
 
 Database.xlsx stores basenames only (Product_Image_URL / Brand_Image_URL). This script
-fetches the files referenced in ProductExport (UID = SKU).
+fetches the files referenced in BTC Product Data (UID = SKU).
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ import app_paths  # noqa: F401
 
 from app_paths import asset_path, data_path, product_database_path
 
-DEFAULT_PRODUCT_EXPORT = data_path("ProductExport.csv")
+DEFAULT_BTC_PRODUCT_DATA = data_path("BTC_Product_Data.csv")
 PRODUCT_IMAGE_DIR = asset_path("product_images")
 BRAND_IMAGE_DIR = asset_path("brand_logos")
 
@@ -51,7 +51,7 @@ def pick_product_url(row: pd.Series) -> str:
     return ""
 
 
-def load_product_export(path: Path) -> pd.DataFrame:
+def load_btc_product_data(path: Path) -> pd.DataFrame:
     last_err: Exception | None = None
     df = None
     for encoding in ("utf-8-sig", "utf-8", "cp1252", "latin-1"):
@@ -68,7 +68,7 @@ def load_product_export(path: Path) -> pd.DataFrame:
             last_err = exc
             continue
     if df is None:
-        raise last_err or RuntimeError(f"Could not decode ProductExport: {path}")
+        raise last_err or RuntimeError(f"Could not decode BTC Product Data: {path}")
     df["UID"] = df["UID"].astype(str).str.strip()
     df = df[~df["UID"].str.startswith("[", na=False)]
     df = df[df["UID"] != ""]
@@ -152,9 +152,9 @@ def download_one(
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Download product/brand images from ProductExport.csv into assets/."
+        description="Download product/brand images from BTC Product Data into assets."
     )
-    parser.add_argument("--product-export", type=Path, default=DEFAULT_PRODUCT_EXPORT)
+    parser.add_argument("--btc-product-data", type=Path, default=DEFAULT_BTC_PRODUCT_DATA)
     parser.add_argument("--database", type=Path, default=product_database_path())
     parser.add_argument(
         "--database-only",
@@ -175,12 +175,12 @@ def main() -> int:
     parser.add_argument("--delay", type=float, default=0.05, help="Seconds between HTTP requests.")
     args = parser.parse_args()
 
-    pe_path = args.product_export
+    pe_path = args.btc_product_data
     if not pe_path.is_file():
         print(f"Error: file not found: {pe_path}")
         return 1
 
-    pe_df = load_product_export(pe_path)
+    pe_df = load_btc_product_data(pe_path)
     skus = {s.strip() for s in args.sku if s.strip()} or None
 
     db_product_names: set[str] = set()

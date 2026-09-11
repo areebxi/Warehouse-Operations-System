@@ -417,24 +417,12 @@ def extract_size_code(
             if pocket_code:
                 return pocket_code
 
-    if size_reference_df is not None and 'Merge_clean' in size_reference_df.columns:
-        if len(size_reference_df) > 0:
-            ref = _search_reference_size_codes(sku_str, size_reference_df)
-            if ref:
-                return ref
-
     parts = _sku_hyphen_tokens(sku_str)
-    bracket_required = set()
-    if size_reference_df is not None and 'Merge_clean' in size_reference_df.columns:
-        bracket_required = _bases_requiring_brackets(
-            size_reference_df, get_size_reference_index(size_reference_df)
-        )
-
     pattern_code = _extract_pattern_based_codes(parts)
-    if pattern_code and pattern_code not in bracket_required:
+    if pattern_code:
         return pattern_code
 
     common_code = _extract_common_size_codes(parts)
-    if common_code and common_code not in bracket_required:
+    if common_code:
         return common_code
     return None

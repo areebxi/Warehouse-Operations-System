@@ -1,10 +1,9 @@
 @echo off
 chcp 65001 >nul
-title Queue App - Canvas Layout Tool
-color 0A
+title Production Design Queue Manager
 
 echo ========================================
-echo   Queue App - Canvas Layout Tool
+echo   Production Design Queue Manager
 echo ========================================
 echo.
 
@@ -79,7 +78,7 @@ if errorlevel 1 (
 
 REM Start the app detached so this setup window can close immediately.
 REM /MAX avoids Windows inheriting a minimized state from the closing console.
-echo [INFO] Starting Queue App (no console window)...
+echo [INFO] Starting Production Design Queue Manager (no console window)...
 echo.
 start "" /MAX pythonw "%SCRIPT_DIR%queue_app.py"
 if errorlevel 1 (

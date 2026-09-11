@@ -2,6 +2,12 @@
 setlocal EnableExtensions
 
 cd /d "%~dp0"
+title Shipping Label Generator
+
+echo ========================================
+echo   Shipping Label Generator
+echo ========================================
+echo.
 
 REM 1) Environment check: verify Python is installed
 py --version >nul 2>&1

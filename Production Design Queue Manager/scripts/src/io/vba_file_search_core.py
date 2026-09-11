@@ -277,4 +277,21 @@ def find_design_file_vba_logic(
     result = _search_double_for_order(order_str)
     if result[0]:
         return result
+
+    fb = _demo_design_fallback("custom", order_str)
+    if fb:
+        return fb, "single", False, False
+    fb = _demo_design_fallback("custom_double", order_str)
+    if fb:
+        return fb, "double", False, False
     return None, None, False, False
+
+
+def _demo_design_fallback(kind: str, token: str):
+    try:
+        from shared.demo_images import demo_fallback_path
+
+        path = demo_fallback_path(kind, token)
+        return str(path) if path else None
+    except ImportError:
+        return None

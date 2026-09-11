@@ -20,11 +20,14 @@ All paths resolve through `shared/paths.py`.
 Key live files:
 
 - `database/shared/custom_label/Custom_Label_Database.csv` (CL app owns policy)
-- `database/shared/product_export/ProductExport.csv` (shared PE)
+- `database/shared/btc_product_data/BTC_Product_Data.csv` (shared **BTC Product Data**)
+- `database/shared/uneek_product_data/Uneek_Product_Data.xlsx` (shared **Uneek Product Data**)
+- `database/shared/absolute_product_data/Absolute_Product_Data.xlsx` (shared **Absolute Product Data**)
 - `database/shared/shipstation/ShipStation_Tags.xlsx` (shared tags)
 - Packing DB: `database/order-packing-list-generator/` (Workbook, New SKU DB)
 - Queue DB: `database/production-design-queue-manager/Configuration Workbook.xlsx`
-- PO DB: `database/purchase-order-generator/` (Database, packs, stock)
+- Plain / Packs: `database/shared/plain/Plain Database.xlsx`, `database/shared/packs/Packs Database.xlsx`
+- PO DB: `database/purchase-order-generator/` (stock CSVs; Plain/Packs are shared)
 - CL helpers: `database/custom-label-database/support/`, `Apparel Images/`
 - Run I/O: each app’s `{Input,Output,Logs,…}/`
 - `runtime/SharedInbox/DTF Des/{date}/{shift}/`
@@ -45,8 +48,8 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 
 ### Custom Label Database
 - **Purpose:** Catalog fills and NocoDB sync.
-- **Live data:** `database/shared/custom_label/` (+ backups); helpers in `database/custom-label-database/support/`; PE in `database/shared/product_export/`.
-- **Talks to:** NocoDB; Product Export / Size helpers. Not ShipStation.
+- **Live data:** `database/shared/custom_label/` (+ backups); helpers in `database/custom-label-database/support/`; BTC Product Data in `database/shared/btc_product_data/`; Uneek Product Data in `database/shared/uneek_product_data/`; Absolute Product Data in `database/shared/absolute_product_data/`.
+- **Talks to:** NocoDB; BTC / Uneek Product Data / Size helpers. Not ShipStation.
 
 ### Order Packing List Generator
 - **Purpose:** ShipStation orders → process CSVs, packing PDFs, Picking / Orders Details / DTF Des Excel.
@@ -64,9 +67,9 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 - **Talks to:** ShipStation API. Does not auto-read SharedInbox yet.
 
 ### Purchase Order Generator
-- **Purpose:** Awaiting-dispatch by tag → BTC stock → packing slips.
-- **Live data:** DB in `database/purchase-order-generator/`; app `assets/`, `output/`, `config.py`; shared Tags + PE + CL CSV.
-- **Talks to:** ShipStation API; BTC FTP stock; CL CSV (`BTC SKU`).
+- **Purpose:** Awaiting-dispatch by tag → BTC stock → packing slips (future: EDI-focused; packing PDFs move to Packing List Generator).
+- **Live data:** stock in `database/purchase-order-generator/`; shared Plain / Packs / Tags / CL / supplier catalogs; app `assets/`, `output/`, `config.py`.
+- **Talks to:** ShipStation API; BTC FTP stock; CL CSV (`BTC SKU`); shared Plain / Packs.
 
 ## Join points (proven)
 
@@ -74,7 +77,11 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 |------|------|
 | Item SKU ↔ Custom Label | `shared/cl_sku_match.py` on CL CSV `Custom Label` |
 | CL CSV | `database/shared/custom_label/Custom_Label_Database.csv` |
-| Product Export | `database/shared/product_export/ProductExport.csv` (single) |
+| BTC Product Data | `database/shared/btc_product_data/BTC_Product_Data.csv` (single) |
+| Uneek Product Data | `database/shared/uneek_product_data/Uneek_Product_Data.xlsx` (single) |
+| Absolute Product Data | `database/shared/absolute_product_data/Absolute_Product_Data.xlsx` (single). Warehouse buys **babysuits only** (styles C800T / C8020T / C8030T) |
+| Plain Database | `database/shared/plain/Plain Database.xlsx` (single; grouping + PO) |
+| Packs Database | `database/shared/packs/Packs Database.xlsx` (single; grouping + PO) |
 | ShipStation Tags | `database/shared/shipstation/ShipStation_Tags.xlsx` (single) |
 | DTF Des-P\*.xlsx | Packing → app Output + SharedInbox; Queue auto Missing Logo |
 | Print sizes (Queue) | CL CSV Width/Height mm; Pocket overrides in Queue Configuration Workbook |

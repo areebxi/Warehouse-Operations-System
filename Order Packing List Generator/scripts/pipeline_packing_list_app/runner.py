@@ -70,9 +70,9 @@ def validate_image_folders(app) -> bool:
     """Require any non-empty image folder path to be an existing directory."""
     folders = (
         ("Apparel Image folder", app.apparel_dir_var.get()),
-        ("Normal Logo/Design folder", app.logo_normal_dir_var.get()),
-        ("Customise Single Position Logo/Design folder", app.logo_custom_single_dir_var.get()),
-        ("Customise Double Position Logo/Design folder", app.logo_custom_double_dir_var.get()),
+        ("Normal Design folder", app.logo_normal_dir_var.get()),
+        ("Customise Single Position Design folder", app.logo_custom_single_dir_var.get()),
+        ("Customise Double Position Design folder", app.logo_custom_double_dir_var.get()),
     )
     for label, raw in folders:
         path_str = (raw or "").strip()
@@ -506,6 +506,32 @@ def on_run_clicked(app) -> None:
                     batch_phase = "excel" if multi else "all"
                     pdf_jobs = []
 
+                    def _skip_missing_csv(
+                        csv_path: Path,
+                        *,
+                        pl: PipelineLog,
+                        prefix: str,
+                        reason: str,
+                        phase: str,
+                    ) -> None:
+                        name = csv_path.stem
+                        line = f"Skipped {name} ({phase}): {reason}"
+                        pl.detail(line)
+                        if app._log_queue is not None:
+                            app._log_queue.put(f"{prefix}{line}")
+                        results.append(
+                            {
+                                "input": csv_path,
+                                "output_root": None,
+                                "unmatched": None,
+                                "missing_logo": None,
+                                "process_name": name,
+                                "missing_logos_report": None,
+                                "skipped": True,
+                                "skip_reason": reason,
+                            }
+                        )
+
                     for csv_path in paths:
                         prefix = f"[{csv_path.stem}] " if multi else ""
                         pl = run_with_log_file(csv_path.stem, prefix)
@@ -522,13 +548,39 @@ def on_run_clicked(app) -> None:
                         pl.detail(start_msg)
                         if app._log_queue is not None:
                             app._log_queue.put(f"{prefix}{start_msg}")
-                        output_root, unmatched, missing_logo, missing_logos_report = _run_one_pipeline(
-                            csv_path,
-                            pl=pl,
-                            use_fixed=use_fixed,
-                            fixed_process=fixed_for_this,
-                            phases=batch_phase,
-                        )
+
+                        if multi and not Path(csv_path).exists():
+                            _skip_missing_csv(
+                                Path(csv_path),
+                                pl=pl,
+                                prefix=prefix,
+                                reason=f"Input CSV not found: {csv_path}",
+                                phase="Excel",
+                            )
+                            continue
+
+                        try:
+                            output_root, unmatched, missing_logo, missing_logos_report = (
+                                _run_one_pipeline(
+                                    csv_path,
+                                    pl=pl,
+                                    use_fixed=use_fixed,
+                                    fixed_process=fixed_for_this,
+                                    phases=batch_phase,
+                                )
+                            )
+                        except FileNotFoundError as exc:
+                            if not multi:
+                                raise
+                            _skip_missing_csv(
+                                Path(csv_path),
+                                pl=pl,
+                                prefix=prefix,
+                                reason=str(exc),
+                                phase="Excel",
+                            )
+                            continue
+
                         entry = {
                             "input": csv_path,
                             "output_root": output_root,
@@ -550,6 +602,17 @@ def on_run_clicked(app) -> None:
                                 }
                             )
 
+                    if multi and not pdf_jobs and any(r.get("skipped") for r in results):
+                        skipped_lines = [
+                            f"- {r.get('process_name')}: {r.get('skip_reason') or 'not found'}"
+                            for r in results
+                            if r.get("skipped")
+                        ]
+                        raise FileNotFoundError(
+                            "All input CSVs were skipped (not found / unavailable):\n"
+                            + "\n".join(skipped_lines)
+                        )
+
                     if pdf_jobs:
                         banner = (
                             f"Batch: Excel complete for {len(pdf_jobs)} inputs — starting PDF phase…"
@@ -559,13 +622,25 @@ def on_run_clicked(app) -> None:
                             job["pl"].detail(f"{job['prefix']}Starting PDF phase…")
                             if app._log_queue is not None:
                                 app._log_queue.put(f"{job['prefix']}Starting PDF phase…")
-                            _, _, _, missing_logos_report = _run_one_pipeline(
-                                job["csv_path"],
-                                pl=job["pl"],
-                                use_fixed=job["use_fixed"],
-                                fixed_process=job["fixed_for_this"],
-                                phases="pdf",
-                            )
+                            try:
+                                _, _, _, missing_logos_report = _run_one_pipeline(
+                                    job["csv_path"],
+                                    pl=job["pl"],
+                                    use_fixed=job["use_fixed"],
+                                    fixed_process=job["fixed_for_this"],
+                                    phases="pdf",
+                                )
+                            except FileNotFoundError as exc:
+                                reason = str(exc)
+                                line = (
+                                    f"Skipped {Path(job['csv_path']).stem} (PDF): {reason}"
+                                )
+                                job["pl"].detail(line)
+                                if app._log_queue is not None:
+                                    app._log_queue.put(f"{job['prefix']}{line}")
+                                job["entry"]["pdf_skipped"] = True
+                                job["entry"]["pdf_skip_reason"] = reason
+                                continue
                             job["entry"]["missing_logos_report"] = missing_logos_report
                             output_root = job["entry"]["output_root"]
                             unmatched = job["entry"]["unmatched"]
@@ -601,24 +676,61 @@ def on_run_clicked(app) -> None:
 
 def on_pipeline_success(app) -> None:
     drain_log_queue(app)
-    append_log(app, "Pipeline completed successfully.")
-    msg_parts = ["Pipeline completed successfully."]
+    results = app._pipeline_results
+    skipped = [r for r in (results or []) if r.get("skipped")]
+    pdf_skipped = [r for r in (results or []) if r.get("pdf_skipped") and not r.get("skipped")]
+    completed = [r for r in (results or []) if not r.get("skipped")]
+
+    if skipped and completed:
+        title = "Finished (with skips)"
+        headline = "Pipeline completed with skipped inputs."
+    elif skipped and not completed:
+        title = "Finished (with skips)"
+        headline = "Pipeline finished — all selected inputs were skipped."
+    else:
+        title = "Finished"
+        headline = "Pipeline completed successfully."
+
+    append_log(app, headline)
+    msg_parts = [headline]
     for log_fp in getattr(app, "_session_log_files", None) or []:
         append_log(app, f"Log file: {log_fp}")
         msg_parts.append(f"\nLog file:\n{log_fp}")
-    results = app._pipeline_results
-    if results and len(results) > 1:
+
+    if skipped:
+        append_log(app, "Skipped (input CSV missing / unavailable):")
+        msg_parts += ["", "Skipped (input CSV missing / unavailable):"]
+        for r in skipped:
+            name = str(r.get("process_name") or "").strip() or "?"
+            reason = str(r.get("skip_reason") or "Input CSV not found")
+            line = f"Process {name} — {reason}"
+            append_log(app, line)
+            msg_parts.append(line)
+
+    if pdf_skipped:
+        append_log(app, "Skipped PDF (input CSV missing / unavailable):")
+        msg_parts += ["", "Skipped PDF (input CSV missing / unavailable):"]
+        for r in pdf_skipped:
+            name = str(r.get("process_name") or "").strip() or "?"
+            reason = str(r.get("pdf_skip_reason") or "Input CSV not found")
+            line = f"Process {name} — {reason}"
+            append_log(app, line)
+            msg_parts.append(line)
+
+    if results and (len(completed) > 1 or (skipped and completed)):
         processes_made = [
-            str(e.get("process_name") or "").strip() for e in results if str(e.get("process_name") or "").strip()
+            str(e.get("process_name") or "").strip()
+            for e in completed
+            if str(e.get("process_name") or "").strip()
         ]
         unmatched_processes = [
             str(e.get("process_name"))
-            for e in results
+            for e in completed
             if isinstance(e.get("unmatched"), Path) and e.get("unmatched").exists()
         ]
         missing_logo_processes = [
             str(e.get("process_name"))
-            for e in results
+            for e in completed
             if isinstance(e.get("missing_logo"), Path) and e.get("missing_logo").exists()
         ]
         if processes_made:
@@ -636,7 +748,7 @@ def on_pipeline_success(app) -> None:
             for n in missing_logo_processes:
                 append_log(app, f"Process {n}")
             msg_parts += ["", "Missing logo orders file:"] + [f"Process {n}" for n in missing_logo_processes]
-    else:
+    elif not skipped:
         if app.output_root and app.output_root.exists():
             append_log(app, f"Output folder: {app.output_root}")
             msg_parts.append(f"\nOutput folder: {app.output_root}")
@@ -646,12 +758,23 @@ def on_pipeline_success(app) -> None:
         if app.missing_logo_path and app.missing_logo_path.exists():
             append_log(app, f"Missing logo orders file: {app.missing_logo_path}")
             msg_parts.append(f"\nMissing logo orders file: {app.missing_logo_path}")
-    missing_reports = [r.get("missing_logos_report") for r in (results or []) if r.get("missing_logos_report")]
+    elif len(completed) == 1:
+        only = completed[0]
+        out = only.get("output_root")
+        if isinstance(out, Path) and out.exists():
+            append_log(app, f"Output folder: {out}")
+            msg_parts.append(f"\nOutput folder: {out}")
+
+    missing_reports = [
+        r.get("missing_logos_report")
+        for r in completed
+        if r.get("missing_logos_report")
+    ]
     for report in missing_reports:
         msg_parts += ["", report]
     set_buttons_running(app, False)
     app._save_config()
-    show_scrollable_message(app.root, "Finished", "\n".join(msg_parts))
+    show_scrollable_message(app.root, title, "\n".join(msg_parts))
 
 
 def on_pipeline_error(app, message: str) -> None:

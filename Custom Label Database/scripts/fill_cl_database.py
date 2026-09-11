@@ -4,11 +4,17 @@ import io
 import os
 import re
 import sys
+from pathlib import Path
 from typing import Dict, List, Optional, Sequence
+
+_WAREHOUSE = Path(__file__).resolve().parents[2]
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared import paths as wh  # noqa: E402
 
 
 TOKEN_RE = re.compile(r"\{([^{}]+)\}")
-# ProductExport cell values: keep ASCII letters, digits, and hyphens; other characters become spaces, then collapsed.
+# BTC Product Data cell values: keep ASCII letters, digits, and hyphens; other characters become spaces, then collapsed.
 _SANITIZE_PRODUCT_VALUE = re.compile(r"[^a-zA-Z0-9-]+")
 # Remove parenthetical / bracketed notes e.g. "Sport Grey (RS)" -> "Sport Grey " before sanitizing.
 _PARENS_SEGMENT = re.compile(r"\([^()]*\)")
@@ -57,12 +63,12 @@ def _read_csv_text(path: str, encoding: Optional[str]) -> tuple[str, str]:
     return raw.decode("latin-1"), "latin-1"
 
 
-def load_product_export(path: str, encoding: Optional[str]) -> tuple[List[str], List[Dict[str, str]]]:
-    """Load ProductExport.csv into memory so we can expand multiple CL template rows."""
+def load_btc_product_data(path: str, encoding: Optional[str]) -> tuple[List[str], List[Dict[str, str]]]:
+    """Load BTC Product Data into memory so we can expand multiple CL template rows."""
     text, _used_enc = _read_csv_text(path, encoding)
     reader = csv.DictReader(io.StringIO(text))
     if not reader.fieldnames:
-        raise ValueError("ProductExport.csv has no header/fieldnames.")
+        raise ValueError("BTC Product Data has no header/fieldnames.")
     rows: List[Dict[str, str]] = []
     for row in reader:
         # csv.DictReader may return None values for missing columns; normalize to empty string
@@ -75,9 +81,9 @@ def cell_has_placeholders(cell: str) -> bool:
 
 
 def replace_placeholders_in_cell(cell: str, product_row: Dict[str, str], source_name: str, row_num: int) -> str:
-    """Replace {ColumnName} tokens using columns from ProductExport.csv.
+    """Replace {ColumnName} tokens using columns from BTC Product Data.
 
-    Product field values are already sanitized to ASCII letters, digits, and hyphens (see load_product_export).
+    Product field values are already sanitized to ASCII letters, digits, and hyphens (see load_btc_product_data).
     After substitution, any run of whitespace (including line breaks from the template layout)
     is collapsed to a single space so fields like Gender Apparel are one line.
     """
@@ -87,7 +93,7 @@ def replace_placeholders_in_cell(cell: str, product_row: Dict[str, str], source_
         if key not in product_row:
             raise KeyError(
                 f"Missing token column {key!r} referenced from CL {source_name} row {row_num}. "
-                f"Available ProductExport columns do not include it."
+                f"Available BTC Product Data columns do not include it."
             )
         return product_row[key]
 
@@ -131,7 +137,7 @@ def fill_cl_template(
             cl_row_num += 1
 
             # Template detection: a CL row is "template/placeholder" if any cell contains {..} tokens.
-            # If it's a template row, replace it by N filled rows (N = number of ProductExport rows).
+            # If it's a template row, replace it by N filled rows (N = BTC Product Data rows).
             if any(cell_has_placeholders(cell) for cell in row):
                 for p_row in product_rows:
                     filled_row: List[str] = []
@@ -169,11 +175,11 @@ def fill_cl_template(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Expand CL DatabaseX.csv template rows using ProductExport.csv.")
+    parser = argparse.ArgumentParser(description="Expand CL DatabaseX.csv template rows using BTC Product Data.")
     parser.add_argument(
         "--product",
-        default=os.path.join(os.path.dirname(__file__), "ProductExport.csv"),
-        help="Path to ProductExport.csv",
+        default=str(wh.btc_product_data_path()),
+        help="Path to BTC_Product_Data.csv",
     )
     parser.add_argument(
         "--template",
@@ -200,7 +206,7 @@ def main() -> int:
     read_enc: Optional[str] = args.encoding
     write_enc = args.encoding if args.encoding is not None else "utf-8-sig"
 
-    _, product_rows = load_product_export(args.product, encoding=read_enc)
+    _, product_rows = load_btc_product_data(args.product, encoding=read_enc)
     fill_cl_template(args.template, product_rows, args.out, read_encoding=read_enc, write_encoding=write_enc)
 
     print(f"Wrote filled output to: {args.out}")

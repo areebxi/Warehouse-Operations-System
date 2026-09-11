@@ -1,0 +1,95 @@
+---
+description: Four Areeb 30-chain columns and how they are filled
+alwaysApply: false
+globs: "Custom Label Database/**,scripts/fill_areeb_taxonomy.py,shared/areeb_taxonomy.py"
+---
+
+# Areeb 30-chain taxonomy
+
+Grouping 30-chain reads these four headers on **all three** catalogs. They are **not** the PE columns `Category` / `Department` / `Sub-Category` / `Sub-Department`.
+
+| Header | Graph slot |
+|---|---|
+| `Category (Areeb)` | category |
+| `Product Type (Areeb)` | product-type |
+| `Product Style (Areeb)` | product-style |
+| `Department (Areeb)` | department |
+
+Code: `shared/areeb_taxonomy.py`. One-off fill: `python scripts/fill_areeb_taxonomy.py`. Future CL rows: `fill_from_seeds.py --steps areeb`.
+
+## Custom Label — warehouse standard (`cl_standard`)
+
+**Never copy BTC, Uneek, PE, Brand, or supplier cells into the four Areeb columns.** Study input was last-year ShipStation SKUs + the live CL `Gender Apparel` list (328 values, 0 blank). Fill values come from the warehouse system in `shared/areeb_taxonomy.py`. Refill **overwrites** all four Areeb cells on every CL row.
+
+| Areeb column | How it is filled |
+|---|---|
+| `Category (Areeb)` | Product family from Gender Apparel (`T-SHIRTS`, `SWEATSHIRTS AND HOODIES`, `POLO SHIRTS`, `Stickers`, `Iron-On`, `Bags`, …). |
+| `Product Type (Areeb)` | Type inside that family (`MENS SHORT SLEEVE T-SHIRT`, `Childrens T-Shirt`, `Sticker`, …). |
+| `Product Style (Areeb)` | Style token from Gender Apparel (`Heavy Cotton`, `Softstyle`, `Valueweight`, `Classic`, `A4`, `BG125J`). **Not Brand.** |
+| `Department (Areeb)` | **Gender only:** `Mens` / `Womens` / `Kids` / `Unisex` / `General`. Not raw Gender Apparel. Non-apparel (bags, stickers, mugs, iron-on, headwear, hospitality) → `General`. Hi-vis without kids/womens → `Unisex`. Adult garments with no gender word → `Mens`. |
+
+Lookup order for one Gender Apparel string:
+
+1. Exact table `CL_STANDARD_RULES` (legacy names + codes: `Mens-T-Shirt`, `5000`, `C800T-BS`, …)
+2. Prefixes: `DTF-IronOn*` / `IronOn*` → Iron-On; `BG-*` / `PC-*` / `WB-*` / tote/backpack → Bags; `Cap-*` → HEADWEAR
+3. Pattern engine on Gender Apparel words (hoodie, polo, trouser, hi-vis, …) + brand-prefix strip (`FOTL` / `FOLT` / `GILDAN` / `Uneek` / …) for style
+
+Examples: `Mens-T-Shirt` → T-SHIRTS / MENS SHORT SLEEVE T-SHIRT / T-Shirt / Mens. `FOTL Mens Valueweight T` → … / Valueweight / Mens. `GILDAN Heavy Blend Adult Crewneck Sweatshirt` → SWEATSHIRTS AND HOODIES / Mens Sweatshirts & Hoodies / Heavy Blend / Mens. `Sticker` → Stickers / Sticker / Sticker / General. `Kids-T-Shirt-Hoodie` → Sets / T-Shirt and Hoodie / Kids Set / Kids.
+
+## BTC Product Data (Plain / Packs only)
+
+Join: UID (Plain `SKU`, Packs `Item 1 SKU`). Fallback: `Product Code` → BTC `SPC` (first UID on that SPC) — Plain and Packs. **Not used for Custom Label Areeb.**
+
+| Areeb column | BTC column |
+|---|---|
+| `Category (Areeb)` | `Department` |
+| `Product Type (Areeb)` | `Sub Department` |
+| `Product Style (Areeb)` | `Brand` |
+| `Department (Areeb)` | `Description` |
+
+## Uneek Product Data (Plain / Packs only)
+
+Join: `Short Code` (Plain `SKU`). Fallback: `Product Code`. **Not used for Custom Label Areeb.**
+
+| Areeb column | Uneek column |
+|---|---|
+| `Category (Areeb)` | `Category` |
+| `Product Type (Areeb)` | `Product Name` |
+| `Product Style (Areeb)` | `Full Description` |
+| `Department (Areeb)` | `Gender` |
+
+Uneek `Department (Areeb)` is Gender; BTC `Department (Areeb)` is garment Description. Same column, two vocabularies — supervisor map 8 Sep 2026. Custom Label Department (Areeb) is warehouse gender only (`Mens` / `Womens` / `Kids` / `Unisex` / `General`).
+
+## Plain / Packs
+
+- Plain fill is **blank-only**. Lookup: `SKU` → BTC UID, else `SKU` → Uneek Short Code, else `Product Code` → BTC SPC, else leftover system `plain_leftover`.
+- Packs (`01-Database`): `Item 1 SKU` → BTC UID, else `Product Code` → BTC SPC, else Uneek Short Code / Product Code. Never copy Packs `Description` (eBay HTML) into `Department (Areeb)`. Blank-only.
+
+## Plain leftover (`plain_leftover`)
+
+Used only when UID, Uneek Short Code, and BTC SPC all miss. Also fills **holes** on a supplier hit (example: Uneek `Category` blank → leftover Category only). Does **not** overwrite filled BTC/Uneek cells. Values stay in BTC language. **Not** Custom Label gender-only Department.
+
+| Areeb column | How it is filled |
+|---|---|
+| `Category (Areeb)` | Family from Plain `Description` using BTC Department words (`T-SHIRTS`, `OUTERWEAR`, `SWEATSHIRTS AND HOODIES`, …). Last resort `Accessories`. |
+| `Product Type (Areeb)` | Type from Description + gender words, using BTC Sub Department (`Ladies Short Sleeve T-Shirts`, `Childrens jackets`, …). |
+| `Product Style (Areeb)` | Plain `Brand`. |
+| `Department (Areeb)` | Plain `Description` (same slot as BTC Description). |
+
+Gender words in Description pick the Sub Department only (`Girl's` / `Kid's` → Childrens, `Women's` / `Ladies` → Ladies, `Unisex` → Unisex, else Mens). They are **not** written into `Department (Areeb)`.
+
+## Fill 2026-09-08
+
+| File | Rows | Filled | Still blank Category (Areeb) |
+|---|---|---|---|
+| Plain Database.xlsx | 78,039 | All four Areeb columns filled blank-only: 67,237 UID/Short Code kept; **3,941** `btc_spc`; **6,860** `plain_leftover`; **1** Uneek hole (`805YWSM` Category ← leftover `Safetywear`) | 0 |
+| Packs Database.xlsx | 38,452 | 38,452 (38,261 `btc_uid` + 191 `btc_spc`) | 0 |
+| Custom_Label_Database.csv | 131,892 | All four Areeb columns overwritten from Gender Apparel `cl_standard` | 0 |
+
+Backups: `database/shared/plain/archive/`, `database/shared/packs/archive/`; CL `database/shared/custom_label/backups/`.
+
+## Last-year order study (2025-09-08 .. 2026-09-08)
+
+Cache: `Custom Label Database/docs/areeb-taxonomy-ss-skus.json` (complete). Statuses `shipped` + `awaiting_shipment`. **60,051** unique SKUs. **57,773** hit a CL row; **2,278** have no CL row (those SKUs are not in the catalog). Every CL row has Gender Apparel. CL classify source is `cl_standard` only.
+
+Supply Method is a separate column (not Areeb). See `supply-method.mdc`.

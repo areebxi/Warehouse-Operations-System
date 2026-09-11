@@ -87,17 +87,22 @@ class SettingsManager(ISettingsManager):
         self._saved_settings = {
             'input_file': None,
             'input_folder_path': None,
-            'size_reference_file': None,
+            'cl_csv_path': None,
+            'config_workbook_path': None,
             'designs_folder': None,
             'single_designs_folder': None,
             'double_designs_folder': None,
-            'dtf_queues_folder': None
+            'dtf_queues_folder': None,
+            'use_demo_images': False,
         }
         
         if os.path.exists(self.settings_file):
             try:
                 with open(self.settings_file, 'r') as f:
-                    self._saved_settings = json.load(f)
+                    loaded = json.load(f)
+                if loaded.get("size_reference_file") and not loaded.get("config_workbook_path"):
+                    loaded["config_workbook_path"] = loaded.pop("size_reference_file")
+                self._saved_settings.update(loaded)
             except Exception as e:
                 print(f"Error loading settings: {e}")
     
@@ -105,11 +110,14 @@ class SettingsManager(ISettingsManager):
         self,
         input_file: Optional[str] = None,
         input_folder_path: Optional[str] = None,
+        cl_csv_path: Optional[str] = None,
+        config_workbook_path: Optional[str] = None,
         size_reference_file: Optional[str] = None,
         designs_folder: Optional[str] = None,
         single_designs_folder: Optional[str] = None,
         double_designs_folder: Optional[str] = None,
-        dtf_queues_folder: Optional[str] = None
+        dtf_queues_folder: Optional[str] = None,
+        use_demo_images: Optional[bool] = None,
     ) -> None:
         """Save current settings to file.
         
@@ -134,11 +142,13 @@ class SettingsManager(ISettingsManager):
             settings = {
                 'input_file': input_file,
                 'input_folder_path': input_folder_path,
-                'size_reference_file': size_reference_file,
+                'cl_csv_path': cl_csv_path or size_reference_file,
+                'config_workbook_path': config_workbook_path,
                 'designs_folder': designs_folder,
                 'single_designs_folder': single_designs_folder,
                 'double_designs_folder': double_designs_folder,
-                'dtf_queues_folder': dtf_queues_folder
+                'dtf_queues_folder': dtf_queues_folder,
+                'use_demo_images': bool(use_demo_images),
             }
             with open(self.settings_file, 'w') as f:
                 json.dump(settings, f, indent=2)

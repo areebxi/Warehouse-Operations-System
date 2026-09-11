@@ -1,0 +1,35 @@
+---
+description: Supply Method values and how they are filled
+alwaysApply: false
+globs: "Custom Label Database/**,scripts/fill_supply_method.py,shared/supply_method.py,scripts/test_supply_method.py"
+---
+
+# Supply Method
+
+Grouping column **`Supply Method`** on Custom Label, Plain Database, and Packs. Not the old CL `Warehouse Stock` column (China bags).
+
+Code: `shared/supply_method.py`. One-off: `python scripts/fill_supply_method.py`. Future CL rows: `fill_from_seeds.py --steps supply`.
+
+| Cell | Meaning |
+|---|---|
+| `Warehouse Stock` | Fruit of the Loom men / women / kids **t-shirts only** |
+| `In House Manufacture` | Iron-on or sticker (printed / CL only) |
+| `Supplier On Demand` | Gildan t-shirts and everything else |
+
+Decision order:
+
+1. If this is CL **and** Custom Label (SKU) or Gender Apparel contains `iron on` / `ironon` / `iron-on` / `sticker` (spaces and hyphens ignored) → `In House Manufacture`
+2. Else if FOTL identity **and** `Category (Areeb)` = `T-SHIRTS` **and** not vest/tank → `Warehouse Stock`
+3. Else → `Supplier On Demand`
+
+FOTL identity: Brand contains Fruit + Loom, or Brand/GA `FOTL`/`FOLT`, or GA is `Mens-T-Shirt` / `Womens-T-Shirt` / `Kids-T-Shirt` with blank Brand. **Gildan brand always wins** (on-demand).
+
+Plain / Packs: `allow_in_house=False` — never write `In House Manufacture`.
+
+## Fill 2026-09-09
+
+| File | Warehouse Stock | In House Manufacture | Supplier On Demand |
+|---|---:|---:|---:|
+| Custom Label | 83,801 | 453 | 47,638 |
+| Plain Database | 2,530 | 0 | 75,509 |
+| Packs | 17,252 | 0 | 21,200 |

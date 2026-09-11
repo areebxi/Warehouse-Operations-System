@@ -8,6 +8,7 @@ Pipeline (Custom Label always):
 """
 from __future__ import annotations
 
+import pickle
 import re
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -182,7 +183,19 @@ def _read_size_ref_table(config_path: Path) -> pd.DataFrame:
 
 
 def load_size_ref_index(config_path: Path) -> SizeRefIndex:
-    sr = _read_size_ref_table(config_path)
+    """Load Size References index; cache beside the CSV when mtime matches."""
+    path = Path(config_path)
+    cache = path.with_name(path.stem + ".index_cache.pkl")
+    try:
+        if cache.is_file() and cache.stat().st_mtime >= path.stat().st_mtime:
+            with open(cache, "rb") as f:
+                cached = pickle.load(f)
+            if isinstance(cached, SizeRefIndex):
+                return cached
+    except Exception:
+        pass
+
+    sr = _read_size_ref_table(path)
     by_base: dict[str, MergeBase] = {}
     by_exact: dict[str, list[SrRow]] = defaultdict(list)
 
@@ -218,7 +231,13 @@ def load_size_ref_index(config_path: Path) -> SizeRefIndex:
             mb.bare_rows.append(row)
 
     bases = sorted(by_base.keys(), key=len, reverse=True)
-    return SizeRefIndex(by_base=by_base, bases_longest_first=bases, by_exact_sku=dict(by_exact))
+    index = SizeRefIndex(by_base=by_base, bases_longest_first=bases, by_exact_sku=dict(by_exact))
+    try:
+        with open(cache, "wb") as f:
+            pickle.dump(index, f, protocol=pickle.HIGHEST_PROTOCOL)
+    except Exception:
+        pass
+    return index
 
 
 def load_overrides(config_path: Path) -> list[OverrideRule]:

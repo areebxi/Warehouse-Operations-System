@@ -30,7 +30,6 @@ def setup_error_logging() -> Tuple[None, Optional[Path]]:
     if console_dir is not None:
         _logs_dir = console_dir
     else:
-        import sys
         warehouse = project_root.parent
         if str(warehouse) not in sys.path:
             sys.path.insert(0, str(warehouse))

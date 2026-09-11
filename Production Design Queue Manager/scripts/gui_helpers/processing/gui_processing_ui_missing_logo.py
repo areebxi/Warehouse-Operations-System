@@ -12,14 +12,13 @@ from src.system.logging.utils import (
     get_run_logger,
 )
 from src.system.logging.run_logger import log_run_event
-from src.core.design_processor import process_personalised_designs, process_single_designs
+from src.core.design_folder_routing import find_designs_for_dtf_row
 from src.core.canvas_arranger import pack_designs
 from gui_helpers.common.gui_progress import update_progress, reset_progress
 from .gui_processing_helpers import (
     auto_detect_customise_column,
     create_design_log_entry,
     track_missing_size_reference_multi,
-    is_customise_yes,
     is_plainlg_sku,
     handle_missing_designs_error,
     handle_missing_designs_warning,
@@ -86,40 +85,37 @@ def process_missing_logo_file(gui, df, order_column, sku_column, file_path=None,
             duplicate_index = order_occurrences[order_number] - 1
             is_duplicate_order = order_total_counts.get(order_number, 0) > 1
 
-            size_code = gui.extract_size_code(item_sku)
-            if gui.size_reference_df is not None and size_code:
-                size_info = gui.get_size_from_reference(size_code)
-                if not size_info:
-                    missing_entry = f"{order_number} ({item_sku} - {size_code})"
-                    if missing_entry not in missing_sizes:
-                        missing_sizes.append(missing_entry)
-                        track_missing_size_reference_multi(df, order_column, sku_column, order_number, item_sku, missing_size_row_indices)
+            if gui.sku_missing_cl_print_size(item_sku):
+                missing_entry = f"{order_number} ({item_sku})"
+                if missing_entry not in missing_sizes:
+                    missing_sizes.append(missing_entry)
+                    track_missing_size_reference_multi(
+                        df, order_column, sku_column, order_number, item_sku, missing_size_row_indices
+                    )
 
-            force_single = is_customise_yes(customise)
-            design_items = []
-            found_in_personalised = False
-            if gui.single_designs_folder or gui.double_designs_folder:
-                design_items = process_personalised_designs(
-                    order_number, item_sku, duplicate_index, is_duplicate_order,
-                    gui.single_designs_folder, gui.double_designs_folder, gui.size_reference_df,
-                    gui.mm_to_pixel, gui.canvas_width_mm, gui.design_padding,
-                    getattr(gui, "print_size_overrides", None) or gui.pocket_design_ids_set,
-                    canvas_height_mm=gui.canvas_height_mm,
-                    force_single=force_single,
-                )
-                found_in_personalised = bool(design_items)
-                if design_items:
-                    log_stats['personalised_found'] += len(design_items)
-
-            if not design_items and gui.designs_folder:
-                design_items = process_single_designs(
-                    item_sku, gui.designs_folder, gui.size_reference_df, gui.mm_to_pixel,
-                    getattr(gui, "print_size_overrides", None) or gui.pocket_design_ids_set, canvas_width_mm=gui.canvas_width_mm,
-                    canvas_height_mm=gui.canvas_height_mm, design_padding=gui.design_padding,
-                    force_single=force_single,
-                )
-                if design_items:
-                    log_stats['all_in_one_found'] += len(design_items)
+            design_items, source = find_designs_for_dtf_row(
+                order_number=order_number,
+                item_sku=item_sku,
+                customise=customise,
+                duplicate_index=duplicate_index,
+                is_duplicate_order=is_duplicate_order,
+                designs_folder=gui.designs_folder,
+                single_designs_folder=gui.single_designs_folder,
+                double_designs_folder=gui.double_designs_folder,
+                mm_to_pixel=gui.mm_to_pixel,
+                canvas_width_mm=gui.canvas_width_mm,
+                canvas_height_mm=gui.canvas_height_mm,
+                design_padding=gui.design_padding,
+                print_size_overrides=getattr(gui, "print_size_overrides", None)
+                or gui.pocket_design_ids_set,
+                cl_csv_path=getattr(gui, "cl_csv_path", None),
+            )
+            found_in_personalised = source == "personalised"
+            if design_items:
+                if found_in_personalised:
+                    log_stats["personalised_found"] += len(design_items)
+                else:
+                    log_stats["all_in_one_found"] += len(design_items)
 
             if not design_items:
                 missing_orders.append(f"{order_number} (SKU: {item_sku})")

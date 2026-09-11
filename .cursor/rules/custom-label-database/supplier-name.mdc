@@ -1,0 +1,54 @@
+---
+description: Supplier Name values and how they are filled
+alwaysApply: false
+globs: "Custom Label Database/**,scripts/fill_supplier_name.py,shared/supplier_name.py,scripts/test_supplier_name.py"
+---
+
+# Supplier Name
+
+Grouping column **`Supplier Name`** on Custom Label, Plain Database, and Packs. Plain `1`; printed warehouse-stock `x`; printed supplier-on-demand `1`. Blank when the split is on → unmatched.
+
+Code: `shared/supplier_name.py`. One-off: `python scripts/fill_supplier_name.py`. Future CL rows: `fill_from_seeds.py --steps supplier_name`.
+
+Canonical cells:
+
+| Cell | Meaning |
+|---|---|
+| `BTC Activewear` | Bought from BTC. Not Packs short `BTC`. Not `Activeware`. |
+| `Uneek Clothing` | Bought from Uneek. Uneek sheet `Company` is 100% this string. |
+| `Absolute Apparels` | Babysuits purchased from Absolute only. |
+| (blank) | CL in-house iron-on / sticker. No supplier. |
+
+**Absolute Product Data** (`database/shared/absolute_product_data/Absolute_Product_Data.xlsx`) is a full wholesale price list (629 styles). The warehouse **only buys babysuits** from Absolute Apparels. Do not mark Gildan / bodywarmers / polos as Absolute because they appear on that sheet.
+
+Absolute babysuit styles (sheet Description `Body Suit Baby` / `Romper Suit Baby`):
+
+| Style | What |
+|---|---|
+| `C800T` | Casual Combed Interlock 180 Body Suit Baby |
+| `C8020T` | L/S Body Suit Baby |
+| `C8030T` | Romper Suit Baby |
+
+Hit when Custom Label, Gender Apparel, SKU, or Product Code contains that style token (`C800T-BS`, `M281-P5-C800T-30-18-24`). `BZ10-Body Suit` is **not** Absolute (not on the Absolute babysuit list).
+
+Decision order:
+
+1. CL in-house (SKU or Gender Apparel contains iron on / ironon / iron-on / sticker) → **blank**
+2. Absolute babysuit style → `Absolute Apparels`
+3. BTC Product Data **UID** → `BTC Activewear`
+4. Uneek **Short Code** → `Uneek Clothing`
+5. BTC Product Data **SPC** → `BTC Activewear`
+6. Uneek **Product Code** → `Uneek Clothing`
+7. Else → `BTC Activewear` (Plain leftover numeric SKU; Packs `BTC` normalizes here)
+
+## Fill 2026-09-09
+
+Overwrite all rows. Backups first. C8020T still not in the three catalogs.
+
+| File | Rows | BTC Activewear | Uneek Clothing | Absolute Apparels | Blank | Backup |
+|---|---:|---:|---:|---:|---:|---|
+| Custom Label | 131,892 | 123,948 | 6,992 | 499 | 453 (in-house) | `database/shared/custom_label/backups/Custom_Label_Database.bak_20260909_185544.csv` |
+| Plain Database | 78,039 | 71,047 | 6,992 | 0 | 0 | `database/shared/plain/archive/Plain Database.bak_20260909_185710.xlsx` |
+| Packs | 38,452 | 38,452 | 0 | 0 | 0 | `database/shared/packs/archive/Packs Database.bak_20260909_185937.xlsx` |
+
+CL wrote **5,430** cells (blanks filled; 6 C800T/C8030T corrected off `BTC Activewear`; in-house kept/cleared to blank). Plain wrote all 78,039. Packs wrote all 38,452 (`BTC` → `BTC Activewear`).

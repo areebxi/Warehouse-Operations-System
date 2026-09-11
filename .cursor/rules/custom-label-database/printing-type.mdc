@@ -1,0 +1,28 @@
+---
+description: Printing Type values and how they are filled
+alwaysApply: false
+globs: "Custom Label Database/**,scripts/fill_printing_type.py,shared/printing_type.py,scripts/test_printing_type.py"
+---
+
+# Printing Type
+
+Grouping column **`Printing Type`** on Custom Label only (printed split; plain flag `x`). Do not add a second column. Do not fill `Design Type`.
+
+Code: `shared/printing_type.py`. One-off: `python scripts/fill_printing_type.py`. Future CL rows: `fill_from_seeds.py --steps printing_type`.
+
+| Cell | Meaning |
+|---|---|
+| `DTF` | Default. Garments, bags, iron-on, stickers, everything that is not a mug. |
+| `Sublimation` | Mugs / drinkware |
+
+Decision order:
+
+1. Custom Label leading `M##` → `Mocks Databse.csv` `Printing-Type` when that cell is `DTF` or `Sublimation`
+2. Else mug: `Category (Areeb)` = `Mugs` **or** Gender Apparel starts with `Mug` → `Sublimation`
+3. Else → `DTF`
+
+`M-T-BLK-M` is not a mock ID. Junk mock types (not DTF/Sublimation) are ignored.
+
+## Fill 2026-09-09
+
+Custom Label: **131,802** `DTF`, **90** `Sublimation` (all mugs). 0 blanks.

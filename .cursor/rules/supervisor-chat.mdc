@@ -1,0 +1,39 @@
+---
+description: How to talk to the supervisor and persist grouping decisions
+alwaysApply: true
+---
+
+# Supervisor chat
+
+- If the supervisor’s wording, spelling, or grammar would change the meaning, **restate the intended meaning in one sentence** and use that meaning. Persist the mapping if it is a standing term.
+- **More than one open question:** ask **one** question, wait for the answer, then the next. Do not batch questions.
+- Same turn, write every grouping lock into `order-grouping-locks.md` and regenerate `order-grouping-progress.xlsx` via `scripts/write_order_grouping_progress.py`.
+
+Standing terms:
+
+- **today** (ship-by) = run date **or overdue**. **Blank ship-by is not today** — it is **unmatched**. **Future ship-by** is not skipped: after today/overdue, leftover **shift-cap lines** are filled from future (soonest first). Leftover future after all caps wait for a later run. Filename first slot: **`today`** for run-date/overdue; future-fill uses actual **`YYYY-MM-DD`**.
+- **order pool** = ShipStation `awaiting_shipment` **only**. No supervisor CSV/file (export has no tags).
+- **shift cap** = **lines**, not orders. `1st Shift` = 300, `2nd Shift` = 100, `3rd Shift` = 100. One run fills all three Packing Input folders. **Shift is also a filename slot** (`1st` / `2nd` / `3rd`, after `today` or `YYYY-MM-DD`). `resend` / `unmatched` have no shift slot.
+- **parts** = **50 units** per part inside a process (same threshold as Packing PDF `_Part N`, one page per unit). Not the CEO graph 0–30 / 31–60 / 61–90 bands. **Colour 3+ groups first**, then parts. Same order stays on one `-N`.
+- **Packs colour** = **later**. Do not guess Item 1 Colour. Do not dump mixed packs to unmatched. Packs still split on Areeb + Brand Name + Pack Size.
+- **Fawad** = process-name slot for ShipStation store **MAS Clothing**. More peel-off channels later. Amazon is **not** its own channel (`own`).
+- **Definite match:** grouping never guesses. No definite match → process file **`unmatched`**. Floor handles it this run; then investigate and tighten logic/catalog so the next run matches. Same customer order stays together.
+- **Resend** = tag **`1014-ALL-RESEND` only**. Not 1015 / 1016 / 1017.
+- **display** (Grouping Data Usage) = print that field on the **packing PDF for that order’s page**. It does not turn grouping off. A field can group and display.
+- Plain process files are also **stock-ordering piles**. Packs vs Gildan T-shirts = **30-chain** (product type / brand), not package-type.
+- Graph / Grouping Data **values are examples**, not a closed list. Logic = dimension + flag/threshold; real values come at catalog/config fill. Missing Graph branch ≠ value off.
+- **In-house manufacturer** = made in the warehouse (iron-on or sticker). **Plain cannot be in-house** → `unmatched`. Plain supply-method can be warehouse, on-demand, or later non-in-house values.
+- **Supply Method** (catalog column on CL, Plain Database, Packs): `Warehouse Stock` = Fruit of the Loom men / women / kids **t-shirts only**; `In House Manufacture` = Custom Label SKU or Gender Apparel contains `iron on` / `ironon` / `iron-on` / `sticker` (CL/printed only); `Supplier On Demand` = Gildan t-shirts and everything else. Do not reuse CL `Warehouse Stock`. Code: `shared/supply_method.py`.
+- **Printing Type** (CL only, printed split): `DTF` default; `Sublimation` = mugs. Mock leading `M##` → Mocks `Printing-Type` when DTF/Sublimation; else Category `Mugs` or Gender Apparel starts with `Mug` → Sublimation; else DTF. Do not fill Design Type. Code: `shared/printing_type.py`.
+- **SKU match keys:** CL = **after first dash** (e.g. `77989LG-M-T-BLK-M` → `M-T-BLK-M`); Plain Database = **till last dash** (e.g. `1243-1` → `1243`); Packs = **whole SKU**. Entire-cell match only — no numeric stripping.
+- **Plain vs printed** = finish gate (with SKU override): if Item SKU contains `plain` / `plainlg` → plain; else if CL DB matches after first dash → printed; else if Plain Database matches till last dash (or whole SKU) → plain; else if Packs Database matches whole SKU → plain; else `unmatched`.
+- **SKU attribute source (catalog fields only):** Packs → CL → Plain Database (first hit). Unmatched if none hit when a field needs catalog data. A grouping **run** only reads the three catalogs. **Step 2 fill** may write CL, Plain Database, and Packs after fill/run.
+- Mixed plain+printed in one order → whole order **printed** (printed-wins).
+- **BTC Product Data** = the shared BTC supplier catalog. Live file: `database/shared/btc_product_data/BTC_Product_Data.csv` (`shared.paths.btc_product_data_path`). Same kind of sheet as **Uneek Product Data**.
+- **Uneek Product Data** = the shared Uneek supplier catalog. Live file: `database/shared/uneek_product_data/Uneek_Product_Data.xlsx` (`shared.paths.uneek_product_data_path`). Same kind of sheet as **BTC Product Data** — supplier product rows, not warehouse Custom Label.
+- **Absolute Product Data** = the shared Absolute Apparels supplier catalog. Live file: `database/shared/absolute_product_data/Absolute_Product_Data.xlsx` (`shared.paths.absolute_product_data_path`). Full wholesale price list; warehouse **only buys babysuits** from them (styles `C800T` / `C8020T` / `C8030T`).
+- **Supplier Name** (catalog, grouping): canonical cells **`BTC Activewear`**, **`Uneek Clothing`**, **`Absolute Apparels`**. Absolute = babysuit styles only. Join: Absolute style token first, else BTC UID/SPC → BTC Activewear, Uneek Short Code/Product Code → Uneek Clothing. Packs short `BTC` normalizes to `BTC Activewear`. CL in-house (iron-on/sticker) stays blank. Filled 2026-09-09. Code: `shared/supplier_name.py`.
+- **Plain Database** live file is `database/shared/plain/Plain Database.xlsx` (was under `purchase-order-generator/`).
+- **Packs Database** live file is `database/shared/packs/Packs Database.xlsx`.
+- **Areeb 30-chain columns** (distinct from PE `Category` / `Department`): `Category (Areeb)`, `Product Type (Areeb)`, `Product Style (Areeb)`, `Department (Areeb)` on CL, Plain Database, and Packs. Plain/Packs: BTC Department / Sub Department / Brand / Description; Uneek Category / Product Name / Full Description / Gender. Plain leftover (no UID / Short Code / SPC): Brand → Product Style, Description → Department, Category/Type from Description in BTC Department / Sub Department language. **Custom Label:** warehouse `cl_standard` from Gender Apparel only — never BTC, Uneek, PE, or Brand. **Department (Areeb) = gender only** (`Mens` / `Womens` / `Kids` / `Unisex` / `General`). Product Style is not CL Brand. Details: `.cursor/rules/custom-label-database/areeb-taxonomy.mdc`.
+- **Order Grouping Sorter** = new app (folder `Order Grouping Sorter`), outside Packing. Reads ShipStation `awaiting_shipment` + the three catalogs. Writes one CSV per process into Packing `Input/{DD-MM-YYYY}/{1st|2nd|3rd} Shift/`. First milestone is a **dry-run** (counts + process names, no Input write) until supervisor **run**.

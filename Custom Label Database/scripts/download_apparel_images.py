@@ -1,7 +1,7 @@
 """
 Download apparel images for Custom Label Database mock rows.
 
-Uses ProductExport `colour image 01` as the URL.
+Uses BTC Product Data `colour image 01` as the URL.
 Saves each file as the exact `Apparel Image` name (+ extension from URL).
 
 Default scope: mock rows (Custom Label ^M\\d+) that were added by
@@ -36,7 +36,7 @@ if str(_WAREHOUSE) not in sys.path:
 from shared import paths as wh  # noqa: E402
 
 DEFAULT_DB = wh.cl_csv_path(REPO)
-DEFAULT_PE = wh.product_export_path(REPO)
+DEFAULT_PE = wh.btc_product_data_path(REPO)
 DEFAULT_OUT = wh.images_apparel_dir(REPO)
 DEFAULT_PRE_GENERATE = (
     wh.cl_backups_dir(REPO) / "Custom Label Database_preGenerate_20260820_171255.xlsx"
@@ -79,7 +79,7 @@ def load_pe(path: Path) -> pd.DataFrame:
             except UnicodeDecodeError as e:
                 last_err = e
         if pe is None:
-            raise SystemExit(f"ProductExport decode failed: {path} ({last_err})")
+            raise SystemExit(f"BTC Product Data decode failed: {path} ({last_err})")
     else:
         pe = pd.read_excel(path, sheet_name="staff", dtype=str)
         if len(pe) and str(pe.iloc[0].get("UID", "")).startswith("["):
@@ -87,9 +87,9 @@ def load_pe(path: Path) -> pd.DataFrame:
     for c in pe.columns:
         pe[c] = clean(pe[c])
     if "UID" not in pe.columns:
-        raise SystemExit(f"ProductExport missing UID: {path}")
+        raise SystemExit(f"BTC Product Data missing UID: {path}")
     if COLOUR_IMAGE_COL not in pe.columns:
-        raise SystemExit(f"ProductExport missing '{COLOUR_IMAGE_COL}': {path}")
+        raise SystemExit(f"BTC Product Data missing '{COLOUR_IMAGE_COL}': {path}")
     return pe.drop_duplicates("UID", keep="first").set_index("UID", drop=False)
 
 
@@ -156,14 +156,14 @@ def download_one(url: str, out_path: Path, timeout: int = 120) -> tuple[str, str
 
 def main() -> int:
     ap = argparse.ArgumentParser(
-        description="Download mock Apparel Images from ProductExport colour image 01."
+        description="Download mock Apparel Images from BTC Product Data colour image 01."
     )
     ap.add_argument("--db", type=Path, default=DEFAULT_DB, help="Custom_Label_Database.csv")
     ap.add_argument(
         "--product",
         type=Path,
         default=None,
-        help="ProductExport.xlsx or .csv (default: data/product_export/ProductExport.csv)",
+        help="BTC Product Data .xlsx or .csv (default: database/shared/btc_product_data/BTC_Product_Data.csv)",
     )
     ap.add_argument(
         "--out",
@@ -193,7 +193,7 @@ def main() -> int:
     if not args.db.exists():
         raise SystemExit(f"DB not found: {args.db}")
     if not pe_path.exists():
-        raise SystemExit(f"ProductExport not found: {pe_path}")
+        raise SystemExit(f"BTC Product Data not found: {pe_path}")
 
     print(f"DB: {args.db}", flush=True)
     print(f"PE: {pe_path}", flush=True)

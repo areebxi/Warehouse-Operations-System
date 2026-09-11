@@ -15,6 +15,16 @@ def find_dtf_des_files(folder_path: str) -> List[str]:
     return excel_files
 
 
+def get_selected_input_files(gui) -> List[str]:
+    """Return existing selected DTF Des paths (multi-file list, else legacy single)."""
+    paths = list(getattr(gui, "input_file_paths", None) or [])
+    if not paths:
+        single = getattr(gui, "input_file_path", None)
+        if single:
+            paths = [single]
+    return [p for p in paths if p and os.path.isfile(p)]
+
+
 def auto_detect_sku_column(df) -> Optional[str]:
     columns = [col for col in df.columns if pd.notna(col)]
     sku_columns = [col for col in columns if 'sku' in col.lower() and 'item' in col.lower()]

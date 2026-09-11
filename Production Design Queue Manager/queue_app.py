@@ -1,6 +1,7 @@
 import os
 import sys
 import tkinter as tk
+from tkinter import StringVar
 from PIL import Image
 
 # Runtime packages are stored under scripts/
@@ -8,6 +9,11 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 RUNTIME_MODULES_DIR = os.path.join(PROJECT_ROOT, "scripts")
 if RUNTIME_MODULES_DIR not in sys.path:
     sys.path.insert(0, RUNTIME_MODULES_DIR)
+WAREHOUSE_ROOT = os.path.dirname(PROJECT_ROOT)
+if str(WAREHOUSE_ROOT) not in sys.path:
+    sys.path.insert(0, str(WAREHOUSE_ROOT))
+
+from shared import paths as wh  # noqa: E402
 
 # Increase PIL image size limit to handle large canvases
 Image.MAX_IMAGE_PIXELS = None  # Remove limit (or set to a very large number)
@@ -24,7 +30,7 @@ from src.system.logging.run_logger import log_run_event
 from typing import Optional
 from src.io import (
     load_color_bar_from_app_dir,
-    load_configuration_workbook,
+    load_queue_data_sources,
 )
 from src.core import pack_designs, DEFAULT_DESIGN_PADDING
 
@@ -82,7 +88,7 @@ class DesignArrangerGUI:
         setup_error_logging()
         
         self.root = root
-        self.root.title("Queue App")
+        self.root.title("Production Design Queue Manager")
         # Ensure visible when launched via pythonw/start (can open iconified)
         self.root.deiconify()
         self.root.lift()
@@ -111,11 +117,14 @@ class DesignArrangerGUI:
         
         # Data storage
         self.df = None
+        self.input_file_path = None
         self.designs_folder = None
         self.single_designs_folder = None  # Single designs folder for personalised
         self.double_designs_folder = None  # Double designs folder for personalised
         self.dtf_queues_folder = None  # DTF Queues folder for RAR upload
-        self.size_reference_df = None
+        self.cl_csv_path = str(wh.cl_csv_path())
+        self.config_workbook_path = str(wh.queue_config_workbook_path())
+        self.size_reference_df = None  # archive sheet not used for live sizing
         self.size_reference_path = None
         # SKU Contain -> (width_mm, height_mm) from Override Print Size sheet
         self.print_size_overrides = {}
@@ -128,8 +137,9 @@ class DesignArrangerGUI:
         self.design_padding = DEFAULT_DESIGN_PADDING  # Horizontal padding (left/right) in pixels
         self._preview_photos = []
         self._preview_photo_cache = {}
-        self.input_folder_path = None  # For folder selection
-        self.folder_file_batches = {}  # Store batches for each file when processing folder: {file_path: [batches]}
+        self.input_folder_path = None  # legacy; unused (multi-file list replaces folder)
+        self.input_file_paths = []  # selected DTF Des paths (Packing-style multi-select)
+        self.folder_file_batches = {}  # Store batches for each file when processing: {file_path: [batches]}
         self.progress_var = None  # Progress bar variable
         self.progress_bar = None  # Progress bar widget
         self.progress_label = None  # Progress label widget
@@ -141,20 +151,32 @@ class DesignArrangerGUI:
         else:
             self.settings_manager = settings_manager
         self.saved_settings = self.settings_manager.saved_settings
+
+        saved = self.saved_settings
+        self.cl_csv_var = StringVar(
+            value=(saved.get("cl_csv_path") or str(wh.cl_csv_path()))
+        )
+        self.config_workbook_var = StringVar(
+            value=(saved.get("config_workbook_path") or str(wh.queue_config_workbook_path()))
+        )
         
         # Auto-load Color Bar from app directory
         self.color_bar_image, self.color_bar_path = load_color_bar_from_app_dir()
         
-        # Auto-load Size Reference + Override Print Size from Configuration Workbook (one open)
-        (
-            self.size_reference_df,
-            self.size_reference_path,
-            self.print_size_overrides,
-        ) = load_configuration_workbook()
-        self.pocket_design_ids_set = set(self.print_size_overrides.keys())
+        self._reload_data_sources()
         
         # Create UI
         self.create_ui()
+
+    def _reload_data_sources(self) -> None:
+        """Reload CL print sizes + workbook pocket overrides from GUI paths."""
+        self.cl_csv_path, self.print_size_overrides, self.config_workbook_path = (
+            load_queue_data_sources(
+                self.cl_csv_var.get(),
+                self.config_workbook_var.get(),
+            )
+        )
+        self.pocket_design_ids_set = set(self.print_size_overrides.keys())
 
     def _ensure_window_visible(self):
         """Force the main window out of a minimized/iconified state after launch."""
@@ -183,16 +205,31 @@ class DesignArrangerGUI:
         gui_settings.auto_load_settings(self)
     
     def select_input_file(self):
-        """Select a DTF Des file (Excel Worksheet containing order information)"""
-        gui_file_selection.select_input_file(self)
-    
-    def select_input_folder(self):
-        """Select a folder containing DTF Des files"""
-        gui_file_selection.select_input_folder(self)
-    
+        """Compatibility alias — Add DTF Des file(s)."""
+        gui_file_selection.add_input_files(self)
+
+    def add_input_files(self):
+        """Add one or more DTF Des files (multi-select)."""
+        gui_file_selection.add_input_files(self)
+
+    def remove_selected_input_files(self):
+        """Remove highlighted input files from the list."""
+        gui_file_selection.remove_selected_input_files(self)
+
+    def remove_all_input_files(self):
+        """Clear all selected input files."""
+        gui_file_selection.remove_all_input_files(self)
     def select_size_reference_file(self):
-        """Select Size Reference file"""
-        gui_file_selection.select_size_reference_file(self)
+        """Legacy alias — select Configuration Workbook."""
+        self.select_config_workbook()
+
+    def select_cl_csv(self):
+        """Select Custom Label Database CSV for print sizes."""
+        gui_file_selection.select_cl_csv(self)
+
+    def select_config_workbook(self):
+        """Select Configuration Workbook."""
+        gui_file_selection.select_config_workbook(self)
     
     def select_designs_folder(self):
         """Select designs folder"""
@@ -225,6 +262,10 @@ class DesignArrangerGUI:
     def extract_size_code(self, sku):
         """Extract size code from SKU by searching for size codes from the reference file"""
         return gui_size_reference.extract_size_code(self, sku)
+
+    def sku_missing_cl_print_size(self, sku):
+        """True when Item SKU has no print size in the CL database."""
+        return gui_size_reference.sku_missing_cl_print_size(self, sku)
     
     def get_size_from_reference(self, size_code):
         """Get size dimensions from Size Reference file
