@@ -24,6 +24,7 @@ from scripts.app.pdf.merge_combined import merge_combined_by_process
 from scripts.app.pdf.merge_process import merge_process_pdf
 from scripts.app.pdf.report_pages import make_combined_missed_orders_page_pdf, make_missed_orders_page_pdf, make_summary_page_pdf
 from scripts.app.providers.select_provider import get_provider
+from scripts.app.util.process_numbers import process_number_sort_key
 from scripts.app.util.time import local_date_ymd, utc_compact_timestamp
 
 
@@ -95,16 +96,6 @@ def _process_number_key_from_pdf_path(p: Path) -> int:
         return 1_000_000_000
 
 
-def _process_number_sort_key(pn: str) -> tuple[int, str]:
-    """
-    Sort process numbers numerically when possible, else lexicographically.
-    """
-    s = str(pn).strip()
-    if s.isdigit():
-        return (0, f"{int(s):020d}")
-    return (1, s.lower())
-
-
 def _manual_output_root(cfg: AppConfig) -> Path:
     return Path(str(cfg.raw["paths"]["output_dir"])) / "Manual Outputs"
 
@@ -119,7 +110,7 @@ def _manual_job_id_from_groups(groups: list[GroupedOrders]) -> str:
     """
     process_numbers = sorted(
         {str(g.process_number).strip() for g in groups if str(g.process_number).strip()},
-        key=_process_number_sort_key,
+        key=process_number_sort_key,
     )
     if not process_numbers:
         raise ValueError("no process numbers in manual input")
@@ -256,11 +247,11 @@ def _sanity_check_combined_pdf(*, combined_pdf: Path, expected_process_numbers: 
 
     missing = sorted(
         [pn for pn, c in expected_counts.items() if actual_counts.get(pn, 0) < c],
-        key=_process_number_sort_key,
+        key=process_number_sort_key,
     )
     unexpected = sorted(
         [pn for pn, c in actual_counts.items() if expected_counts.get(pn, 0) < c],
-        key=_process_number_sort_key,
+        key=process_number_sort_key,
     )
 
     ok = expected_counts == actual_counts
@@ -525,7 +516,7 @@ def run_print(
             "group_count": int(len(groups)),
             "expected_process_numbers": sorted(
                 [str(g.process_number).strip() for g in groups],
-                key=_process_number_sort_key,
+                key=process_number_sort_key,
             ),
             "orders_per_process": {
                 f"{int(g.source_index)}:{g.process_number}": int(len(g.order_numbers)) for g in groups
@@ -773,7 +764,7 @@ def run_manual_print(cfg: AppConfig, log: JsonlLogger, *, replace_job_id: str | 
             "job_id": job_id,
             "orders_csv": str(manual_csv),
             "replace": bool(replace_job_id),
-            "process_numbers": sorted(process_numbers, key=_process_number_sort_key),
+            "process_numbers": sorted(process_numbers, key=process_number_sort_key),
         },
     )
     print(f"Manual Print job id: {job_id}")

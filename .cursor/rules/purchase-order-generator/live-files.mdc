@@ -13,7 +13,7 @@ App DB in `database/purchase-order-generator/` (stock only). Plain / Packs / BTC
 | `database/shared/plain/Plain Database.xlsx` | Shared plain catalog (slips + grouping). `Supplier Name` filled 2026-09-09. |
 | `database/shared/packs/Packs Database.xlsx` | Shared packs catalog |
 | `database/purchase-order-generator/stock_levels_*.csv` | BTC free stock |
-| `database/shared/shipstation/ShipStation_Tags.xlsx` | Shared tags |
+| `database/shared/shipstation_tags/ShipStation_Tags.xlsx` | Shared tags |
 | `database/shared/btc_product_data/BTC_Product_Data.csv` | Shared BTC Product Data |
 | `database/shared/uneek_product_data/Uneek_Product_Data.xlsx` | Shared Uneek Product Data |
 | `database/shared/absolute_product_data/Absolute_Product_Data.xlsx` | Shared Absolute Product Data (babysuits only) |

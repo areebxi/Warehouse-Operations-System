@@ -14,6 +14,7 @@ from scripts.pipeline_shipstation.client import ShipStationError
 from scripts.pipeline_shipstation.orders_to_csv import fetch_tag_orders_to_csv
 from scripts.pipeline_shipstation.sync_tags_xlsx import DEFAULT_XLSX_PATH
 from scripts.pipeline_shipstation.tags_process_lookup import resolve_tag_list_processes
+from scripts.pipeline_split_by_process_item.common import pin_batch_shift
 from .config import DEFAULT_CL_CSV, DEFAULT_OUTPUT_DIR, PROJECT_ROOT, logs_directory
 
 
@@ -160,11 +161,6 @@ def validate_inputs(app) -> bool:
     if not paths or any(not p.is_file() for p in paths):
         messagebox.showerror("Error", "Please select an Input CSV file (or switch Input source to ShipStation tag).")
         return False
-    if not app.use_fixed_process_number_var.get() and len(paths) > 1:
-        messagebox.showerror(
-            "Error", "Multiple input files are only supported when 'Use fixed process number' is enabled."
-        )
-        return False
     try:
         datetime.strptime(app.date_var.get().strip(), "%d-%m-%Y")
     except Exception:
@@ -245,7 +241,9 @@ def on_run_clicked(app) -> None:
             return
         if not validate_image_folders(app):
             return
-        process_name = (app.fixed_process_number_var.get() or "").strip() or Path(input_path_str).stem
+        process_name = pin_batch_shift(
+            (app.fixed_process_number_var.get() or "").strip() or Path(input_path_str).stem
+        )
         if _FILENAME_UNSAFE.search(process_name):
             messagebox.showerror(
                 "Error", 'Fixed process number (from filename) cannot contain / \\ : * ? " < > |'
@@ -500,7 +498,8 @@ def on_run_clicked(app) -> None:
                             missing_logo = job["entry"]["missing_logo"]
                 else:
                     paths = get_input_paths(app)
-                    use_fixed = app.use_fixed_process_number_var.get()
+                    # Sorter filename is the process name (PIN/PDF/Excel).
+                    use_fixed = True
                     fixed_gui = (app.fixed_process_number_var.get() or "").strip()
                     multi = len(paths) > 1
                     batch_phase = "excel" if multi else "all"
@@ -533,12 +532,11 @@ def on_run_clicked(app) -> None:
                         )
 
                     for csv_path in paths:
-                        prefix = f"[{csv_path.stem}] " if multi else ""
-                        pl = run_with_log_file(csv_path.stem, prefix)
-                        fixed_for_this = (
-                            (fixed_gui or csv_path.stem)
-                            if use_fixed and len(paths) == 1
-                            else (csv_path.stem if use_fixed else None)
+                        prefix = f"[{pin_batch_shift(csv_path.stem)}] " if multi else ""
+                        pl = run_with_log_file(pin_batch_shift(csv_path.stem), prefix)
+                        # Sorter stem → B1-S1 for process, Output folder, missing-logo files.
+                        fixed_for_this = pin_batch_shift(
+                            csv_path.stem if multi else (fixed_gui or csv_path.stem)
                         )
                         start_msg = (
                             "Starting Excel phase (batch)…"

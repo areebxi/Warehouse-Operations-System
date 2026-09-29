@@ -12,6 +12,7 @@ from scripts.pipeline_runtime.order_number_csv import (
     read_csv_with_order_numbers,
 )
 from scripts.pipeline_generate_packing_list_pdf.core_helpers import (
+    PROCESS_ITEM_RE as _PROCESS_ITEM_RE,
     parse_process_and_item_impl,
     safe_str_impl,
 )
@@ -28,7 +29,6 @@ UNMATCHED_ROOT_DIR = wh.packing_runtime_dir() / "Unmatched SKU Files"
 MISSING_LOGO_ROOT_DIR = wh.packing_missing_logo_dir()
 DATA_DIR = wh.packing_data_dir()
 ALL_ORDERS_PATH = wh.packing_all_orders_path()
-_PROCESS_ITEM_RE = re.compile(r"^Process\s+(\S+)\s+Item-(\d+)")
 
 # Characters not allowed in Windows filenames
 _FILENAME_UNSAFE = re.compile(r'[<>:"/\\|?*]')

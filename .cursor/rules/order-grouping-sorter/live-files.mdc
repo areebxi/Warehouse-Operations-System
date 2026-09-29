@@ -1,0 +1,24 @@
+---
+description: Order Grouping Sorter live paths — catalogs read-only; Packing Input write later
+alwaysApply: false
+globs: Order Grouping Sorter/**
+---
+
+# Sorter live files
+
+Sorter configuration that grouping **reads** (it does not overwrite catalogs). Paths via `shared.paths`. Sorter DB: `database/order-grouping-sorter/` — `taxonomy_picklists.csv` (Hashim #038) and `fixed_batches.csv` (B80/B100/… criteria).
+
+| Path | Role |
+|---|---|
+| `database/order-grouping-sorter/taxonomy_picklists.csv` | Closed pick-lists. New products pick from these values. Do not invent. |
+| `database/order-grouping-sorter/fixed_batches.csv` | Fixed batch codes + match criteria. Source for sorter `B80`/`B100`/… naming. |
+| `database/order-grouping-sorter/leftover_batches/{YYYY-MM-DD}.csv` | Leftover `B1`/`B2`… criteria for that run date (same columns as fixed). Written each sorter run; overwritten that day. |
+| `database/shared/custom_label/Custom_Label_Database.csv` | Printed finish (after first dash → Custom Label; no-dash SKU → whole Custom Label) + printed attributes |
+| `database/shared/plain/Plain Database.xlsx` sheet `Sheet1` | Plain finish (till last dash or whole SKU → SKU) |
+| `database/shared/packs/Packs Database.xlsx` sheet `01-Database` | Plain finish (whole SKU → Channel Child SKU) |
+| `config/ShipStation/.env` | Shared ShipStation `REAL_API_*` |
+| `Order Grouping Sorter/Logs/` | Dry-run reports |
+| `Order Packing List Generator/Input/{DD-MM-YYYY}/1st Shift/` | Write target on `--run` while testing (`sorter_input_csv_path`). Replaces 1st Shift CSVs. Fixed-batch files are `B100-{6 fields}.csv` / `B80-{6 fields}.csv` / … ; leftover `B1-{6 fields}.csv` / `B2-…` (skip reserved). `RESEND` / `UNMATCHED` land there. Production later: nth run = nth shift |
+| `Order Grouping Sorter/Manually Made Files/` | Historical floor exports + Packing output. **Analysis only** — not an intake source. |
+
+Do not import Packing internals. CSV columns copy `CSV_FIELDNAMES` in Packing `orders_to_csv.py`.

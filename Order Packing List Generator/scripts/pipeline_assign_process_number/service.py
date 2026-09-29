@@ -158,7 +158,9 @@ def run(
     if missing:
         raise ValueError(f"Step-4 CSV is missing required column(s): {', '.join(missing)}")
 
-    fixed = (fixed_process_number or "").strip()
+    from scripts.pipeline_split_by_process_item.common import pin_batch_shift
+
+    fixed = pin_batch_shift((fixed_process_number or "").strip())
     if fixed and not separate_by_logo_id:
         df = df.copy()
         df["Process and Item Number"] = fixed
@@ -185,7 +187,7 @@ def run(
     tracker_kwargs = prepare_tracker_assign_kwargs(
         workbook_path,
         separate_by_logo_id,
-        fixed_process_number,
+        fixed or None,
         shift_input=shift_input,
         log=log,
     )

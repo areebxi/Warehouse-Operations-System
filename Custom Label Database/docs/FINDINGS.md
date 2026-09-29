@@ -2,6 +2,23 @@
 
 Facts and locked lessons. Snapshot numbers that can drift are dated. Policy that must not be forgotten is also in `.cursor/rules/`.
 
+## CL warehouse stock colours 2026-09-23
+
+Warehouse in-house stock on Custom Label is no longer “every FOTL t-shirt”. `Supply Method` = `Warehouse Stock` only when:
+
+- FOTL t-shirt (`Category (Areeb)` T-Shirts, not a vest) and `Colour` is on that department’s list (`Mens` / `Womens` / `Kids`). Ladies = Womens. Whole colour cell. Deep Navy is not Navy. Heliconia is Womens and Kids only. Yellow and Bottle Green are Mens (Yellow also not Kids). Sports Grey is Mens and Kids, not Womens.
+- Kids body styles `C800T` and `C8030T` in Black, Lemon Yellow, Light Blue, Light Pink, Red, Sports Grey, White. `C8030T` is Product Type Romper. `C8020T` is not stock.
+
+Plain Database and Packs still use “all FOTL t-shirts” with no colour list. CL filled 2026-09-23: 63,399 Warehouse Stock, 68,367 Supplier On Demand, 458 In House Manufacture. Backup `Custom_Label_Database.bak_20260923_103520.csv`.
+
+## Size-only acrylic SKU 2026-09-22
+
+Listing SKU `A515` (whole Custom Label `A[4-6]` + two digits) is **always personalised** (`Customise` = Yes). `A515-PHOTO` is a different label. Sorter matches no-dash SKUs on whole Custom Label.
+
+## Kids 14-15 Years print mm 2026-09-22
+
+`Shirts Print Sizes.csv` has no 14-15 band. Warehouse Front Print for 14-15Y = **Small A4 (237×336)**. Do not use 3-4Y (176×250). `AGE_TO_PRINT` maps `14-15 Years` / `14-15Y` → `Small`.
+
 ---
 
 ## What this is
@@ -20,7 +37,7 @@ As of **28 Aug 2026:** **124,762** data rows × **60** columns (+132 M55 SPC `61
 **Seed (user-filled, do not invent):**  
 `Custom Label`, `Gender Apparel`, `Colour`, `Size`, `Apparel Image`, `Print Positions`, `Customise`
 
-**Customise** (derived from Custom Label, not cloned from peers): `Yes` when the label has `-P{digit}-` **or** a `Yes` segment (supervisor 4 Sep 2026: `Yes` in our SKU = personalised; e.g. `W101-SkyBe-O/S-Yes`). Plain mock+UID stays blank.
+**Customise** (derived from Custom Label, not cloned from peers): `Yes` when the label has `-P{digit}-` **or** leading `P{digit}-` **or** a `Yes` segment (supervisor 4 Sep 2026: `Yes` in our SKU = personalised; e.g. `W101-SkyBe-O/S-Yes`). Plain mock+UID stays blank.
 
 **Print slots (max 4):**  
 `Position N Name`, `Print Size N`, `Width N (mm)`, `Height N (mm)` — N = 1..4. Slot count follows **Number of Designs** when present, else positions listed in `Print Positions`. Position **names** come from the DB `Print Positions` text, not from Size References suffixes.
@@ -50,7 +67,13 @@ First fill is blank-only. Some PE Department / Sub Department rows are wrong; wh
 | `Supplier SKU` → PE `UID` | Same UID when already filled. |
 | `Supplier Product Code` → PE `SPC` | Weak overlap historically; not the main join. |
 
-**UID extraction misses** labels with **no trailing digits:** iron-ons (`M260-P5-IronOn-A4`), C800T age tokens (`M281-P5-C800T-30-0>3`, `M281-P5-C800T-30-18-24` — the `24` is an age, not a PE UID), bag codes (`BG-BG542-BLK-O/S-YES`), size-in-label SKUs (`K-H-DHR-YXS`, `W-T-ATTHR-M`), and `77123-BTC` (UID is the prefix; existing mocks of that garment are `M38-77123`). Do not invent a UID for those. `fill_from_seeds.uid_from_custom_label` skips any label containing `C800T`.
+**UID extraction misses** labels with **no trailing digits:** iron-ons (`M260-P5-IronOn-A4`), C800T age tokens (`M281-P5-C800T-30-0>3`, `M281-P5-C800T-30-18-24` — the `24` is an age, not a PE UID), DTF gang sheets (`Transfer-1M-1` — the `1` is not a PE UID), bag codes (`BG-BG542-BLK-O/S-YES`), size-in-label SKUs (`K-H-DHR-YXS`, `W-T-ATTHR-M`, `W-H-BLK-M`), and `77123-BTC` (UID is the prefix; existing mocks of that garment are `M38-77123`). Do not invent a UID from the Custom Label for those. `fill_from_seeds.uid_from_custom_label` skips any label containing `C800T` or `Transfer`. Whole-label digits (`208544`) **are** a BTC UID.
+
+**Warehouse garment codes (18 Sep 2026):** packing SKU `{design}-{M|W|K}-{T|H|…}-{colour}-{size}` → Custom Label after first dash (`75931-W-H-BLK-M` → `W-H-BLK-M`). Seed GA from the letters (`W`+`H` → `Womens-Hoodie`), colour/size from the tokens (`BLK`/`M` → Black / Medium). If the design prefix is digits **and** that UID exists in BTC Product Data, set `Supplier SKU` from the prefix (this row: 75931 = FOTL Ladies Classic Hooded Sweat 62038 Black M). Do not clone a mens-hoodie peer’s Supplier SKU onto a womens code. Size References is mock+UID only — shirts use Shirts Print Sizes.
+
+**Gildan 5000 packing codes (20 Sep 2026):** Item SKU `{design}-5000-{colour}-{size}` → Custom Label after first dash (`128357LG-5000-NAT-S` → `5000-NAT-S`). Entire-cell match only — do **not** join to `A3-5000-…`. Fill the `5000-…` label; clone GA/colour/size/mm from the existing `A3-5000-{colour}-{size}` peer. Queue missing-size on those SKUs was catalog gap, not Size References. Apparel Image uses **T-Shirt** (not `TShirt`).
+
+Packing PDF vs Queue: packing Step 2 matches the **company** Custom Label (`ARJ-BDg-C3-D1-ED`). DTF Des remaps that tail via New SKU Database to `5000-NAT-S`. Queue print sizes look up the remapped label. PDF garment photo does not need Width/Height mm.
 
 PE sizes are often letters (`S`/`M`/`L`). DB sizes are often words (`Small`/`Medium`/`Large`) or age bands (`9-11 Years`). Map; do not blindly overwrite DB Size with PE Size.
 
@@ -89,6 +112,8 @@ Cleanup already applied on the old Excel: `_x000D_` / CR-LF stripped; age shorts
 Typos already corrected on the old Excel (do not re-run blindly): `Fuschia`→`Fuchsia`, `Colbalt Blue`→`Cobalt Blue`, `Sport Grey`→`Sports Grey`, `Light-Pink`→`Light Pink`. Approved expands: `Dark Heather`→`Dark Heather Grey`, `Azure`→`Azure Blue` (not applied to every later paste).
 
 Navy / Royal variants (`Navy` vs `Navy Blue` vs `French Navy`, etc.) stay as-is unless asked.
+
+Packing shirt colour tokens (Custom Label stays the token; Colour name + peer code for clone): **NAV = Navy** (peer `NVY`), **PUE = Purple** (peer `PRP`). Locked 15 Sep 2026. `add_labels._SHIRT_COLOUR_ALIAS`.
 
 New-row seed drift (24 Aug tail, not auto-fixed): `K-H-DHR-YXS` Colour `Dark Heather` while sibling K-H-DHR sizes use `Dark Heather Grey`. Apostrophes in Gender Apparel on a few FOTL rows (`Fruit Of The Loom Men's Iconic 150 T`) while siblings use `FOTL Mens Iconic 150 T`. `M281-P5-C800T-30-0>3` Size was **3-6 Months** (label and cousins say 0-3).
 
@@ -178,7 +203,7 @@ Non-apparel pocket rename (done once, 58 rows): bags / backpacks / keyrings only
 
 ## Apparel Image
 
-Format: `(Gender Apparel)-(Colour)` with spaces → `-`, letters/digits/dash only, consecutive dashes collapsed.
+Format: `(Gender Apparel)-(Colour)` with spaces → `-`, letters/digits/dash only, consecutive dashes collapsed. Token is **`T-Shirt`**, not `TShirt`. New seeds/clones run `hyphen_tshirt_in_slug`. Do not bulk-rename the catalog.
 
 **Fill blanks only. Never rewrite an existing name.**
 
@@ -214,6 +239,22 @@ Canonical grouping cells: **`BTC Activewear`**, **`Uneek Clothing`**, **`Absolut
 | Plain Database | 71,047 | 6,992 | 0 | 0 | 78,039 | `Plain Database.bak_20260909_185710.xlsx` |
 | Packs | 38,452 | 0 | 0 | 0 | 38,452 | `Packs Database.bak_20260909_185937.xlsx` |
 
+### Hashim #038 CL Areeb pick-list refill — 16 Sep 2026
+
+Supervisor: refill **CL only**. Plain / Packs Areeb stay **supplier product data** (BTC / Uneek) — do not refill those two.
+
+Supervisor deleted four blank-GA rows: `N217-P3-1D77`, `Transfer-3M`, `Transfer-1M-1`, `208544`. Then `python scripts/fill_areeb_taxonomy.py --target cl` rewrote live CSV. **131,909** rows. **0 Areeb cells changed** (old ALL-CAPS cells already matched that harvest). Backup `Custom_Label_Database.bak_20260916_083255.csv`. CL overwrite now blanks an off-list warehouse style on a future fill (`apply_areeb`). Pick-list: `database/order-grouping-sorter/taxonomy_picklists.csv`.
+
+**Squeezed refill 2026-09-16 10:17** (supervisor **fill**). Same script `--target cl`. **131,909** rows; **131,741** rewritten; **298,338** Areeb cells; **168** already matching. **0 blank / 0 off-list** on the four Areeb columns. Backup `Custom_Label_Database.bak_20260916_101719.csv`. Live cells are Title Case; Product Type has no gender; Product Style is a named product (never `BG125L`); Department is gender only. Source `shared/taxonomy_catalog.py`. Plain / Packs not touched.
+
+### Unmatched sorter SKUs — 17 Sep 2026
+
+Supervisor **add**. **+8** CL rows (132,042 → **132,050**). Backup `Custom_Label_Database_preAdd_20260917_103000.csv`. `add_labels` now: `BG-BG#` colour tokens (`ClaRdOW` = Classic Red-Off White); sticker size from the `(50cmx50cm)` token (clone same-letter L, not A4 iron-on); DTF `Transfer-1M-1` / `Transfer-3M` seed GA `Only-Design` (not blank — those blank-GA rows were deleted 16 Sep). Size References unchanged (no new mock+UID; `C800T` / `A4` / `A6` already present). Skipped: N217 (supervisor later); SET5722 already Packs; 208544 already Plain (blank ship-by).
+
+### C800T `&gt;` / `>` / `-` twins — 17 Sep 2026
+
+Supervisor: **no decoding** on the sorter key. Fill each spelling as its own Custom Label. **+11** (132,050 → **132,061**). Backup `Custom_Label_Database_preAdd_20260917_132821.csv`. P5 now has all five ages in all three spellings. P3 0–3 and no-P 3–6 got the missing twins only. Append-only — old `M281-P5-C800T-30-0>3` Size is still **3-6 Months**.
+
 ### BTC columns held shipping data — 10 Sep 2026
 
 `BTC SKU` / `BTC Product Code` / `BTC Supplier Stock` had copies of `Package Type` / `Weight` / `Service` (`Large Letter`, gram weights, `Royal Mail48`). Not a whole-file column shift: Ralawise/Absolute empty; other columns clean. Height mm matching Weight (pocket 80×100) is coincidence — left alone.
@@ -246,7 +287,7 @@ When a supervisor asks for a few UIDs of a BTC style, **prefer adding every PE U
 
 ## Mocks generator
 
-`scripts/generate_from_mocks.py` + `support/Mocks Databse.csv` (and PE):
+`scripts/generate_from_mocks.py` + `support/Mocks Database.csv` (and PE):
 
 - Custom Label = `{Pasting Mocks ID}-{UID}` (e.g. `M260-214332`)
 - Fill **only** the seed columns; skip a mock if any seed cell cannot be filled

@@ -1,0 +1,25 @@
+---
+description: On fill, sync Database Transfer Workbook + Configuration Workbook from live CL/SR
+alwaysApply: false
+globs: "Custom Label Database/**,Database Transfer/**"
+---
+
+# Database Transfer sync (locked 2026-09-25)
+
+When the supervisor says **fill** (or **yes** / **do it** for a CL / Size References write), after the live CSVs are updated also sync:
+
+| File | Sheet | Source |
+|------|-------|--------|
+| `Database Transfer/Workbook.xlsx` | **CL Database** only | `database/shared/custom_label/Custom_Label_Database.csv` |
+| `Database Transfer/Configuration Workbook.xlsx` | **Size References** only | `database/custom-label-database/support/Size References.csv` |
+
+Rules:
+
+- Those two sheets must **perfectly reflect** the live CSVs (full replace of that sheet’s data).
+- Keep Workbook transfer column aliases: `Colour` → `Colour Name`, `Apparel Image` → `Picture Name`, `Print Positions` → `Position`.
+- Size References sheet mirrors the live CSV columns as-is (no `SKU Value 2` / `SKU Value 3` — removed 2026-09-25).
+- Leave other Workbook sheets and **Override Print Size** untouched.
+- Backup both xlsx under `Database Transfer/backups/` before overwrite.
+- Script: `python "Custom Label Database/scripts/sync_database_transfer.py"` from warehouse root (or `python scripts/sync_database_transfer.py` from the CL app folder).
+
+Do not treat Database Transfer as the live catalog — live remains the CSVs.

@@ -1,0 +1,15 @@
+---
+description: Sorter input stems shorten to B#-S# for PIN / Excel / PDF
+alwaysApply: false
+globs: "Order Packing List Generator/**"
+---
+
+# Batch+shift process base
+
+Sorter input filenames like `B1-S1-PLAIN-2-SUPPLY ON DEMAND-R-9` are long on purpose (unique piles on disk in Packing Input). Packing **visible** process identity is batch+shift only: **`B1-S1`**.
+
+- Helper: `pin_batch_shift` / `format_batch_pin` in `scripts/pipeline_split_by_process_item/common.py`.
+- Applies to: fixed process from stem, Step 5 base, Step 6/7/8 file stems, PIN on the PDF, preflight Process Number, **Output/{date}/{shift}/{B#-S#}/** folder, and `missing_logo_orders_{B#-S#}.csv`.
+- PIN form: `B1-S1-1 Item 1` (batch+shift + process number + item).
+- `RESEND` / `UNMATCHED` / numeric tracker ids: unchanged (no `B#-S#` prefix).
+- Two leftover piles that share the same `B#-S#` in one shift write into the same Output folder — fixed-batch codes (`B100`, `B1050`, …) do not collide.

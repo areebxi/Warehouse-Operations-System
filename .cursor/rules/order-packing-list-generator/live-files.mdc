@@ -13,7 +13,7 @@ App DB in `database/order-packing-list-generator/`. Run I/O in app folder. Share
 | `database/order-packing-list-generator/Workbook.xlsx` | Process sheets (CL Database sheet archive-only) |
 | `database/order-packing-list-generator/New SKU Database.csv` | DTF Des Item-SKU remap |
 | `database/order-packing-list-generator/All Orders.csv` | Cumulative run log |
-| `database/shared/shipstation/ShipStation_Tags.xlsx` | Tags → process# (shared) |
+| `database/shared/shipstation_tags/ShipStation_Tags.xlsx` | Tags → process# (shared) |
 | `database/shared/custom_label/Custom_Label_Database.csv` | Enrich |
 | `Order Packing List Generator/{Input,Output,Logs,…}` | Run I/O |
 | `runtime/SharedInbox/DTF Des/{date}/{shift}/` | DTF Des dual-write |

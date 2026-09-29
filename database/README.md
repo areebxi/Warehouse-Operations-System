@@ -7,7 +7,7 @@ Live **database** files for the warehouse system. App folders hold code + run I/
 | `shared/btc_product_data/BTC_Product_Data.csv` | BTC Product Data (CL + PO) |
 | `shared/uneek_product_data/Uneek_Product_Data.xlsx` | Uneek Product Data (CL + PO) |
 | `shared/absolute_product_data/Absolute_Product_Data.xlsx` | Absolute Product Data (babysuits C800T / C8020T / C8030T only) |
-| `shared/shipstation/ShipStation_Tags.xlsx` | ShipStation tags (Packing + PO) |
+| `shared/shipstation_tags/ShipStation_Tags.xlsx` | ShipStation tags (Packing + PO) |
 | `shared/custom_label/Custom_Label_Database.csv` | Live CL catalog (+ `backups/`) |
 | `shared/plain/Plain Database.xlsx` | Shared plain catalog (grouping + PO; + `archive/`) |
 | `shared/packs/Packs Database.xlsx` | Shared packs catalog (grouping + PO; + `archive/`) |
@@ -16,6 +16,7 @@ Live **database** files for the warehouse system. App folders hold code + run I/
 | `custom-label-database/Apparel Images/` | CL apparel images |
 | `order-packing-list-generator/` | Packing Workbook, New SKU DB, All Orders log |
 | `production-design-queue-manager/` | Configuration Workbook (pocket overrides) |
+| `order-grouping-sorter/` | Taxonomy pick-lists (category / subcategory / product type / product style) |
 | `purchase-order-generator/` | Stock CSVs (+ Movie Poster SKUs); Plain/Packs live under `shared/` |
 | `shipping-label-generator/` | Reserved (no live DB today) |
 

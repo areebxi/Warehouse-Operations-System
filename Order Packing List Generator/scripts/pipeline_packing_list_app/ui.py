@@ -190,7 +190,7 @@ def build_ui(app) -> None:
 
     ttk.Label(frm, text="Process number:").grid(row=8, column=0, sticky="w", padx=(0, 10), pady=3)
 
-    app.fixed_process_entry = ttk.Entry(frm, textvariable=app.fixed_process_number_var, width=20)
+    app.fixed_process_entry = ttk.Entry(frm, textvariable=app.fixed_process_number_var, width=56)
 
     app.fixed_process_entry.grid(row=8, column=1, sticky="w", pady=3)
 

@@ -1,0 +1,20 @@
+---
+description: Step 6 must import _normalize_key from common
+alwaysApply: false
+globs: "Order Packing List Generator/scripts/pipeline_split_by_process_item/**"
+---
+
+# Step 6 `_normalize_key`
+
+`service.py` uses `_normalize_key` to rename Order Number columns. The helper lives in `common.py`. Always import it:
+
+```python
+from .common import (
+    _normalize_key,
+    _position_after_merge,
+    _reorder_columns_for_output,
+    sanitize_filename,
+)
+```
+
+Do not drop that import when trimming unused names. Missing it is `NameError: name '_normalize_key' is not defined` at Step 6 right after reading the Step 5 CSV.

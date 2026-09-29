@@ -1,0 +1,13 @@
+---
+description: Later — Packing owns every packing list; enrich Plain/Packs too
+globs: "Order Packing List Generator/**"
+alwaysApply: false
+---
+
+# Later (not built) — all packing lists here
+
+Supervisor 2026-09-17: **every packing list PDF** comes from this app, including slips **Purchase Order Generator** still prints. PO later is EDI/stock only. Do not implement until asked.
+
+Today Step 2 / preflight search **Custom Label only**. Unmatched SKU = blank Gender Apparel. Genuine plains/packs (e.g. `SET5722` in Packs) flag Yes even when the sorter already grouped them.
+
+Later enrich/preflight: CL (printed) then **Plain Database** (till last dash or whole SKU) then **Packs** (whole SKU → `Channel Child SKU`). A catalog hit is **not** Unmatched SKU. Do **not** clone pack/plain SKUs into CL (that would make the sorter treat them as printed).

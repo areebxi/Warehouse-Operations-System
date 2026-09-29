@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Shared ShipStation
 
-- Module: `shared/shipstation/` — credentials + sync read client (`list_tags`, `list_orders_by_tag`, `list_orders`, `get_order`).
+- Module: `shared/shipstation/` — credentials + sync read client (`list_tags`, `list_stores`, `list_orders_by_tag`, `list_orders`, `get_order`).
 - Secrets: **only** `config/ShipStation/.env` with `REAL_API_*`.
 - Prefer `orders/listbytag` over downloading all awaiting orders then filtering in Python.
 - Shipping **create/void/label** stays in `RealProvider` (async); amendments `listtags` uses shared sync.

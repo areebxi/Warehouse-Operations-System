@@ -23,7 +23,7 @@ Key live files:
 - `database/shared/btc_product_data/BTC_Product_Data.csv` (shared **BTC Product Data**)
 - `database/shared/uneek_product_data/Uneek_Product_Data.xlsx` (shared **Uneek Product Data**)
 - `database/shared/absolute_product_data/Absolute_Product_Data.xlsx` (shared **Absolute Product Data**)
-- `database/shared/shipstation/ShipStation_Tags.xlsx` (shared tags)
+- `database/shared/shipstation_tags/ShipStation_Tags.xlsx` (shared tags)
 - Packing DB: `database/order-packing-list-generator/` (Workbook, New SKU DB)
 - Queue DB: `database/production-design-queue-manager/Configuration Workbook.xlsx`
 - Plain / Packs: `database/shared/plain/Plain Database.xlsx`, `database/shared/packs/Packs Database.xlsx`
@@ -52,9 +52,9 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 - **Talks to:** NocoDB; BTC / Uneek Product Data / Size helpers. Not ShipStation.
 
 ### Order Packing List Generator
-- **Purpose:** ShipStation orders → process CSVs, packing PDFs, Picking / Orders Details / DTF Des Excel.
+- **Purpose:** ShipStation orders → process CSVs, packing PDFs, Picking / Orders Details / DTF Des Excel. **Later (not built):** every packing list PDF, including slips PO still prints; enrich also Plain + Packs.
 - **Live data:** DB in `database/order-packing-list-generator/`; app `config/`, Input/Output/Logs; shared tags; SharedInbox dual-write.
-- **Talks to:** ShipStation; CL CSV; SharedInbox.
+- **Talks to:** ShipStation; CL CSV; SharedInbox. Later: shared Plain / Packs (read).
 
 ### Production Design Queue Manager
 - **Purpose:** Arrange design images on a DTF print canvas from DTF Des inputs.
@@ -66,8 +66,13 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 - **Live data:** app `DTF Des Files/`, `Output/`, `shipping_config.yaml`; secrets via `config/ShipStation/.env`.
 - **Talks to:** ShipStation API. Does not auto-read SharedInbox yet.
 
+### Order Grouping Sorter
+- **Purpose:** ShipStation `awaiting_shipment` → process piles (fixed batches first: `B100-S1-PRINTED-2-WAREHOUSE STOCK-R-1.csv` / …; leftover `B1-S1-…` / `B2-…` skipping reserved). One CSV per process into Packing Input. Default CLI is dry-run; `--run` writes after supervisor **run**. Testing: **`1st Shift`** every `--run`.
+- **Live data:** DB in `database/order-grouping-sorter/` (taxonomy pick-lists + fixed batches); reads shared CL / Plain / Packs; secrets via `config/ShipStation/.env`; Logs in the app folder. Write target: Packing `Input/{DD-MM-YYYY}/1st Shift/` while testing. `RESEND` / `UNMATCHED` land there.
+- **Talks to:** ShipStation (shared client, including `list_stores`); the three grouping catalogs (read-only on a run). Does not import Packing internals. CSV columns copy Packing current-view (`Order #`, `Ship By`, …).
+
 ### Purchase Order Generator
-- **Purpose:** Awaiting-dispatch by tag → BTC stock → packing slips (future: EDI-focused; packing PDFs move to Packing List Generator).
+- **Purpose:** Awaiting-dispatch by tag → BTC stock → packing slips. **Later (not built, 2026-09-17):** EDI/stock only; **all** packing list PDFs from Order Packing List Generator.
 - **Live data:** stock in `database/purchase-order-generator/`; shared Plain / Packs / Tags / CL / supplier catalogs; app `assets/`, `output/`, `config.py`.
 - **Talks to:** ShipStation API; BTC FTP stock; CL CSV (`BTC SKU`); shared Plain / Packs.
 
@@ -82,14 +87,17 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 | Absolute Product Data | `database/shared/absolute_product_data/Absolute_Product_Data.xlsx` (single). Warehouse buys **babysuits only** (styles C800T / C8020T / C8030T) |
 | Plain Database | `database/shared/plain/Plain Database.xlsx` (single; grouping + PO) |
 | Packs Database | `database/shared/packs/Packs Database.xlsx` (single; grouping + PO) |
-| ShipStation Tags | `database/shared/shipstation/ShipStation_Tags.xlsx` (single) |
+| ShipStation Tags | `database/shared/shipstation_tags/ShipStation_Tags.xlsx` (single) |
+| Taxonomy pick-lists | `database/order-grouping-sorter/taxonomy_picklists.csv` (Hashim #038 closed Areeb category / product type / product style / department + PE subcategory). Title Case; type has no gender; style is a named product, never a code. Source `shared/taxonomy_catalog.py`. CL filled 2026-09-16; Plain / Packs stay supplier copy. |
+| Fixed batches | `database/order-grouping-sorter/fixed_batches.csv` — `B80`/`B100`/… codes + match criteria. Sorter loads via `Order Grouping Sorter/scripts/fixed_batches.py`. Leftover `B1`/`B2`/… skip these numbers. |
 | DTF Des-P\*.xlsx | Packing → app Output + SharedInbox; Queue auto Missing Logo |
 | Print sizes (Queue) | CL CSV Width/Height mm; Pocket overrides in Queue Configuration Workbook |
 | New SKU Database | Packing DTF Des Item-SKU remap (`database/order-packing-list-generator/`) |
 | NocoDB | Custom Label Database scripts only |
-| ShipStation | Packing, PO, Shipping via `shared/shipstation` (create/void local to Shipping) |
+| ShipStation | Packing, PO, Shipping, Sorter via `shared/shipstation` (create/void local to Shipping) |
+| Order Grouping Sorter → Packing Input | One CSV per process into Packing `Input/{DD-MM-YYYY}/1st Shift/` while testing (`shared.paths.sorter_input_csv_path`). Fixed-batch files are `B100-{6 fields}.csv` / `B80-{6 fields}.csv` / … ; leftover `B1-{6 fields}.csv` / `B2-…` (skip reserved). Default CLI is dry-run; `--run` writes. Production later: nth `--run` of the day = nth shift. `RESEND` / `UNMATCHED` land in that run’s folder. |
 
-**Later (not built):** Shipping auto-ingest from SharedInbox.
+**Later (not built):** Shipping auto-ingest from SharedInbox. Packing owns **all** packing list PDFs (including today’s PO slips); Packing enrich/preflight also hits Plain + Packs (do not clone those SKUs into CL). PO is EDI/stock only.
 
 ## System do-nots
 

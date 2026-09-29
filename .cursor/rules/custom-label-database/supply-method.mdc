@@ -12,19 +12,31 @@ Code: `shared/supply_method.py`. One-off: `python scripts/fill_supply_method.py`
 
 | Cell | Meaning |
 |---|---|
-| `Warehouse Stock` | Fruit of the Loom men / women / kids **t-shirts only** |
+| `Warehouse Stock` | **CL:** FOTL men / women / kids t-shirts in the locked colour lists, plus Kids `C800T` / `C8030T` in the locked body colours. **Plain / Packs:** all FOTL men / women / kids t-shirts |
 | `In House Manufacture` | Iron-on or sticker (printed / CL only) |
-| `Supplier On Demand` | Gildan t-shirts and everything else |
+| `Supplier On Demand` | Everything else |
 
-Decision order:
+CL decision order:
 
-1. If this is CL **and** Custom Label (SKU) or Gender Apparel contains `iron on` / `ironon` / `iron-on` / `sticker` (spaces and hyphens ignored) → `In House Manufacture`
-2. Else if FOTL identity **and** `Category (Areeb)` = `T-SHIRTS` **and** not vest/tank → `Warehouse Stock`
-3. Else → `Supplier On Demand`
+1. Custom Label (SKU) or Gender Apparel contains `iron on` / `ironon` / `iron-on` / `sticker` → `In House Manufacture`
+2. Else Kids **and** Custom Label / Gender Apparel / Supplier Product Code contains `C800T` or `C8030T` **and** `Colour` is on the body list → `Warehouse Stock`
+3. Else FOTL identity **and** `Category (Areeb)` = `T-SHIRTS` **and** not vest/tank **and** `Department (Areeb)` + `Colour` hit that department’s list → `Warehouse Stock`
+4. Else → `Supplier On Demand`
 
 FOTL identity: Brand contains Fruit + Loom, or Brand/GA `FOTL`/`FOLT`, or GA is `Mens-T-Shirt` / `Womens-T-Shirt` / `Kids-T-Shirt` with blank Brand. **Gildan brand always wins** (on-demand).
 
-Plain / Packs: `allow_in_house=False` — never write `In House Manufacture`.
+Colour match is the whole `Colour` cell, casefold only. Ladies = `Womens`. `C8030T` is Product Type Romper in the catalog; the style code is what counts. `C8020T` and `BZ10-Body Suit` are not warehouse stock.
+
+Lists (supervisor 2026-09-23), also in `WAREHOUSE_TEE_COLOURS` / `WAREHOUSE_BODY_COLOURS`:
+
+| Department | Apparel | Colours |
+|---|---|---|
+| Mens | FOTL T-Shirt | Azure Blue, Black, Bottle Green, Burgundy, Charcoal, Classic Olive, Daisy, Dark Heather Grey, Forest Green, Fuchsia, Heather Grey, Irish Green, Kelly Green, Light Blue, Light Graphite, Light Graphite Grey, Light Pink, Maroon, Military Green, Natural, Navy, Navy Blue, Orange, Purple, Red, Royal, Royal Blue, Sapphire, Sky Blue, Sports Grey, Sunflower, White, Yellow |
+| Womens | FOTL T-Shirt | Black, Burgundy, Charcoal, Classic Olive, Daisy, Dark Heather Grey, Fuchsia, Heather Grey, Heliconia, Irish Green, Kelly Green, Light Blue, Light Graphite, Light Graphite Grey, Light Pink, Maroon, Military Green, Natural, Navy, Navy Blue, Orange, Purple, Red, Royal, Royal Blue, Sky Blue, Sunflower, White |
+| Kids | FOTL T-Shirt | Azure Blue, Black, Burgundy, Charcoal, Daisy, Fuchsia, Heather Grey, Heliconia, Irish Green, Kelly Green, Light Blue, Light Graphite, Light Graphite Grey, Light Pink, Maroon, Natural, Navy, Navy Blue, Orange, Purple, Red, Royal, Royal Blue, Sapphire, Sky Blue, Sports Grey, Sunflower, White |
+| Kids | `C800T` / `C8030T` | Black, Lemon Yellow, Light Blue, Light Pink, Red, Sports Grey, White |
+
+Plain / Packs: `allow_in_house=False` — never write `In House Manufacture`. No colour gate.
 
 ## Fill 2026-09-09
 
@@ -33,3 +45,11 @@ Plain / Packs: `allow_in_house=False` — never write `In House Manufacture`.
 | Custom Label | 83,801 | 453 | 47,638 |
 | Plain Database | 2,530 | 0 | 75,509 |
 | Packs | 17,252 | 0 | 21,200 |
+
+## Fill 2026-09-23 (CL only)
+
+Backup `database/shared/custom_label/backups/Custom_Label_Database.bak_20260923_103520.csv`. 0 mismatches vs the rule. Plain / Packs not rewritten.
+
+| File | Rows | Warehouse Stock | In House Manufacture | Supplier On Demand | Wrote |
+|---|---:|---:|---:|---:|---:|
+| Custom Label | 132,224 | 63,399 | 458 | 68,367 | 21,728 |

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import re
 import sys
 import time
 from datetime import datetime
@@ -43,6 +42,7 @@ from scripts.pipeline_runtime.runner_utils import (
     _update_all_orders_log,
     log_csv_preview,
 )
+from scripts.pipeline_split_by_process_item.common import pin_batch_shift
 from scripts.pipeline_split_by_process_item.service import run as run_split_by_process_and_item_number
 from scripts.pipeline_split_position.service import run as run_split_and_assign_position_codes
 
@@ -58,7 +58,7 @@ PipelinePhase = Literal["all", "excel", "pdf"]
 
 
 def discover_step6_csvs(output_root: Path, token: str) -> list[Path]:
-    """Process CSVs left after Step 6 / missing-logo filter (excludes intermediate pipeline files)."""
+    """Process CSVs left after Step 6 (missing logos already stripped before naming)."""
     exclude_names = {
         f"1_fetch_input_csv_{token}.csv",
         f"1b_apply_rules_{token}.csv",
@@ -148,7 +148,7 @@ def run_pipeline(
     except ValueError as exc:
         raise ValueError(f"Date must be in DD-MM-YYYY format, got '{date_dd_mm_yyyy}'.") from exc
 
-    token = input_csv_path.stem
+    token = pin_batch_shift(input_csv_path.stem)
     shift_label = (shift or "").strip()
     if not shift_label:
         raise ValueError("Shift must be a non-empty string.")
@@ -355,26 +355,11 @@ def run_pipeline(
         log_csv_preview(lc, step5_path, "Step 5 CSV preview (process numbers)")
 
     if log:
-        log.step("Step 6/8: Splitting by process and item number...")
-    t_step = time.perf_counter()
-    fixed_numeric = bool(fixed and re.fullmatch(r"\d+", fixed))
-    run_split_by_process_and_item_number(
-        step5_path,
-        output_root,
-        workbook_path,
-        run_date=dispatch_date,
-        use_simple_process_format=False,
-        use_fixed_numeric_process=fixed_numeric,
-        fixed_process_number=fixed if fixed_numeric else None,
-        log=lc,
-    )
-    step6_csvs = discover_step6_csvs(output_root, token)
-    if log:
-        log.step("Filtering missing logos (merge groups)...")
+        log.step("Filtering missing logos (before process/item naming)...")
     t_miss = time.perf_counter()
     with demo_image_lookup(use_demo):
-        step6_csvs, missing_logo_path, missing_logo_count = filter_step6_csvs_for_missing_logos(
-            step6_csvs,
+        kept_step5, missing_logo_path, missing_logo_count = filter_step6_csvs_for_missing_logos(
+            [step5_path],
             output_root=output_root,
             token=token,
             logo_custom_single_dir=logo_custom_single_dir,
@@ -392,6 +377,26 @@ def run_pipeline(
             + (f"; file: {missing_logo_path}" if missing_logo_path else "")
             + f"  [{time.perf_counter() - t_miss:.2f}s]"
         )
+
+    if log:
+        log.step("Step 6/8: Splitting by process and item number...")
+    t_step = time.perf_counter()
+    if not kept_step5 or not step5_path.exists():
+        step6_csvs = []
+        if log:
+            log.detail("  Step 6: skipped — no rows left after missing-logo filter.")
+    else:
+        run_split_by_process_and_item_number(
+            step5_path,
+            output_root,
+            workbook_path,
+            run_date=dispatch_date,
+            use_simple_process_format=True,
+            use_fixed_numeric_process=False,
+            fixed_process_number=None,
+            log=lc,
+        )
+        step6_csvs = discover_step6_csvs(output_root, token)
 
     for csv_path in step6_csvs:
         _update_all_orders_log(csv_path, date_dd_mm_yyyy, log=lc)
@@ -424,7 +429,7 @@ def run_pipeline(
             output_root,
             dispatch_date,
             use_fixed_process_number=use_fixed_process_number,
-            use_fixed_numeric_process=fixed_numeric,
+            use_fixed_numeric_process=False,
             log=lc,
             date_dd_mm_yyyy=date_dd_mm_yyyy,
             shift_label=shift_label,

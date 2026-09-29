@@ -13,7 +13,7 @@ pip install -r requirements.txt
 - **Project files** (expected structure):
   - `database/order-packing-list-generator/Workbook.xlsx` – process/position sheets (Process Info, Multiple Positions, Logo IDs, etc.). Not the live Custom Label catalog.
   - `database/shared/custom_label/Custom_Label_Database.csv` – live CL enrich source (SKU → Gender Apparel, etc.). Set via **Custom Label Database (CSV)** in the GUI.
-  - `database/shared/shipstation/ShipStation_Tags.xlsx` – tag name / Tag ID / per-shift process-number mapping. Used when tag-mode process number is left blank. Sync from ShipStation with `python scripts/sync_shipstation_tags.py` (close the Excel file first).
+  - `database/shared/shipstation_tags/ShipStation_Tags.xlsx` – tag name / Tag ID / per-shift process-number mapping. Used when tag-mode process number is left blank. Sync from ShipStation with `python scripts/sync_shipstation_tags.py` (close the Excel file first).
   - `config/ShipStation/.env` – ShipStation API credentials (`REAL_API_BASE_URL`, `REAL_API_KEY`, `REAL_API_SECRET`) for tag-based order fetch.
   - `Output/` – output folder (created automatically if missing).
   - Optional image folders for PDFs (top-level files only; no subfolders are scanned):

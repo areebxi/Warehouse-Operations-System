@@ -24,6 +24,8 @@ from src.io.file_search import (
     find_design_file_by_sku,
     find_design_file,
     find_design_file_vba_logic,
+    find_sku_position_variant_files,
+    resolve_sku_position_hint,
 )
 
 # Re-export from file_loaders
@@ -49,6 +51,8 @@ __all__ = [
     "find_design_file_by_sku",
     "find_design_file",
     "find_design_file_vba_logic",
+    "find_sku_position_variant_files",
+    "resolve_sku_position_hint",
     # File loader functions
     "load_color_bar_from_app_dir",
     "load_configuration_workbook",

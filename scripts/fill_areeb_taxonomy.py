@@ -189,6 +189,7 @@ def fill_cl(*, dry_run: bool) -> tuple[dict[str, int], list[dict[str, str]]]:
     stats: dict[str, int] = defaultdict(int)
     samples: list[str] = []
     classified: list[tuple[dict[str, str], AreebValues]] = []
+    cleared_style: Counter[str] = Counter()
     for row in rows:
         values = classify_cl(row)
         patch = apply_areeb(row, values)
@@ -201,12 +202,23 @@ def fill_cl(*, dry_run: bool) -> tuple[dict[str, int], list[dict[str, str]]]:
                 stats["already_or_empty_incoming"] += 1
             continue
         count_write(stats, values.source, len(patch))
+        for col, val in patch.items():
+            if not val:
+                stats[f"cleared_{col}"] += 1
+                if col == "Product Style (Areeb)":
+                    old = cell(row.get(col)) or "(blank)"
+                    ga = cell(row.get("Gender Apparel")) or "(blank GA)"
+                    cleared_style[f"{old} | {ga}"] += 1
         if len(samples) < 8:
             samples.append(f"label={row.get('Custom Label')} src={values.source} {patch}")
         if not dry_run:
             row.update(patch)
     print("Custom Label:", path)
     _print_stats(stats, samples)
+    if cleared_style:
+        print("  Product Style cleared (top 12 old | Gender Apparel):")
+        for k, n in cleared_style.most_common(12):
+            print(f"    {n:6,}  {k}")
     leftover_rows = []
     for row, val in classified:
         if not val.category:
@@ -215,11 +227,22 @@ def fill_cl(*, dry_run: bool) -> tuple[dict[str, int], list[dict[str, str]]]:
         return dict(stats), leftover_rows
     bak = backup_file(path, wh.cl_backups_dir())
     print(f"  backup {bak}")
-    with path.open("w", encoding="utf-8-sig", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=headers, extrasaction="ignore")
-        writer.writeheader()
-        writer.writerows(rows)
-    print("  wrote", path)
+    try:
+        with path.open("w", encoding="utf-8-sig", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=headers, extrasaction="ignore")
+            writer.writeheader()
+            writer.writerows(rows)
+        print("  wrote", path)
+        fallback = path.with_name(path.stem + "_write_fallback" + path.suffix)
+        if fallback.is_file():
+            fallback.unlink()
+    except PermissionError:
+        fallback = path.with_name(path.stem + "_write_fallback" + path.suffix)
+        with fallback.open("w", encoding="utf-8-sig", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=headers, extrasaction="ignore")
+            writer.writeheader()
+            writer.writerows(rows)
+        print("  live locked, wrote", fallback)
     return dict(stats), leftover_rows
 
 

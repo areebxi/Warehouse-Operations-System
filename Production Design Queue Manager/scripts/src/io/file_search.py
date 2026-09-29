@@ -16,13 +16,19 @@ from src.io.file_utilities import IMAGE_EXTENSIONS, extract_design_code, remove_
 from src.system.logging.utils import get_run_logger
 
 # Re-export from vba_file_search for backwards compatibility
-from src.io.vba_file_search import find_design_file_vba_logic
+from src.io.vba_file_search import (
+    find_design_file_vba_logic,
+    find_sku_position_variant_files,
+    resolve_sku_position_hint,
+)
 
 __all__ = [
     'find_design_file_by_code',
     'find_design_file_by_sku',
     'find_design_file',
     'find_design_file_vba_logic',
+    'find_sku_position_variant_files',
+    'resolve_sku_position_hint',
 ]
 
 

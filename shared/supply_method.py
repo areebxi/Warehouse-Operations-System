@@ -1,13 +1,18 @@
-"""Supply Method for grouping: one warehouse rule on CL, Plain, and Packs.
+"""Supply Method for grouping.
 
-Supervisor lock 2026-09-09:
-  Warehouse Stock        = Fruit of the Loom men / women / kids t-shirts only
+Supervisor lock 2026-09-09, tightened for Custom Label on 2026-09-23:
+  Warehouse Stock        = CL: FOTL men / women / kids t-shirts in the locked
+                           colour lists, plus Kids body styles C800T / C8030T
+                           in the locked body colours.
+                           Plain / Packs: all FOTL men / women / kids t-shirts
+                           (no colour list).
   In House Manufacture   = Custom Label SKU or Gender Apparel contains
                            iron on / ironon / iron-on / sticker
                            (CL / printed only; plain cannot be in-house)
-  Supplier On Demand     = Gildan t-shirts and everything else
+  Supplier On Demand     = everything else (off-list FOTL colours, Gildan, …)
 
 Do not reuse CL column `Warehouse Stock` (Yes on China bags — not this split).
+Colour match is the whole Colour cell, casefold only. Deep Navy is not Navy.
 """
 
 from __future__ import annotations
@@ -26,8 +31,58 @@ SUPPLIER_ON_DEMAND = "Supplier On Demand"
 # Gender Apparel tokens used for the warehouse FOTL tee lines when Brand is blank.
 WAREHOUSE_GA_TEES = frozenset({"Mens-T-Shirt", "Womens-T-Shirt", "Kids-T-Shirt"})
 
+# CL only (2026-09-23). Ladies = Department (Areeb) Womens. Exact Colour cells.
+_MENS_TEE_COLOURS = (
+    "Azure Blue", "Black", "Bottle Green", "Burgundy", "Charcoal", "Classic Olive",
+    "Daisy", "Dark Heather Grey", "Forest Green", "Fuchsia", "Heather Grey",
+    "Irish Green", "Kelly Green", "Light Blue", "Light Graphite", "Light Graphite Grey",
+    "Light Pink", "Maroon", "Military Green", "Natural", "Navy", "Navy Blue",
+    "Orange", "Purple", "Red", "Royal", "Royal Blue", "Sapphire", "Sky Blue",
+    "Sports Grey", "Sunflower", "White", "Yellow",
+)
+_WOMENS_TEE_COLOURS = (
+    "Black", "Burgundy", "Charcoal", "Classic Olive", "Daisy", "Dark Heather Grey",
+    "Fuchsia", "Heather Grey", "Heliconia", "Irish Green", "Kelly Green", "Light Blue",
+    "Light Graphite", "Light Graphite Grey", "Light Pink", "Maroon", "Military Green",
+    "Natural", "Navy", "Navy Blue", "Orange", "Purple", "Red", "Royal", "Royal Blue",
+    "Sky Blue", "Sunflower", "White",
+)
+_KIDS_TEE_COLOURS = (
+    "Azure Blue", "Black", "Burgundy", "Charcoal", "Daisy", "Fuchsia", "Heather Grey",
+    "Heliconia", "Irish Green", "Kelly Green", "Light Blue", "Light Graphite",
+    "Light Graphite Grey", "Light Pink", "Maroon", "Natural", "Navy", "Navy Blue",
+    "Orange", "Purple", "Red", "Royal", "Royal Blue", "Sapphire", "Sky Blue",
+    "Sports Grey", "Sunflower", "White",
+)
+_BODY_COLOURS = (
+    "Black", "Lemon Yellow", "Light Blue", "Light Pink", "Red", "Sports Grey", "White",
+)
+
+def _fold_set(names: tuple[str, ...]) -> frozenset[str]:
+    return frozenset(n.casefold() for n in names)
+
+
+WAREHOUSE_TEE_COLOURS = {
+    "mens": _fold_set(_MENS_TEE_COLOURS),
+    "womens": _fold_set(_WOMENS_TEE_COLOURS),
+    "kids": _fold_set(_KIDS_TEE_COLOURS),
+}
+WAREHOUSE_BODY_COLOURS = _fold_set(_BODY_COLOURS)
+
+_DEPT_KEY = {
+    "mens": "mens",
+    "men": "mens",
+    "womens": "womens",
+    "women": "womens",
+    "ladies": "womens",
+    "lady": "womens",
+    "kids": "kids",
+    "kid": "kids",
+}
+
 # Word-boundary: "Harvest" must not count as a vest.
 _VEST_RE = re.compile(r"\b(?:vests?|tanks?|camisoles?)\b", re.I)
+_BODY_STYLE_RE = re.compile(r"\b(?:C800T|C8030T)\b", re.I)
 
 
 def _fold(value: object) -> str:
@@ -131,16 +186,57 @@ def classify_supply_method(
     return SUPPLIER_ON_DEMAND
 
 
+def is_cl_warehouse_tee_colour(department: object, colour: object) -> bool:
+    """True when this department's locked FOTL tee colour list contains Colour."""
+    key = _DEPT_KEY.get(_fold(department))
+    if not key:
+        return False
+    return _fold(colour) in WAREHOUSE_TEE_COLOURS[key]
+
+
+def is_cl_warehouse_body_suit(
+    *,
+    department: object = "",
+    colour: object = "",
+    custom_label: object = "",
+    gender_apparel: object = "",
+    product_code: object = "",
+) -> bool:
+    """Kids C800T / C8030T in the locked body colours. C8020T is not stock."""
+    if _DEPT_KEY.get(_fold(department)) != "kids":
+        return False
+    if _fold(colour) not in WAREHOUSE_BODY_COLOURS:
+        return False
+    blob = " ".join(cell(p) for p in (custom_label, gender_apparel, product_code))
+    return bool(_BODY_STYLE_RE.search(blob))
+
+
 def classify_cl_row(row: dict[str, Any]) -> str:
-    return classify_supply_method(
-        brand=row.get("Brand"),
-        category_areeb=row.get("Category (Areeb)"),
-        product_type=row.get("Product Type (Areeb)"),
-        gender_apparel=row.get("Gender Apparel"),
-        custom_label=row.get("Custom Label"),
-        sku=row.get("Warehouse SKU") or row.get("SKU"),
-        allow_in_house=True,
-    )
+    """CL colour gate. Plain / Packs stay on classify_plain_row / classify_packs_row."""
+    gender_apparel = row.get("Gender Apparel")
+    custom_label = row.get("Custom Label")
+    sku = row.get("Warehouse SKU") or row.get("SKU")
+    if is_in_house_text(gender_apparel, custom_label, sku):
+        return IN_HOUSE_MANUFACTURE
+    if is_cl_warehouse_body_suit(
+        department=row.get("Department (Areeb)"),
+        colour=row.get("Colour"),
+        custom_label=custom_label,
+        gender_apparel=gender_apparel,
+        product_code=row.get("Supplier Product Code"),
+    ):
+        return WAREHOUSE_STOCK
+    if (
+        is_fotl(brand=row.get("Brand"), gender_apparel=gender_apparel)
+        and is_tshirt(
+            category_areeb=row.get("Category (Areeb)"),
+            product_type=row.get("Product Type (Areeb)"),
+            gender_apparel=gender_apparel,
+        )
+        and is_cl_warehouse_tee_colour(row.get("Department (Areeb)"), row.get("Colour"))
+    ):
+        return WAREHOUSE_STOCK
+    return SUPPLIER_ON_DEMAND
 
 
 def classify_plain_row(row: dict[str, Any]) -> str:

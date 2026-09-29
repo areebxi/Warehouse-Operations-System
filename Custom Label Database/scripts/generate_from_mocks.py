@@ -45,7 +45,7 @@ BACKUPS = wh.cl_backups_dir()
 
 DEFAULT_DB = wh.cl_csv_path()
 DEFAULT_PE = wh.btc_product_data_path()
-DEFAULT_MOCKS = SUPPORT / "Mocks Databse.csv"
+DEFAULT_MOCKS = wh.mocks_database_csv_path()
 SHEET = "Data"
 
 SEED_COLS = [

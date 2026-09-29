@@ -1,4 +1,4 @@
-"""Post-Step 6: exclude rows (and merge siblings) with missing logo files."""
+"""After Step 5, before Step 6 naming: drop missing-logo rows (and merge siblings)."""
 
 from __future__ import annotations
 
@@ -12,9 +12,23 @@ from scripts.pipeline_preflight_issues.image_dry_run import (
     flag_missing_images,
 )
 from scripts.pipeline_runtime.order_number_csv import read_csv_with_order_numbers
+from scripts.pipeline_split_by_process_item.duplicate_order_suffixes import (
+    assign_merge_order_number_suffixes,
+)
+from scripts.pipeline_split_by_process_item.grouping_quantity import _expand_df_by_quantity
 from scripts.pipeline_split_by_process_item.merge_group_mask import (
     expand_issue_mask_to_merge_groups,
 )
+
+_ORIG_IDX = "_filter_orig_idx"
+
+
+def _lookup_frame(df: pd.DataFrame) -> pd.DataFrame:
+    """Expand qty and apply custom stems so missing-logo lookup matches Step 6/PDF."""
+    work = df.copy()
+    work[_ORIG_IDX] = range(len(work))
+    work = _expand_df_by_quantity(work)
+    return assign_merge_order_number_suffixes(work)
 
 
 def filter_step6_csvs_for_missing_logos(
@@ -28,8 +42,11 @@ def filter_step6_csvs_for_missing_logos(
     log: Optional[Callable[[str], None]] = None,
 ) -> tuple[list[Path], Optional[Path], int]:
     """
-    Dry-run logo lookup on each Step-6 process CSV; exclude missing-logo rows
-    and their merge siblings. Writes ``missing_logo_orders_{token}.csv`` when any.
+    Dry-run logo lookup on each CSV (Step 5 before naming); exclude missing-logo
+    rows and their merge siblings. Kept files stay unexpanded so Step 6 can name
+    remaining rows with no process/item gaps. Writes
+    ``missing_logo_orders_{token}.csv`` when any (holding file; reprint is a
+    full packing run from Step 1).
 
     Returns (kept_csvs, missing_logo_csv_or_none, excluded_row_count).
     When no logo folders are configured, returns step6_csvs unchanged.
@@ -79,8 +96,10 @@ def filter_step6_csvs_for_missing_logos(
                 pass
             continue
 
+        df = df.reset_index(drop=True)
+        work = _lookup_frame(df)
         missing_logo_flags, _ = flag_missing_images(
-            df,
+            work,
             apparel_stem_map=None,
             logo_normal_stem_map=logo_normal_map,
             logo_custom_stem_map=logo_custom_map,
@@ -90,13 +109,19 @@ def filter_step6_csvs_for_missing_logos(
             logo_custom_double_dir=logo_custom_double_path,
         )
         raw_missing = int(missing_logo_flags.sum())
-        exclude_mask = expand_issue_mask_to_merge_groups(df, missing_logo_flags)
-        n_exclude = int(exclude_mask.sum())
+        exclude_work = expand_issue_mask_to_merge_groups(work, missing_logo_flags)
+        n_exclude = int(exclude_work.sum())
         if n_exclude:
             sibling_pullins += max(0, n_exclude - raw_missing)
-            excluded_frames.append(df.loc[exclude_mask].copy())
+            dropped = set(
+                int(v) for v in work.loc[exclude_work, _ORIG_IDX].tolist()
+            )
+            excluded_frames.append(
+                work.loc[exclude_work].drop(columns=[_ORIG_IDX], errors="ignore")
+            )
             total_excluded += n_exclude
-            kept = df.loc[~exclude_mask].copy()
+            keep_mask = [i not in dropped for i in range(len(df))]
+            kept = df.loc[keep_mask].copy()
             if kept.empty:
                 try:
                     csv_path.unlink()

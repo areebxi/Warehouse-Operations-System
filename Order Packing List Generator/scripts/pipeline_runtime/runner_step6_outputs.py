@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import re
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -120,13 +119,12 @@ def run_step6_style_outputs(
 
     if log:
         log.step("Step 7 (missing pipeline): Generating Excel outputs (Picking, Orders Details, DTF Des)...")
-    fixed_numeric = bool(re.fullmatch(r"\d+", name))
     run_generate_excel_outputs(
         csv_path,
         output_root,
         dispatch_date,
         use_fixed_process_number=True,
-        use_fixed_numeric_process=fixed_numeric,
+        use_fixed_numeric_process=False,
         log=lc,
         date_dd_mm_yyyy=date_dd_mm_yyyy,
         shift_label=shift_label or None,

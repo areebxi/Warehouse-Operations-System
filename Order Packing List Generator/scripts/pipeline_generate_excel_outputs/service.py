@@ -6,6 +6,7 @@ import pandas as pd
 
 from scripts.pipeline_runtime.order_number_csv import read_csv_with_order_numbers
 from scripts.pipeline_runtime.runner_utils import copy_dtf_des_to_shared_inbox
+from scripts.pipeline_split_by_process_item.common import pin_batch_shift
 
 from .config import DTF_SKU_MAP_CSV, REQUIRED
 from .helpers import _file_level_seq, load_dtf_sku_mapping
@@ -30,7 +31,7 @@ def run(
 
     dtf_sku_map = load_dtf_sku_mapping(DTF_SKU_MAP_CSV)
 
-    process_base = csv_path.stem
+    process_base = pin_batch_shift(csv_path.stem)
     file_level_seq = _file_level_seq(df, process_base)
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)

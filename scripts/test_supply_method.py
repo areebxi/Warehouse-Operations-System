@@ -27,27 +27,88 @@ def test_fotl_tees_are_warehouse() -> None:
             "Category (Areeb)": "T-SHIRTS",
             "Product Type (Areeb)": "MENS SHORT SLEEVE T-SHIRT",
             "Gender Apparel": "FOTL Mens Valueweight T",
+            "Department (Areeb)": "Mens",
+            "Colour": "Azure Blue",
         },
         {
             "Brand": "Fruit of the Loom",
             "Category (Areeb)": "T-SHIRTS",
             "Product Type (Areeb)": "Childrens T-Shirt",
             "Gender Apparel": "Kids-T-Shirt",
+            "Department (Areeb)": "Kids",
+            "Colour": "Sports Grey",
         },
         {
             "Brand": "",
             "Category (Areeb)": "T-SHIRTS",
             "Product Type (Areeb)": "Ladies Short Sleeve T-Shirts",
             "Gender Apparel": "Womens-T-Shirt",
+            "Department (Areeb)": "Womens",
+            "Colour": "Heliconia",
         },
         {
             "Brand": "Fruit Of The Loom",
             "Category (Areeb)": "T-SHIRTS",
             "Product Type (Areeb)": "Mens Long Sleeve T-Shirt",
             "Gender Apparel": "FOTL Mens Valueweight Long Sleeve Baseball T-Shirt",
+            "Department (Areeb)": "Mens",
+            "Colour": "White",
         },
     ):
         assert classify_cl_row(row) == WAREHOUSE_STOCK, row
+
+
+def test_cl_colour_gate_and_body_suits() -> None:
+    deep_navy = {
+        "Brand": "Fruit Of The Loom",
+        "Category (Areeb)": "T-Shirts",
+        "Product Type (Areeb)": "Short Sleeve T-Shirt",
+        "Gender Apparel": "FOTL Mens Valueweight T",
+        "Department (Areeb)": "Mens",
+        "Colour": "Deep Navy",
+    }
+    assert classify_cl_row(deep_navy) == SUPPLIER_ON_DEMAND
+    mens_heliconia = {**deep_navy, "Colour": "Heliconia"}
+    assert classify_cl_row(mens_heliconia) == SUPPLIER_ON_DEMAND
+    ladies_sports = {
+        **deep_navy,
+        "Department (Areeb)": "Ladies",
+        "Gender Apparel": "Womens-T-Shirt",
+        "Colour": "Sports Grey",
+    }
+    assert classify_cl_row(ladies_sports) == SUPPLIER_ON_DEMAND
+    kids_yellow = {
+        **deep_navy,
+        "Department (Areeb)": "Kids",
+        "Gender Apparel": "Kids-T-Shirt",
+        "Colour": "Yellow",
+    }
+    assert classify_cl_row(kids_yellow) == SUPPLIER_ON_DEMAND
+    baseball = {**deep_navy, "Colour": "White/Black"}
+    assert classify_cl_row(baseball) == SUPPLIER_ON_DEMAND
+    body = {
+        "Department (Areeb)": "Kids",
+        "Product Type (Areeb)": "Body Suit",
+        "Gender Apparel": "C800T-BS",
+        "Custom Label": "M281-P5-C800T-30-0-3",
+        "Colour": "Lemon Yellow",
+        "Supplier Name": "Absolute Apparels",
+    }
+    assert classify_cl_row(body) == WAREHOUSE_STOCK
+    romper = {
+        **body,
+        "Product Type (Areeb)": "Romper",
+        "Gender Apparel": "C8030T-BS",
+        "Custom Label": "C8030T-WHI-0-3M",
+        "Colour": "White",
+    }
+    assert classify_cl_row(romper) == WAREHOUSE_STOCK
+    off_body = {**body, "Colour": "Navy"}
+    assert classify_cl_row(off_body) == SUPPLIER_ON_DEMAND
+    c8020 = {**body, "Custom Label": "C8020T-BLK-0-3", "Gender Apparel": "C8020T-BS", "Colour": "Black"}
+    assert classify_cl_row(c8020) == SUPPLIER_ON_DEMAND
+    bz10 = {**body, "Custom Label": "BZ10-BLK", "Gender Apparel": "BZ10-Body Suit", "Colour": "Black"}
+    assert classify_cl_row(bz10) == SUPPLIER_ON_DEMAND
 
 
 def test_gildan_and_everything_else_on_demand() -> None:
@@ -164,6 +225,7 @@ def test_plain_and_packs_never_in_house() -> None:
 
 if __name__ == "__main__":
     test_fotl_tees_are_warehouse()
+    test_cl_colour_gate_and_body_suits()
     test_gildan_and_everything_else_on_demand()
     test_iron_on_and_sticker_in_house_on_cl_only()
     test_fotl_vest_is_not_warehouse()

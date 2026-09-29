@@ -36,6 +36,14 @@ def normalize_lower_impl(val) -> str:
     return str(val).strip().lower()
 
 
+# Packing PIN: "B100-S1-1 Item 1" (batch+shift+process number). Also accepts legacy
+# "Process {name}-{N} Item-{item}".
+PROCESS_ITEM_RE = re.compile(
+    r"^(?:Process\s+)?(.+?)\s+Item[-\s](\d+)",
+    re.IGNORECASE,
+)
+
+
 def parse_process_and_item_impl(
     val,
     *,

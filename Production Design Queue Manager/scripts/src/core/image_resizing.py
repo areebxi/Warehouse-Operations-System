@@ -11,6 +11,7 @@ from typing import Optional, Dict, Tuple
 from src.system.logging.utils import get_run_logger
 from src.core.size_reference import COLOR_BAR_WIDTH, COLOR_BAR_SPACING
 from src.core.image_orientation import apply_orientation_if_enabled
+from src.core.sku_position_hints import target_mm_for_position_token
 
 
 def calculate_image_dimensions(
@@ -23,7 +24,8 @@ def calculate_image_dimensions(
     order_number: Optional[str] = None,
     canvas_width_mm: Optional[float] = None,
     canvas_height_mm: Optional[float] = None,
-    design_padding: int = 25
+    design_padding: int = 25,
+    filename_position_token: Optional[str] = None,
 ) -> Tuple[int, int, float, float, str]:
     """Calculate image dimensions with size constraints (pocket/sleeve + canvas bounds)."""
     logger = get_run_logger()
@@ -32,11 +34,29 @@ def calculate_image_dimensions(
     original_height = img.height
     original_aspect = original_width / original_height
 
+    hint_mm = target_mm_for_position_token(filename_position_token)
+    if hint_mm:
+        hint_w_mm, hint_h_mm = hint_mm
+        token_label = str(filename_position_token).strip().upper()
+        size_info = {
+            "width_px": int(hint_w_mm * mm_to_pixel_factor),
+            "height_px": int(hint_h_mm * mm_to_pixel_factor),
+            "width_mm": float(hint_w_mm),
+            "height_mm": float(hint_h_mm),
+            "size_code": token_label,
+            "match_type": "filename_position_hint",
+            "merge_entry": token_label,
+        }
+        # Hint mm wins — including kids. Do not apply legacy -P.png 65×80.
+        is_pocket = False
+        is_sleeve = False
+
     log_lines = []
     log_lines.append(
         f"Sizing image — order: {order_number or 'N/A'}, SKU: {item_sku or 'N/A'}, "
         f"original: {original_width}x{original_height}px, "
-        f"pocket={is_pocket}, sleeve={is_sleeve}"
+        f"pocket={is_pocket}, sleeve={is_sleeve}, "
+        f"filename_token={filename_position_token or 'N/A'}"
     )
 
     if size_info:
@@ -189,6 +209,7 @@ def resize_image_with_constraints(
     canvas_height_mm: Optional[float] = None,
     design_padding: int = 25,
     allow_orientation: bool = False,
+    filename_position_token: Optional[str] = None,
 ) -> Tuple[Image.Image, int, int, float, float]:
     """Resize the image to calculated constrained dimensions."""
     dim_kwargs = {
@@ -200,6 +221,7 @@ def resize_image_with_constraints(
         "canvas_width_mm": canvas_width_mm,
         "canvas_height_mm": canvas_height_mm,
         "design_padding": design_padding,
+        "filename_position_token": filename_position_token,
     }
 
     working_img, width_px, height_px, width_mm, height_mm = apply_orientation_if_enabled(

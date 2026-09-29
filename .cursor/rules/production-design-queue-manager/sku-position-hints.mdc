@@ -1,0 +1,20 @@
+---
+description: 1-SP JPEG position hints — PNG queued, JPEG never placed
+globs: "Production Design Queue Manager/**"
+alwaysApply: false
+---
+
+# 1-SP JPEG position hints (personalised, PNG-only)
+
+Supervisor 2026-09-22: On duplicate-order SKU files in the **single** folder only, a JPEG next to the main PNG is a **position hint**, not a second design.
+
+- Queue only the PNG. Never place the JPEG on the canvas.
+- Hint only if the matching main PNG exists. JPEG-only → do not invent a design; fall through to double as today.
+- Tokens: dedicated hyphen segment `-P-` / `-S-` / `-S1-` / `-S2-` before the full SKU. Do not treat apparel size `S` inside the SKU as sleeve. Build stems; do not substring-scan.
+- Token order: P, S, S1, S2. First hit wins. One PNG, one size.
+- `-P-` JPEG → 80×100 (including kids). Sleeve tokens → 100×100. Not the legacy kids 65×80 path.
+- Legacy `{OrderNumber}-P.png` / `-S.png` stays (unique orders). Kids `-K-` → 65×80 on that PNG-suffix path.
+- Main search stays PNG-only (`IMAGE_EXTENSIONS = ['.png']`). Do not expand to JPEG.
+- Hint lookup only when `is_duplicate_order`, `position` is None, and a single-folder PNG was found.
+- Missing Logo inherits via `process_personalised_designs`. Do not duplicate in the GUI.
+- Token tables live in `scripts/src/core/sku_position_hints.py` (no I/O). Do not import I/O from `image_resizing`.

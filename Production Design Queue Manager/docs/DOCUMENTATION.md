@@ -96,6 +96,7 @@
     - Kids (-K- in SKU): 65mm width × 80mm height
     - Men's/Women's (-M- or -W- in SKU): 80mm width × 100mm height
   - Sleeve variants: Override to 100mm × 100mm for all sizes regardless of SKU
+  - **Duplicate-order SKU flow (1-SP JPEG hint):** `{OrderNumber}-{itemSku}.png` (or with `{index}`) is the queued design. A companion JPEG `{OrderNumber}-P-{itemSku}.jpg` / `-S-` / `-S1-` / `-S2-` is a position hint only — never queued. `-P-` → 80×100 mm (including kids); sleeve tokens → 100×100 mm. Token is a dedicated hyphen segment before the full SKU; apparel size `S` inside the SKU is not a sleeve. JPEG-only does not invent a design. Main search stays PNG-only.
   - Dimension overrides applied after calculating aspect ratio but before resizing
   - Resizing uses orientation-based strategy: width constraint if image is wider than tall, height constraint otherwise
 - **Double Design Sizing**: Double design folder images use original image dimensions (no size reference rules applied)
@@ -1229,7 +1230,7 @@ All run logs live in a single **`Logs/`** folder. There are **no** separate `Err
   - Case-insensitive matching: `-p.png`, `-P.png`, `-s.png`, `-S.png` all supported
   - Priority order: Pocket → Sleeve → Regular `.png` file
   - Works with duplicate indexes in the legacy order-only naming flow (e.g., `12345-1-P.png` for the second occurrence)
-  - Note: in the newer duplicate-order SKU-based naming flow (exact filenames like `{OrderNumber}-{itemSku}.png`), the `-P.png` / `-S.png` suffix is not automatically applied
+  - Duplicate-order SKU flow: companion JPEG `-P-` / `-S-` / `-S1-` / `-S2-` next to the main PNG is a hint (PNG queued at 80×100 / 100×100). The JPEG is never placed on the canvas. JPEG-only does not invent a design.
 - **Pocket Dimension Overrides**: When a pocket variant is detected, target dimensions are overridden based on SKU pattern:
   - **Kids** (SKU contains "-K-"): 65mm width × 80mm height
   - **Men's/Women's** (SKU contains "-M-" or "-W-"): 80mm width × 100mm height
@@ -1617,10 +1618,12 @@ The application allows you to customize canvas dimensions and DPI:
    - Application will:
      - Find single designs first (checks for -P.png and -S.png variants before regular .png)
      - Detect pocket/sleeve variants automatically
+     - On duplicate SKU files, a 1-SP JPEG `-P-` / `-S-` / `-S1-` / `-S2-` next to the PNG is a hint (PNG queued; JPEG is not)
      - Resize single designs:
        - Regular: Based on size reference from Item SKU
        - Pocket: Override dimensions based on SKU (Kids: 65×80mm, Men's/Women's: 80×100mm)
        - Sleeve: Override to 100×100mm for all sizes
+       - SKU-flow JPEG hint: `-P-` → 80×100 mm (including kids); sleeve tokens → 100×100 mm
      - Use orientation-based resizing (width constraint for landscape, height constraint for portrait)
      - Then find double designs
      - Use original image size for double designs (no size reference rules)
@@ -1651,10 +1654,12 @@ The application allows you to customize canvas dimensions and DPI:
      - Create a size determination log for each file (in `Logs/`)
      - Find single and double designs for each order
      - Check for pocket (-P.png) and sleeve (-S.png) variants first
+     - On duplicate SKU files, a 1-SP JPEG `-P-` / `-S-` / `-S1-` / `-S2-` next to the PNG is a hint (PNG queued; JPEG is not)
      - Resize single designs:
        - Regular: Based on size reference from Item SKU
        - Pocket: Override dimensions based on SKU (Kids: 65×80mm, Men's/Women's: 80×100mm)
        - Sleeve: Override to 100×100mm for all sizes
+       - SKU-flow JPEG hint: `-P-` → 80×100 mm (including kids); sleeve tokens → 100×100 mm
      - Use orientation-based resizing (width constraint for landscape, height constraint for portrait)
      - Use original image size for double designs (no size reference rules)
      - Scale down double designs if they exceed canvas width (with padding preserved)
@@ -1744,7 +1749,7 @@ The application allows you to customize canvas dimensions and DPI:
   - If the SKU-based filename is not found, the code falls back to legacy order-only names:
     - `{OrderNumber}.png`
     - and (when `duplicateIndex > 0`) `{OrderNumber}-{duplicateIndex}.png`
-  - In this SKU-based duplicate flow, pocket/sleeve `-P.png` / `-S.png` suffix is not automatically added
+  - Position hint (1-SP JPEG only, not queued): `{OrderNumber}-P-{itemSku}.jpg` / `.jpeg` (or with `{index}`); same for `-S-`, `-S1-`, `-S2-`. Applies only when the matching main PNG exists. Token is a dedicated hyphen segment before the full SKU. `-P-` → 80×100 mm (including kids); sleeve tokens → 100×100 mm. JPEG-only does not invent a design.
 - **Double designs**:
   - The app searches single folder first, then double folder, using the same naming rules above
 
@@ -2259,8 +2264,10 @@ The application writes **two** log types into **`Logs/`** (no separate Errors an
 - `find_design_file(sku)`: Find design file for SKU (with multiple matching strategies)
 - `find_design_file_vba_logic(order_number, duplicate_index, folder_type, exclude_path)`: Find design file for order (Personalised)
   - Returns `(file_path, design_type, is_pocket, is_sleeve)` tuple
-  - Detects pocket (-P.png) and sleeve (-S.png) variants automatically
+  - Detects pocket (-P.png) and sleeve (-S.png) variants automatically on the unique-order PNG path
+  - SKU-duplicate path returns the main PNG with `is_pocket=False`, `is_sleeve=False`; JPEG hints are resolved separately
   - `is_pocket` and `is_sleeve` are boolean flags indicating variant detection
+- `resolve_sku_position_hint(...)`: First 1-SP companion JPEG token (`P` / `S` / `S1` / `S2`). Does not return the JPEG path — callers must not queue it.
 - `save_missing_size_reference_rows(df, missing_row_indices, source_file_path)`: Save rows with missing size references to a new DTF Des file
 
 #### Canvas Operations

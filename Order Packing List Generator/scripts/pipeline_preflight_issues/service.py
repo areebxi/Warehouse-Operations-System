@@ -20,6 +20,7 @@ from scripts.pipeline_cl_lookup.enrich_cl_lookup import (
 from scripts.pipeline_cl_lookup.fetch_input_csv import fetch_input_csv
 from scripts.pipeline_fill_prime_images.service import fill_packing_columns_df
 from scripts.pipeline_runtime.order_number_csv import coerce_order_number_columns
+from scripts.pipeline_split_by_process_item.common import pin_batch_shift
 from scripts.pipeline_split_by_process_item.duplicate_order_suffixes import (
     assign_merge_order_number_suffixes,
 )
@@ -145,8 +146,8 @@ def _process_one_csv(
     # base / base-1 / base-2 Logo/Design stems so custom file lookup aligns.
     combined = _expand_df_by_quantity(combined)
     combined = assign_merge_order_number_suffixes(combined)
-    # Input CSV stem is the process batch the order came from (e.g. 8050.csv → 8050).
-    combined["Process Number"] = csv_path.stem
+    # Input CSV stem → B1-S1 (batch+shift); RESEND / numeric stay whole.
+    combined["Process Number"] = pin_batch_shift(csv_path.stem)
     cols = ["Process Number"] + [c for c in combined.columns if c != "Process Number"]
     return combined[cols]
 

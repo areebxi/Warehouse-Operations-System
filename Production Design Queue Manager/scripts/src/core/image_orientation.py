@@ -143,6 +143,7 @@ def select_best_orientation(
     canvas_width_mm: Optional[float] = None,
     canvas_height_mm: Optional[float] = None,
     design_padding: int = 25,
+    filename_position_token: Optional[str] = None,
 ) -> OrientationChoice:
     """
     Choose original or 90°-rotated orientation for size-referenced resizing.
@@ -161,6 +162,7 @@ def select_best_orientation(
         "canvas_width_mm": canvas_width_mm,
         "canvas_height_mm": canvas_height_mm,
         "design_padding": design_padding,
+        "filename_position_token": filename_position_token,
     }
 
     orig_w, orig_h, orig_w_mm, orig_h_mm, _ = calculate_dimensions(

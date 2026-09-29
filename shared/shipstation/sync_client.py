@@ -52,6 +52,37 @@ def parse_listtags_payload(data: Any) -> list[dict[str, Any]]:
     return out
 
 
+def parse_stores_payload(data: Any) -> list[dict[str, Any]]:
+    """Normalize /stores JSON into [{storeId, storeName}, ...]."""
+    stores: Any
+    if isinstance(data, list):
+        stores = data
+    elif isinstance(data, dict):
+        stores = data.get("stores")
+        if stores is None and data.get("storeId") is not None:
+            stores = [data]
+        if not isinstance(stores, list):
+            stores = None
+    else:
+        stores = None
+    if not isinstance(stores, list):
+        raise ShipStationError("ShipStation stores response missing stores list.")
+    out: list[dict[str, Any]] = []
+    for s in stores:
+        if not isinstance(s, dict):
+            continue
+        sid = s.get("storeId", s.get("StoreId", s.get("store_id", s.get("id"))))
+        name = s.get("storeName", s.get("StoreName", s.get("store_name", s.get("name", ""))))
+        if sid is None:
+            continue
+        try:
+            store_id = int(sid)
+        except (TypeError, ValueError):
+            continue
+        out.append({"storeId": store_id, "storeName": str(name or "").strip()})
+    return out
+
+
 class ShipStationClient:
     def __init__(
         self,
@@ -106,6 +137,12 @@ class ShipStationClient:
         data = self._get("accounts/listtags")
         out = parse_listtags_payload(data)
         self._log(f"ShipStation: loaded {len(out)} tag(s).")
+        return out
+
+    def list_stores(self) -> list[dict[str, Any]]:
+        data = self._get("stores")
+        out = parse_stores_payload(data)
+        self._log(f"ShipStation: loaded {len(out)} store(s).")
         return out
 
     def list_orders_by_tag(

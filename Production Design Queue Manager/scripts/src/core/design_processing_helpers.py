@@ -67,6 +67,7 @@ def load_and_resize_design(
     is_sleeve: bool = False,
     item_sku: Optional[Union[str, pd.Series]] = None,
     order_label: Optional[Union[str, int]] = None,
+    filename_position_token: Optional[str] = None,
 ) -> Optional[Tuple[Image.Image, int, int, float, float, Optional[Dict[str, Any]]]]:
     """Load a design image and resize according to constraints.
 
@@ -89,8 +90,9 @@ def load_and_resize_design(
             "canvas_height_mm": canvas_height_mm,
             "design_padding": design_padding,
             "allow_orientation": allow_orientation,
+            "filename_position_token": filename_position_token,
         }
-        if size_info:
+        if size_info or filename_position_token:
             resized = resize_image_with_constraints(
                 img,
                 effective_size_info,

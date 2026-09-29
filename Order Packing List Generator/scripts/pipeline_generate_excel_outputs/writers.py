@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 from openpyxl import Workbook
 
-from .helpers import _base_additional_no_dash, _extended_process_and_item_number, _gender_colour_size_combo_hyphenated, _item_number_from_extended, _normalize, _order_number_base, _process_number_for_excel_from_row, _process_plus_additional, _remap_dtf_item_sku, _split_item_sku_by_lg, _tracker_seq_from_val
+from .helpers import _extended_process_and_item_number, _gender_colour_size_combo_hyphenated, _item_number_from_extended, _normalize, _order_number_base, _process_number_for_excel_from_row, _process_plus_additional, _remap_dtf_item_sku, _split_item_sku_by_lg
 
 
 def _write_picking(df: pd.DataFrame, process_base: str, picking_number: str, dispatch_date: date, path: Path) -> None:
@@ -196,16 +196,7 @@ def _write_dtf_des(
     for _, row in df.iterrows():
         process_and_item = row.get("Process and Item Number", "")
         extended = _extended_process_and_item_number(process_and_item)
-        if use_fixed_numeric_process:
-            seq = _tracker_seq_from_val(process_and_item)
-            if seq is not None:
-                process_excel = seq
-            else:
-                process_excel = _process_number_for_excel_from_row(process_and_item)
-        elif use_fixed_process_number:
-            process_excel = _base_additional_no_dash(extended)
-        else:
-            process_excel = _process_number_for_excel_from_row(process_and_item)
+        process_excel = _process_number_for_excel_from_row(process_and_item)
         process_display = f"Process {process_excel}" if process_excel else ""
         item_num_str = _item_number_from_extended(extended)
         item_display = f"Item {item_num_str}" if item_num_str else "Item 1"

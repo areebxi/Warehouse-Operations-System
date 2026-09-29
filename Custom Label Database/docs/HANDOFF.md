@@ -1,6 +1,6 @@
 # Custom Label Database — Agent snapshot
 
-**Updated:** 10 September 2026 (BTC shipping leak cleared; Customisation Type column present)  
+**Updated:** 23 September 2026 (CL warehouse-stock colour gate filled)  
 **Standing brief:** `AGENTS.md` (handbook) · Parent map: `../AGENTS.md`  
 **Facts:** `docs/FINDINGS.md` · **Paths:** `docs/WORKSPACE.md` · **Policy:** parent `.cursor/rules/custom-label-database/` · **Chat copies:** `docs/chats/`
 
@@ -12,20 +12,175 @@ Prior long chats: [Custom Label DB cleanup](4455a0cd-185b-4d3e-86d5-b1c620841dd4
 
 Warehouse Automation System Engineer on this catalog domain; user is supervisor. No production writes without **yes / do it / fill / run**. One problem at a time. Prefer CSV. **Save everything as we go** (parent CL rules + docs + `AGENTS.md`) — chat is not memory.
 
-**Standing fill chat (from 1 Sep 2026):** this thread is for Custom Label catalog fills and Size References fills. Live files: `database/shared/custom_label/Custom_Label_Database.csv` and `database/custom-label-database/support/Size References.csv`. Propose + dry-run, then wait for **yes / fill / run**. After a catalog seed, run `fill_from_seeds.py` then `fill_size_references_from_cl.py`.
+**Standing fill chat (from 1 Sep 2026):** this thread is for Custom Label catalog fills and Size References fills. Live files: `database/shared/custom_label/Custom_Label_Database.csv` and `database/custom-label-database/support/Size References.csv`. Propose + dry-run, then wait for **yes / fill / run**. After a catalog seed, run `fill_from_seeds.py` then `fill_size_references_from_cl.py`. **Then** `sync_database_transfer.py` (locked 2026-09-25) so `Database Transfer/Workbook.xlsx` + `Configuration Workbook.xlsx` mirror those CSVs. Size References columns: no `SKU Value 2` / `SKU Value 3` (supervisor removed 2026-09-25).
 
 ---
 
 ## Live now
 
-Live catalog: `database/shared/custom_label/Custom_Label_Database.csv` — **131,892** rows × **66** columns (`Customisation Type` present, **0** filled; v1 grouping slot is `x`).  
-Helpers: `database/custom-label-database/support/` (`Size References.csv`, `Shirts Print Sizes.csv`, `Mocks Databse.csv`).
+Live catalog: `database/shared/custom_label/Custom_Label_Database.csv`.
+
+### Warehouse stock colour gate — 23 Sep 2026
+
+Supervisor **fill**. `Supply Method` overwritten on the live CSV. Backup `database/shared/custom_label/backups/Custom_Label_Database.bak_20260923_103520.csv`. Plain / Packs unchanged.
+
+| | Warehouse Stock | In House Manufacture | Supplier On Demand |
+|---|---:|---:|---:|
+| Before | 84,097 | 458 | 47,669 |
+| After (132,224 rows) | 63,399 | 458 | 68,367 |
+
+**21,728** cells written. **21,213** FOTL tees left Warehouse Stock (colour off that department’s list: Mens 11,823 including 73 baseball two-tones, Kids 7,362, Ladies 2,028). **515** entered: C800T 416 + C8030T 99. Re-read matched the rule on every row.
+
+### M25 SPC 61033 + Size References — 22 Sep 2026
+
+Queue warned missing size reference on `DTF Des-P200.xlsx` for `309574LG-M233-171736` / `140211LG-M25-17259`. Both **already** in CL + Size References with correct Front Print A4 mm (267×378 Large / 250×353 7-8Y). Queue CL lookup succeeds when `cl_csv_path` points at the live catalog.
+
+**Same product code + same mock:** M233 / SPC `61430` already complete (188/188). M25 / SPC `61033` was 8/164 — filled the rest.
+
+| Step | Result |
+|---|---|
+| `add_labels.py --all-spc --skus 140211LG-M25-17259` | **+156** CL `M25-{UID}` (132,068 → **132,224**). Backup `Custom_Label_Database_preAdd_20260922_192956.csv`. |
+| Fix 14-15 Years | **24** new rows had wrong **176×250** (3-4Y); set to **237×336** (Small — Print Sizes has no 14-15 band; matches older M25 14-15Y). Backup `…_preFixM25_14_15_20260922_193101.csv`. Same fix on SR (`Size_References_preFixM25_14_15_20260922_193153.csv`). `AGE_TO_PRINT` now maps 14-15 → Small for future fills. |
+| `fill_size_references_from_cl.py` | **+156** SR keys `M25 ({UID})` (97,338 → **97,494**). Backup `Size_References_preFill_20260922_193117.csv`. |
+
+Front Print A4 audit vs `Shirts Print Sizes.csv`: M233 / M25 **0** mismatches after fill. Catalog-wide rewrite (supervisor **yes**): script `scripts/rewrite_front_print_a4_from_shirts.py` — **SR 1,750** Front Print A4 mock+UID cells + **CL 5,908** matching front Width/Height → exact A4 band mm. Pocket / A3 / non-front untouched. Backups `Size_References_preRewriteFrontA4_20260922_193426.csv`, `Custom_Label_Database_preRewriteFrontA4_20260922_193428.csv`.
+
+### Acrylic unmatched SKUs — 22 Sep 2026
+
+Supervisor **fill** from sorter `UNMATCHED.csv` (22-09-2026). **+4** CL rows (132,064 → **132,068**). Size References: **not applicable** (A5/A6 already present). Backup: `backups/Custom_Label_Database_preAdd_20260922_072438.csv`.
+
+| Packing SKU | Custom Label | Action |
+|---|---|---|
+| `48BLG-P5-ACPPLQ-A525-PB` | `P5-ACPPLQ-A525-PB` | New. Photo Acrylic **A5 25mm**. 148×210. Customise Yes (`P5-`). |
+| `48BLG-P5-ACPPLQ-A615-PB` | `P5-ACPPLQ-A615-PB` | New. Photo Acrylic **A6 15mm**. 105×148. Customise Yes. |
+| `ACPPLQ-A525-PHOTO` | `A525-PHOTO` | New. Same pattern as `A515-PHOTO`. A5 25mm. 148×210. Customise blank (PHOTO suffix, not size-only). |
+| `A515` | `A515` | New. Size-only listing SKU. **Always Customise Yes** (supervisor: always personalised). A5 15mm. 148×210. Sorter matches no-dash SKUs on whole Custom Label. |
+
+Skipped: `SET41527` (supervisor will add to Packs); `189364LG-N217-P3-1D77` (next: **neutral database**). Mixed supply-method is a sorter lock, not a catalog fill.
+
+`customise_for_label`: whole-label `A[4-6]`+two digits (`A515`) → Yes. `A515-PHOTO` stays the PHOTO path (blank unless P/Yes).
+
+### Gildan 5000 packing codes — 20 Sep 2026
+
+Supervisor **fill** from Queue Missing Logo on `DTF Des-P50.xlsx` (orders `204-6556766-6800323` / `205-2632137-2622749`). Packing SKUs `128357LG-5000-NAT-S` / `128357LG-5000-LPNK-XL` → Custom Labels **`5000-NAT-S`** / **`5000-LPNK-XL`**. **+2** rows (132,062 → **132,064**). Backup: `backups/Custom_Label_Database_preAdd_20260920_073706.csv`. Cloned GA/colour/size from existing `A3-5000-…` peers; millimetres from Shirts Print Sizes. Did **not** add an `A3-` matcher join. Size References: **not applicable**.
+
+Apparel Image on those two rows: supervisor **fix** `TShirt` → `T-Shirt` (live write after CSV unlocked). Backup `Custom_Label_Database_preFixApparel_20260920_074610.csv`. New `add_labels` clones hyphen `TShirt` going forward. Do not bulk-rename the rest of the catalog.
+
+### W-H-BLK-M — 18 Sep 2026
+
+Supervisor **add** from Packing preflight `Preflight Issues_18-09-2026_16-05-44.csv` (order 49892, Unmatched SKU only). Packing SKU `75931-W-H-BLK-M` → Custom Label **`W-H-BLK-M`**. **+1** row (132,061 → **132,062**). Backup: `backups/Custom_Label_Database_preAdd_20260918_161230.csv`. Size References: **not applicable** (not mock+UID; Medium A4 from Shirts Print Sizes).
+
+Same warehouse-code family as `M-H-BLK-M` / `M-T-BLK-M`. Prefix `75931` is BTC UID for FOTL Ladies Classic Hooded Sweat 62038 Black M (matches Item Name). Gender Apparel **`Womens-Hoodie`** (added to `CL_STANDARD_RULES`). On Demand (hoodie, not a FOTL tee). Customise blank. 267×378 Front Center DTF. `add_labels` now seeds `M|W|K`-`T|H|…`-colour-size labels.
+
+### C800T age-token twins — 17 Sep 2026
+
+Supervisor **fill**. No sorter decoding: `&gt;` / `>` / `-` stay distinct Custom Labels. **+11** rows (132,050 → **132,061**) so each existing M281 C800T series has all three spellings. Backup: `backups/Custom_Label_Database_preAdd_20260917_132821.csv`. Size from the age token (0-3 Months on `0-3` / `0&gt;3`, not the old `0>3` P5 row which is still 3-6 Months). P5/P3 Customise Yes; no-P blank. Absolute / On Demand / DTF / 110×150. Size References unchanged.
+
+| Series | Already had | Added |
+|---|---|---|
+| `M281-P5-C800T-30-` ages 0–3 / 3–6 / 6–12 / 12–18 / 18–24 | mix of `>` `&gt;` `-` | `0-3`, `3-6`, `6-12`, `6&gt;12`, `12>18`, `12-18`, `18>24` |
+| `M281-P3-C800T-30-` 0–3 | `0>3` | `0&gt;3`, `0-3` |
+| `M281-C800T-30-` 3–6 (no P) | `3>6` | `3&gt;6`, `3-6` |
+
+Did **not** invent extra P3 / no-P ages. Did **not** rewrite existing rows.
+
+### Unmatched sorter SKUs — 17 Sep 2026
+
+Supervisor **add** from the 17 Sep unmatched list. **+8** CL rows (132,042 → **132,050**). Backup: `backups/Custom_Label_Database_preAdd_20260917_103000.csv`. Size References: **not applicable** (none are plain `M##-UID`; `C800T` / `A4` / `A6` keys already exist).
+
+Skipped on purpose:
+
+| Packing SKU | Why |
+|---|---|
+| `189364LG-N217-P3-1D77` | Supervisor: do not add; teach N217 structure later. Blank-GA `N217-P3-1D77` was deleted 16 Sep. |
+| `SET5722` | Already in Packs (`Channel Child SKU`). Do **not** put in CL (sorter would treat the pack as printed). |
+| `208544` | Already in Plain Database (Beechfield B655 Vintage Sage Green). Unmatched this run because **blank ship-by**, not missing catalog. Sorter CL key needs a dash, so a CL row would not help. |
+
+| Packing SKU | Custom Label | Action |
+|---|---|---|
+| `DTF-Transfer-1M-1` | `Transfer-1M-1` | Re-added with GA **`Only-Design`** (blank-GA row was deleted 16 Sep). Size 1M. Iron-On / Iron-On Transfer / Standard. On Demand. Not in-house (DTF gang sheet is not iron-on/sticker in the SKU). |
+| `DTF-Transfer-3M` | `Transfer-3M` | Same. Size 3M. |
+| `802152LG-STICKERS-L(50cmx50cm)-YES` | `STICKERS-L(50cmx50cm)-YES` | New. Cloned L 40cm sticker. Size **50cm x 50cm**. In House. Customise Yes. |
+| `112632LG-BG-BG140S-ClaRdOW-O/S-YES` | `BG-BG140S-ClaRdOW-O/S-YES` | New. **ClaRdOW** = Classic Red-Off White (PE UID 147042). Cloned BG140S cousin. Customise Yes. On Demand. |
+| `19BLG-P5-ACPPLQ-A425-PB` | `P5-ACPPLQ-A425-PB` | New. Photo Acrylic **A4 25mm**. 210×297. Customise Yes. |
+| `11202ALG-M281-P5-C800T-30-18&gt;24` | `M281-P5-C800T-30-18&gt;24` | New. Literal `&gt;` kept distinct from `18-24`. White 18-24 Months. 110×150. Absolute. Customise Yes. |
+| `1803ALG-M281-P3-C800T-30-0>3` | `M281-P3-C800T-30-0>3` | New. P3 (not P5). Size **0-3 Months** from the age token. Absolute. Customise Yes. |
+| `ACPPLQ-A625-PHOTO` | `A625-PHOTO` | New. Same pattern as `A515-PHOTO` (sorter after-first-dash). A6 25mm. 105×148. Customise blank (no P/Yes). |
+
+`add_labels` now clones `BG-BG#` colour tokens (`ClaRdOW`), sticker cm from the label (not A4 iron-on), and DTF `Transfer-*` with `Only-Design`.
+
+### M76 × SPC 61082 — 16 Sep 2026
+
+Supervisor **fill**. UID `3263` product code **61082** (FOTL Mens Original T). All **134** BTC UIDs now `M76-{UID}` in CL and `M76 ({UID})` in Size References. `M76-3263` already present; **+133** CL (131,909 → **132,042**); **+133** SR (97,204 → **97,337**). Cloned GA/Colour/Size from same-UID Front Center FOTL cousins (not Black Small on every row). Print Positions Front Center. Warehouse Stock. Customise blank. `add_labels.py --all-spc M76-3263` then `fill_size_references_from_cl.py`. Backups: `Custom_Label_Database_preAdd_20260916_121240.csv`, `Size_References_preFill_20260916_121306.csv`. `add_labels` same-UID peer now scores Front Center + FOTL over pocket mocks.
+
+### Size References — M76 (3263) — 16 Sep 2026
+
+Supervisor **add** packing SKU `419894LG-M76-3263`. Custom Label `M76-3263` **already in CL** (15 Sep unmatched add) — no second CL row. Size References was missing. **+1** SR row `M76 (3263)`: Men / Small / Front Print / 237×336 / A4 / Product Code `61430-61036` (M76 mock). Backup: `database/custom-label-database/support/backups/Size_References_preFill_20260916_115442.csv`.
+
+### Hashim #038 Areeb pick-list — 16 Sep 2026
+
+Supervisor **refill live catalog, CL only** (Plain / Packs stay supplier product data). Four blank-GA rows deleted by supervisor: `N217-P3-1D77`, `Transfer-3M`, `Transfer-1M-1`, `208544` (131,913 → **131,909**). Morning rewrite (`--target cl`) changed **0** Areeb cells (old harvest already matched). Backup `Custom_Label_Database.bak_20260916_083255.csv`.
+
+**Squeezed refill 10:17** (supervisor **fill**): same script `--target cl`. **131,909** rows; **131,741** rewritten; **298,338** Areeb cells; **168** already matching; **0 blank / 0 off-list**. Backup `Custom_Label_Database.bak_20260916_101719.csv`. Live cells: Title Case; Product Type has no gender; Product Style is a named product (never a code); Department is gender only. Source `shared/taxonomy_catalog.py`. Pick-list: `database/order-grouping-sorter/taxonomy_picklists.csv`.
 
 ### Supplier Name grouping — 9 Sep 2026
 
 Canonical cells: `BTC Activewear` / `Uneek Clothing` / `Absolute Apparels`. **Filled 2026-09-09.** CL: 123,948 / 6,992 / 499 Absolute / 453 in-house blank. Plain: 71,047 BTC / 6,992 Uneek. Packs: 38,452 BTC Activewear. Backups: `Custom_Label_Database.bak_20260909_185544.csv`, `Plain Database.bak_20260909_185710.xlsx`, `Packs Database.bak_20260909_185937.xlsx`. Rule: parent `supplier-name.mdc`. Code: `shared/supplier_name.py`.
 
 Main filler: `python scripts/fill_from_seeds.py`. Fast add: `python scripts/add_labels.py --skus …` (named-only, append-only). Size References reverse fill: `python scripts/fill_size_references_from_cl.py --dry-run`.
+
+### Unmatched sorter SKUs — 15 Sep 2026
+
+Supervisor **add** from `Order Packing List Generator/Input/15-09-2026/1st Shift/UNMATCHED.csv` (18 rows, 16 unique Item SKUs). **+11** rows (131,902 → **131,913**). 5 already in CL (casefold). Backups: `backups/Custom_Label_Database_preAdd_20260915_132106.csv`, `…_preFill_20260915_132541.csv`.
+
+| Packing SKU | Custom Label | Action |
+|---|---|---|
+| `DTF-Transfer-3M` | `Transfer-3M` | New. DTF gang sheet. Seed blank on purpose. On Demand / BTC leftover. |
+| `DTF-Transfer-1M-1` | `Transfer-1M-1` | New. Same. First fill leaked UID `1` → Gildan — **cleared**. `uid_from_custom_label` now skips `Transfer`. |
+| `419894LG-M76-3263` | `M76-3263` | New 15 Sep. Same UID as `M260-P5-3263` (FOTL Original T Black Small). Warehouse Stock. 237×336. Size References `M76 (3263)` added 16 Sep. |
+| `11890ALG-M281-P5-C800T-30-12&gt;18` | `M281-P5-C800T-30-12&gt;18` | New. Literal `&gt;` kept distinct. Cloned C800T-BS White. Size **12-18 Months**. 110×150. Absolute. Customise Yes. |
+| `178567LG-M-T-NAV-XL-YES` | `M-T-NAV-XL-YES` | New. Supervisor: **NAV = Navy**. Cloned Mens-T-Shirt Navy Extra Large (`NVY` peer). Warehouse Stock. Customise Yes. 267×378. Label keeps `NAV`. |
+| `178567LG-M-T-PUE-L-YES` | `M-T-PUE-L-YES` | New. Supervisor: **PUE = Purple**. Cloned Mens-T-Shirt Purple Large (`PRP` peer). Warehouse Stock. Customise Yes. 267×378. Label keeps `PUE`. |
+| `13405LG-F/F-K-T-CBLU-YXL-Yes` | `F/F-K-T-CBLU-YXL-Yes` | New. Cloned CBLU Yes cousin. Size **12-14 Years** (YXL + RED YXL sibling). Warehouse Stock. |
+| `13405LG-F/F-K-T-RED-YXL-Yes` | `F/F-K-T-RED-YXL-YES` | Already in CL. |
+| `802135LG-STICKERS-L(40cmx40cm)-YES` | `STICKERS-L(40cmx40cm)-YES` | New. Cloned sticker L. In House. Customise Yes. |
+| `802059LG-STICKERS-L(40cmx40cm)` | `STICKERS-L(40cmx40cm)` | New. Cloned sticker L. In House. Customise blank. |
+| `129058LG-K-T-FGRN-YS-YES` | `K-T-FGRN-YS-YES` | New. Cloned `K-T-FGRN-YS`. Forest Green 5-6. Warehouse Stock. Customise Yes. |
+| `98765LG-BG-BG125-MUD-O/S-YES` | `BG-BG125-MUD-O/S-YES` | Already in CL. |
+| `77009LG-F/F-SH1808-REDGY-O/S-Yes` | `F/F-SH1808-REDGY-O/S-Yes` | Already in CL. |
+| `208544` | `208544` | New. Whole-SKU BTC UID (Beechfield B655). Brand/Category filled. GA blank (no mock seed). |
+| `-C8030T-WHI-0-3M` | `C8030T-WHI-0-3M` | Already in CL (after first dash). |
+| `189382LG-N220-P3-55713` | `N220-P3-55713` | Already in CL. |
+
+`uid_from_custom_label`: skip `Transfer`; all-digit label is a UID (`208544`). Shirt colour aliases for peer lookup only: **NAV → NVY (Navy)**, **PUE → PRP (Purple)**.
+
+### Unmatched sorter SKUs — 14 Sep 2026
+
+Supervisor **fill**. **+7** rows (131,895 → **131,902**). Backup: `backups/Custom_Label_Database_preAdd_20260914_092337.csv`.
+
+| Packing SKU | Custom Label | Action |
+|---|---|---|
+| `1636ALG-M263-P5-DTF-IronOn-A4` | `M263-P5-DTF-IronOn-A4` | New. Cloned `DTF-IronOn-A4`. In House. Customise Yes (`-P5-`). |
+| `922ALG-M260-P2-17259` | `M260-P2-17259` | New. Cloned `M260-P5-17259` (Kids Valueweight Light Pink 7-8). Warehouse Stock. Customise Yes (`-P2-`). |
+| `189364LG-N217-P3-1D77` | `N217-P3-1D77` | New. **No peer** (photo slate; not in CL/Mocks). Customise Yes. Supply On Demand / BTC leftover. Gender Apparel blank on purpose — do not guess slate. |
+| `110419LG-F4-M-T-NVY-M-Yes` | `F4-M-T-NVY-M-Yes` | New. Cloned `F4-M-T-NVY-M`. Warehouse Stock Navy Medium. Customise Yes token. |
+| `802058LG-STICKERS-M(30cmx30cm)` | `STICKERS-M(30cmx30cm)` | New. Cloned `STCKR-M(30cmx30cm)`. In House. Customise blank (no P/Yes). |
+| `47BLG-P5-ACPPLQ-A625-PB` | `P5-ACPPLQ-A625-PB` | New. Photo Acrylic. Size **A6 25mm**. 105×148. Customise Yes. |
+| `50BLG-P5-ACPPLQ-A415-PB` | `P5-ACPPLQ-A415-PB` | New. Photo Acrylic. Size **A4 15mm**. 210×297. Customise Yes. |
+
+`add_labels` now clones iron-on `M##-P#-DTF-IronOn-A#`, sticker `STICKERS-M(…)`, `-Yes` shirt cousins, and acrylic A6.
+
+### Unmatched sorter SKUs — 11 Sep 2026
+
+Supervisor **fill**. **+3** rows (131,892 → **131,895**). Backup: `backups/Custom_Label_Database_preAdd_20260911_145305.csv`.
+
+| Packing SKU | Custom Label | Action |
+|---|---|---|
+| `11828ALG-M281-P5-C800T-30-6>12` | `M281-P5-C800T-30-6>12` | New. Cloned `M281-P5-C800T-30-3>6` (C800T-BS White). Size **6-12 Months**. 110×150. Customise Yes. Absolute Apparels. |
+| `10182ALG-M281-C800T-30-3>6` | `M281-C800T-30-3>6` | New. Listing omitted `-P5-`. Cloned P5 cousin. Size 3-6 Months. Customise **blank** (no P-token — do not guess P5). Absolute Apparels. |
+| `32BLG-P5-ACPPLQ-A410-PB` | `P5-ACPPLQ-A410-PB` | New. Photo Acrylic peer `A515-PHOTO`. Size **A4 10mm** from A410 (same pattern as A515 = A5 15mm). 210×297. Customise Yes (leading `P5-`). BTC Activewear leftover. |
+
+`add_labels` now clones C800T without `-P#-`, seeds ACPPLQ acrylic from `A515-PHOTO`, and `customise_for_label` treats leading `P{digit}-` as personalised. Areeb / Supply Method / Printing Type / Supplier Name run on the new rows before append.
 
 ### Customise = Yes token — 4 Sep 2026
 

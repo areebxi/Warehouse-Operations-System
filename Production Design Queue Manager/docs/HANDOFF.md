@@ -1,6 +1,6 @@
-﻿# Production Design Queue Manager — snapshot
+# Production Design Queue Manager — snapshot
 
-**Updated:** 25 August 2026 (CL sizes + SharedInbox auto Missing Logo)  
+**Updated:** 22 September 2026 (1-SP JPEG position hints, PNG-only)  
 **Handbook:** `AGENTS.md`
 
 ## Continue here
@@ -9,6 +9,7 @@
 - Auto Missing Logo: `run_auto_missing_logo.bat` (watches SharedInbox; folders from `config/queue_app_settings.json`).
 - Print sizes: CL CSV; Pocket overrides: Configuration Workbook.
 - Modes (GUI): Normal, Personalised, Missing Logo.
+- Personalised duplicate SKU files: 1-SP JPEG `-P-`/`-S-`/`-S1-`/`-S2-` is a size hint; only the PNG is queued.
 
 ## Watch
 

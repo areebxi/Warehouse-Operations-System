@@ -73,7 +73,7 @@ SHEET = "Data"
 
 RE_MOCK = re.compile(r"\(M(\d+)\)", re.I)
 RE_UID = re.compile(r"-(\d+)$")
-RE_P_PERSONAL = re.compile(r"-P\d+-", re.I)
+RE_P_PERSONAL = re.compile(r"(?:^|-)P\d+-", re.I)
 RE_CRLF = re.compile(r"[\r\n]+")
 
 # DB Size aliases -> Shirts Print Sizes.csv "Apparel Size" key
@@ -107,6 +107,10 @@ AGE_TO_PRINT = {
     "12-13 Years/YXL": "12-13 Years/YXL",
     "12-13Y/YXL": "12-13 Years/YXL",
     "YXL": "12-13 Years/YXL",
+    # Print Sizes has no 14-15 band; warehouse uses Small A4 (237×336), same as existing M25 14-15Y.
+    "14-15 Years": "Small",
+    "14-15Y": "Small",
+    "12-14 Years": "Small",
 }
 
 AGE_TO_SR = {
@@ -255,19 +259,26 @@ def uid_from_custom_label(label: str) -> str:
     """Last numeric segment: M260-P6-349876 -> 349876.
 
     Skip C800T age tokens (``M281-P5-C800T-30-18-24`` ends in 24, not a PE UID).
+    Skip DTF gang-sheet labels (``Transfer-1M-1`` ends in 1, not a PE UID).
+    Whole-label digits (``208544``) are a BTC UID with no dash.
     """
     s = clean(label)
-    if not s or "C800T" in s.upper():
+    if not s or "C800T" in s.upper() or "TRANSFER" in s.upper():
         return ""
+    if s.isdigit():
+        return s
     m = RE_UID.search(s)
     return m.group(1) if m else ""
 
 
 def customise_for_label(label: str) -> str:
-    """Personalised => Yes: ``-P{digit}-`` or a ``Yes`` token in the label.
+    """Personalised => Yes: ``-P{digit}-``, leading ``P{digit}-``, or a ``Yes`` token.
 
     Supervisor (4 Sep 2026): any ``Yes`` in our SKU/Custom Label means personalised
     (e.g. ``W101-SkyBe-O/S-Yes``, ``M-T-NAVBE-3XL-Yes``), not only ``-P#-``.
+    Leading ``P5-ACPPLQ-…`` is the same P-token when the mock prefix is omitted.
+    Supervisor (22 Sep 2026): size-only acrylic listing SKU ``A515`` (whole label
+    ``A[4-6]`` + two digits) is always personalised. ``A515-PHOTO`` is not this path.
     """
     s = clean(label)
     if not s:
@@ -276,6 +287,8 @@ def customise_for_label(label: str) -> str:
         return "Yes"
     # Exact Yes segment (dash or slash separators), case-insensitive
     if any(p.casefold() == "yes" for p in re.split(r"[-/]", s) if p):
+        return "Yes"
+    if re.fullmatch(r"A[4-6]\d{2}", s, re.I):
         return "Yes"
     return ""
 
@@ -292,6 +305,11 @@ def g1_format(text: str) -> str:
     return " ".join(out)
 
 
+def hyphen_tshirt_in_slug(slug: str) -> str:
+    """Apparel Image token is T-Shirt, never TShirt."""
+    return (slug or "").replace("TShirt", "T-Shirt")
+
+
 def apparel_image_slug(gender_apparel: str, colour: str) -> str:
     """Maker-style GA+Colour slug; letters/digits/dash only (blank cells only)."""
 
@@ -305,10 +323,10 @@ def apparel_image_slug(gender_apparel: str, colour: str) -> str:
     if not g and not c:
         return ""
     if not g:
-        return c
+        return hyphen_tshirt_in_slug(c)
     if not c:
-        return g
-    return f"{g}-{c}"
+        return hyphen_tshirt_in_slug(g)
+    return hyphen_tshirt_in_slug(f"{g}-{c}")
 
 
 def extract_mock(pp: str) -> str:

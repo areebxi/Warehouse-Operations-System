@@ -1,0 +1,23 @@
+---
+description: Closed taxonomy pick-lists (Hashim #038)
+alwaysApply: false
+globs: "Order Grouping Sorter/**,shared/taxonomy_picklist.py,shared/taxonomy_catalog.py,scripts/build_taxonomy_picklists.py,scripts/test_taxonomy_picklist.py,database/order-grouping-sorter/**"
+---
+
+# Taxonomy pick-lists (Hashim #038)
+
+Closed Title Case values for the **four Areeb columns** plus PE subcategory. When a product arrives, pick only from `database/order-grouping-sorter/taxonomy_picklists.csv`. Do not invent a new drive.
+
+| Column | Warehouse header | Seed |
+|---|---|---|
+| category | `Category (Areeb)` | Curated warehouse families. Not BTC wholesale extras. |
+| product type | `Product Type (Areeb)` | Silhouette / bag kind. **No gender.** |
+| product style | `Product Style (Areeb)` | Named range / simplified product name. **Never a supplier code.** |
+| department | `Department (Areeb)` | `Mens` / `Womens` / `Kids` / `Unisex` / `General`. |
+| subcategory | PE `Sub-Category` | Closed. **Not** a 30-chain split. Do not add a fifth Areeb column. |
+
+Source of truth for the lists: `shared/taxonomy_catalog.py`. Rebuild: `python scripts/build_taxonomy_picklists.py`.
+
+CL `cl_standard` snaps all four Areeb cells (unknown → blank). **Do not refill Plain / Packs Areeb** — those columns copy supplier product data (BTC / Uneek). Plain leftover does not snap. Grouping does not unmatched an already-filled catalog cell that is off-list.
+
+To allow a new value: add it in `taxonomy_catalog.py` (plus a `maps_to` alias if an old spelling must snap) and rebuild. Do not re-harvest catalogs.

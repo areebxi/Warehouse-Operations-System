@@ -1,10 +1,10 @@
-﻿"""
+"""
 Fill Size References.csv from live Custom_Label_Database.csv.
 
 Live paths:
   database/shared/custom_label/Custom_Label_Database.csv
   database/custom-label-database/support/Size References.csv
-  database/custom-label-database/support/Mocks Databse.csv
+  database/custom-label-database/support/Mocks Database.csv
 
 Scope: mock+UID labels only (Custom Label M123-45678 → SKU Value `M123 (45678)`).
   - Append missing exact mock+UID keys (and extra design rows when CL has more slots).
@@ -39,6 +39,7 @@ sys.path.insert(0, str(_SCRIPT_DIR))
 from shared.paths import (  # noqa: E402
     cl_csv_path,
     custom_label_support_dir,
+    mocks_database_csv_path,
     warehouse_root_from,
 )
 
@@ -62,15 +63,14 @@ DEFAULT_DB = cl_csv_path(_ROOT)
 DEFAULT_SR = _SUPPORT / "Size References.csv"
 if not DEFAULT_SR.is_file():
     DEFAULT_SR = _LEGACY_SUPPORT / "Size References.csv"
-DEFAULT_MOCKS = _SUPPORT / "Mocks Databse.csv"
+DEFAULT_MOCKS = mocks_database_csv_path(_ROOT)
 if not DEFAULT_MOCKS.is_file():
-    DEFAULT_MOCKS = _LEGACY_SUPPORT / "Mocks Databse.csv"
+    DEFAULT_MOCKS = _LEGACY_SUPPORT / "Mocks Database.csv"
 BACKUPS = _SUPPORT / "backups"
 
+# Supervisor removed SKU Value 2 / SKU Value 3 (2026-09-25) — not needed.
 SR_COLS = [
     "SKU Value",
-    "SKU Value 2",
-    "SKU Value 3",
     "Number of Designs",
     "Size Width",
     "Size Height",
@@ -252,8 +252,6 @@ def desired_sr_rows(payload: dict, mock_meta: dict[str, dict[str, str]]) -> list
         rows.append(
             {
                 "SKU Value": payload["key"],
-                "SKU Value 2": "",
-                "SKU Value 3": "",
                 "Number of Designs": nd,
                 "Size Width": w,
                 "Size Height": h,

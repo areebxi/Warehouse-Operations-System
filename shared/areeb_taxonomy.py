@@ -3,6 +3,7 @@
 Plain / Packs: blank-only copy from BTC / Uneek.
 Plain leftover (no UID / Short Code / SPC): Brand + Description; Category/Type from Description in BTC language.
 Custom Label: warehouse `cl_standard` from Gender Apparel only. Never BTC, Uneek, Brand, or PE cells.
+CL fill snaps to Hashim #038 Title Case pick-lists (type has no gender; style is a product name).
 """
 
 from __future__ import annotations
@@ -11,6 +12,9 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
+
+import shared.taxonomy_catalog as tax
+from shared.taxonomy_picklist import snap_warehouse
 
 AREEB_COLS = (
     "Category (Areeb)",
@@ -42,158 +46,109 @@ GENDER_GENERAL = "General"
 # Exact Gender Apparel → warehouse 4-tuple. Overrides the pattern engine.
 # Tuple: Category, Product Type, Product Style, Department (gender only).
 CL_STANDARD_RULES: dict[str, tuple[str, str, str, str]] = {
-    "Mens-T-Shirt": ("T-SHIRTS", "MENS SHORT SLEEVE T-SHIRT", "T-Shirt", GENDER_MENS),
-    "Womens-T-Shirt": ("T-SHIRTS", "Ladies Short Sleeve T-Shirts", "T-Shirt", GENDER_WOMENS),
-    "Kids-T-Shirt": ("T-SHIRTS", "Childrens T-Shirt", "T-Shirt", GENDER_KIDS),
-    "GILDAN Heavy Cotton Adult T-Shirt": (
-        "T-SHIRTS",
-        "MENS SHORT SLEEVE T-SHIRT",
-        "Heavy Cotton",
-        GENDER_MENS,
-    ),
-    "GILDAN Softstyle Adult T-Shirt": (
-        "T-SHIRTS",
-        "MENS SHORT SLEEVE T-SHIRT",
-        "Softstyle",
-        GENDER_MENS,
-    ),
-    "GILDAN Softstyle Ladies T Shirt": (
-        "T-SHIRTS",
-        "Ladies Short Sleeve T-Shirts",
-        "Softstyle",
-        GENDER_WOMENS,
-    ),
-    "GILDAN Softstyle Ladies Tank Top": (
-        "T-SHIRTS",
-        "Ladies Vests, Camisoles, Etc.",
-        "Softstyle Tank",
-        GENDER_WOMENS,
-    ),
-    "FOTL Kids Valueweight T": ("T-SHIRTS", "Childrens T-Shirt", "Valueweight", GENDER_KIDS),
-    "5000": ("T-SHIRTS", "MENS SHORT SLEEVE T-SHIRT", "Heavy Cotton", GENDER_MENS),
-    "G5000": ("T-SHIRTS", "MENS SHORT SLEEVE T-SHIRT", "Heavy Cotton", GENDER_MENS),
-    "2400": ("T-SHIRTS", "Mens Long Sleeve T-Shirt", "Ultra Cotton", GENDER_MENS),
-    "61026": ("T-SHIRTS", "MENS SHORT SLEEVE T-SHIRT", "61026", GENDER_MENS),
-    "61168-Ringer": ("T-SHIRTS", "MENS SHORT SLEEVE T-SHIRT", "Ringer", GENDER_MENS),
-    "TD02B": ("T-SHIRTS", "Childrens T-Shirt", "TD02B", GENDER_KIDS),
-    "CA3001T": ("T-SHIRTS", "Childrens T-Shirt", "CA3001T", GENDER_KIDS),
-    "JC003": ("T-SHIRTS", "MENS SHORT SLEEVE T-SHIRT", "JC003", GENDER_MENS),
-    "JC03J": ("T-SHIRTS", "Childrens T-Shirt", "JC03J", GENDER_KIDS),
-    "Acid Wash Vintage Rust": ("T-SHIRTS", "MENS SHORT SLEEVE T-SHIRT", "Acid Wash Vintage Rust", GENDER_MENS),
-    "Acid Wash Optic Wash": ("T-SHIRTS", "MENS SHORT SLEEVE T-SHIRT", "Acid Wash Optic Wash", GENDER_MENS),
-    "Mens-Hoodie": ("SWEATSHIRTS AND HOODIES", "Mens Sweatshirts & Hoodies", "Hoodie", GENDER_MENS),
-    "Mens-Sweatshirt": ("SWEATSHIRTS AND HOODIES", "Mens Sweatshirts & Hoodies", "Sweatshirt", GENDER_MENS),
-    "Womens-Sweatshirt": (
-        "SWEATSHIRTS AND HOODIES",
-        "Ladies Sweatshirts And Hoodies",
-        "Sweatshirt",
-        GENDER_WOMENS,
-    ),
-    "Kids-Hoodie": (
-        "SWEATSHIRTS AND HOODIES",
-        "Childrens Sweatshirts And Hoodies",
-        "Hoodie",
-        GENDER_KIDS,
-    ),
-    "Kids-Sweatshirt": (
-        "SWEATSHIRTS AND HOODIES",
-        "Childrens Sweatshirts And Hoodies",
-        "Sweatshirt",
-        GENDER_KIDS,
-    ),
-    "GILDAN Heavy Blend Adult Hooded Sweatshirt": (
-        "SWEATSHIRTS AND HOODIES",
-        "Mens Sweatshirts & Hoodies",
-        "Heavy Blend",
-        GENDER_MENS,
-    ),
+    "Mens-T-Shirt": (tax.CAT_TEE, tax.TYPE_SS_TEE, tax.DEFAULT_STYLE, GENDER_MENS),
+    "Womens-T-Shirt": (tax.CAT_TEE, tax.TYPE_SS_TEE, tax.DEFAULT_STYLE, GENDER_WOMENS),
+    "Kids-T-Shirt": (tax.CAT_TEE, tax.TYPE_SS_TEE, tax.DEFAULT_STYLE, GENDER_KIDS),
+    "GILDAN Heavy Cotton Adult T-Shirt": (tax.CAT_TEE, tax.TYPE_SS_TEE, "Heavy Cotton", GENDER_MENS),
+    "GILDAN Softstyle Adult T-Shirt": (tax.CAT_TEE, tax.TYPE_SS_TEE, "Softstyle", GENDER_MENS),
+    "GILDAN Softstyle Ladies T Shirt": (tax.CAT_TEE, tax.TYPE_SS_TEE, "Softstyle", GENDER_WOMENS),
+    "GILDAN Softstyle Ladies Tank Top": (tax.CAT_TEE, tax.TYPE_TANK, "Softstyle", GENDER_WOMENS),
+    "FOTL Kids Valueweight T": (tax.CAT_TEE, tax.TYPE_SS_TEE, "Valueweight", GENDER_KIDS),
+    "5000": (tax.CAT_TEE, tax.TYPE_SS_TEE, "Heavy Cotton", GENDER_MENS),
+    "G5000": (tax.CAT_TEE, tax.TYPE_SS_TEE, "Heavy Cotton", GENDER_MENS),
+    "2400": (tax.CAT_TEE, tax.TYPE_LS_TEE, "Ultra Cotton", GENDER_MENS),
+    "61026": (tax.CAT_TEE, tax.TYPE_SS_TEE, "Valueweight Baseball", GENDER_MENS),
+    "61168-Ringer": (tax.CAT_TEE, tax.TYPE_SS_TEE, "Ringer", GENDER_MENS),
+    "TD02B": (tax.CAT_TEE, tax.TYPE_SS_TEE, "Kids Tie Dye", GENDER_KIDS),
+    "CA3001T": (tax.CAT_TEE, tax.TYPE_SS_TEE, "Toddler Jersey", GENDER_KIDS),
+    "JC003": (tax.CAT_TEE, tax.TYPE_SS_TEE, "Contrast Cool", GENDER_MENS),
+    "JC03J": (tax.CAT_TEE, tax.TYPE_SS_TEE, "Contrast Cool", GENDER_KIDS),
+    "Acid Wash Vintage Rust": (tax.CAT_TEE, tax.TYPE_SS_TEE, "Acid Wash Vintage Rust", GENDER_MENS),
+    "Acid Wash Optic Wash": (tax.CAT_TEE, tax.TYPE_SS_TEE, "Acid Wash Optic Wash", GENDER_MENS),
+    "Mens-Hoodie": (tax.CAT_SWEAT, tax.TYPE_HOODIE, tax.DEFAULT_STYLE, GENDER_MENS),
+    "Mens-Sweatshirt": (tax.CAT_SWEAT, tax.TYPE_SWEAT, tax.DEFAULT_STYLE, GENDER_MENS),
+    "Womens-Hoodie": (tax.CAT_SWEAT, tax.TYPE_HOODIE, tax.DEFAULT_STYLE, GENDER_WOMENS),
+    "Womens-Sweatshirt": (tax.CAT_SWEAT, tax.TYPE_SWEAT, tax.DEFAULT_STYLE, GENDER_WOMENS),
+    "Kids-Hoodie": (tax.CAT_SWEAT, tax.TYPE_HOODIE, tax.DEFAULT_STYLE, GENDER_KIDS),
+    "Kids-Sweatshirt": (tax.CAT_SWEAT, tax.TYPE_SWEAT, tax.DEFAULT_STYLE, GENDER_KIDS),
+    "GILDAN Heavy Blend Adult Hooded Sweatshirt": (tax.CAT_SWEAT, tax.TYPE_HOODIE, "Heavy Blend", GENDER_MENS),
     "GILDAN Softstyle Midw Fleece Youth Hoodie": (
-        "SWEATSHIRTS AND HOODIES",
-        "Childrens Sweatshirts And Hoodies",
+        tax.CAT_SWEAT,
+        tax.TYPE_HOODIE,
         "Softstyle Midweight Fleece",
         GENDER_KIDS,
     ),
     "GILDAN Softstyle Midweight Fleece Youth Hoodie": (
-        "SWEATSHIRTS AND HOODIES",
-        "Childrens Sweatshirts And Hoodies",
+        tax.CAT_SWEAT,
+        tax.TYPE_HOODIE,
         "Softstyle Midweight Fleece",
         GENDER_KIDS,
     ),
-    "JH001-Hoodie": ("SWEATSHIRTS AND HOODIES", "Mens Sweatshirts & Hoodies", "JH001", GENDER_MENS),
-    "JH01J-Hoodie": (
-        "SWEATSHIRTS AND HOODIES",
-        "Childrens Sweatshirts And Hoodies",
-        "JH01J",
-        GENDER_KIDS,
-    ),
-    "C2200-Hoodie": ("SWEATSHIRTS AND HOODIES", "Mens Sweatshirts & Hoodies", "C2200", GENDER_MENS),
-    "C2400": ("SWEATSHIRTS AND HOODIES", "Mens Sweatshirts & Hoodies", "C2400", GENDER_MENS),
-    "SF500B-Hoodie": (
-        "SWEATSHIRTS AND HOODIES",
-        "Childrens Sweatshirts And Hoodies",
-        "SF500B",
-        GENDER_KIDS,
-    ),
-    "Kids-T-Shirt-Hoodie": ("Sets", "T-Shirt and Hoodie", "Kids Set", GENDER_KIDS),
-    "85800L-Polo-T-Shirt": ("POLO SHIRTS", "Ladies Short Sleeve Polo Shirts", "85800L", GENDER_WOMENS),
-    "64800-Polo T-Shirt": ("POLO SHIRTS", "MENS SHORT SLEEVE POLO SHIRTS", "64800", GENDER_MENS),
-    "UCC003-Mens-Polo": ("POLO SHIRTS", "MENS SHORT SLEEVE POLO SHIRTS", "UCC003", GENDER_MENS),
-    "Uneek Hi-Viz Polo Shirt": ("POLO SHIRTS", "Hi-Viz Polo Shirt", "Hi-Viz Polo", GENDER_UNISEX),
-    "64200": ("T-SHIRTS", "Mens Tank Tops, Vest Etc", "64200", GENDER_MENS),
-    "64200L": ("T-SHIRTS", "Ladies Vests, Camisoles, Etc.", "64200L", GENDER_WOMENS),
-    "C800T-BS": ("Babywear", "Baby And Toddlerwear", "C800T", GENDER_KIDS),
-    "C8030T-BS": ("Babywear", "Baby And Toddlerwear", "C8030T", GENDER_KIDS),
-    "BZ02-Toddler-T-Shirt": ("Babywear", "Baby And Toddlerwear", "BZ02", GENDER_KIDS),
-    "BZ10-Body Suit": ("Babywear", "Baby And Toddlerwear", "BZ10", GENDER_KIDS),
-    "Kids-Toddler 61033": ("Babywear", "Baby And Toddlerwear", "61033", GENDER_KIDS),
-    "China Bag": ("Bags", "Bags, Backpacks Etc", "China Bag", GENDER_GENERAL),
-    "Cotton-Shopper": ("Bags", "Bags, Backpacks Etc", "Cotton Shopper", GENDER_GENERAL),
+    "JH001-Hoodie": (tax.CAT_SWEAT, tax.TYPE_HOODIE, "College", GENDER_MENS),
+    "JH01J-Hoodie": (tax.CAT_SWEAT, tax.TYPE_HOODIE, "College", GENDER_KIDS),
+    "C2200-Hoodie": (tax.CAT_SWEAT, tax.TYPE_HOODIE, "Ringspun Blended", GENDER_MENS),
+    "C2400": (tax.CAT_SWEAT, tax.TYPE_SWEAT, "Ringspun Blended", GENDER_MENS),
+    "SF500B-Hoodie": (tax.CAT_SWEAT, tax.TYPE_HOODIE, "Softstyle Midweight Fleece", GENDER_KIDS),
+    "Kids-T-Shirt-Hoodie": (tax.CAT_SETS, tax.TYPE_SET, "Kids Set", GENDER_KIDS),
+    "85800L-Polo-T-Shirt": (tax.CAT_POLO, tax.TYPE_SS_POLO, "Premium Cotton Polo", GENDER_WOMENS),
+    "64800-Polo T-Shirt": (tax.CAT_POLO, tax.TYPE_SS_POLO, "Softstyle Double Pique", GENDER_MENS),
+    "UCC003-Mens-Polo": (tax.CAT_POLO, tax.TYPE_SS_POLO, "Everyday Polo", GENDER_MENS),
+    "Uneek Hi-Viz Polo Shirt": (tax.CAT_POLO, tax.TYPE_HV_POLO, "High Visibility", GENDER_UNISEX),
+    "64200": (tax.CAT_TEE, tax.TYPE_TANK, "Softstyle", GENDER_MENS),
+    "64200L": (tax.CAT_TEE, tax.TYPE_TANK, "Softstyle", GENDER_WOMENS),
+    "C800T-BS": (tax.CAT_BABY, tax.TYPE_BODY, "Baby Body Suit", GENDER_KIDS),
+    "C8030T-BS": (tax.CAT_BABY, tax.TYPE_ROMPER, "Baby Romper", GENDER_KIDS),
+    "BZ02-Toddler-T-Shirt": (tax.CAT_BABY, tax.TYPE_BABY_TEE, "Baby T-Shirt", GENDER_KIDS),
+    "BZ10-Body Suit": (tax.CAT_BABY, tax.TYPE_BODY, "Baby Bodysuit", GENDER_KIDS),
+    "Kids-Toddler 61033": (tax.CAT_BABY, tax.TYPE_BABY_TEE, "Valueweight", GENDER_KIDS),
+    "China Bag": (tax.CAT_BAGS, tax.TYPE_TOTE, "China Bag", GENDER_GENERAL),
+    "Cotton-Shopper": (tax.CAT_BAGS, tax.TYPE_TOTE, "Cotton Shopper", GENDER_GENERAL),
     "BagBase Boutique Wristlet Keyring": (
-        "Bags",
-        "Bags, Backpacks Etc",
+        tax.CAT_BAGS,
+        tax.TYPE_BAG_ACC,
         "Boutique Wristlet Keyring",
         GENDER_GENERAL,
     ),
-    "PC-QD442": ("Bags", "Bags, Backpacks Etc", "QD442", GENDER_GENERAL),
-    "WB-QD440": ("Bags", "Bags, Backpacks Etc", "QD440", GENDER_GENERAL),
-    "W696": ("Bags", "Bags, Backpacks Etc", "W696", GENDER_GENERAL),
-    "W265": ("Bags", "Bags, Backpacks Etc", "W265", GENDER_GENERAL),
-    "BG745": ("Bags", "Bags, Backpacks Etc", "BG745", GENDER_GENERAL),
-    "Yoko Hi-Vis Class 2 Waistcoat": ("Safetywear", "Hi-Vis Waistcoat", "Class 2", GENDER_UNISEX),
-    "Hi-Vis-HVW801": ("Safetywear", "Hi-Vis Waistcoat", "HVW801", GENDER_UNISEX),
-    "Beechfield Original Patch Beanie": ("HEADWEAR", "Beanie", "Original Patch", GENDER_GENERAL),
-    "Beechfield Snowstar Patch Beanie": ("HEADWEAR", "Beanie", "Snowstar Patch", GENDER_GENERAL),
-    "BEECH Original Patch Beanie": ("HEADWEAR", "Beanie", "Original Patch", GENDER_GENERAL),
-    "BEECH Snowstar Patch Beanie": ("HEADWEAR", "Beanie", "Snowstar Patch", GENDER_GENERAL),
-    "Cap-B445": ("HEADWEAR", "Cap", "B445", GENDER_GENERAL),
-    "Cap-B641": ("HEADWEAR", "Cap", "B641", GENDER_GENERAL),
+    "PC-QD442": (tax.CAT_BAGS, tax.TYPE_PENCIL, "Pencil Case", GENDER_GENERAL),
+    "WB-QD440": (tax.CAT_BAGS, tax.TYPE_BAG_ACC, "Water Bottle Holder", GENDER_GENERAL),
+    "W696": (tax.CAT_BAGS, tax.TYPE_TOTE, "Oversized Canvas Tote", GENDER_GENERAL),
+    "W265": (tax.CAT_BAGS, tax.TYPE_TOTE, "Organic Premium Maxi Tote", GENDER_GENERAL),
+    "BG745": (tax.CAT_BAGS, tax.TYPE_BAG_ACC, "Boutique Circular Key Clip", GENDER_GENERAL),
+    "Yoko Hi-Vis Class 2 Waistcoat": (tax.CAT_SAFETY, tax.TYPE_HV_VEST, "Class 2", GENDER_UNISEX),
+    "Hi-Vis-HVW801": (tax.CAT_SAFETY, tax.TYPE_HV_VEST, "Executive Vest", GENDER_UNISEX),
+    "Beechfield Original Patch Beanie": (tax.CAT_HEAD, tax.TYPE_BEANIE, "Original Patch", GENDER_GENERAL),
+    "Beechfield Snowstar Patch Beanie": (tax.CAT_HEAD, tax.TYPE_BEANIE, "Snowstar Patch", GENDER_GENERAL),
+    "BEECH Original Patch Beanie": (tax.CAT_HEAD, tax.TYPE_BEANIE, "Original Patch", GENDER_GENERAL),
+    "BEECH Snowstar Patch Beanie": (tax.CAT_HEAD, tax.TYPE_BEANIE, "Snowstar Patch", GENDER_GENERAL),
+    "Cap-B445": (tax.CAT_HEAD, tax.TYPE_BEANIE, "Original Patch", GENDER_GENERAL),
+    "Cap-B641": (tax.CAT_HEAD, tax.TYPE_CAP, "Patch Snapback Trucker", GENDER_GENERAL),
     "Westford Mill FairTrade Cotton Junior Apron": (
-        "Hospitality",
-        "Apron",
-        "FairTrade Cotton Junior",
+        tax.CAT_HOSP,
+        tax.TYPE_APRON,
+        "Fairtrade Cotton Junior",
         GENDER_KIDS,
     ),
     "WFMILL FairTrade Cotton Junior Apron": (
-        "Hospitality",
-        "Apron",
-        "FairTrade Cotton Junior",
+        tax.CAT_HOSP,
+        tax.TYPE_APRON,
+        "Fairtrade Cotton Junior",
         GENDER_KIDS,
     ),
-    "AA77-Apron": ("Hospitality", "Apron", "AA77", GENDER_GENERAL),
-    "W364-Apron": ("Hospitality", "Apron", "W364", GENDER_GENERAL),
-    "Sticker": ("Stickers", "Sticker", "Sticker", GENDER_GENERAL),
-    "Stickers": ("Stickers", "Sticker", "Circle", GENDER_GENERAL),
-    "STICKER": ("Stickers", "Sticker", "A4", GENDER_GENERAL),
-    "Mug": ("Mugs", "Mug", "Mug", GENDER_GENERAL),
-    "Mug-M61": ("Mugs", "Mug", "M61", GENDER_GENERAL),
-    "Mask": ("Masks", "Face Mask", "Face Mask", GENDER_GENERAL),
-    "6M014V": ("Masks", "Face Mask", "6M014V", GENDER_GENERAL),
-    "Badge": ("Badges", "Badge", "25mm", GENDER_GENERAL),
-    "Card": ("Cards", "Card", "A5", GENDER_GENERAL),
-    "Photo Acrylic": ("Photo Acrylic", "Photo Acrylic", "Photo Acrylic", GENDER_GENERAL),
-    "Baby Drawer Lock": ("Accessories", "Baby Drawer Lock", "Baby Drawer Lock", GENDER_GENERAL),
-    "Only-Design": ("Iron-On", "Iron-On Transfer", "Iron-On", GENDER_GENERAL),
-    "Kids-Tutu": ("Tutus", "Tutu", "Tutu", GENDER_KIDS),
+    "AA77-Apron": (tax.CAT_HOSP, tax.TYPE_APRON, "Bib Apron", GENDER_GENERAL),
+    "W364-Apron": (tax.CAT_HOSP, tax.TYPE_APRON, "Cotton Adult Apron", GENDER_GENERAL),
+    "Sticker": (tax.CAT_STICKER, tax.TYPE_STICKER, tax.DEFAULT_STYLE, GENDER_GENERAL),
+    "Stickers": (tax.CAT_STICKER, tax.TYPE_STICKER, "Circle", GENDER_GENERAL),
+    "STICKER": (tax.CAT_STICKER, tax.TYPE_STICKER, "A4", GENDER_GENERAL),
+    "Mug": (tax.CAT_MUGS, tax.TYPE_MUG, tax.DEFAULT_STYLE, GENDER_GENERAL),
+    "Mug-M61": (tax.CAT_MUGS, tax.TYPE_MUG, "Ceramic Mug", GENDER_GENERAL),
+    "Mask": (tax.CAT_ACC, tax.TYPE_MASK, tax.DEFAULT_STYLE, GENDER_GENERAL),
+    "6M014V": (tax.CAT_ACC, tax.TYPE_MASK, tax.DEFAULT_STYLE, GENDER_GENERAL),
+    "Badge": (tax.CAT_ACC, tax.TYPE_BADGE, "25 mm", GENDER_GENERAL),
+    "Card": (tax.CAT_ACC, tax.TYPE_CARD, "A5", GENDER_GENERAL),
+    "Photo Acrylic": (tax.CAT_ACC, tax.TYPE_PHOTO, tax.DEFAULT_STYLE, GENDER_GENERAL),
+    "Baby Drawer Lock": (tax.CAT_ACC, tax.TYPE_LOCK, tax.DEFAULT_STYLE, GENDER_GENERAL),
+    "Only-Design": (tax.CAT_IRON, tax.TYPE_IRON, tax.DEFAULT_STYLE, GENDER_GENERAL),
+    "Kids-Tutu": (tax.CAT_BABY, tax.TYPE_TUTU, tax.DEFAULT_STYLE, GENDER_KIDS),
 }
 
 CL_LEFTOVER_RULES = CL_STANDARD_RULES
@@ -242,17 +197,13 @@ _CL_BRAND_PREFIXES = (
 
 _NON_APPAREL = frozenset(
     {
-        "Bags",
-        "Iron-On",
-        "Stickers",
-        "Mugs",
-        "Masks",
-        "Badges",
-        "Cards",
-        "Photo Acrylic",
-        "Accessories",
-        "HEADWEAR",
-        "Hospitality",
+        tax.CAT_BAGS,
+        tax.CAT_IRON,
+        tax.CAT_STICKER,
+        tax.CAT_MUGS,
+        tax.CAT_ACC,
+        tax.CAT_HEAD,
+        tax.CAT_HOSP,
     }
 )
 
@@ -379,49 +330,52 @@ _GARMENT_PHRASES = tuple(
 )
 
 _KIND_STYLE = {
-    "ironon": "Iron-On",
-    "bag": "Bag",
-    "cap": "Cap",
-    "beanie": "Beanie",
-    "helmet": "Helmet",
-    "sticker": "Sticker",
-    "mug": "Mug",
-    "mask": "Face Mask",
-    "badge": "Badge",
-    "card": "Card",
-    "photo": "Photo Acrylic",
-    "lock": "Baby Drawer Lock",
-    "tutu": "Tutu",
-    "apron": "Apron",
+    "ironon": tax.DEFAULT_STYLE,
+    "bag": tax.DEFAULT_STYLE,
+    "cap": tax.DEFAULT_STYLE,
+    "beanie": tax.DEFAULT_STYLE,
+    "helmet": "Hi-Vis Baseball",
+    "sticker": tax.DEFAULT_STYLE,
+    "mug": tax.DEFAULT_STYLE,
+    "mask": tax.DEFAULT_STYLE,
+    "badge": "25 mm",
+    "card": "A5",
+    "photo": tax.DEFAULT_STYLE,
+    "lock": tax.DEFAULT_STYLE,
+    "tutu": tax.DEFAULT_STYLE,
+    "apron": tax.DEFAULT_STYLE,
     "tee_hoodie": "Kids Set",
-    "baby": "Babywear",
-    "hi_viz_polo": "Hi-Viz Polo",
-    "hi_viz_tee": "Hi-Viz T-Shirt",
-    "hi_viz_trouser": "Hi-Viz Trouser",
-    "hi_viz_waistcoat": "Hi-Viz Waistcoat",
-    "hi_viz_jacket": "Hi-Viz Jacket",
-    "hi_vis": "Hi-Vis",
-    "hoodie": "Hoodie",
-    "sweatshirt": "Sweatshirt",
-    "tee": "T-Shirt",
-    "long_sleeve": "Long Sleeve",
-    "tank": "Tank",
-    "vest": "Vest",
-    "polo": "Polo",
-    "long_polo": "Long Sleeve Polo",
-    "woven": "Shirt",
-    "trouser": "Trouser",
-    "shorts": "Shorts",
-    "jogger": "Joggers",
-    "jacket": "Jacket",
-    "fleece": "Fleece",
-    "gilet": "Gilet",
-    "cardigan": "Cardigan",
-    "rugby": "Rugby Shirt",
-    "tunic": "Tunic",
-    "scrub": "Scrub",
-    "tabard": "Tabard",
+    "baby": "Baby Body Suit",
+    "hi_viz_polo": "High Visibility",
+    "hi_viz_tee": "High Visibility",
+    "hi_viz_trouser": "High Visibility",
+    "hi_viz_waistcoat": "High Visibility",
+    "hi_viz_jacket": "High Visibility",
+    "hi_vis": "High Visibility",
+    "hoodie": tax.DEFAULT_STYLE,
+    "sweatshirt": tax.DEFAULT_STYLE,
+    "tee": tax.DEFAULT_STYLE,
+    "long_sleeve": tax.DEFAULT_STYLE,
+    "tank": tax.DEFAULT_STYLE,
+    "vest": tax.DEFAULT_STYLE,
+    "polo": tax.DEFAULT_STYLE,
+    "long_polo": tax.DEFAULT_STYLE,
+    "woven": tax.DEFAULT_STYLE,
+    "trouser": tax.DEFAULT_STYLE,
+    "shorts": tax.DEFAULT_STYLE,
+    "jogger": tax.DEFAULT_STYLE,
+    "jacket": tax.DEFAULT_STYLE,
+    "fleece": tax.DEFAULT_STYLE,
+    "gilet": tax.DEFAULT_STYLE,
+    "cardigan": tax.DEFAULT_STYLE,
+    "rugby": "Classic",
+    "tunic": tax.DEFAULT_STYLE,
+    "scrub": tax.DEFAULT_STYLE,
+    "tabard": "Premium",
 }
+
+_CODE_RE = re.compile(r"[A-Za-z]{0,6}\d+[A-Za-z]{0,4}")
+_IRON_SIZES = frozenset({"A3", "A4", "A5", "A6"})
 
 
 def cell(value: object) -> str:
@@ -530,15 +484,94 @@ def _strip_brand(folded: str) -> str:
 
 def _title_style(text: str) -> str:
     bits: list[str] = []
-    for raw in text.split():
+    for raw in text.replace("-", " ").split():
         low = raw.casefold()
         if low in {"ux", "v"}:
             bits.append(raw.upper())
-        elif low in {"hi-viz", "hi-vis", "hiviz"}:
-            bits.append("Hi-Viz")
+        elif low in {"hi-viz", "hi-vis", "hiviz", "hivis"}:
+            bits.append("Hi-Vis")
+        elif low in {"t", "shirt"} and bits and bits[-1] == "T":
+            bits[-1] = "T-Shirt"
         else:
-            bits.append(raw[:1].upper() + raw[1:] if raw else raw)
+            bits.append(raw[:1].upper() + raw[1:].lower() if raw else raw)
     return " ".join(bits)
+
+
+def _style_from_ga(ga: str, kind: str) -> str:
+    orig = _norm_ga(ga)
+    cf = _fold_ga(ga)
+    if cf.startswith("dtf-ironon") or cf.startswith("ironon"):
+        rest = _ironon_style(orig)
+        if rest.upper() in _IRON_SIZES:
+            return rest.upper()
+        named = tax.style_from_code(rest) or tax.style_from_code(rest.replace("-", ""))
+        if named:
+            return named
+        for token in _codes_in(rest):
+            hit = tax.style_from_code(token)
+            if hit:
+                return hit
+        if rest.casefold() in {"k-t", "kt"}:
+            return "Kids T-Shirt"
+        return tax.collapse_style(_title_style(rest) or tax.DEFAULT_STYLE)
+    for token in _codes_in(orig):
+        hit = tax.style_from_code(token)
+        if hit:
+            return hit
+    for needle, canon in tax.STYLE_PHRASES:
+        if needle in cf:
+            return canon
+    folded = _strip_brand(cf)
+    folded = _KIDS_RE.sub(" ", folded)
+    folded = _WOMENS_RE.sub(" ", folded)
+    folded = _MENS_RE.sub(" ", folded)
+    folded = _UNISEX_RE.sub(" ", folded)
+    folded = _HIVIS_RE.sub(" ", folded)
+    for phrase in _GARMENT_PHRASES:
+        folded = folded.replace(phrase, " ")
+    folded = re.sub(r"\s+", " ", folded).strip(" -")
+    if folded.endswith(" t"):
+        folded = folded[:-2].strip()
+    leftover_map = {
+        "heavy": "Heavy Cotton",
+        "china": "China Bag",
+    }
+    if folded in leftover_map:
+        return leftover_map[folded]
+    if folded:
+        titled = _title_style(folded)
+        return tax.collapse_style(titled)
+    return tax.collapse_style(_KIND_STYLE.get(kind, tax.DEFAULT_STYLE))
+
+
+def _classify_ga_pattern(ga: str) -> AreebValues:
+    hit = _garment_kind(ga)
+    if not hit:
+        return AreebValues()
+    category, kind = hit
+    dept = _department_for(ga, category)
+    return _values_from_tuple(
+        (category, _product_type(category, kind, ga), _style_from_ga(ga, kind), dept)
+    )
+
+
+def _snap_cl_areeb(values: AreebValues) -> AreebValues:
+    """Hashim #038: warehouse fill picks from the closed list; do not invent."""
+    if not values.any_filled():
+        return values
+    category, product_type, product_style, department = snap_warehouse(
+        category=values.category,
+        product_type=values.product_type,
+        product_style=values.product_style,
+        department=values.department,
+    )
+    return AreebValues(
+        category=category,
+        product_type=product_type,
+        product_style=product_style,
+        department=department or values.department,
+        source=values.source,
+    )
 
 
 def _garment_kind(ga: str) -> tuple[str, str] | None:
@@ -547,7 +580,7 @@ def _garment_kind(ga: str) -> tuple[str, str] | None:
     if not cf:
         return None
     if cf.startswith("dtf-ironon") or cf.startswith("ironon"):
-        return "Iron-On", "ironon"
+        return tax.CAT_IRON, "ironon"
     if (
         cf.startswith("bg-")
         or cf.startswith("kc-bg")
@@ -556,83 +589,85 @@ def _garment_kind(ga: str) -> tuple[str, str] | None:
         or cf.startswith("cc-w")
         or cf.startswith("eco ")
     ):
-        return "Bags", "bag"
+        return tax.CAT_BAGS, "bag"
     if cf.startswith("cap-"):
-        return "HEADWEAR", "cap"
+        return tax.CAT_HEAD, "cap"
     if any(
         token in cf
         for token in ("tote", "backpack", "shopper", "keyring", "china bag", "chinabag")
     ):
-        return "Bags", "bag"
+        return tax.CAT_BAGS, "bag"
     if _HIVIS_RE.search(cf):
         if "polo" in cf:
-            return "POLO SHIRTS", "hi_viz_polo"
+            return tax.CAT_POLO, "hi_viz_polo"
         if "t-shirt" in cf or "t shirt" in cf:
-            return "T-SHIRTS", "hi_viz_tee"
+            return tax.CAT_TEE, "hi_viz_tee"
         if "trouser" in cf:
-            return "Safetywear", "hi_viz_trouser"
+            return tax.CAT_SAFETY, "hi_viz_trouser"
         if "waist" in cf:
-            return "Safetywear", "hi_viz_waistcoat"
+            return tax.CAT_SAFETY, "hi_viz_waistcoat"
         if "jacket" in cf or "bomber" in cf:
-            return "Safetywear", "hi_viz_jacket"
+            return tax.CAT_SAFETY, "hi_viz_jacket"
         if "helmet" in cf:
-            return "Safetywear", "helmet"
-        return "Safetywear", "hi_vis"
+            return tax.CAT_SAFETY, "helmet"
+        return tax.CAT_SAFETY, "hi_vis"
     if "tutu" in cf:
-        return "Tutus", "tutu"
+        return tax.CAT_BABY, "tutu"
     if "waist coat" in cf or "waistcoat" in cf:
-        return "Safetywear", "hi_viz_waistcoat"
+        return tax.CAT_SAFETY, "hi_viz_waistcoat"
     if "apron" in cf:
-        return "Hospitality", "apron"
+        return tax.CAT_HOSP, "apron"
     if "sticker" in cf:
-        return "Stickers", "sticker"
+        return tax.CAT_STICKER, "sticker"
     if cf == "mug" or cf.startswith("mug-"):
-        return "Mugs", "mug"
+        return tax.CAT_MUGS, "mug"
     if "mask" in cf:
-        return "Masks", "mask"
+        return tax.CAT_ACC, "mask"
     if cf == "badge":
-        return "Badges", "badge"
+        return tax.CAT_ACC, "badge"
     if cf == "card":
-        return "Cards", "card"
+        return tax.CAT_ACC, "card"
     if "photo acrylic" in cf:
-        return "Photo Acrylic", "photo"
+        return tax.CAT_ACC, "photo"
     if "drawer lock" in cf:
-        return "Accessories", "lock"
+        return tax.CAT_ACC, "lock"
     if cf == "only-design":
-        return "Iron-On", "ironon"
+        return tax.CAT_IRON, "ironon"
     if any(
         token in cf
         for token in ("beanie", "snapback", "dad cap", "panel cap", "trucker cap", "pom pom")
     ):
-        return "HEADWEAR", "beanie" if "beanie" in cf else "cap"
+        return tax.CAT_HEAD, "beanie" if "beanie" in cf else "cap"
+    if "romper" in cf:
+        return tax.CAT_BABY, "baby"
     if "body suit" in cf or "bodysuit" in cf or "toddler" in cf or cf.endswith("-bs"):
-        return "Babywear", "baby"
+        return tax.CAT_BABY, "baby"
     if "tabard" in cf:
-        return "Healthcare", "tabard"
+        return tax.CAT_HEALTH, "tabard"
     if "tunic" in cf:
-        return "Healthcare", "tunic"
+        return tax.CAT_HEALTH, "tunic"
     if "scrub" in cf:
-        return "Healthcare", "scrub"
+        return tax.CAT_HEALTH, "scrub"
     if "t-shirt" in cf and "hoodie" in cf:
-        return "Sets", "tee_hoodie"
+        return tax.CAT_SETS, "tee_hoodie"
     if "trouser" in cf:
-        return "Trousers", "trouser"
+        return tax.CAT_TROUSER, "trouser"
     if re.search(r"\bshorts\b", cf) and "sleeve" not in cf:
-        return "Shorts", "shorts"
+        return tax.CAT_SHORTS, "shorts"
     if "jog" in cf:
-        return "Joggers", "jogger"
+        return tax.CAT_TROUSER, "jogger"
     if "rugby" in cf:
-        return "Rugby Shirts", "rugby"
+        return tax.CAT_SHIRT, "rugby"
     if "polo" in cf:
         if "longsleeve" in cf or "long sleeve" in cf:
-            return "POLO SHIRTS", "long_polo"
-        return "POLO SHIRTS", "polo"
+            return tax.CAT_POLO, "long_polo"
+        return tax.CAT_POLO, "polo"
     if "gilet" in cf or "bodywarmer" in cf or "body warmer" in cf:
-        return "Gilets", "gilet"
+        return tax.CAT_GILET, "gilet"
     if "cardigan" in cf:
-        return "Jackets", "cardigan"
+        return tax.CAT_JACKET, "cardigan"
     if "fleece" in cf:
-        return "Fleeces", "fleece"
+        return tax.CAT_FLEECE, "fleece"
     if any(
         token in cf
         for token in (
@@ -645,30 +680,30 @@ def _garment_kind(ga: str) -> tuple[str, str] | None:
         )
     ) or re.search(r"\bjacket\b", cf):
         if "sweat" in cf:
-            return "SWEATSHIRTS AND HOODIES", "hoodie"
-        return "Jackets", "jacket"
+            return tax.CAT_SWEAT, "hoodie"
+        return tax.CAT_JACKET, "jacket"
     if "hoodie" in cf or "hooded" in cf:
-        return "SWEATSHIRTS AND HOODIES", "hoodie"
+        return tax.CAT_SWEAT, "hoodie"
     if "sweatshirt" in cf or "crewneck" in cf:
-        return "SWEATSHIRTS AND HOODIES", "sweatshirt"
+        return tax.CAT_SWEAT, "sweatshirt"
     if "tank" in cf:
-        return "T-SHIRTS", "tank"
+        return tax.CAT_TEE, "tank"
     if "vest" in cf:
-        return "T-SHIRTS", "vest"
+        return tax.CAT_TEE, "vest"
     if "long sleeve" in cf and ("t-shirt" in cf or "t shirt" in cf or cf.endswith(" t")):
-        return "T-SHIRTS", "long_sleeve"
+        return tax.CAT_TEE, "long_sleeve"
     if "t-shirt" in cf or "t shirt" in cf or re.search(r"\bt$", cf):
-        return "T-SHIRTS", "tee"
+        return tax.CAT_TEE, "tee"
     if "poplin" in cf or "oxford" in cf or re.search(r"\bshirt\b", cf):
-        return "Shirts", "woven"
+        return tax.CAT_SHIRT, "woven"
     return None
 
 
 def _department_for(ga: str, category: str) -> str:
-    if category == "Babywear" or category == "Tutus" or category == "Sets":
+    if category == tax.CAT_BABY or category == tax.CAT_SETS:
         return GENDER_KIDS
     if category in _NON_APPAREL:
-        if category == "Hospitality" and _KIDS_RE.search(ga):
+        if category == tax.CAT_HOSP and _KIDS_RE.search(ga):
             return GENDER_KIDS
         return GENDER_GENERAL
     if _KIDS_RE.search(ga):
@@ -677,184 +712,140 @@ def _department_for(ga: str, category: str) -> str:
         return GENDER_WOMENS
     if _UNISEX_RE.search(ga) or _HIVIS_RE.search(ga):
         return GENDER_UNISEX
-    if category == "Safetywear" or (category == "Healthcare" and "scrub" in _fold_ga(ga)):
+    if category == tax.CAT_SAFETY or (category == tax.CAT_HEALTH and "scrub" in _fold_ga(ga)):
         return GENDER_UNISEX
     if _MENS_RE.search(ga):
         return GENDER_MENS
     if category in {
-        "T-SHIRTS",
-        "SWEATSHIRTS AND HOODIES",
-        "POLO SHIRTS",
-        "Shirts",
-        "Trousers",
-        "Shorts",
-        "Jackets",
-        "Fleeces",
-        "Gilets",
-        "Joggers",
-        "Rugby Shirts",
-        "Healthcare",
+        tax.CAT_TEE,
+        tax.CAT_SWEAT,
+        tax.CAT_POLO,
+        tax.CAT_SHIRT,
+        tax.CAT_TROUSER,
+        tax.CAT_SHORTS,
+        tax.CAT_JACKET,
+        tax.CAT_FLEECE,
+        tax.CAT_GILET,
+        tax.CAT_HEALTH,
     }:
         return GENDER_MENS
     return GENDER_GENERAL
 
 
-def _product_type(category: str, kind: str, dept: str) -> str:
-    by_kind = {
-        "ironon": "Iron-On Transfer",
-        "bag": "Bags, Backpacks Etc",
-        "cap": "Cap",
-        "beanie": "Beanie",
-        "helmet": "Safety Helmet",
-        "sticker": "Sticker",
-        "mug": "Mug",
-        "mask": "Face Mask",
-        "badge": "Badge",
-        "card": "Card",
-        "photo": "Photo Acrylic",
-        "lock": "Baby Drawer Lock",
-        "tutu": "Tutu",
-        "apron": "Apron",
-        "tee_hoodie": "T-Shirt and Hoodie",
-        "baby": "Baby And Toddlerwear",
-        "hi_viz_polo": "Hi-Viz Polo Shirt",
-        "hi_viz_tee": "Hi-Viz T-Shirt",
-        "hi_viz_trouser": "Hi-Vis Trouser",
-        "hi_viz_waistcoat": "Hi-Vis Waistcoat",
-        "hi_viz_jacket": "Hi-Vis Jacket",
-        "hi_vis": "Hi-Vis",
-        "tabard": "Tabard",
-        "tunic": "Tunic",
-        "scrub": "Scrub",
-        "jogger": "Jog Bottoms",
-        "shorts": "Shorts",
-        "rugby": "Rugby Shirt",
-        "gilet": "Gilet",
-        "cardigan": "Cardigan",
-        "fleece": "Fleece",
-        "jacket": "Jacket",
-        "trouser": "Trouser",
-        "woven": "Woven Shirt",
-        "long_polo": "Long Sleeve Polo Shirt",
-    }
-    if kind in by_kind:
-        if kind == "tunic":
-            return {
-                GENDER_WOMENS: "Ladies Tunic",
-                GENDER_MENS: "Mens Tunic",
-                GENDER_UNISEX: "Tunic",
-            }.get(dept, "Tunic")
-        if kind == "trouser":
-            return {
-                GENDER_WOMENS: "Ladies Trousers",
-                GENDER_KIDS: "Childrens Trousers",
-                GENDER_UNISEX: "Trouser",
-            }.get(dept, "Mens Trousers")
-        if kind == "woven":
-            return {
-                GENDER_WOMENS: "Ladies Woven Shirt",
-                GENDER_KIDS: "Childrens Woven Shirt",
-            }.get(dept, "Mens Woven Shirt")
-        if kind == "jacket":
-            return {
-                GENDER_WOMENS: "Ladies Jacket",
-                GENDER_KIDS: "Childrens Jacket",
-            }.get(dept, "Mens Jacket")
-        if kind == "fleece":
-            return {
-                GENDER_WOMENS: "Ladies Fleece",
-                GENDER_KIDS: "Childrens Fleece",
-            }.get(dept, "Mens Fleece")
-        if kind == "polo":
-            return {
-                GENDER_WOMENS: "Ladies Short Sleeve Polo Shirts",
-                GENDER_KIDS: "Childrens Polo Shirt",
-                GENDER_UNISEX: "Unisex Polo Shirt",
-            }.get(dept, "MENS SHORT SLEEVE POLO SHIRTS")
-        if kind == "long_polo":
-            return {
-                GENDER_WOMENS: "Ladies Long Sleeve Polo Shirt",
-                GENDER_KIDS: "Childrens Long Sleeve Polo Shirt",
-            }.get(dept, "Mens Long Sleeve Polo Shirt")
-        return by_kind[kind]
-    if category == "T-SHIRTS":
-        if kind == "long_sleeve":
-            return {
-                GENDER_WOMENS: "Ladies Long Sleeve T-Shirt",
-                GENDER_KIDS: "Childrens Long Sleeve T-Shirt",
-            }.get(dept, "Mens Long Sleeve T-Shirt")
-        if kind == "tank":
-            return {
-                GENDER_WOMENS: "Ladies Vests, Camisoles, Etc.",
-                GENDER_KIDS: "Childrens Vest",
-            }.get(dept, "Mens Tank Tops, Vest Etc")
-        if kind == "vest":
-            return {
-                GENDER_WOMENS: "Ladies Vests, Camisoles, Etc.",
-                GENDER_KIDS: "Childrens Vest",
-            }.get(dept, "Athletic Vest")
-        return {
-            GENDER_WOMENS: "Ladies Short Sleeve T-Shirts",
-            GENDER_KIDS: "Childrens T-Shirt",
-            GENDER_UNISEX: "Unisex T-Shirt",
-        }.get(dept, "MENS SHORT SLEEVE T-SHIRT")
-    if category == "SWEATSHIRTS AND HOODIES":
-        return {
-            GENDER_WOMENS: "Ladies Sweatshirts And Hoodies",
-            GENDER_KIDS: "Childrens Sweatshirts And Hoodies",
-            GENDER_UNISEX: "Unisex Sweatshirts & Hoodies",
-        }.get(dept, "Mens Sweatshirts & Hoodies")
-    if category == "POLO SHIRTS":
-        return {
-            GENDER_WOMENS: "Ladies Short Sleeve Polo Shirts",
-            GENDER_KIDS: "Childrens Polo Shirt",
-            GENDER_UNISEX: "Unisex Polo Shirt",
-        }.get(dept, "MENS SHORT SLEEVE POLO SHIRTS")
-    return category
+def _codes_in(text: str) -> list[str]:
+    found = _CODE_RE.findall(text or "")
+    out: list[str] = []
+    seen: set[str] = set()
+    for raw in sorted(found, key=len, reverse=True):
+        token = raw.upper()
+        if token in _IRON_SIZES or token in seen:
+            continue
+        seen.add(token)
+        out.append(token)
+    return out
 
 
-def _style_from_ga(ga: str, kind: str) -> str:
+def _first_named_code(text: str) -> str:
+    for token in _codes_in(text):
+        hit = tax.style_from_code(token)
+        if hit:
+            return token
+    return ""
+
+
+def _bag_type(ga: str) -> str:
+    code = _first_named_code(ga)
+    hit = tax.bag_type_from_code(code)
+    if hit:
+        return hit
     cf = _fold_ga(ga)
-    orig = _norm_ga(ga)
-    if cf.startswith("dtf-ironon") or cf.startswith("ironon"):
-        return _ironon_style(orig)
-    if cf.startswith("bg-"):
-        return "-".join(orig.split("-")[1:]) or orig
-    if cf.startswith("cap-"):
-        return orig.split("-", 1)[-1]
-    if cf.startswith("pc-") or cf.startswith("wb-") or cf.startswith("kc-") or cf.startswith("cc-"):
-        return orig.split("-", 1)[-1]
-    hyphen = re.match(r"^([A-Za-z0-9]+)(?:-(hoodie|polo|apron|bs|t-shirt).*)?$", orig, re.I)
-    if hyphen and orig.count("-") >= 1 and _garment_kind(orig) and orig.split("-", 1)[0].isalnum():
-        head = orig.split("-", 1)[0]
-        if head.casefold() not in _CL_BRAND_PREFIXES and not re.search(r"[a-z]{4,}", head.casefold()):
-            if any(ch.isdigit() for ch in head) or head.isupper():
-                return head
-    folded = _strip_brand(cf)
-    folded = _KIDS_RE.sub(" ", folded)
-    folded = _WOMENS_RE.sub(" ", folded)
-    folded = _MENS_RE.sub(" ", folded)
-    folded = _UNISEX_RE.sub(" ", folded)
-    folded = _HIVIS_RE.sub(" ", folded)
-    for phrase in _GARMENT_PHRASES:
-        folded = folded.replace(phrase, " ")
-    folded = re.sub(r"\s+", " ", folded).strip(" -")
-    if folded.endswith(" t"):
-        folded = folded[:-2].strip()
-    if folded:
-        return _title_style(folded)
-    return _KIND_STYLE.get(kind, kind.replace("_", " ").title())
+    if "backpack" in cf:
+        return tax.TYPE_BACKPACK
+    if "book bag" in cf:
+        return tax.TYPE_BOOK
+    if "gymsac" in cf or "gym sac" in cf:
+        return tax.TYPE_GYMSAC
+    if "pencil" in cf:
+        return tax.TYPE_PENCIL
+    if "lunch" in cf or "cooler" in cf or "sandwich" in cf:
+        return tax.TYPE_LUNCH
+    if "drawstring" in cf:
+        return tax.TYPE_DRAWSTRING
+    if "barrel" in cf or "dance bag" in cf:
+        return tax.TYPE_BARREL
+    if any(tok in cf for tok in ("tote", "shopper", "bag for life", "china")):
+        return tax.TYPE_TOTE
+    return tax.TYPE_BAG_ACC
 
 
-def _classify_ga_pattern(ga: str) -> AreebValues:
-    hit = _garment_kind(ga)
-    if not hit:
-        return AreebValues()
-    category, kind = hit
-    dept = _department_for(ga, category)
-    return _values_from_tuple(
-        (category, _product_type(category, kind, dept), _style_from_ga(ga, kind), dept)
-    )
+def _product_type(category: str, kind: str, ga: str) -> str:
+    code = _first_named_code(ga)
+    cf = _fold_ga(ga)
+    by_kind = {
+        "ironon": tax.TYPE_IRON,
+        "bag": _bag_type(ga),
+        "cap": tax.head_type_from_code(code) or tax.TYPE_CAP,
+        "beanie": tax.head_type_from_code(code) or tax.TYPE_BEANIE,
+        "helmet": tax.TYPE_HELMET,
+        "sticker": tax.TYPE_STICKER,
+        "mug": tax.TYPE_MUG,
+        "mask": tax.TYPE_MASK,
+        "badge": tax.TYPE_BADGE,
+        "card": tax.TYPE_CARD,
+        "photo": tax.TYPE_PHOTO,
+        "lock": tax.TYPE_LOCK,
+        "tutu": tax.TYPE_TUTU,
+        "apron": tax.TYPE_APRON,
+        "tee_hoodie": tax.TYPE_SET,
+        "hi_viz_polo": tax.TYPE_HV_POLO,
+        "hi_viz_tee": tax.TYPE_HV_TEE,
+        "hi_viz_trouser": tax.TYPE_HV_TROUSER,
+        "hi_viz_waistcoat": tax.TYPE_HV_VEST,
+        "hi_viz_jacket": tax.TYPE_HV_JACKET,
+        "hi_vis": tax.TYPE_HV_VEST,
+        "tabard": tax.TYPE_TABARD,
+        "tunic": tax.TYPE_TUNIC,
+        "scrub": tax.TYPE_SCRUB,
+        "jogger": tax.TYPE_JOGGER,
+        "shorts": tax.TYPE_SHORTS,
+        "rugby": tax.TYPE_RUGBY,
+        "gilet": tax.TYPE_GILET,
+        "cardigan": tax.TYPE_CARDIGAN,
+        "fleece": tax.TYPE_FLEECE,
+        "jacket": tax.TYPE_JACKET,
+        "woven": tax.TYPE_SHIRT,
+        "long_polo": tax.TYPE_LS_POLO,
+        "polo": tax.TYPE_SS_POLO,
+        "long_sleeve": tax.TYPE_LS_TEE,
+        "tank": tax.TYPE_TANK,
+        "vest": tax.TYPE_TANK,
+        "tee": tax.TYPE_SS_TEE,
+    }
+    if kind == "baby":
+        if "romper" in cf or tax.style_from_code(code) == "Baby Romper":
+            return tax.TYPE_ROMPER
+        if "body" in cf or tax.style_from_code(code) in {"Baby Body Suit", "Baby Bodysuit"}:
+            return tax.TYPE_BODY
+        return tax.TYPE_BABY_TEE
+    if kind == "hoodie":
+        if "full zip" in cf or "full-zip" in cf or "sweat jacket" in cf:
+            return tax.TYPE_ZIP_HOODIE
+        return tax.TYPE_HOODIE
+    if kind == "sweatshirt":
+        return tax.TYPE_SWEAT
+    if kind == "trouser":
+        if "cargo" in cf:
+            return tax.TYPE_CARGO
+        return tax.TYPE_TROUSER
+    if kind in by_kind:
+        return by_kind[kind]
+    if category == tax.CAT_TEE:
+        return tax.TYPE_SS_TEE
+    if category == tax.CAT_SWEAT:
+        return tax.TYPE_HOODIE
+    if category == tax.CAT_POLO:
+        return tax.TYPE_SS_POLO
+    return category
 
 
 def cl_standard(row: Mapping[str, Any]) -> AreebValues:
@@ -864,8 +855,8 @@ def cl_standard(row: Mapping[str, Any]) -> AreebValues:
         return AreebValues()
     exact = CL_STANDARD_RULES.get(ga) or CL_STANDARD_RULES_FOLD.get(ga.casefold())
     if exact:
-        return _values_from_tuple(exact)
-    return _classify_ga_pattern(ga)
+        return _snap_cl_areeb(_values_from_tuple(exact))
+    return _snap_cl_areeb(_classify_ga_pattern(ga))
 
 
 leftover_cl = cl_standard
@@ -1276,11 +1267,16 @@ def apply_blank_only(current: Mapping[str, Any], values: AreebValues) -> dict[st
 
 
 def apply_areeb(current: Mapping[str, Any], values: AreebValues) -> dict[str, str]:
-    """Blank-only for supplier joins. CL standard overwrites all four Areeb cells."""
+    """Blank-only for supplier joins. CL standard overwrites all four Areeb cells.
+
+    Hashim #038: an off-list warehouse style/type/category is written blank
+    (do not keep an invented cell).
+    """
     if values.source != SOURCE_CL_STANDARD:
         return apply_blank_only(current, values)
     out: dict[str, str] = {}
     for col, val in values.as_dict().items():
-        if val and cell(current.get(col)) != val:
-            out[col] = val
+        new = cell(val)
+        if cell(current.get(col)) != new:
+            out[col] = new
     return out

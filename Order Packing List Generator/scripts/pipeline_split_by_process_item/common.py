@@ -44,6 +44,28 @@ def _normalize_numeric_process_base(base: str) -> str | None:
     return None
 
 
+_BATCH_SHIFT_RE = re.compile(r"^(B\d+-S\d+)", re.IGNORECASE)
+
+
+def pin_batch_shift(stem: str) -> str:
+    """Visible process base from sorter/input stem: B100-S1-PRINTED-… → B100-S1.
+
+    Used for PIN, Step 6/7/8 file stems, and preflight Process Number.
+    Non-B#-S# stems (RESEND, UNMATCHED, numeric tracker ids) stay whole.
+    """
+    s = _normalize(stem)
+    m = _BATCH_SHIFT_RE.match(s)
+    return m.group(1) if m else s
+
+
+def format_batch_pin(base: str, process_number: int, item: int) -> str:
+    """Supervisor 2026-09-23: B100-S1-1 Item 1 (no Process prefix; Item with space)."""
+    short = pin_batch_shift(base)
+    if short:
+        return f"{short}-{process_number} Item {item}"
+    return f"{process_number} Item {item}"
+
+
 def is_pure_numeric_process_base(base: str) -> bool:
     """True when process base is digits only (tracker/fixed numeric processes)."""
     return _normalize_numeric_process_base(base) is not None

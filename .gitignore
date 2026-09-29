@@ -64,12 +64,17 @@ database/**
 !database/README.md
 !database/**/
 !database/**/README.md
+!database/order-grouping-sorter/taxonomy_picklists.csv
 
 # --- Demo Images Database (offline test placeholders) ---
 Demo Images Database/**
 !Demo Images Database/README.md
 !Demo Images Database/**/
 !Demo Images Database/**/*.png
+
+# --- Order Grouping Sorter live I/O (DB: database/order-grouping-sorter/) ---
+Order Grouping Sorter/Logs/**
+Order Grouping Sorter/Manually Made Files/**
 
 # --- Packing app live I/O (DB in database/order-packing-list-generator/) ---
 Order Packing List Generator/Input/**
@@ -110,3 +115,9 @@ runtime/**
 *.rar
 *.tmp
 ~$*
+
+# --- Local git hygiene (added on first PC link) ---
+**/.cursor/debug*.log
+Order Grouping Sorter/Today's Manually Made Files/**
+Order Grouping Sorter/scripts/_tmp_*/
+Database Transfer/backups/**

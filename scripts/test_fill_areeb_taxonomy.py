@@ -177,22 +177,28 @@ def main() -> None:
     )
     assert cl_ignore_btc.source == "cl_standard"
     assert cl_ignore_btc.department == "Mens"
-    assert cl_ignore_btc.product_style == "T-Shirt"
+    assert cl_ignore_btc.product_style == "Standard"
 
     cl_ignore_uneek = cat.classify_cl(
         {"Supplier SKU": "", "Custom Label": "UC104", "Gender Apparel": "Uneek Classic T-shirt"}
     )
     assert cl_ignore_uneek.source == "cl_standard"
-    assert cl_ignore_uneek.category == "T-SHIRTS"
+    assert cl_ignore_uneek.category == "T-Shirts"
     assert cl_ignore_uneek.product_style == "Classic"
     assert cl_ignore_uneek.department == "Mens"
 
     tee = leftover_cl({"Gender Apparel": "Mens-T-Shirt", "Brand": "Gildan"})
     assert tee.source == "cl_standard"
-    assert tee.category == "T-SHIRTS"
-    assert tee.product_type == "MENS SHORT SLEEVE T-SHIRT"
-    assert tee.product_style == "T-Shirt"
+    assert tee.category == "T-Shirts"
+    assert tee.product_type == "Short Sleeve T-Shirt"
+    assert tee.product_style == "Standard"
     assert tee.department == "Mens"
+
+    ladies_hoodie = leftover_cl({"Gender Apparel": "Womens-Hoodie"})
+    assert ladies_hoodie.category == "Sweatshirts & Hoodies"
+    assert ladies_hoodie.product_type == "Hoodie"
+    assert ladies_hoodie.product_style == "Standard"
+    assert ladies_hoodie.department == "Womens"
 
     gildan = leftover_cl({"Gender Apparel": "GILDAN Heavy Cotton Adult T-Shirt"})
     assert gildan.product_style == "Heavy Cotton"
@@ -201,7 +207,7 @@ def main() -> None:
     sticker = leftover_cl({"Gender Apparel": "Sticker", "Brand": "ignored"})
     assert sticker.category == "Stickers"
     assert sticker.product_type == "Sticker"
-    assert sticker.product_style == "Sticker"
+    assert sticker.product_style == "Standard"
     assert sticker.department == "General"
 
     iron = leftover_cl({"Gender Apparel": "DTF-IronOn-A4"})
@@ -212,7 +218,7 @@ def main() -> None:
 
     bag = leftover_cl({"Gender Apparel": "BG-BG125J"})
     assert bag.category == "Bags"
-    assert bag.product_style == "BG125J"
+    assert bag.product_style == "Junior Fashion Backpack"
     assert bag.department == "General"
 
     combo = leftover_cl({"Gender Apparel": "Kids-T-Shirt-Hoodie"})
@@ -223,17 +229,17 @@ def main() -> None:
     assert not unknown.any_filled()
 
     fotl = leftover_cl({"Gender Apparel": "FOTL Mens Valueweight T", "Brand": "ignored"})
-    assert fotl.category == "T-SHIRTS"
+    assert fotl.category == "T-Shirts"
     assert fotl.product_style == "Valueweight"
     assert fotl.department == "Mens"
 
     crew = leftover_cl({"Gender Apparel": "GILDAN Heavy Blend Adult Crewneck Sweatshirt"})
-    assert crew.category == "SWEATSHIRTS AND HOODIES"
+    assert crew.category == "Sweatshirts & Hoodies"
     assert crew.product_style == "Heavy Blend"
     assert crew.department == "Mens"
 
     hiviz = leftover_cl({"Gender Apparel": "Uneek Hi Viz Short Sleeve Polo Shirt"})
-    assert hiviz.category == "POLO SHIRTS"
+    assert hiviz.category == "Polo Shirts"
     assert hiviz.department == "Unisex"
 
     yoko = leftover_cl({"Gender Apparel": "Yoko Hi-Vis Class 2 Waistcoat"})
@@ -250,7 +256,7 @@ def main() -> None:
         }
     )
     assert cl_left.source == "cl_standard"
-    assert cl_left.product_style == "T-Shirt"
+    assert cl_left.product_style == "Standard"
     assert cl_left.department == "Mens"
 
     overwrite = apply_areeb(
@@ -263,7 +269,20 @@ def main() -> None:
         tee,
     )
     assert overwrite.get("Department (Areeb)") == "Mens"
-    assert overwrite.get("Product Style (Areeb)") == "T-Shirt"
+    assert overwrite.get("Product Style (Areeb)") == "Standard"
+
+    invented = leftover_cl({"Gender Apparel": "Mens UniqueWidget T-Shirt"})
+    assert invented.product_style == ""
+    cleared = apply_areeb(
+        {
+            "Category (Areeb)": "T-Shirts",
+            "Product Type (Areeb)": "Short Sleeve T-Shirt",
+            "Product Style (Areeb)": "UniqueWidget",
+            "Department (Areeb)": "Mens",
+        },
+        invented,
+    )
+    assert cleared.get("Product Style (Areeb)") == ""
 
     blank_only = apply_blank_only(
         {"Category (Areeb)": "", "Product Type (Areeb)": "keep"},

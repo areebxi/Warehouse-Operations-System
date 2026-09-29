@@ -16,9 +16,6 @@ DEFAULT_OUTPUT_DIR = wh.packing_output_dir()
 DEFAULT_WORKBOOK = wh.packing_workbook_path()
 BLANK_FILENAME = "_blank"
 
-PROCESS_TRACKER_SHEET = "Process Number Tracker"
-TRACKER_SEQUENCE_START = 10000
-
 # Windows-invalid filename characters
 INVALID_FILENAME_CHARS = re.compile(r'[<>:"/\\|?*]')
 

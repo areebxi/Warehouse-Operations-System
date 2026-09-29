@@ -54,6 +54,10 @@ def _extended_process_and_item_number(val) -> str:
     m = re.search(r"\(([^)]+)\)", s)
     if m:
         return m.group(1).strip()
+    # New PIN: B100-S1-1 Item 1  →  B100-S1-1-1
+    batch_pin = re.match(r"^(.+?)\s+Item[-\s](\d+)$", s, re.IGNORECASE)
+    if batch_pin and not s.lower().startswith("process "):
+        return f"{batch_pin.group(1)}-{batch_pin.group(2)}"
     simple = re.match(r"^Process\s+(.+?)\s+Item-(\d+)$", s)
     if simple:
         return f"{simple.group(1)}-{simple.group(2)}"
@@ -73,12 +77,17 @@ def _process_number_for_excel(process_plus: str) -> str:
 
 
 def _process_plus_additional(extended: str) -> str:
+    """Filename + inside-file -N. Spaces in WAREHOUSE STOCK are part of the name.
+
+    Old tracker parenthetical was `{base}-{N} {item}` (space before item).
+    New PIN extends as `{filename}-{N}-{item}` (last hyphen is the item).
+    """
     s = _normalize(extended)
     if not s:
         return ""
-    if " " in s:
-        parts = s.rsplit(None, 1)
-        return parts[0] if parts else s
+    old = re.fullmatch(r"(.+-\d+)\s+(\d+)", s)
+    if old:
+        return old.group(1)
     idx = s.rfind("-")
     if idx <= 0:
         return s
@@ -99,9 +108,9 @@ def _item_number_from_extended(extended: str) -> str:
     s = _normalize(extended)
     if not s:
         return ""
-    if " " in s:
-        parts = s.rsplit(None, 1)
-        return parts[-1] if parts else ""
+    old = re.fullmatch(r".+-\d+\s+(\d+)", s)
+    if old:
+        return old.group(1)
     idx = s.rfind("-")
     if idx < 0:
         return ""

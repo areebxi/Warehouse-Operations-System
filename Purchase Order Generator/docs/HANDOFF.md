@@ -1,6 +1,6 @@
 # Purchase Order Generator — snapshot
 
-**Updated:** 25 August 2026 (CL app CSV)  
+**Updated:** 17 September 2026 (later: packing lists move to Packing)  
 **Handbook:** `AGENTS.md` · **Layout:** `FOLDER_LAYOUT.md`
 
 ## Continue here
@@ -12,5 +12,6 @@
 
 ## Watch
 
+- **Later (not built, 2026-09-17):** packing list PDFs (including slips this app prints) move to Order Packing List Generator. This app stays tag → stock / EDI.
 - Former local `data/Custom Label Database.csv` is under `data/archive/`.
 - FTP stock filename is configured in `config.py` only.

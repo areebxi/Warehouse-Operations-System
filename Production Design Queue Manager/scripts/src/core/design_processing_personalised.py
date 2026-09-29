@@ -12,7 +12,7 @@ from src.core.design_processing_helpers import (
 from src.core.image_utils import DEFAULT_DESIGN_PADDING
 from src.core.cl_print_sizes import get_cl_position_size_entries
 from src.core.size_code_extractor import PrintSizeOverrides
-from src.io.file_handlers import find_design_file_vba_logic
+from src.io.file_handlers import find_design_file_vba_logic, resolve_sku_position_hint
 
 
 def process_personalised_designs(
@@ -68,6 +68,16 @@ def process_personalised_designs(
         )
 
         if single_path:
+            filename_token = None
+            if is_duplicate_order and not position:
+                filename_token, hinted_pocket, hinted_sleeve = resolve_sku_position_hint(
+                    order_number,
+                    duplicate_index,
+                    item_sku,
+                    single_designs_folder,
+                )
+                if filename_token:
+                    is_pocket, is_sleeve = hinted_pocket, hinted_sleeve
             resized = load_and_resize_design(
                 single_path,
                 size_info,
@@ -79,14 +89,18 @@ def process_personalised_designs(
                 is_sleeve=is_sleeve,
                 item_sku=item_sku,
                 order_label=order_number,
+                filename_position_token=filename_token,
             )
             if resized:
                 resized_img, width_px, height_px, width_mm, height_mm, effective_size_info = resized
-                label = f"{order_number} (Single)"
-                if is_pocket:
+                if filename_token in ("S1", "S2"):
+                    label = f"{order_number} (Single-Sleeve-{filename_token})"
+                elif is_pocket:
                     label = f"{order_number} (Single-Pocket)"
                 elif is_sleeve:
                     label = f"{order_number} (Single-Sleeve)"
+                else:
+                    label = f"{order_number} (Single)"
                 if position:
                     label = f"{label}-{position}"
                 results.append(

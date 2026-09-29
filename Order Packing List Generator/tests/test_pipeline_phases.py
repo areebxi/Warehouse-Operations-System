@@ -91,7 +91,7 @@ class TestPipelinePhases(unittest.TestCase):
         def fake_write(_rows, path):
             Path(path).write_text("Order Number\n1\n", encoding="utf-8")
 
-        def fake_enrich(_path, _wb, log=None):
+        def fake_enrich(_path, _wb, log=None, **_kwargs):
             import pandas as pd
 
             return pd.DataFrame([{"Order Number": "1"}])
@@ -109,9 +109,16 @@ class TestPipelinePhases(unittest.TestCase):
             p = Path(output_root) / "5_assign_process_number_3500.csv"
             p.write_text("Order Number,Process and Item Number\n1,Process 3500 Item-1\n", encoding="utf-8")
 
+        call_order: list[str] = []
+
         def fake_split6(step5, output_root, wb, **kwargs):
+            call_order.append("split6")
             p = Path(output_root) / step6_name
             p.write_text("Order Number\n1\n", encoding="utf-8")
+
+        def fake_filter(csvs, **kw):
+            call_order.append("filter")
+            return (csvs, None, 0)
 
         def fake_excel(csv_path, output_root, dispatch_date, **kwargs):
             (Path(output_root) / f"{Path(csv_path).stem}.xlsx").write_bytes(b"PK")
@@ -134,7 +141,7 @@ class TestPipelinePhases(unittest.TestCase):
             side_effect=fake_split6,
         ), patch(
             "scripts.pipeline_runtime.runner.filter_step6_csvs_for_missing_logos",
-            side_effect=lambda csvs, **kw: (csvs, None, 0),
+            side_effect=fake_filter,
         ), patch(
             "scripts.pipeline_runtime.runner._update_all_orders_log"
         ), patch(
@@ -147,6 +154,7 @@ class TestPipelinePhases(unittest.TestCase):
             )
 
         mock_s8.assert_not_called()
+        self.assertEqual(call_order, ["filter", "split6"])
         self.assertTrue(output_root.is_dir())
         self.assertTrue((output_root / step6_name).is_file())
         self.assertIsNone(report)

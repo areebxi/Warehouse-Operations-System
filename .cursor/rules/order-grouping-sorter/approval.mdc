@@ -1,0 +1,13 @@
+---
+description: Sorter dry-run default; no Packing Input write without run
+alwaysApply: false
+globs: "Order Grouping Sorter/**"
+---
+
+# Approval
+
+Default command is a **dry-run**: live `awaiting_shipment` → counts + process names. It does **not** write Packing Input, catalogs, or Output.
+
+`--run` writes one CSV per process into Packing Input **only** when the supervisor already said **run**. Testing: **`1st Shift`** every `--run`. `RESEND` / `UNMATCHED` land there.
+
+Catalogs are read-only on a grouping run. Step 2 fill is a different job (supervisor **fill / run**).

@@ -221,6 +221,8 @@ Uses **Order Number** to find files in the **Single Designs Folder (Personalised
 | Single (regular) | Size Reference from Item SKU |
 | Single pocket (`-P.png`) | Kids (`-K-`): 65×80 mm; Men’s/Women’s (`-M-` / `-W-`): 80×100 mm |
 | Single sleeve (`-S.png`) | 100×100 mm |
+| Duplicate SKU PNG + `-P-` JPEG hint (1-SP only) | PNG queued at **80×100 mm** (including kids). JPEG is not queued. |
+| Duplicate SKU PNG + `-S-` / `-S1-` / `-S2-` JPEG hint | PNG queued at **100×100 mm**. JPEG is not queued. |
 | Double | Original image size; scaled down only if wider than canvas (padding preserved) |
 
 ### Folder of files
@@ -282,9 +284,13 @@ Supported size prefixes for fallback: XS, S, M, L, XL, 2XL, 3XL, 4XL, XXL, XXXL,
 | Pocket (checked first) | `{OrderNumber}-P.png` |
 | Sleeve (checked first) | `{OrderNumber}-S.png` |
 | Duplicate orders | `{OrderNumber}-{itemSku}.png` or `{OrderNumber}-{index}-{itemSku}.png` |
+| Duplicate pocket hint (not queued) | `{OrderNumber}-P-{itemSku}.jpg` / `.jpeg` (or with `{index}`) |
+| Duplicate sleeve hint (not queued) | `{OrderNumber}-S-{itemSku}` / `-S1-` / `-S2-` `.jpg` / `.jpeg` |
 | Multi-position | `{OrderNumber}-{Position}.png` |
 
 **Duplicate orders:** When the same order number appears on multiple rows, the app uses SKU-based filenames; `/` and `\` in SKUs are converted to `-`.
+
+**1-SP JPEG position hint:** On duplicate SKU files in the single folder only, a JPEG next to the matching main PNG is a position hint, not a second design. Only the PNG is queued. Token is a dedicated hyphen segment before the full SKU (`-P-`, `-S-`, `-S1-`, `-S2-`) — apparel size `S` inside the SKU is not a sleeve. Token order: P, then S, then S1, then S2; first hit wins. Hint applies only if that main PNG exists; JPEG-only does not invent a design (search continues to the double folder as today). `-P-` is always 80×100, including kids. Legacy `{OrderNumber}-P.png` / `-S.png` is unchanged.
 
 **Double designs:** Same naming rules; app searches **single folder first**, then **double folder**.
 

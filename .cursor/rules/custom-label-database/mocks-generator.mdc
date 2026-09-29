@@ -6,7 +6,7 @@ globs: "Custom Label Database/**"
 
 # Mocks generator
 
-`scripts/generate_from_mocks.py` + `support/Mocks Databse.csv` (filename spelling is real) + BTC Product Data:
+`scripts/generate_from_mocks.py` + `support/Mocks Database.csv` + BTC Product Data:
 
 - Custom Label = `{Pasting Mocks ID}-{UID}` (e.g. `M260-214332`)
 - Fill **only** seed columns; skip if any cannot be filled

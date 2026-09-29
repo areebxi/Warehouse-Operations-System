@@ -7,6 +7,7 @@ import pandas as pd
 from reportlab.lib.utils import ImageReader
 
 from scripts.pipeline_generate_packing_list_pdf.core_helpers import (
+    PROCESS_ITEM_RE as _PROCESS_ITEM_RE,
     get_field_value_impl,
     logo_design_tokens_impl,
     normalize_label_impl,
@@ -102,8 +103,6 @@ try:
 except Exception:
     Image = None  # type: ignore[assignment]
 
-
-_PROCESS_ITEM_RE = re.compile(r"^Process\s+(\S+)\s+Item-(\d+)")
 
 _safe_str = safe_str_impl
 _normalize_label = normalize_label_impl

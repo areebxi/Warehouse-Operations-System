@@ -61,21 +61,18 @@ def sheet_board(wb: Workbook) -> None:
     ws.row_dimensions[1].height = 26
     put(ws, 1, 1, "Order grouping  ·  " + date.today().isoformat(), bg=NAVY, fg=WHITE, bold=True, size=16, align=L)
     ws.merge_cells("A1:L1")
-    put(ws, 2, 1, "Green = locked     Yellow = off (v1)     Graph values = examples     1 logic ✓  2 catalog fill ✓  3 Order Grouping Sorter  4 dry-run (no Input write until run)", bg=BLUE, bold=True, align=L)
+    put(ws, 2, 1, "Green = locked     Yellow = off (v1)     Graph values = examples except Hashim #038 Areeb pick-lists (Title Case; type has no gender; style is a product name)     1 logic ✓  2 catalog fill ✓  3 sorter ✓  4 Input write 2026-09-11", bg=BLUE, bold=True, align=L)
     ws.merge_cells("A2:L2")
 
     # Process name
     put(ws, 4, 1, "Process name", bg=NAVY, fg=WHITE, bold=True, align=C)
     slots = [
-        ("today", GREEN, "or YYYY-MM-DD if future-fill"),
-        ("1st", GREEN, "2nd / 3rd — also the Input folder"),
-        ("plain", GREEN, "SKU plain/plainlg OR Plain Database/Packs match"),
-        ("own", GREEN, "or peeled channel e.g. fawad"),
-        ("x", YELLOW, "design groups off"),
-        ("prime", GREEN, "tag Amazon Prime Order"),
-        ("dtf", GREEN, "printed only; CL Printing Type"),
-        ("readymade", GREEN, "printed only; Customise"),
-        ("x", YELLOW, "custom type off"),
+        ("PLAIN/PRINTED", GREEN, "product-finish"),
+        ("1 / 2", GREEN, "prime / non-prime"),
+        ("WAREHOUSE STOCK", GREEN, "or SUPPLY ON DEMAND / IN HOUSE MANUFACTURE"),
+        ("P / R", GREEN, "personalised / ready made"),
+        ("S1", GREEN, "testing: every --run is 1st Shift; production later S2 / S3"),
+        ("1", GREEN, "priority — today first, then prime, then as made"),
     ]
     for i, (name, bg, meaning) in enumerate(slots):
         col = 2 + i
@@ -85,14 +82,14 @@ def sheet_board(wb: Workbook) -> None:
     ws.row_dimensions[5].height = 36
 
     put(ws, 6, 1, "plain name", bg=GREY, size=9, align=C)
-    put(ws, 6, 2, "Shift is the Input folder (1st Shift / 2nd Shift / 3rd Shift) and a filename slot (1st / 2nd / 3rd). Plain skips dtf / readymade / package-type (slots x). Adds supply-method and supplier when flags are 1. Packs vs Gildan = 30-chain (no pack colour). Amazon stays in own. MAS Clothing → fawad.", bg=GREEN, fg=GREEN_F, size=9, align=L)
+    put(ws, 6, 2, "Fixed batches: B40/B80/B100/B1050/B3700/…. Leftover: B1/B2/… (skip reserved). Filename keeps full 6 fields. Packing PIN uses B100-S1-1 Item 1 only. Shift folder stays 1st/2nd/3rd. Amazon stays in own. MAS Clothing → fawad (match only).", bg=GREEN, fg=GREEN_F, size=9, align=L)
     ws.merge_cells("B6:J6")
 
-    put(ws, 8, 1, "resend", bg=YELLOW, fg=YELLOW_F, bold=True, align=C)
-    put(ws, 8, 2, "filename is only:  resend     Exact tag 1014-ALL-RESEND only (not 1015 / 1016 / 1017). Wins even if ship-by is blank.", bg=YELLOW, align=L)
+    put(ws, 8, 1, "RESEND", bg=YELLOW, fg=YELLOW_F, bold=True, align=C)
+    put(ws, 8, 2, "filename is only:  RESEND     Exact tag 1014-ALL-RESEND only (not 1015 / 1016 / 1017). Wins even if ship-by is blank.", bg=YELLOW, align=L)
     ws.merge_cells("B8:J8")
-    put(ws, 9, 1, "unmatched", bg=ORANGE, fg=ORANGE_F, bold=True, align=C)
-    put(ws, 9, 2, "filename is only:  unmatched     No definite match. Floor handles this run; then investigate and tighten so the next run matches. Same order stays together.", bg=ORANGE, align=L)
+    put(ws, 9, 1, "UNMATCHED", bg=ORANGE, fg=ORANGE_F, bold=True, align=C)
+    put(ws, 9, 2, "filename is only:  UNMATCHED     No definite match. Floor handles this run; then investigate and tighten so the next run matches. Same order stays together.", bg=ORANGE, align=L)
     ws.merge_cells("B9:J9")
 
     put(ws, 11, 1, "This shift", bg=NAVY, fg=WHITE, bold=True, align=C)
@@ -100,8 +97,8 @@ def sheet_board(wb: Workbook) -> None:
     intake = [
         "1. ShipStation\nawaiting_shipment only",
         "2. Skip\npost-order-designs",
-        "3. Resend tag?\n→ file “resend”",
-        "4. Blank ship-by\n→ unmatched",
+        "3. Resend tag?\n→ file “RESEND”",
+        "4. Blank ship-by\n→ today",
         "5. Today/overdue first\nthen future to fill cap",
         "6. Folders 1st/2nd/3rd\n300/100/100 LINES",
     ]
@@ -118,17 +115,17 @@ def sheet_board(wb: Workbook) -> None:
     for i, h in enumerate(headers):
         put(ws, 16, 1 + i, h, bg=NAVY, fg=WHITE, bold=True, align=C)
     splits = [
-        ("shift", "on", "on", "Filename slot 1st / 2nd / 3rd after today or YYYY-MM-DD. Also the Input folder (1st Shift = 300 lines, 2nd = 100, 3rd = 100)", "on"),
-        ("plain / printed", "on", "on", "Finish gate: SKU plain/plainlg → plain; else CL hit (after 1st dash) → printed; else Plain Database till-last-dash or Packs whole → plain; else unmatched", "on"),
-        ("store / channel", "on", "on", "MAS Clothing → process name fawad; more later; Amazon stays in own", "on"),
+        ("shift", "on", "on", "Testing: filename field 1 S1 (after optional B-batch prefix) and Input 1st Shift every --run. Hashim #037: order volume > 300 splits today vs later dates; do not dump into Shift 2/3. Blank ship-by → today (in awaiting_shipment → pull today; 2026-09-24). Production later: nth run = nth shift", "on"),
+        ("plain / printed", "on", "on", "Finish gate: SKU plain/plainlg → plain; else CL hit (after 1st dash, or whole SKU if no dash) → printed; else Plain Database till-last-dash or Packs whole → plain; else unmatched. Filename PLAIN or PRINTED", "on"),
+        ("store / channel", "on", "on", "MAS Clothing → fawad match (not a filename slot); Amazon stays in own", "on"),
         ("design group", "off", "off", "per scenario, Design ID lists", "off"),
         ("prime", "on", "on", "tag Amazon Prime Order (not CL Amazon Prime)", "on"),
         ("printing method", "off", "on", "CL Printing Type — DTF default; Sublimation = mugs", "on"),
-        ("ready-made / customised", "off", "on", "CL Customise", "on"),
+        ("ready-made / customised", "off", "on", "CL Customise. Mixed P vs R in one order: majority printed units; tie → readymade (not unmatched)", "on"),
         ("customisation type", "off", "off", "CL Customisation Type (column empty; v1 slot x)", "off"),
         ("print size", "off", "off", "CL Print Size 1", "off"),
         ("print position", "off", "off", "CL Print Positions", "off"),
-        ("supply method", "on", "on", "Warehouse Stock = FOTL men/women/kids t-shirts only. In House Manufacture = SKU/GA contains iron on / ironon / iron-on / sticker (printed). Supplier On Demand = Gildan tees + everything else. Plain never in-house.", "on"),
+        ("supply method", "on", "on", "CL Warehouse Stock = FOTL tees in locked colour lists (Mens/Womens/Kids) plus Kids C800T/C8030T body colours. Filled 2026-09-23 (63,399 warehouse). Plain/Packs Warehouse Stock = all FOTL tees. In House = iron-on/sticker (printed). Else Supplier On Demand. Plain never in-house. Mixed supply-method → Supplier On Demand.", "on"),
         ("supplier", "on", "stock off / on-demand on", "Supplier Name: BTC Activewear / Uneek Clothing / Absolute Apparels (babysuits C800T C8020T C8030T only)", "on"),
         ("package type", "off", "off", "packing PDF only (Large Letter / Parcel). Packs vs Gildan = 30-chain", "off"),
     ]
@@ -148,7 +145,7 @@ def sheet_board(wb: Workbook) -> None:
         put(ws, r, 3, row[2], bg=flag_bg(row[2]), align=C)
         put(ws, r, 4, row[3], align=L)
         put(ws, r, 5, row[4], bg=flag_bg(row[4]), bold=True, align=C)
-    put(ws, 30, 1, "Order Grouping Sorter (new app) writes Packing Input/{DD-MM-YYYY}/{1st|2nd|3rd} Shift/. Dry-run first: counts + process names, no Input write until run. Packs colour later.", bg=GREEN, fg=GREEN_F, align=L)
+    put(ws, 30, 1, "Fixed batches first (B10…B8050, row order = priority), then plain B2000/B2100/B2200/B2500/B2600/… and printed leftover B1/B2/… skipping reserved. Hashim #037: orders > 300 split today vs later. Testing: --run rewrites 1st Shift. Packing PIN: B100-S1-1 Item 1 (batch+shift only).", bg=GREEN, fg=GREEN_F, align=L)
     ws.merge_cells("A30:E30")
 
     # 30 chain
@@ -158,28 +155,28 @@ def sheet_board(wb: Workbook) -> None:
         ("Category (Areeb)", GREEN, "filled"),
         ("Product Type (Areeb)", GREEN, "filled"),
         ("Product Style (Areeb)", GREEN, "filled"),
-        ("Department (Areeb)", GREEN, "filled"),
-        ("Brand / Brand Name", GREEN, "have"),
-        ("Size / Pack Size", GREEN, "have"),
+        ("Department (Areeb)", GREEN, "30 both"),
+        ("Brand / Brand Name", GREEN, "30 both"),
+        ("Size / Pack Size", GREEN, "30 both"),
         ("Colour", GREEN, "have; packs later"),
     ]
     for i, (name, bg, note) in enumerate(chain):
         put(ws, 33, 1 + i, name, bg=bg, bold=True, align=C)
         put(ws, 34, 1 + i, note, bg=bg, size=9, align=C)
 
-    put(ws, 35, 1, "Plain: every step 30     Printed: department always on, brand off, size on, colour 30", bg=GREY, size=10, align=L)
+    put(ws, 35, 1, "Fixed-batch FOTL / iron-on families skip the 30-chain (already their own file). Leftover Graph 30-chain (plain AND printed): every step 30. Packs skip colour.", bg=GREY, size=10, align=L)
     ws.merge_cells("A35:I35")
 
     put(ws, 36, 1, "If a branch is not drawn all the way to colour, it still uses this chain (blank = save writing, not skip).", bg=YELLOW, fg=YELLOW_F, bold=True, align=L)
     ws.merge_cells("A36:I36")
-    put(ws, 37, 1, "Printed in-house (iron-on or sticker, made here) uses the same 30-chain tail as warehouse-stock. Plain cannot be in-house. Mixed plain+printed order → whole order printed.", bg=YELLOW, align=L)
+    put(ws, 37, 1, "Printed in-house (iron-on or sticker) uses the same 30-chain tail. Blank Brand/Colour on flag 30 stays in the parent (not unmatched). Plain cannot be in-house. Mixed plain+printed → whole order printed.", bg=YELLOW, align=L)
     ws.merge_cells("A37:I37")
 
-    put(ws, 39, 1, "On each packing line", bg=NAVY, fg=WHITE, bold=True, align=L)
+    put(ws, 39, 1, "On each packing line — batch, then process number, then item number", bg=NAVY, fg=WHITE, bold=True, align=L)
     ws.merge_cells("A39:J39")
-    put(ws, 40, 1, "Process today-1st-plain-own-…-1 Item 1     then     …-1 Item 2     then     …-2 Item 1", bg=GREEN, fg=GREEN_F, bold=True, align=C)
+    put(ws, 40, 1, "B80-S1-1 Item 1     then     B80-S1-1 Item 2     then     B80-S1-2 Item 1", bg=GREEN, fg=GREEN_F, bold=True, align=C)
     ws.merge_cells("A40:J40")
-    put(ws, 41, 1, "-1 / -2 = colour groups (3+ qty) first, then parts of 50 units. Item 1, 2 = lines. Same order keeps the same -N. Packs skip colour groups.", bg=GREY, align=L)
+    put(ws, 41, 1, "PIN uses batch+shift only (B80-S1), not the full filename. Process number = colour 3+ then 50 units. Item number = line. Same order keeps the same process number. Packs skip colour groups.", bg=GREY, align=L)
     ws.merge_cells("A41:J41")
 
     widths(ws, {**{chr(65 + i): 16 for i in range(12)}, "A": 26, "B": 18, "C": 28, "D": 42, "E": 22})
@@ -200,9 +197,9 @@ def sheet_catalog(wb: Workbook) -> None:
     ws = wb.create_sheet("Catalog")
     ws.page_setup.orientation = "landscape"
     ws.sheet_view.showGridLines = False
-    put(ws, 1, 1, "Step 2 — catalog fill done (2026-09-08/09). Sorter reads; it does not overwrite.", bg=NAVY, fg=WHITE, bold=True, size=16, align=L)
+    put(ws, 1, 1, "Step 2 — catalog fill done (2026-09-08/09). CL Areeb squeezed refill 2026-09-16. Sorter reads; it does not overwrite.", bg=NAVY, fg=WHITE, bold=True, size=16, align=L)
     ws.merge_cells("A1:D1")
-    put(ws, 2, 1, "30-chain = Areeb columns. Do not overwrite PE Department. Packs colour later. Backup before any future fill.", bg=YELLOW, fg=YELLOW_F, bold=True, align=L)
+    put(ws, 2, 1, "30-chain = Areeb columns. Do not overwrite PE Department. Packs colour later. Plain/Packs Areeb stay supplier copy. Backup before any future fill.", bg=YELLOW, fg=YELLOW_F, bold=True, align=L)
     ws.merge_cells("A2:D2")
     for i, h in enumerate(["Column", "Do this", "Used for", "v1"]):
         put(ws, 4, 1 + i, h, bg=NAVY, fg=WHITE, bold=True, align=C)
@@ -212,11 +209,11 @@ def sheet_catalog(wb: Workbook) -> None:
         ("Supply Method (all 3)", "FILLED — FOTL tees / iron-on+sticker / on-demand", "Warehouse Stock, In House Manufacture, Supplier On Demand", GREEN, "on"),
         ("Package Type / Package", "CL 34%; Plain 100%; display", "packing PDF; grouping off", YELLOW, "off"),
         ("Supplier Name", "FILLED — BTC Activewear / Uneek Clothing / Absolute babysuits", "supplier split when flag 1", GREEN, "on"),
-        ("Category (Areeb)", "FILLED on all 3", "≥30 new file", GREEN, "on"),
-        ("Product Type (Areeb)", "FILLED on all 3", "≥30 new file", GREEN, "on"),
-        ("Product Style (Areeb)", "FILLED on all 3", "≥30 new file", GREEN, "on"),
-        ("Department (Areeb)", "FILLED; CL = gender only", "plain 30 / printed 1", GREEN, "on"),
-        ("Brand, Size, Colour", "have (Packs: Brand Name + Pack Size; colour later)", "30+ files; colour 3+ qty → -N (not packs)", GREEN, "on"),
+        ("Category (Areeb)", "FILLED; pick-list #038 Title Case", "≥30 new file", GREEN, "on"),
+        ("Product Type (Areeb)", "FILLED; pick-list #038 no gender", "≥30 new file", GREEN, "on"),
+        ("Product Style (Areeb)", "FILLED; named product not code", "≥30 new file", GREEN, "on"),
+        ("Department (Areeb)", "FILLED; CL = gender only (on list)", "plain 30 / printed 1", GREEN, "on"),
+        ("Brand, Size, Colour", "have (Packs: Brand Name + Pack Size; colour later)", "30+ files; colour 3+ qty → -N (not packs). Same 30 on printed.", GREEN, "on"),
         ("Print Size 1", "leave; fill later", "print size split (v2)", YELLOW, "off"),
         ("Print Positions", "have; split later", "print position split (v2)", YELLOW, "off"),
         ("Amazon Prime (CL)", "leave — not grouping", "PO / inventory only", YELLOW, "not grouping"),
@@ -230,7 +227,7 @@ def sheet_catalog(wb: Workbook) -> None:
         put(ws, r, 3, used)
         put(ws, r, 4, v1, bg=bg, bold=True, align=C)
         ws.row_dimensions[r].height = 22
-    put(ws, 22, 1, "Step 3: Order Grouping Sorter. SKU keys: CL after 1st dash | Plain till last dash | Packs whole. Attrs: Packs→CL→Plain. Packs colour later.", bg=GREEN, fg=GREEN_F, align=L)
+    put(ws, 22, 1, "Step 3: Order Grouping Sorter. SKU keys: CL after 1st dash (no dash → whole) | Plain till last dash | Packs whole. Attrs: Packs→CL→Plain. Packs colour later. Mixed supply → on-demand.", bg=GREEN, fg=GREEN_F, align=L)
     ws.merge_cells("A22:D22")
     widths(ws, {"A": 24, "B": 32, "C": 40, "D": 16})
 

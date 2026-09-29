@@ -17,7 +17,7 @@ Code: `shared/printing_type.py`. One-off: `python scripts/fill_printing_type.py`
 
 Decision order:
 
-1. Custom Label leading `M##` → `Mocks Databse.csv` `Printing-Type` when that cell is `DTF` or `Sublimation`
+1. Custom Label leading `M##` → `Mocks Database.csv` `Printing-Type` when that cell is `DTF` or `Sublimation`
 2. Else mug: `Category (Areeb)` = `Mugs` **or** Gender Apparel starts with `Mug` → `Sublimation`
 3. Else → `DTF`
 

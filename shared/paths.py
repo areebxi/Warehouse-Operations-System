@@ -20,6 +20,7 @@ DB_SLUG_PACKING = "order-packing-list-generator"
 DB_SLUG_QUEUE = "production-design-queue-manager"
 DB_SLUG_PO = "purchase-order-generator"
 DB_SLUG_SHIPPING = "shipping-label-generator"
+DB_SLUG_SORTER = "order-grouping-sorter"
 
 
 def warehouse_root_from(path: object | None = None) -> Path:
@@ -113,7 +114,7 @@ def absolute_product_data_path(from_path: object | None = None) -> Path:
 
 
 def shipstation_tags_path(from_path: object | None = None) -> Path:
-    return database_shared_dir(from_path) / "shipstation" / "ShipStation_Tags.xlsx"
+    return database_shared_dir(from_path) / "shipstation_tags" / "ShipStation_Tags.xlsx"
 
 
 def plain_database_path(from_path: object | None = None) -> Path:
@@ -145,6 +146,28 @@ def custom_label_support_dir(from_path: object | None = None) -> Path:
 def custom_label_database_dir(from_path: object | None = None) -> Path:
     """CL app-owned helpers (support/, Apparel Images/)."""
     return database_app_dir(DB_SLUG_CL, from_path)
+
+
+def size_references_csv_path(from_path: object | None = None) -> Path:
+    return custom_label_support_dir(from_path) / "Size References.csv"
+
+
+def mocks_database_csv_path(from_path: object | None = None) -> Path:
+    """CL support Mocks Database (print positions / printing type by Pasting Mocks ID)."""
+    return custom_label_support_dir(from_path) / "Mocks Database.csv"
+
+
+def database_transfer_dir(from_path: object | None = None) -> Path:
+    """Supervisor upload mirrors of CL Database + Size References (not live)."""
+    return warehouse_root_from(from_path) / "Database Transfer"
+
+
+def database_transfer_workbook_path(from_path: object | None = None) -> Path:
+    return database_transfer_dir(from_path) / "Workbook.xlsx"
+
+
+def database_transfer_config_workbook_path(from_path: object | None = None) -> Path:
+    return database_transfer_dir(from_path) / "Configuration Workbook.xlsx"
 
 
 # --- Packing (Order Packing List Generator) ---
@@ -205,6 +228,60 @@ def packing_config_dir(from_path: object | None = None) -> Path:
 
 def packing_gui_config_path(from_path: object | None = None) -> Path:
     return packing_config_dir(from_path) / "gui_config.json"
+
+
+# --- Order Grouping Sorter ---
+
+
+def sorter_app_dir(from_path: object | None = None) -> Path:
+    return warehouse_root_from(from_path) / "Order Grouping Sorter"
+
+
+def sorter_data_dir(from_path: object | None = None) -> Path:
+    return database_app_dir(DB_SLUG_SORTER, from_path)
+
+
+def sorter_taxonomy_picklists_path(from_path: object | None = None) -> Path:
+    """Closed category / subcategory / product type / product style lists (Hashim #038)."""
+    return sorter_data_dir(from_path) / "taxonomy_picklists.csv"
+
+
+def sorter_fixed_batches_path(from_path: object | None = None) -> Path:
+    """Fixed batch codes + match criteria (B80 / B100 / …). Source for sorter naming."""
+    return sorter_data_dir(from_path) / "fixed_batches.csv"
+
+
+def sorter_leftover_batches_dir(from_path: object | None = None) -> Path:
+    """Per-date leftover B1/B2… criteria CSVs (same columns as fixed_batches.csv)."""
+    return sorter_data_dir(from_path) / "leftover_batches"
+
+
+def sorter_leftover_batches_path(
+    run_date: object,
+    *,
+    from_path: object | None = None,
+) -> Path:
+    """One leftover-batches CSV per run date: leftover_batches/{YYYY-MM-DD}.csv."""
+    if hasattr(run_date, "isoformat"):
+        stamp = run_date.isoformat()  # date / datetime
+    else:
+        stamp = str(run_date)
+    return sorter_leftover_batches_dir(from_path) / f"{stamp}.csv"
+
+
+def sorter_logs_dir(from_path: object | None = None) -> Path:
+    return sorter_app_dir(from_path) / "Logs"
+
+
+def sorter_input_csv_path(
+    date_dd_mm_yyyy: str,
+    shift_folder: str,
+    process_name: str,
+    *,
+    from_path: object | None = None,
+) -> Path:
+    """Packing Input/{DD-MM-YYYY}/{shift folder}/{process}.csv — write only after run."""
+    return packing_input_dir(from_path) / date_dd_mm_yyyy / shift_folder / f"{process_name}.csv"
 
 
 # --- Queue (Production Design Queue Manager) ---

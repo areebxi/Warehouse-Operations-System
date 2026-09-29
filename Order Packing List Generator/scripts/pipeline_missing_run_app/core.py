@@ -1,12 +1,15 @@
 from __future__ import annotations
 
-import re
 from pathlib import Path
 from typing import Callable, Optional
 
 import pandas as pd
 
-from scripts.pipeline_generate_packing_list_pdf.core_helpers import parse_process_and_item_impl, safe_str_impl
+from scripts.pipeline_generate_packing_list_pdf.core_helpers import (
+    PROCESS_ITEM_RE as _PROCESS_ITEM_RE,
+    parse_process_and_item_impl,
+    safe_str_impl,
+)
 from scripts.pipeline_runtime.pipeline_log import PipelineLog
 from scripts.pipeline_runtime.order_number_csv import read_csv_with_order_numbers
 from scripts.pipeline_runtime.runner import ALL_ORDERS_PATH, PROJECT_ROOT, _run_step6_style_outputs
@@ -16,8 +19,6 @@ _WAREHOUSE = PROJECT_ROOT.parent
 if str(_WAREHOUSE) not in sys.path:
     sys.path.insert(0, str(_WAREHOUSE))
 from shared import paths as wh  # noqa: E402
-
-_PROCESS_ITEM_RE = re.compile(r"^Process\s+(\S+)\s+Item-(\d+)")
 
 MISSING_DIR = wh.packing_missing_input_dir()
 DEFAULT_MISSING_INPUT = MISSING_DIR / "Missing Input.csv"

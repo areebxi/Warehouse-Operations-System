@@ -2,7 +2,13 @@ import pandas as pd
 
 from scripts.pipeline_runtime.order_number_csv import coerce_order_number_columns
 
-from .common import _normalize, _normalize_key, _normalize_numeric_process_base, _order_number_column
+from .common import (
+    _normalize,
+    _normalize_key,
+    _normalize_numeric_process_base,
+    _order_number_column,
+    format_batch_pin,
+)
 from .duplicate_order_suffixes import assign_order_number_suffixes_for_customise
 from .grouping_quantity import _get_qty
 
@@ -85,7 +91,7 @@ def _sort_and_assign_merge_first(
                 display_base = int(numeric_increment_base)
                 val = f"Process {display_base} Item-{item}"
             elif use_simple_process_format or (use_fixed_numeric_process and numeric_increment_base is None):
-                val = f"Process {base}-1 Item-{item}" if base else f"Process 1 Item-{item}"
+                val = format_batch_pin(base, 1, item)
             elif sequence_number is not None:
                 val = f"Process {sequence_number}1 Item-{item} ({ext_display})"
             else:
@@ -141,7 +147,7 @@ def _sort_and_assign_merge_first(
                 display_base = int(numeric_increment_base) + (additional - 1)
                 val = f"Process {display_base} Item-{item}"
             elif use_simple_process_format or (use_fixed_numeric_process and numeric_increment_base is None):
-                val = f"Process {base}-{additional} Item-{item}" if base else f"Process {additional} Item-{item}"
+                val = format_batch_pin(base, additional, item)
             elif sequence_number is not None:
                 val = f"Process {sequence_number}{additional} Item-{item} ({ext_display})"
             else:

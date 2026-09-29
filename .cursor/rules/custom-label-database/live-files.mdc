@@ -1,4 +1,4 @@
-﻿---
+---
 description: CL live paths under database/ + app scripts
 globs: "Custom Label Database/**"
 alwaysApply: false
@@ -17,7 +17,9 @@ CL app owns catalog **policy**; live files live under `database/`. Resolve via `
 | `database/shared/btc_product_data/BTC_Product_Data.csv` | BTC Product Data (UID join) |
 | `database/shared/uneek_product_data/Uneek_Product_Data.xlsx` | Uneek Product Data |
 | `database/shared/absolute_product_data/Absolute_Product_Data.xlsx` | Absolute Product Data (babysuits only) |
+| `Database Transfer/Workbook.xlsx` | Upload mirror of CL (sheet **CL Database**); sync on fill |
+| `Database Transfer/Configuration Workbook.xlsx` | Upload mirror of Size References; sync on fill |
 
-Useful scripts (app `scripts/`): `fill_from_seeds.py`, `generate_from_mocks.py`, `download_apparel_images.py`, `fill_cl_database.py` (legacy template expand).
+Useful scripts (app `scripts/`): `fill_from_seeds.py`, `generate_from_mocks.py`, `download_apparel_images.py`, `fill_cl_database.py` (legacy template expand), `sync_database_transfer.py` (after fill).
 
 Run Python from the Custom Label Database app folder. Prefer scripts over opening the full CSV in the editor.

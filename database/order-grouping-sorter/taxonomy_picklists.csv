@@ -1,0 +1,484 @@
+dimension,value,maps_to,source
+category,T-Shirts,,warehouse
+category,Polo Shirts,,warehouse
+category,Sweatshirts & Hoodies,,warehouse
+category,Shirts,,warehouse
+category,Jackets,,warehouse
+category,Fleeces,,warehouse
+category,Gilets,,warehouse
+category,Trousers,,warehouse
+category,Shorts,,warehouse
+category,Babywear,,warehouse
+category,Healthcare,,warehouse
+category,Hospitality,,warehouse
+category,Safetywear,,warehouse
+category,Headwear,,warehouse
+category,Bags,,warehouse
+category,Sets,,warehouse
+category,Stickers,,warehouse
+category,Iron-On,,warehouse
+category,Mugs,,warehouse
+category,Accessories,,warehouse
+category,Badges,Accessories,alias
+category,CAPS & HATS,Headwear,alias
+category,Cards,Accessories,alias
+category,Hospitallity,Hospitality,alias
+category,Joggers,Trousers,alias
+category,Masks,Accessories,alias
+category,OUTERWEAR,Jackets,alias
+category,Photo Acrylic,Accessories,alias
+category,Rugby Shirts,Shirts,alias
+category,Shirts & Blouses,Shirts,alias
+category,SWEATSHIRTS AND HOODIES,Sweatshirts & Hoodies,alias
+category,TROUSERS & JOGPANTS,Trousers,alias
+category,Tutus,Babywear,alias
+subcategory,Short Sleeve T-Shirt,,warehouse
+subcategory,Long Sleeve T-Shirt,,warehouse
+subcategory,Tank Top,,warehouse
+subcategory,Sweatshirts & Hoodies,,warehouse
+subcategory,Polo Shirts,,warehouse
+subcategory,Bags,,warehouse
+subcategory,Caps & Hats,,warehouse
+subcategory,Safety Headwear,,warehouse
+subcategory,Aprons & Tabards,,warehouse
+subcategory,Covers,,warehouse
+subcategory,Aprons And Tabards,Aprons & Tabards,alias
+subcategory,"Bags, Backpacks Etc",Bags,alias
+subcategory,Caps & Hats Etc,Caps & Hats,alias
+subcategory,Childrens Sweatshirts And Hoodies,Sweatshirts & Hoodies,alias
+subcategory,Childrens T-Shirt,Short Sleeve T-Shirt,alias
+subcategory,Ladies Short Sleeve T-Shirts,Short Sleeve T-Shirt,alias
+subcategory,"Ladies Vests, Camisoles, Etc.",Tank Top,alias
+subcategory,Mens Long Sleeve T-Shirts,Long Sleeve T-Shirt,alias
+subcategory,Mens Short Sleeve Polo Shirts,Polo Shirts,alias
+subcategory,Mens Short Sleeve T-Shirt,Short Sleeve T-Shirt,alias
+subcategory,Mens Sweatshirts & Hoodies,Sweatshirts & Hoodies,alias
+subcategory,"Mens Tank Tops, Vest Etc",Tank Top,alias
+subcategory,"Mens Tank Tops, Vests Etc",Tank Top,alias
+product_type,Short Sleeve T-Shirt,,warehouse
+product_type,Long Sleeve T-Shirt,,warehouse
+product_type,Tank Top,,warehouse
+product_type,Short Sleeve Polo,,warehouse
+product_type,Long Sleeve Polo,,warehouse
+product_type,Hoodie,,warehouse
+product_type,Zip Hoodie,,warehouse
+product_type,Sweatshirt,,warehouse
+product_type,Shirt,,warehouse
+product_type,Rugby Shirt,,warehouse
+product_type,Jacket,,warehouse
+product_type,Fleece,,warehouse
+product_type,Gilet,,warehouse
+product_type,Cardigan,,warehouse
+product_type,Trousers,,warehouse
+product_type,Cargo Trousers,,warehouse
+product_type,Joggers,,warehouse
+product_type,Shorts,,warehouse
+product_type,Body Suit,,warehouse
+product_type,Romper,,warehouse
+product_type,Baby T-Shirt,,warehouse
+product_type,Tutu,,warehouse
+product_type,Tunic,,warehouse
+product_type,Tabard,,warehouse
+product_type,Scrub,,warehouse
+product_type,Apron,,warehouse
+product_type,Hi-Vis T-Shirt,,warehouse
+product_type,Hi-Vis Polo,,warehouse
+product_type,Hi-Vis Trousers,,warehouse
+product_type,Hi-Vis Waistcoat,,warehouse
+product_type,Hi-Vis Jacket,,warehouse
+product_type,Safety Helmet,,warehouse
+product_type,Cap,,warehouse
+product_type,Beanie,,warehouse
+product_type,Backpack,,warehouse
+product_type,Tote,,warehouse
+product_type,Gymsac,,warehouse
+product_type,Book Bag,,warehouse
+product_type,Pencil Case,,warehouse
+product_type,Lunch Bag,,warehouse
+product_type,Drawstring Bag,,warehouse
+product_type,Barrel Bag,,warehouse
+product_type,Bag Accessory,,warehouse
+product_type,T-Shirt & Hoodie,,warehouse
+product_type,Sticker,,warehouse
+product_type,Iron-On Transfer,,warehouse
+product_type,Mug,,warehouse
+product_type,Badge,,warehouse
+product_type,Card,,warehouse
+product_type,Photo Acrylic,,warehouse
+product_type,Face Mask,,warehouse
+product_type,Baby Drawer Lock,,warehouse
+product_type,Athletic Vest,Tank Top,alias
+product_type,Baby And Toddlerwear,Body Suit,alias
+product_type,"Bags, Backpacks Etc",Backpack,alias
+product_type,Childrens Fleece,Fleece,alias
+product_type,Childrens Fleeces,Fleece,alias
+product_type,Childrens Jacket,Jacket,alias
+product_type,Childrens jackets,Jacket,alias
+product_type,Childrens Long Sleeve T-Shirt,Long Sleeve T-Shirt,alias
+product_type,Childrens Polo Shirt,Short Sleeve Polo,alias
+product_type,Childrens Polo Shirts,Short Sleeve Polo,alias
+product_type,Childrens Sweatshirts And Hoodies,Hoodie,alias
+product_type,Childrens T-Shirt,Short Sleeve T-Shirt,alias
+product_type,Childrens Trousers,Trousers,alias
+product_type,Childrens Vest,Tank Top,alias
+product_type,Childrens Woven Shirt,Shirt,alias
+product_type,Hi-Vis Trouser,Hi-Vis Trousers,alias
+product_type,Hi-Viz Polo Shirt,Hi-Vis Polo,alias
+product_type,Hi-Viz T-Shirt,Hi-Vis T-Shirt,alias
+product_type,Hi-Viz Trouser,Hi-Vis Trousers,alias
+product_type,Jog Bottoms,Joggers,alias
+product_type,Ladies Fleece,Fleece,alias
+product_type,Ladies Jacket,Jacket,alias
+product_type,Ladies Long Sleeve Polo Shirt,Long Sleeve Polo,alias
+product_type,Ladies Long Sleeve Polo Shirts,Long Sleeve Polo,alias
+product_type,Ladies Long Sleeve T-Shirt,Long Sleeve T-Shirt,alias
+product_type,LADIES LONG SLEEVE T-SHIRTS,Long Sleeve T-Shirt,alias
+product_type,Ladies Short Sleeve Polo Shirts,Short Sleeve Polo,alias
+product_type,Ladies Short Sleeve T-Shirts,Short Sleeve T-Shirt,alias
+product_type,Ladies Sweatshirts And Hoodies,Hoodie,alias
+product_type,Ladies Trousers,Trousers,alias
+product_type,Ladies Trousers And Jog Pants,Trousers,alias
+product_type,Ladies Tunic,Tunic,alias
+product_type,"Ladies Vests, Camisoles, Etc.",Tank Top,alias
+product_type,Ladies Woven Shirt,Shirt,alias
+product_type,Mens Fleece,Fleece,alias
+product_type,Mens Jacket,Jacket,alias
+product_type,Mens Long Sleeve Polo Shirt,Long Sleeve Polo,alias
+product_type,Mens Long Sleeve Polo Shirts,Long Sleeve Polo,alias
+product_type,Mens Long Sleeve T-Shirt,Long Sleeve T-Shirt,alias
+product_type,MENS LONG SLEEVE T-SHIRTS,Long Sleeve T-Shirt,alias
+product_type,MENS OUTER JACKETS,Jacket,alias
+product_type,MENS SHORT SLEEVE POLO SHIRTS,Short Sleeve Polo,alias
+product_type,MENS SHORT SLEEVE T-SHIRT,Short Sleeve T-Shirt,alias
+product_type,Mens Sweatshirts & Hoodies,Hoodie,alias
+product_type,"Mens Tank Tops, Vest Etc",Tank Top,alias
+product_type,"Mens Tank Tops, Vests Etc",Tank Top,alias
+product_type,Mens Trousers,Trousers,alias
+product_type,Mens Trousers And Jogpants,Trousers,alias
+product_type,Mens Tunic,Tunic,alias
+product_type,Mens Woven Shirt,Shirt,alias
+product_type,T-Shirt and Hoodie,T-Shirt & Hoodie,alias
+product_type,Unisex Polo,Short Sleeve Polo,alias
+product_type,Unisex Polo Shirt,Short Sleeve Polo,alias
+product_type,Unisex Sweats And Hoodies,Hoodie,alias
+product_type,Unisex Sweatshirts & Hoodies,Hoodie,alias
+product_type,Unisex T-Shirt,Short Sleeve T-Shirt,alias
+product_style,Standard,,warehouse
+product_style,Valueweight,,warehouse
+product_style,Valueweight Baseball,,warehouse
+product_style,Iconic 150,,warehouse
+product_style,Original,,warehouse
+product_style,Heavy Cotton,,warehouse
+product_style,Softstyle,,warehouse
+product_style,Ultra Cotton,,warehouse
+product_style,Heavy Blend,,warehouse
+product_style,Softstyle Midweight Fleece,,warehouse
+product_style,Classic,,warehouse
+product_style,Deluxe,,warehouse
+product_style,Premium,,warehouse
+product_style,The UX,,warehouse
+product_style,Eco,,warehouse
+product_style,Contrast,,warehouse
+product_style,Olympic,,warehouse
+product_style,Active,,warehouse
+product_style,Heavyweight,,warehouse
+product_style,Ultra Cool,,warehouse
+product_style,Super Cool Workwear,,warehouse
+product_style,Super Pro,,warehouse
+product_style,Cotton Rich,,warehouse
+product_style,Ultimate Cotton,,warehouse
+product_style,Polycotton Workwear,,warehouse
+product_style,Eco Workwear,,warehouse
+product_style,Processable,,warehouse
+product_style,Jersey,,warehouse
+product_style,Sports,,warehouse
+product_style,Two Tone,,warehouse
+product_style,Action,,warehouse
+product_style,Workwear,,warehouse
+product_style,Cargo,,warehouse
+product_style,Cargo Knee Pad,,warehouse
+product_style,Lightweight,,warehouse
+product_style,Premium Reversible,,warehouse
+product_style,Reversible,,warehouse
+product_style,Premium V-Neck,,warehouse
+product_style,Classic V-Neck,,warehouse
+product_style,V-Neck,,warehouse
+product_style,Ringer,,warehouse
+product_style,Acid Wash Vintage Rust,,warehouse
+product_style,Acid Wash Optic Wash,,warehouse
+product_style,High Visibility,,warehouse
+product_style,Class 2,,warehouse
+product_style,Sleeveless Safety,,warehouse
+product_style,Executive Vest,,warehouse
+product_style,Hi-Vis Baseball,,warehouse
+product_style,College,,warehouse
+product_style,Contrast Cool,,warehouse
+product_style,Ringspun Blended,,warehouse
+product_style,Everyday Polo,,warehouse
+product_style,Softstyle Double Pique,,warehouse
+product_style,Premium Cotton Polo,,warehouse
+product_style,Toddler Jersey,,warehouse
+product_style,Kids Tie Dye,,warehouse
+product_style,Baby Body Suit,,warehouse
+product_style,Baby Romper,,warehouse
+product_style,Baby T-Shirt,,warehouse
+product_style,Baby Bodysuit,,warehouse
+product_style,Poplin,,warehouse
+product_style,Pinpoint Oxford,,warehouse
+product_style,Quarter Zip,,warehouse
+product_style,Printable Softshell,,warehouse
+product_style,Microfleece,,warehouse
+product_style,Padded,,warehouse
+product_style,Outdoor,,warehouse
+product_style,Road Safety,,warehouse
+product_style,Original Patch,,warehouse
+product_style,Snowstar Patch,,warehouse
+product_style,Circular Patch,,warehouse
+product_style,Rectangular Patch,,warehouse
+product_style,Pom Pom,,warehouse
+product_style,Heavyweight Cuffed,,warehouse
+product_style,6-Panel Low Profile,,warehouse
+product_style,Classic 5-Panel,,warehouse
+product_style,Heavyweight 5-Panel,,warehouse
+product_style,Original 5-Panel Snapback,,warehouse
+product_style,Snapback Trucker,,warehouse
+product_style,5-Panel Contrast Snapback,,warehouse
+product_style,Patch Snapback Trucker,,warehouse
+product_style,Junior Original 5-Panel Cap,,warehouse
+product_style,Junior Cotton Cap,,warehouse
+product_style,Houston 5-Panel Printers Cap,,warehouse
+product_style,Fairtrade Cotton Junior,,warehouse
+product_style,Bib With Pocket,,warehouse
+product_style,Bib Apron,,warehouse
+product_style,Cotton Adult Apron,,warehouse
+product_style,Kids Set,,warehouse
+product_style,A3,,warehouse
+product_style,A4,,warehouse
+product_style,A5,,warehouse
+product_style,A6,,warehouse
+product_style,Circle,,warehouse
+product_style,25 mm,,warehouse
+product_style,Ceramic Mug,,warehouse
+product_style,Kids T-Shirt,,warehouse
+product_style,China Bag,,warehouse
+product_style,Cotton Shopper,,warehouse
+product_style,Eco Recycled Cotton Tote,,warehouse
+product_style,Junior Fashion Backpack,,warehouse
+product_style,Original Fashion Backpack,,warehouse
+product_style,Maxi Fashion Backpack,,warehouse
+product_style,Mini Fashion Backpack,,warehouse
+product_style,Mini Essential Fashion Backpack,,warehouse
+product_style,Premium Gymsac,,warehouse
+product_style,Budget Gymsac,,warehouse
+product_style,Athleisure Gymsac,,warehouse
+product_style,Cotton Gymsac,,warehouse
+product_style,Retro Shoulder Bag,,warehouse
+product_style,Mini Barrel Bag,,warehouse
+product_style,Packaway Barrel Bag,,warehouse
+product_style,Junior Dance Bag,,warehouse
+product_style,Grab Pouch,,warehouse
+product_style,Ripper Wallet,,warehouse
+product_style,Belt Bag,,warehouse
+product_style,Felt Trug,,warehouse
+product_style,Boutique Circular Key Clip,,warehouse
+product_style,Boutique Accessory Pouch,,warehouse
+product_style,Boutique Wristlet Keyring,,warehouse
+product_style,Lunch Cooler,,warehouse
+product_style,Water Bottle Holder,,warehouse
+product_style,Pencil Case,,warehouse
+product_style,Enhanced-Viz Book Bag,,warehouse
+product_style,Classic Book Bag,,warehouse
+product_style,Junior Book Bag,,warehouse
+product_style,Junior Book Bag With Strap,,warehouse
+product_style,Teamwear Shoe Bag,,warehouse
+product_style,Hiking Boot Bag,,warehouse
+product_style,Boot Bag,,warehouse
+product_style,Sandwich Lunchbox,,warehouse
+product_style,Guildford Cotton Tote,,warehouse
+product_style,Stafford Contrast Drawstring,,warehouse
+product_style,Cotton Tote,,warehouse
+product_style,Bag For Life,,warehouse
+product_style,Bag For Life Short Handles,,warehouse
+product_style,Cotton Stuff Bag,,warehouse
+product_style,Cotton Ribbon Cord Bag,,warehouse
+product_style,Premium Cotton Tote,,warehouse
+product_style,Organic Premium Maxi Tote,,warehouse
+product_style,Cotton Cushion Cover,,warehouse
+product_style,Jute Classic Shopper,,warehouse
+product_style,Jute Stuff Bag,,warehouse
+product_style,Printers Jute Shopper,,warehouse
+product_style,Pocket Jute Gift Bag,,warehouse
+product_style,Pocket Jute Midi Tote,,warehouse
+product_style,Cotton Pocket Jute Shopper,,warehouse
+product_style,Jute Base Canvas Shopper,,warehouse
+product_style,Jute Base Canvas Tote,,warehouse
+product_style,Jute Base Canvas Tote XL,,warehouse
+product_style,Canvas Accessory Case,,warehouse
+product_style,Canvas Accessory Bag,,warehouse
+product_style,Gallery Canvas Tote,,warehouse
+product_style,Fairtrade Cotton Bottle Bag,,warehouse
+product_style,Nautical Beach Bag,,warehouse
+product_style,Oversized Canvas Tote,,warehouse
+product_style,Organic Spring Purse,,warehouse
+product_style,Organic Accessory Pouch,,warehouse
+product_style,EarthAware Contrast Shopper,,warehouse
+product_style,2400,Ultra Cotton,alias
+product_style,25mm,25 mm,alias
+product_style,5000,Heavy Cotton,alias
+product_style,6 Panel Low Profile,6-Panel Low Profile,alias
+product_style,61026,Valueweight Baseball,alias
+product_style,61033,Valueweight,alias
+product_style,61168,Ringer,alias
+product_style,64200,Softstyle,alias
+product_style,64200L,Softstyle,alias
+product_style,64800,Softstyle Double Pique,alias
+product_style,6M014V,Standard,alias
+product_style,85800L,Premium Cotton Polo,alias
+product_style,AA77,Bib Apron,alias
+product_style,Apron,Bib Apron,alias
+product_style,B10B,Junior Original 5-Panel Cap,alias
+product_style,B445,Original Patch,alias
+product_style,B610C,5-Panel Contrast Snapback,alias
+product_style,B641,Patch Snapback Trucker,alias
+product_style,Baby Drawer Lock,Standard,alias
+product_style,Babywear,Baby T-Shirt,alias
+product_style,Badge,Standard,alias
+product_style,Bag,Standard,alias
+product_style,Baseball,Hi-Vis Baseball,alias
+product_style,Beanie,Standard,alias
+product_style,BG10,Premium Gymsac,alias
+product_style,BG125,Original Fashion Backpack,alias
+product_style,BG125J,Junior Fashion Backpack,alias
+product_style,BG125L,Maxi Fashion Backpack,alias
+product_style,BG125S,Mini Fashion Backpack,alias
+product_style,BG14,Retro Shoulder Bag,alias
+product_style,BG140S,Mini Barrel Bag,alias
+product_style,BG145,Junior Dance Bag,alias
+product_style,BG150,Packaway Barrel Bag,alias
+product_style,BG153,Mini Essential Fashion Backpack,alias
+product_style,BG38,Grab Pouch,alias
+product_style,BG40,Ripper Wallet,alias
+product_style,BG42,Belt Bag,alias
+product_style,BG5,Budget Gymsac,alias
+product_style,BG542,Athleisure Gymsac,alias
+product_style,BG728,Felt Trug,alias
+product_style,BG745,Boutique Circular Key Clip,alias
+product_style,BG750,Boutique Accessory Pouch,alias
+product_style,BZ02,Baby T-Shirt,alias
+product_style,BZ10,Baby Bodysuit,alias
+product_style,C2200,Ringspun Blended,alias
+product_style,C2400,Ringspun Blended,alias
+product_style,C800T,Baby Body Suit,alias
+product_style,C8030T,Baby Romper,alias
+product_style,CA3001T,Toddler Jersey,alias
+product_style,Cap,Standard,alias
+product_style,Card,A5,alias
+product_style,Cardigan,Standard,alias
+product_style,China-Bag,China Bag,alias
+product_style,Classic 5,Classic 5-Panel,alias
+product_style,Eco 100 Recycled Cotton,Eco Recycled Cotton Tote,alias
+product_style,Face Mask,Standard,alias
+product_style,Fleece,Standard,alias
+product_style,G5000,Heavy Cotton,alias
+product_style,Gilet,Standard,alias
+product_style,Heavweight Cuffed,Heavyweight Cuffed,alias
+product_style,Heavy,Heavy Cotton,alias
+product_style,Heavyweight 5,Heavyweight 5-Panel,alias
+product_style,Helmet,Hi-Vis Baseball,alias
+product_style,Hi-Vis,Class 2,alias
+product_style,Hi-Viz Jacket,High Visibility,alias
+product_style,Hi-Viz Polo,High Visibility,alias
+product_style,Hi-Viz T-Shirt,High Visibility,alias
+product_style,Hi-Viz Trouser,High Visibility,alias
+product_style,Hi-Viz Waistcoat,High Visibility,alias
+product_style,Hoodie,Standard,alias
+product_style,HVW801,Executive Vest,alias
+product_style,Iron-On,Standard,alias
+product_style,Jacket,Standard,alias
+product_style,JC003,Contrast Cool,alias
+product_style,JC03J,Contrast Cool,alias
+product_style,JH001,College,alias
+product_style,JH01J,College,alias
+product_style,Joggers,Standard,alias
+product_style,Junior Fashion,Junior Fashion Backpack,alias
+product_style,K-T,Kids T-Shirt,alias
+product_style,Long,Cargo,alias
+product_style,Long Sleeve,Standard,alias
+product_style,Long Sleeve Polo,Standard,alias
+product_style,M61,Ceramic Mug,alias
+product_style,Mug,Standard,alias
+product_style,Original 5,Original 5-Panel Snapback,alias
+product_style,Photo Acrylic,Standard,alias
+product_style,Polo,Standard,alias
+product_style,QD435,Lunch Cooler,alias
+product_style,QD440,Water Bottle Holder,alias
+product_style,QD442,Pencil Case,alias
+product_style,QD452,Enhanced-Viz Book Bag,alias
+product_style,QD456,Classic Book Bag,alias
+product_style,QD457,Junior Book Bag With Strap,alias
+product_style,QD51,Junior Book Bag,alias
+product_style,QD76,Teamwear Shoe Bag,alias
+product_style,QD85,Hiking Boot Bag,alias
+product_style,QD86,Boot Bag,alias
+product_style,RC05J,Junior Cotton Cap,alias
+product_style,RC80X,Houston 5-Panel Printers Cap,alias
+product_style,Regular,Cargo,alias
+product_style,Rugby Shirt,Classic,alias
+product_style,Safety,High Visibility,alias
+product_style,Scrub,Standard,alias
+product_style,SF500B,Softstyle Midweight Fleece,alias
+product_style,SH1808,Sandwich Lunchbox,alias
+product_style,SH4112,Guildford Cotton Tote,alias
+product_style,SH5891,Stafford Contrast Drawstring,alias
+product_style,Shirt,Standard,alias
+product_style,Short,Cargo,alias
+product_style,Shorts,Standard,alias
+product_style,Softstyle Tank,Softstyle,alias
+product_style,Sticker,Standard,alias
+product_style,Sweatshirt,Standard,alias
+product_style,T-Shirt,Standard,alias
+product_style,Tabard,Premium,alias
+product_style,Tank,Softstyle,alias
+product_style,TD02B,Kids Tie Dye,alias
+product_style,TPC001,Cotton Tote,alias
+product_style,Trouser,Standard,alias
+product_style,Tunic,Standard,alias
+product_style,Tutu,Standard,alias
+product_style,UCC003,Everyday Polo,alias
+product_style,Vest,Standard,alias
+product_style,W101,Bag For Life,alias
+product_style,W101S,Bag For Life Short Handles,alias
+product_style,W110,Cotton Gymsac,alias
+product_style,W115,Cotton Stuff Bag,alias
+product_style,W121,Cotton Ribbon Cord Bag,alias
+product_style,W201,Premium Cotton Tote,alias
+product_style,W265,Organic Premium Maxi Tote,alias
+product_style,W350,Cotton Cushion Cover,alias
+product_style,W364,Cotton Adult Apron,alias
+product_style,W407,Jute Classic Shopper,alias
+product_style,W415,Jute Stuff Bag,alias
+product_style,W422,Printers Jute Shopper,alias
+product_style,W425,Pocket Jute Gift Bag,alias
+product_style,W426,Pocket Jute Midi Tote,alias
+product_style,W427,Cotton Pocket Jute Shopper,alias
+product_style,W450,Jute Base Canvas Shopper,alias
+product_style,W451,Jute Base Canvas Tote,alias
+product_style,W452,Jute Base Canvas Tote XL,alias
+product_style,W530,Canvas Accessory Case,alias
+product_style,W540,Canvas Accessory Bag,alias
+product_style,W544,Canvas Accessory Bag,alias
+product_style,W552,Canvas Accessory Case,alias
+product_style,W600,Gallery Canvas Tote,alias
+product_style,W620,Fairtrade Cotton Bottle Bag,alias
+product_style,W680,Nautical Beach Bag,alias
+product_style,W696,Oversized Canvas Tote,alias
+product_style,W825,Organic Spring Purse,alias
+product_style,W830,Organic Accessory Pouch,alias
+product_style,W858,EarthAware Contrast Shopper,alias
+product_style,With Knee Pad Pockets Long,Cargo Knee Pad,alias
+product_style,With Knee Pad Pockets Regular,Cargo Knee Pad,alias
+department,Mens,,warehouse
+department,Womens,,warehouse
+department,Kids,,warehouse
+department,Unisex,,warehouse
+department,General,,warehouse

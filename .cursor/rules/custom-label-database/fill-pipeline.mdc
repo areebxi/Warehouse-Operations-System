@@ -9,20 +9,21 @@ globs: "Custom Label Database/**"
 Seed columns (user-filled; do not invent): `Custom Label`, `Gender Apparel`, `Colour`, `Size`, `Apparel Image`, `Print Positions`, `Customise`.
 
 **Customise:** derive from `Custom Label`, do not clone from a peer row. Personalised ⇒ `Yes` when either:
-- token `-P{digit}-` (e.g. `M260-P5-17099`, `N220-P3-55712`), **or**
-- a `Yes` segment anywhere in the label (supervisor 4 Sep 2026: `Yes` in our SKU = personalised; e.g. `W101-SkyBe-O/S-Yes`, `M-T-NAVBE-3XL-Yes`).
+- token `-P{digit}-` (e.g. `M260-P5-17099`, `N220-P3-55712`) **or** leading `P{digit}-` when the mock prefix is omitted (`P5-ACPPLQ-A410-PB`), **or**
+- a `Yes` segment anywhere in the label (supervisor 4 Sep 2026: `Yes` in our SKU = personalised; e.g. `W101-SkyBe-O/S-Yes`, `M-T-NAVBE-3XL-Yes`), **or**
+- size-only acrylic listing SKU `A515` / `A[4-6]`+two digits as the **whole** Custom Label (supervisor 22 Sep 2026: always personalised). `A515-PHOTO` is not this path.
 
 Plain mock+UID (`M55-120852`, `M56-3257`) ⇒ leave blank — **not** `Yes`. `fill_from_seeds.py --steps customise` enforces this.
 
 `scripts/fill_from_seeds.py` then, blank-only unless asked to correct:
 
-1. **Supplier SKU** = last numeric UID on Custom Label (`M260-214332` → `214332`). No UID → skip (iron-ons, C800T tokens including `…-18-24`, `K-H-DHR-YXS`, `W-T-ATTHR-M`, `77123-BTC`, BG542, …). `C800T` in the label is never a PE UID.
+1. **Supplier SKU** = last numeric UID on Custom Label (`M260-214332` → `214332`). Whole-label digits (`208544`) are a UID. No UID → skip (iron-ons, C800T tokens including `…-18-24`, DTF `Transfer-1M-1`, `K-H-DHR-YXS`, `W-T-ATTHR-M`, `77123-BTC`, BG542, …). `C800T` or `Transfer` in the label is never a PE UID.
 2. **PE enrich** = `Supplier Name` + `Supplier Product Code` + `Brand` (**blank only**); `Category` / `Department` ← PE `Department`; `Sub-Category` / `Sub-Department` ← PE `Sub Department` (blank only on first fill). When PE Department / Sub Department is **corrected**, overwrite those four DB columns with `--overwrite-pe-taxonomy`.
 3. **Dedicated cols** (BTC / Ralawise / Absolute) from **Supplier Name**, not SKU.
 4. **Apparel Image** slug from Gender Apparel + Colour — **blank cells only**.
 5. **Print sizes** — see print-sizes rule.
-6. **Areeb 30-chain** (`Category (Areeb)` / `Product Type (Areeb)` / `Product Style (Areeb)` / `Department (Areeb)`) — warehouse `cl_standard` from **Gender Apparel only** (overwrite all four; Department = gender only). Never BTC / Uneek / Brand. See `areeb-taxonomy.mdc`.
-7. **Supply Method** — `Warehouse Stock` (FOTL men/women/kids t-shirts only) / `In House Manufacture` (SKU or Gender Apparel contains iron on / ironon / iron-on / sticker) / `Supplier On Demand` (Gildan tees + everything else). Overwrite. See `supply-method.mdc`. Never copy CL `Warehouse Stock`.
+6. **Areeb 30-chain** (`Category (Areeb)` / `Product Type (Areeb)` / `Product Style (Areeb)` / `Department (Areeb)`) — warehouse `cl_standard` from **Gender Apparel only** (overwrite all four; Department = gender only). Snap all four to the Hashim #038 pick-list (unknown → blank). Never BTC / Uneek / Brand. See `areeb-taxonomy.mdc`.
+7. **Supply Method** — CL `Warehouse Stock` = FOTL men/women/kids t-shirts in the locked colour lists, plus Kids `C800T` / `C8030T` in the locked body colours. `In House Manufacture` = SKU or Gender Apparel contains iron on / ironon / iron-on / sticker. `Supplier On Demand` = everything else. Overwrite. See `supply-method.mdc`. Never copy CL `Warehouse Stock`. Plain / Packs keep the no-colour FOTL tee rule.
 8. **Printing Type** — `DTF` default; `Sublimation` = mugs. Mock `M##` then mug rule. Overwrite. Do not fill Design Type. See `printing-type.mdc`.
 9. **Supplier Name** (grouping) — `BTC Activewear` / `Uneek Clothing` / `Absolute Apparels`. Absolute = babysuit styles `C800T` / `C8020T` / `C8030T` only (not the rest of the Absolute price list). In-house stays blank. See `supplier-name.mdc`. Filled 2026-09-09.
 
@@ -30,7 +31,9 @@ Do **not** fill unless asked: `Tags`, `Size (Dimensions)`.
 
 **New PE styles from packing SKUs:** Custom Label is the tail after the design prefix (`189381LG-N220-P3-55709` → `N220-P3-55709`). Prefer `scripts/add_labels.py --skus …` (named-only, append-only, same fill steps). Add `--all-spc` only when the supervisor wants every PE UID for that BTC SPC as `{mock}-{UID}` (completeness, not required for integrity of existing rows). Clone Gender Apparel / Colour / Size / Apparel Image / Print Positions from a same-UID peer when available; set **Customise** from the `-P{digit}-` / `Yes`-token rule above. Optional: `fill_size_references_from_cl.py` for plain mock+UID keys.
 
-**Print Positions:** confirm from `support/Mocks Databse.csv` (`Pasting Mocks ID` → `Printing Position`; Front Print → Front Center, Back Print → Back Center) before seeding a mock series. Do not guess from the packing SKU alone.
+**After every supervisor fill** of CL and/or Size References: run `scripts/sync_database_transfer.py` so `Database Transfer/` Workbook + Configuration Workbook match the live CSVs. See `database-transfer-sync.mdc`.
+
+**Print Positions:** confirm from `support/Mocks Database.csv` (`Pasting Mocks ID` → `Printing Position`; Front Print → Front Center, Back Print → Back Center) before seeding a mock series. Do not guess from the packing SKU alone.
 
 **Old compound tokens:** one Custom Label can be two design tails in one cell (`F/P-F8-M-T-BLK-5XL 161121LG-B4-M-T-BLK-5XL`). `F/P` = Front Center + Front Left Pocket; `F8` = pocket size.
 

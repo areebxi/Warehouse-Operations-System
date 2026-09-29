@@ -9,8 +9,8 @@ This app folder holds **scripts and docs**. Live catalog + helpers live under wa
 ## Live work
 
 - Edit **`database/shared/custom_label/Custom_Label_Database.csv`** only (via `shared.paths.cl_csv_path()`).
-- Areeb 30-chain (`Category (Areeb)` / `Product Type (Areeb)` / `Product Style (Areeb)` / `Department (Areeb)`): warehouse `cl_standard` from Gender Apparel (`python scripts/fill_areeb_taxonomy.py --target cl` from warehouse root, or `fill_from_seeds.py --steps areeb`). Never BTC/Uneek. Department = gender only. Rule: parent `.cursor/rules/custom-label-database/areeb-taxonomy.mdc`.
-- **Supply Method**: `Warehouse Stock` (FOTL men/women/kids t-shirts only) / `In House Manufacture` (SKU or Gender Apparel contains iron on / ironon / iron-on / sticker) / `Supplier On Demand` (Gildan + everything else). `python scripts/fill_supply_method.py` from warehouse root, or `fill_from_seeds.py --steps supply`. Do not reuse `Warehouse Stock`. Rule: `supply-method.mdc`.
+- Areeb 30-chain (`Category (Areeb)` / `Product Type (Areeb)` / `Product Style (Areeb)` / `Department (Areeb)`): warehouse `cl_standard` from Gender Apparel (`python scripts/fill_areeb_taxonomy.py --target cl` from warehouse root, or `fill_from_seeds.py --steps areeb`). Never BTC/Uneek. Department = gender only. Snap all four Areeb cells to Hashim #038 pick-list (Title Case; type has no gender; style is a product name, never a code). **Do not refill Plain / Packs Areeb** (supplier product data). Rule: parent `.cursor/rules/custom-label-database/areeb-taxonomy.mdc`.
+- **Supply Method**: CL `Warehouse Stock` = FOTL men/women/kids t-shirts in the locked colour lists, plus Kids `C800T` / `C8030T` body colours (not `C8020T`). `In House Manufacture` = SKU or Gender Apparel contains iron on / ironon / iron-on / sticker. `Supplier On Demand` = everything else. `python scripts/fill_supply_method.py --target cl` from warehouse root, or `fill_from_seeds.py --steps supply`. Do not reuse `Warehouse Stock`. Rule: `supply-method.mdc`. Colour lists live in `shared/supply_method.py`.
 - **Printing Type**: `DTF` default; `Sublimation` = mugs. `python scripts/fill_printing_type.py` from warehouse root, or `fill_from_seeds.py --steps printing_type`. Do not fill Design Type. Rule: `printing-type.mdc`.
 - **Supplier Name**: `BTC Activewear` / `Uneek Clothing` / `Absolute Apparels`. Absolute = babysuits only (`C800T` / `C8020T` / `C8030T`). In-house iron-on/sticker stay blank. Filled 2026-09-09. `python scripts/fill_supplier_name.py` from warehouse root, or `fill_from_seeds.py --steps supplier_name`. Rule: `supplier-name.mdc`.
 - **Customisation Type**: column exists; values empty; grouping split off in v1. Do not fill until a rule is locked.
@@ -24,7 +24,9 @@ No production writes unless the supervisor already said **yes / do it / fill / r
 
 Tackle **one problem at a time**.
 
-**Unmatched packing SKUs (fast path):** `python scripts/add_labels.py --skus …` — named labels only, same fill rules, **append-only** (does not rewrite existing rows). Use `--all-spc` when you want every PE UID for that BTC SPC as `{mock}-{UID}` (catalog completeness; slower). Clone GA/Colour/Size/Image/Print Positions from a same-UID peer when possible; **Customise** = `Yes` when Custom Label has `-P{digit}-` **or** a `Yes` token (e.g. `W101-SkyBe-O/S-Yes`). Then optional `fill_size_references_from_cl.py` for plain `M##-{UID}` keys.
+**Unmatched packing SKUs (fast path):** `python scripts/add_labels.py --skus …` — named labels only, same fill rules, **append-only** (does not rewrite existing rows). Use `--all-spc` when you want every PE UID for that BTC SPC as `{mock}-{UID}` (catalog completeness; slower). Clone GA/Colour/Size/Image/Print Positions from a same-UID peer when possible; **Customise** = `Yes` when Custom Label has `-P{digit}-` **or** leading `P{digit}-` **or** a `Yes` token (e.g. `W101-SkyBe-O/S-Yes`). Then optional `fill_size_references_from_cl.py` for plain `M##-{UID}` keys.
+
+**Database Transfer (locked 2026-09-25):** after every supervisor **fill** of CL and/or Size References, also run `python scripts/sync_database_transfer.py` so `Database Transfer/Workbook.xlsx` (CL Database sheet) and `Database Transfer/Configuration Workbook.xlsx` (Size References sheet) perfectly mirror the live CSVs. Rule: parent `.cursor/rules/custom-label-database/database-transfer-sync.mdc`.
 
 ## Hard do-nots
 
@@ -38,4 +40,4 @@ PE taxonomy: `Category` and `Department` ← PE `Department`; `Sub-Category` and
 
 ## After any CSV change
 
-Tell the supervisor exactly what changed: file, rows/labels, columns, before→after, count, backup path.
+Tell the supervisor exactly what changed: file, rows/labels, columns, before→after, count, backup path. On **fill**, also report the Database Transfer sync (row counts + backup paths).

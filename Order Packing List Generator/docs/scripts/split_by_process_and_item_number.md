@@ -2,6 +2,8 @@
 
 Sixth step in the pipeline: **split** the step-5 CSV by **Process and Item Number**, **sort** each group by **Size** using the Process Info Sheet column **"Sequence by Size"** (column AD), **maintain a per-day Process Number Tracker in the workbook**, and **assign per-row Process/Item display values** before writing one CSV per value into the given **output_dir** (e.g. `Output/` for CLI default, or `Output/DD-MM-YYYY/{token}/` when run via pipeline).
 
+The main packing pipeline **already removed missing-logo rows** from this CSV (after Step 5, before this step) so names have no gaps.
+
 ## Purpose
 
 - Read step-5 CSV (e.g. `Output/5_assign_process_number_{token}.csv`) and optionally Workbook "Process Info Sheet".

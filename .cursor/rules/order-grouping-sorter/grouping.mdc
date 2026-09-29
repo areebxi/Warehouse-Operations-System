@@ -1,0 +1,35 @@
+---
+description: Sorter grouping keys, Hashim shift split, process names
+alwaysApply: false
+globs: Order Grouping Sorter/**
+---
+
+# Grouping (v1)
+
+Source of truth: warehouse `order-grouping-locks.md`. Do not guess. No definite match → whole order `unmatched`.
+
+## SKU keys (not universal `resolve_label`)
+
+| Catalog | Key |
+|---------|-----|
+| CL | **After first dash** → `Custom Label`. **No dash → whole SKU** (`A515`). |
+| Plain | **Till last dash** or whole SKU → `SKU` |
+| Packs | **Whole SKU** → `Channel Child SKU` |
+
+Finish gate: SKU contains `plain` / `plainlg` → plain; else CL → printed; else Plain → plain; else Packs → plain; else unmatched. Mixed plain+printed → printed-wins. Mixed printed P vs R → majority printed units; tie → readymade (not unmatched). Mixed supply-method → **Supplier On Demand** (on-demand item arrives later; not unmatched).
+
+Attribute source (separate): Packs whole → else CL after-first (or whole when no dash) → else Plain.
+
+## Intake
+
+Skip `post-order-designs`. Tag `1014-ALL-RESEND` only → file `RESEND` (not 1015/1016/1017). Customised (P) piles only with tag **`1004- Personalised Design-Ready-`**; without it → held (not written). Blank or unparseable `shipByDate` → `UNMATCHED`. **Hashim #037:** Shift 1 **order** volume **above 300** → split process CSVs today vs later dates; ≤300 may mix. Do **not** dump overflow into Shift 2/3. Today/overdue always get CSVs this run. **Testing:** every `--run` writes `1st Shift` / S1 (replaces CSVs). Production later: nth `--run` of the day = nth shift. Ignore SS shift tags. Whole order stays together.
+
+## Names
+
+On-disk filename is **six fields only** (grouping logic unchanged): `S{n}-{PLAIN|PRINTED}-{1|2}-{WAREHOUSE STOCK|SUPPLY ON DEMAND|IN HOUSE MANUFACTURE}-{R|P}-{priority}`. Shift is field 1 (after batch `B` prefix). Prime=`1`, non-prime=`2`. Customised `P`, readymade `R`. **Fixed batches first** — codes and priority live in `database/order-grouping-sorter/fixed_batches.csv` (row order = first match wins; dry-run reports `fixed-batch overlaps`). **Leftover** — plain piles `B2000`/`B2100`/`B2200`/`B2500`/`B2600`/`B2700`/…; printed piles `B1`/`B2`/…; both skip reserved numbers. Example filename: `B100-S1-PRINTED-2-WAREHOUSE STOCK-R-5`. Example PIN: `B100-S1-1 Item 1`. Those skip the 30-chain. Leftover still splits on Graph + 30-chain; peel values are not in the filename. **Priority** (per shift): today first, then prime first, then as files are made. `RESEND` / `UNMATCHED` have no `B` slots. MAS Clothing → `fawad`; other stores → `own`. Prime = SS tag `Amazon Prime Order`.
+
+Packing PIN / PDF: `{B}-S{n}-{process_number} Item {item}` — only batch code + shift from the filename (e.g. filename `B100-S1-PRINTED-2-WAREHOUSE STOCK-R-1` → `B100-S1-1 Item 1`). Process Number Tracker is off.
+
+Leftover (non-fixed) piles get `B1`, `B2`, … skipping reserved fixed-batch numbers. Inside the batch: colour ≥3 units → own process number first; then 50-unit process numbers; same order stays on one process number. Packs skip colour groups (50-unit process numbers only).
+
+`--run` writes one CSV per process into Packing Input. **Testing:** `1st Shift` every `--run`. `RESEND.csv` / `UNMATCHED.csv` land there.

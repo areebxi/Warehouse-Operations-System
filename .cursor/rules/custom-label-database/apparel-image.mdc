@@ -6,9 +6,9 @@ globs: "Custom Label Database/**"
 
 # Apparel Image
 
-Fill **blank** cells only. **Never rewrite** an existing Apparel Image name.
+Fill **blank** cells only. **Never rewrite** an existing Apparel Image name (except a named cell the supervisor asked to correct).
 
-Slug (Maker style): `(Gender Apparel)-(Colour)`, spaces → `-`, letters/digits/dash only, collapse `--`.
+Slug (Maker style): `(Gender Apparel)-(Colour)`, spaces → `-`, letters/digits/dash only, collapse `--`. Garment token is **`T-Shirt`**, never `TShirt` (`hyphen_tshirt_in_slug` on new seeds / peer clones). Do not bulk-rename old `TShirt` cells.
 
 A past bulk pass rewrote ~34,755 names. The true pre-change backup is **gone**. Fallback restore used `support/Workbook.xlsx` `Picture Name` — not a perfect undo. Do not run another whole-file rename.
 

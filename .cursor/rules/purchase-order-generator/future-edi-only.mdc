@@ -1,0 +1,9 @@
+---
+description: Later — PO is EDI/stock; packing lists move to Packing
+globs: "Purchase Order Generator/**"
+alwaysApply: false
+---
+
+# Later (not built) — no packing lists here
+
+Supervisor 2026-09-17: **all packing list PDFs** (including slips this app prints today) move to **Order Packing List Generator**. This app stays tag → stock / EDI. Do not grow packing-slip work as the long-term home. Do not implement the move until asked.

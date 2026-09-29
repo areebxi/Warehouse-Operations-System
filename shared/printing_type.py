@@ -4,7 +4,7 @@ Supervisor lock 2026-09-09:
   DTF           = default (garments, bags, iron-on, stickers, …)
   Sublimation   = mugs / drinkware
 
-Lookup: Custom Label leading M## → Mocks Databse.csv Printing-Type when that
+Lookup: Custom Label leading M## → Mocks Database.csv Printing-Type when that
 cell is DTF or Sublimation. Else mug (Category Mugs or Gender Apparel starts
 with Mug) → Sublimation. Else DTF.
 
@@ -19,7 +19,7 @@ from functools import lru_cache
 from typing import Any, Mapping
 
 from shared.areeb_taxonomy import cell
-from shared.paths import custom_label_support_dir
+from shared.paths import mocks_database_csv_path
 
 COL = "Printing Type"
 
@@ -47,7 +47,7 @@ def normalize_printing_type(raw: object) -> str:
 
 @lru_cache(maxsize=1)
 def load_mock_printing_types() -> dict[str, str]:
-    path = custom_label_support_dir() / "Mocks Databse.csv"
+    path = mocks_database_csv_path()
     out: dict[str, str] = {}
     with path.open(encoding="utf-8-sig", newline="") as f:
         for row in csv.DictReader(f):

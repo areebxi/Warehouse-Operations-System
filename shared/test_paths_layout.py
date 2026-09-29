@@ -24,9 +24,17 @@ def main() -> None:
     assert wh.btc_product_data_path() == db / "shared" / "btc_product_data" / "BTC_Product_Data.csv"
     assert wh.uneek_product_data_path() == db / "shared" / "uneek_product_data" / "Uneek_Product_Data.xlsx"
     assert wh.absolute_product_data_path() == db / "shared" / "absolute_product_data" / "Absolute_Product_Data.xlsx"
-    assert wh.shipstation_tags_path() == db / "shared" / "shipstation" / "ShipStation_Tags.xlsx"
+    assert wh.size_references_csv_path() == db / "custom-label-database" / "support" / "Size References.csv"
+    assert wh.mocks_database_csv_path() == db / "custom-label-database" / "support" / "Mocks Database.csv"
+    assert wh.shipstation_tags_path() == db / "shared" / "shipstation_tags" / "ShipStation_Tags.xlsx"
     assert wh.shipstation_env_path().is_relative_to(root / "config" / "ShipStation")
     assert wh.shared_inbox_dtf_des_root().is_relative_to(root / "runtime" / "SharedInbox")
+    assert wh.sorter_app_dir() == root / "Order Grouping Sorter"
+    assert wh.sorter_data_dir() == db / "order-grouping-sorter"
+    assert wh.sorter_logs_dir() == root / "Order Grouping Sorter" / "Logs"
+    assert wh.sorter_input_csv_path("11-09-2026", "1st Shift", "today-1st-plain") == (
+        root / "Order Packing List Generator" / "Input" / "11-09-2026" / "1st Shift" / "today-1st-plain.csv"
+    )
     print("paths layout ok")
 
 

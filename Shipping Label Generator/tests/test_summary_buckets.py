@@ -38,6 +38,36 @@ def test_single_label_consecutive_processes_share() -> None:
     assert buckets[0].process_numbers == ["100", "101", "102"]
 
 
+def test_batch_shift_consecutive_processes_share() -> None:
+    """Packing Process Num B100-S1-N shares like numeric neighbours."""
+    buckets = bucket_process_groups_for_shared_summaries(
+        [_r("B100-S1-1", 1), _r("B100-S1-2", 1), _r("B100-S1-3", 1)]
+    )
+    assert len(buckets) == 1
+    assert buckets[0].summary_process_number == "B100-S1-1"
+    assert buckets[0].process_numbers == ["B100-S1-1", "B100-S1-2", "B100-S1-3"]
+
+
+def test_batch_shift_sorts_process_n_numerically() -> None:
+    buckets = bucket_process_groups_for_shared_summaries(
+        [_r("B100-S1-10", 1), _r("B100-S1-2", 1), _r("B100-S1-1", 1)]
+    )
+    # Sorted 1,2,10 — share 1-2; gap before 10 starts a new summary.
+    assert [pn for b in buckets for pn in b.process_numbers] == [
+        "B100-S1-1",
+        "B100-S1-2",
+        "B100-S1-10",
+    ]
+    assert [b.summary_process_number for b in buckets] == ["B100-S1-1", "B100-S1-10"]
+
+
+def test_different_batch_shift_do_not_share() -> None:
+    buckets = bucket_process_groups_for_shared_summaries(
+        [_r("B100-S1-1", 1), _r("B8000-S1-2", 1)]
+    )
+    assert [b.summary_process_number for b in buckets] == ["B100-S1-1", "B8000-S1-2"]
+
+
 def test_two_or_more_labels_get_own_summary() -> None:
     buckets = bucket_process_groups_for_shared_summaries([_r("100", 1), _r("101", 2), _r("102", 1)])
     assert [b.summary_process_number for b in buckets] == ["100", "101", "102"]

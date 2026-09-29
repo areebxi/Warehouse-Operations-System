@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import re
 from pathlib import Path
 
 import pandas as pd
@@ -15,6 +14,7 @@ from scripts.app.flows.convert.parse_excel import parse_excel_file
 from scripts.app.logging.jsonl import JsonlLogger
 from scripts.app.logging.orders_audit import OrderAuditLogger
 from scripts.app.util.hashing import sha256_file
+from scripts.app.util.process_numbers import dtf_id_from_stem, process_number_sort_key
 from scripts.app.util.time import local_date_ymd
 
 
@@ -28,48 +28,37 @@ def _orders_csv_path(cfg: AppConfig) -> Path:
     return date_dir / p
 
 
-_DTF_ID_RE = re.compile(r"(\d+)")
-
-
 def _dtf_id_from_source_files(source_files: list[Path]) -> str | None:
-    if not source_files:
+    if not source_files or len(source_files) != 1:
         return None
-    if len(source_files) != 1:
-        return None
-    stem = source_files[0].stem
-    matches = _DTF_ID_RE.findall(stem)
-    return matches[-1] if matches else None
+    return dtf_id_from_stem(source_files[0].stem)
 
 
 def _dtf_range_key(source_files: list[Path]) -> str | None:
     """
-    If multiple input files are present, build a stable key from every numeric id
-    in their stems, e.g. "200-300-400" for three files (not just "200-400").
+    If multiple input files are present, build a stable key from every file id
+    in their stems, e.g. "200-300-400" or "B100-S1-B8000-S1".
     Returns None if any id can't be parsed.
     """
-    ids: list[int] = []
+    ids: list[str] = []
     for p in source_files:
-        stem = p.stem
-        matches = _DTF_ID_RE.findall(stem)
-        if not matches:
+        key = dtf_id_from_stem(p.stem)
+        if not key:
             return None
-        try:
-            ids.append(int(matches[-1]))
-        except Exception:
-            return None
+        ids.append(key)
     if not ids:
         return None
-    ids = sorted(set(ids))
-    if len(ids) == 1:
-        return str(ids[0])
-    return "-".join(str(i) for i in ids)
+    uniq = sorted(set(ids), key=process_number_sort_key)
+    if len(uniq) == 1:
+        return uniq[0]
+    return "-".join(uniq)
 
 
 def _dtf_key_for_manifest(source_files: list[Path]) -> str | None:
     """
     Key used by Print to name the combined PDF:
-    - single file: last numeric token in stem (e.g. "200")
-    - multiple files: all numeric ids joined (e.g. "200-300-400") when parseable
+    - single file: batch+shift (`B100-S1`) or legacy last numeric token (`200`)
+    - multiple files: all ids joined (e.g. "200-300-400", "B100-S1-B8000-S1")
     """
     if len(source_files) == 1:
         return _dtf_id_from_source_files(source_files)

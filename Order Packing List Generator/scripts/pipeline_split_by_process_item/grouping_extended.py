@@ -1,6 +1,6 @@
 import pandas as pd
 
-from .common import _normalize_key, _normalize_numeric_process_base
+from .common import _normalize_key, _normalize_numeric_process_base, format_batch_pin
 
 def sort_group_by_size(group: pd.DataFrame, size_to_rank: dict[str, int] | None) -> pd.DataFrame:
     if size_to_rank is None or "Size" not in group.columns:
@@ -114,7 +114,7 @@ def assign_extended_process_and_item_number(
             display_base = int(numeric_increment_base) + (additional - 1)
             value = f"Process {display_base} Item-{item}"
         elif use_simple_process_format or (use_fixed_numeric_process and numeric_increment_base is None):
-            value = f"Process {base}-{additional} Item-{item}" if base else f"Process {additional} Item-{item}"
+            value = format_batch_pin(base, additional, item)
         elif sequence_number is not None:
             process_num = f"{sequence_number}{additional}"
             value = f"Process {process_num} Item-{item} ({ext_display})"
