@@ -264,6 +264,27 @@ def test_warehouse_stock_supplier_slot_x() -> None:
     assert "btc_activewear" not in name
 
 
+def test_b50_on_demand_fotl_ready_made() -> None:
+    """B50 = B100 twin with Supplier On Demand (locked 2026-09-30)."""
+    cat = Catalogs(
+        cl={
+            "m-t-wht-m": _cl_row(
+                **{
+                    "Custom Label": "M-T-WHT-M",
+                    "Supply Method": "Supplier On Demand",
+                    "Supplier Name": "BTC Activewear",
+                    "Brand": "Fruit Of The Loom",
+                    "Colour": "White",
+                }
+            )
+        }
+    )
+    r = group_orders([_order("OD1", "1-M-T-WHT-M", catalogs=cat)], RUN)
+    assert len(r.bins) == 1
+    assert r.bins[0].floor_code == "B50"
+    assert r.bins[0].process_name.startswith("B50-S1-PRINTED-2-SUPPLY ON DEMAND-R-")
+
+
 def test_plain_in_house_unmatched() -> None:
     cat = Catalogs(
         plain={

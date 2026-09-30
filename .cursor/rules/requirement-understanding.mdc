@@ -1,0 +1,18 @@
+---
+description: Restate requirement and wait for go-ahead before implementing
+alwaysApply: true
+---
+
+# Requirement understanding before implementation
+
+Before implementing any change, first restate the requirement in your own words. Do not modify files, write code, or run implementation steps until that restatement is done **and** the supervisor has given an explicit go-ahead (`yes` / `do it` / equivalent).
+
+Briefly cover:
+
+- What the supervisor is asking to change or build.
+- The expected behavior or outcome.
+- Any important constraints or existing functionality that must be preserved.
+
+If any part is ambiguous or you are unsure about intended behavior, name the ambiguity and ask for clarification. Do not assume business logic that could affect the existing system. Ask **one** open question at a time (see supervisor-chat).
+
+Exceptions (no restatement gate): trivial acknowledgements, pure Q&A with no implementation, and already-approved production actions that only need the standing `yes` / `do it` / `fill` / `run` for live writes — still restate when the approved action itself is a new build or behavior change.

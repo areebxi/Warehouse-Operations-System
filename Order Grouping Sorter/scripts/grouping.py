@@ -756,7 +756,10 @@ def _line_is_babysuit(ln: LineAttrs) -> bool:
 
 
 def _line_is_ss_fotl(ln: LineAttrs) -> bool:
-    if _fold(ln.supply_method) != _fold(WAREHOUSE_STOCK):
+    # Garment + FOTL brand. Warehouse Stock vs On Demand is the CSV supply-method
+    # cell (B100 vs B50). Locked 2026-09-30.
+    brand = _fold(ln.brand)
+    if "fruit of the loom" not in brand and brand != "fotl":
         return False
     if _fold(ln.category) != "t-shirts":
         return False

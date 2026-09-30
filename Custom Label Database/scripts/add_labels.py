@@ -79,9 +79,19 @@ RE_C800T_AGE = re.compile(
     r"^(M\d+(?:-P\d+)?-C800T-\d+-)(\d+(?:>|&gt;)\d+|\d+-\d+)$",
     re.I,
 )
-# A515-PHOTO = A5 15mm. A410 in P5-ACPPLQ-A410-PB = A4 10mm. A625 = A6 25mm.
-RE_ACRYLIC_SIZE = re.compile(r"(?:^|-)A([4-6])(\d{2})(?:-|$)", re.I)
-_ACRYLIC_PAPER = {"4": ("A4", "210", "297"), "5": ("A5", "148", "210"), "6": ("A6", "105", "148")}
+# A515-PHOTO = A5 15mm. A410 in P5-ACPPLQ-A410-PB = A4 10mm. A625 = A6 25mm. A715 = A7 15mm.
+RE_ACRYLIC_SIZE = re.compile(r"(?:^|-)A([4-7])(\d{2})(?:-|$)", re.I)
+_ACRYLIC_PAPER = {
+    "4": ("A4", "210", "297"),
+    "5": ("A5", "148", "210"),
+    "6": ("A6", "105", "148"),
+    "7": ("A7", "74", "105"),
+}
+# Amazon hoodie size codes: ARM-BBe-C1-D6-EF / AS3-BCA-C1-D6-EF (D6-EF = Large).
+RE_AMZ_SIZE_CODE = re.compile(
+    r"^([A-Za-z]{2,3}-[A-Za-z0-9]+)-([A-Za-z0-9]+)-(D\d+)-(E[A-Za-z0-9]+)$",
+    re.I,
+)
 RE_BAG_COLOUR = re.compile(r"^(W\d+|BG-W\d+|BG-[A-Z0-9]+)-([A-Za-z0-9]+)-O/S", re.I)
 # Optional DTF- prefix: M280-P5-IronOn-A6 and M280-P5-DTF-IronOn-A6.
 RE_IRONON = re.compile(r"(?:DTF-)?IronOn-A(\d+)", re.I)
@@ -332,6 +342,13 @@ def _peer_keys_for_label(label: str) -> set[str]:
         keys.add(f"__prefix__:{g.casefold()}-{typ.casefold()}-{col.casefold()}-")
         for og in ("M", "W", "K"):
             keys.add(f"{og}-{typ}-{col}-{sz}".casefold())
+        return keys
+    amz = RE_AMZ_SIZE_CODE.match(label)
+    if amz:
+        fam, _mid, d_tok, e_tok = amz.group(1), amz.group(2), amz.group(3), amz.group(4)
+        keys.add(label.casefold())
+        keys.add(f"__prefix__:{fam.casefold()}-")
+        keys.add(f"__suffix__:-{d_tok.casefold()}-{e_tok.casefold()}")
         return keys
     gildan = RE_GILDAN_5000.match(label)
     if gildan:
@@ -818,6 +835,35 @@ def build_seed_rows(
             uid = (sku_uids or {}).get(lab.casefold(), "")
             if uid:
                 extras["Supplier SKU"] = uid
+        elif RE_AMZ_SIZE_CODE.match(lab):
+            amz = RE_AMZ_SIZE_CODE.match(lab)
+            assert amz is not None
+            fam = amz.group(1)
+            d_tok, e_tok = amz.group(3), amz.group(4)
+            prefix = f"{fam.casefold()}-"
+            suffix = f"-{d_tok.casefold()}-{e_tok.casefold()}"
+            colour_peer: dict[str, str] | None = None
+            size_peer: dict[str, str] | None = None
+            for key, row in peers.items():
+                if key.startswith(prefix) and colour_peer is None:
+                    colour_peer = row
+                if key.endswith(suffix):
+                    size_peer = row
+            peer = colour_peer
+            extras["Print Positions"] = (
+                clean((colour_peer or {}).get("Print Positions")) or "Front Center"
+            )
+            extras["Position 1 Name"] = "Front Center"
+            if size_peer and clean(size_peer.get("Size")):
+                extras["Size"] = clean(size_peer.get("Size"))
+            if peer:
+                for copy_col in ("Width 1 (mm)", "Height 1 (mm)"):
+                    if copy_col in fieldnames and clean(peer.get(copy_col)):
+                        extras[copy_col] = clean(peer.get(copy_col))
+                if size_peer:
+                    for copy_col in ("Width 1 (mm)", "Height 1 (mm)"):
+                        if copy_col in fieldnames and clean(size_peer.get(copy_col)):
+                            extras[copy_col] = clean(size_peer.get(copy_col))
         elif RE_GILDAN_5000.match(lab):
             g5000 = RE_GILDAN_5000.match(lab)
             assert g5000 is not None

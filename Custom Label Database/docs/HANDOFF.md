@@ -1,10 +1,25 @@
 # Custom Label Database — Agent snapshot
 
-**Updated:** 23 September 2026 (CL warehouse-stock colour gate filled)  
+**Updated:** 30 September 2026 (sorter UNMATCHED fill + A7/ARM add_labels)  
 **Standing brief:** `AGENTS.md` (handbook) · Parent map: `../AGENTS.md`  
 **Facts:** `docs/FINDINGS.md` · **Paths:** `docs/WORKSPACE.md` · **Policy:** parent `.cursor/rules/custom-label-database/` · **Chat copies:** `docs/chats/`
 
 Prior long chats: [Custom Label DB cleanup](4455a0cd-185b-4d3e-86d5-b1c620841dd4), [shirt print sizes](59e96d0f-08d7-4ced-bb91-67d9556b29ca).
+
+---
+
+## Sorter UNMATCHED fill — 30 Sep 2026
+
+Supervisor **fill** from sorter `Input/30-09-2026/1st Shift/UNMATCHED.csv`. **+4** CL rows. Backup: `backups/Custom_Label_Database_preAdd_20260930_084615.csv`. Then `sync_database_transfer.py` → CL Database **132,599** rows; Size References **97,845**. Transfer backups `Workbook_preSync_20260930_084623.xlsx` / `Configuration Workbook_preSync_20260930_084623.xlsx`.
+
+| Packing SKU | Custom Label | Notes |
+|---|---|---|
+| `164988LG-M-T-VINHRR-2XL` | `M-T-VINHRR-2XL` | Mens-T-Shirt Vintage Heather Red 2XL. Peer `M-T-VINHRR-XL`. On Demand. |
+| `129034LG-BG-W830-NVY-L-YES` | `BG-W830-NVY-L-YES` | BG-W830 Navy Large. Customise Yes. Peer `W830-NVY-L`. |
+| `PLAIN-ACPPLQ-A710-PB` | `ACPPLQ-A710-PB` | Photo Acrylic **A7 10mm** 74×105. Customise blank. Sorter finish stays **plain** (`plain` in SKU); attributes from CL. |
+| `49731LG-ARM-BBe-C1-D6-EF` | `ARM-BBe-C1-D6-EF` | Mens-Hoodie Light Blue Large (`D6-EF` = Large via AS3 peers). Listing title said Womens; catalog ARM series is Mens. |
+
+`add_labels`: acrylic paper now includes **A7**; Amazon size codes `ARM-…-D#-E#` clone colour-family + size-suffix peers.
 
 ---
 

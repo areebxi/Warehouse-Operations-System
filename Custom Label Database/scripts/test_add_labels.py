@@ -12,11 +12,13 @@ sys.path.insert(0, str(SCRIPTS))
 
 from add_labels import (  # noqa: E402
     RE_ACRYLIC_SIZE,
+    RE_AMZ_SIZE_CODE,
     RE_BAG_COLOUR,
     RE_C800T_AGE,
     RE_GILDAN_5000,
     RE_TRANSFER,
     RE_WAREHOUSE_GARMENT,
+    _ACRYLIC_PAPER,
     _BAG_COLOUR,
     _WAREHOUSE_GA,
     _age_to_size,
@@ -49,6 +51,14 @@ def main() -> None:
     assert a6 is not None and a6.group(1) == "6" and a6.group(2) == "25"
     a415 = RE_ACRYLIC_SIZE.search("P5-ACPPLQ-A415-PB")
     assert a415 is not None and a415.group(1) == "4" and a415.group(2) == "15"
+    a710 = RE_ACRYLIC_SIZE.search("ACPPLQ-A710-PB")
+    assert a710 is not None and a710.group(1) == "7" and a710.group(2) == "10"
+    assert _ACRYLIC_PAPER["7"] == ("A7", "74", "105")
+    assert RE_AMZ_SIZE_CODE.match("ARM-BBe-C1-D6-EF")
+    assert any(
+        k.startswith("__prefix__:arm-bbe-") for k in _peer_keys_for_label("ARM-BBe-C1-D6-EF")
+    )
+    assert "__suffix__:-d6-ef" in _peer_keys_for_label("ARM-BBe-C1-D6-EF")
     assert "a515-photo" in _peer_keys_for_label("P5-ACPPLQ-A410-PB")
     assert "dtf-ironon-a4" in _peer_keys_for_label("M263-P5-DTF-IronOn-A4")
     assert "stckr-m(30cmx30cm)" in _peer_keys_for_label("STICKERS-M(30cmx30cm)")
