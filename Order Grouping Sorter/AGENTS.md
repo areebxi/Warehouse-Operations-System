@@ -47,6 +47,6 @@ Dry-run: run date, mix yes/no (Hashim 300-order gate), process names with orders
 - **Orchestration:** `scripts/run_sorter.py` (dry-run default; `--run` writes).
 - **Domain:** `scripts/grouping.py` (façade) plus `grouping_*.py` modules (`models`, `finish`, `intake`, `slots`, `peel`, `garments`, `fixed`, `shift`, `parts`, `names`, `bins`, `io`, `report`); also `fixed_batches.py`, `leftover_batches.py`, `catalogs.py`.
 - **I/O:** Packing Input via `shared.paths.sorter_input_csv_path`; Logs; sorter DB under `database/order-grouping-sorter/`.
-- **Legacy oversized:** `test_grouping.py` (see `../docs/ARCHITECTURE.md`). Production `grouping.py` is split.
+- **Legacy oversized:** none in production grouping path; `test_grouping.py` is a thin runner over `test_grouping_*.py` behaviour modules (see `../docs/ARCHITECTURE.md`).
 - **Must not:** import Packing internals (CSV columns are copied, not imported); overwrite catalogs on a run; use universal 3-key `resolve_label` for grouping finish keys.
 - Architecture: `.cursor/rules/architecture.mdc`.
