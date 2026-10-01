@@ -129,11 +129,6 @@ Record of the problem (112 live source files over 200 lines as of 2026-09-30). *
 
 | Lines | Path | Mixed responsibilities (one line) |
 |------:|------|-------------------------------------|
-| 1478 | `Custom Label Database/scripts/fill_from_seeds.py` | CL fill orchestration + many seed/enrich steps |
-| 1121 | `Custom Label Database/scripts/add_labels.py` | append-only CL label create + peer clone + fill hooks |
-| 920 | `Custom Label Database/scripts/phase5_print_sizes.py` | print-size fill logic for shirts / size refs |
-| 639 | `Custom Label Database/scripts/size_code_logic.py` | CL size-code derivation |
-| 508 | `Custom Label Database/scripts/fill_size_references_from_cl.py` | catalog fill script |
 | 479 | `Custom Label Database/scripts/generate_from_mocks.py` | mixed responsibilities — see filename |
 | 361 | `Custom Label Database/scripts/print_sizes_simulation.py` | mixed responsibilities — see filename |
 | 333 | `Custom Label Database/scripts/db_update.py` | mixed responsibilities — see filename |

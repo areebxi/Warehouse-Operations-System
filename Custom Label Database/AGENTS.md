@@ -47,6 +47,6 @@ Tell the supervisor exactly what changed: file, rows/labels, columns, before→a
 - **Orchestration:** `scripts/` entry CLIs (`fill_from_seeds.py`, `add_labels.py`, `sync_database_transfer.py`, `db_update.py`).
 - **Domain / shared fills:** `shared/areeb_taxonomy.py`, `supply_method.py`, `printing_type.py`, `supplier_name.py` (multi-app — do not fork in this folder). Seed fill helpers: `fill_seeds_*.py` beside `fill_from_seeds.py`.
 - **I/O:** live paths only via `shared.paths`; helpers under `database/custom-label-database/`.
-- **Legacy oversized:** `add_labels.py`, `phase5_print_sizes.py`, `size_code_logic.py` (see `../docs/ARCHITECTURE.md`). `fill_from_seeds.py` is split.
+- **Split modules:** `size_code_logic.py` façade (`size_code_*.py`); `phase5_print_sizes.py` (`phase5_*.py`); `fill_size_references_from_cl.py` (`fill_sr_from_cl_*.py`); `fill_from_seeds.py` / `add_labels.py` (`fill_seeds_*` / `add_labels_*`).
 - **Must not:** import other apps’ internals; resolve paths outside `shared.paths`; re-implement SKU match / finish gate / supply method / printing type.
 - Policy detail: parent `.cursor/rules/custom-label-database/`. Architecture: `.cursor/rules/architecture.mdc`.

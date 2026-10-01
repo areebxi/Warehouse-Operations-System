@@ -2,8 +2,11 @@
 from pathlib import Path
 import sys
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from size_code_logic import (
+_SCRIPT = Path(__file__).resolve().parent
+sys.path.insert(0, str(_SCRIPT))
+sys.path.insert(0, str(_SCRIPT.parents[1]))
+from shared.paths import size_references_csv_path  # noqa: E402
+from size_code_logic import (  # noqa: E402
     extract_size_code,
     load_overrides,
     load_size_ref_index,
@@ -11,7 +14,7 @@ from size_code_logic import (
     resolve_sr_rows,
 )
 
-CONFIG = Path(__file__).resolve().parents[1] / "Configuration Workbook.xlsx"
+CONFIG = size_references_csv_path(_SCRIPT)
 
 
 def main() -> None:

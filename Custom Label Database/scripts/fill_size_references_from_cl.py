@@ -21,371 +21,30 @@ Run from Custom Label Database app root:
 from __future__ import annotations
 
 import argparse
-import re
 import shutil
 import sys
-from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
 
-_SCRIPT_DIR = Path(__file__).resolve().parent
-_APP_ROOT = _SCRIPT_DIR.parent
-_WAREHOUSE_ROOT = _APP_ROOT.parent
-sys.path.insert(0, str(_WAREHOUSE_ROOT))
-sys.path.insert(0, str(_SCRIPT_DIR))
-
-from shared.paths import (  # noqa: E402
-    cl_csv_path,
-    custom_label_support_dir,
-    mocks_database_csv_path,
-    warehouse_root_from,
+# Paths module inserts script/warehouse roots onto sys.path.
+from fill_sr_from_cl_paths import (  # noqa: E402
+    BACKUPS,
+    BLANK_FILL_COLS,
+    DEFAULT_DB,
+    DEFAULT_MOCKS,
+    DEFAULT_SR,
+    SR_COLS,
 )
-
-from fill_from_seeds import (  # noqa: E402
-    classify,
-    clean,
-    infer_printing_position,
-    map_sr_size,
-    mm_str,
-    split_positions,
-    sr_gender,
-    to_num,
+from fill_from_seeds import clean  # noqa: E402
+from fill_sr_from_cl_apply import apply_fill, pick_cl_payloads  # noqa: E402
+from fill_sr_from_cl_parse import (  # noqa: E402
+    load_mock_meta,
+    parse_cl_mock_uid,
+    sr_key,
+    suffix_for_slots,
 )
-from generate_from_mocks import load_mocks  # noqa: E402
-
-_ROOT = warehouse_root_from(_SCRIPT_DIR)
-_SUPPORT = custom_label_support_dir(_ROOT)
-_LEGACY_SUPPORT = _APP_ROOT / "support"
-
-DEFAULT_DB = cl_csv_path(_ROOT)
-DEFAULT_SR = _SUPPORT / "Size References.csv"
-if not DEFAULT_SR.is_file():
-    DEFAULT_SR = _LEGACY_SUPPORT / "Size References.csv"
-DEFAULT_MOCKS = mocks_database_csv_path(_ROOT)
-if not DEFAULT_MOCKS.is_file():
-    DEFAULT_MOCKS = _LEGACY_SUPPORT / "Mocks Database.csv"
-BACKUPS = _SUPPORT / "backups"
-
-# Supervisor removed SKU Value 2 / SKU Value 3 (2026-09-25) — not needed.
-SR_COLS = [
-    "SKU Value",
-    "Number of Designs",
-    "Size Width",
-    "Size Height",
-    "Suffix",
-    "Gender",
-    "Size",
-    "Printing Position",
-    "Product Code",
-    "Printing Size",
-]
-
-RE_MOCK_UID = re.compile(r"^(M\d+)-(\d+)$", re.I)
-RE_SR_KEY = re.compile(r"^(M\d+)\s*\((\d+)\)\s*$", re.I)
-
-BLANK_FILL_COLS = (
-    "Suffix",
-    "Gender",
-    "Size",
-    "Printing Position",
-    "Product Code",
-    "Printing Size",
-    "Size Width",
-    "Size Height",
-)
-
-
-def sr_key(mock: str, uid: str) -> str:
-    return f"{mock.upper()} ({uid})"
-
-
-def parse_cl_mock_uid(label: str) -> tuple[str, str] | None:
-    m = RE_MOCK_UID.match(clean(label))
-    if not m:
-        return None
-    return m.group(1).upper(), m.group(2)
-
-
-def parse_sr_key(sku_value: str) -> str:
-    m = RE_SR_KEY.match(clean(sku_value))
-    if not m:
-        return ""
-    return sr_key(m.group(1), m.group(2))
-
-
-def mm_cell(val) -> str:
-    n = to_num(val)
-    if n is None:
-        return ""
-    return mm_str(n)
-
-
-def suffix_for_slots(pos_names: list[str], n_slots: int) -> list[str]:
-    """Multi-design: F/B/P/S. Single-design: blank suffix (matches existing SR)."""
-    if n_slots <= 1:
-        return [""] * n_slots
-    used: dict[str, int] = defaultdict(int)
-    out: list[str] = []
-    for i in range(n_slots):
-        kind = classify(pos_names[i]) if i < len(pos_names) else "empty"
-        if kind == "pocket":
-            token = "P"
-        elif kind == "back":
-            token = "B"
-        elif kind == "front":
-            token = "F"
-        elif kind == "other":
-            token = "S"
-        else:
-            token = "F"
-        n = used[token]
-        used[token] = n + 1
-        out.append(token if n == 0 else f"{token}-1")
-    return out
-
-
-def load_mock_meta(path: Path) -> dict[str, dict[str, str]]:
-    if not path.is_file():
-        return {}
-    mocks = load_mocks(path)
-    out: dict[str, dict[str, str]] = {}
-    for _, rec in mocks.iterrows():
-        mid = clean(rec.get("Pasting Mocks ID")).upper()
-        if not mid or mid in out:
-            continue
-        out[mid] = {
-            "product_code": clean(rec.get("Product Code")),
-            "printing_size": clean(rec.get("Printing Size")),
-            "printing_position": clean(rec.get("Printing Position")),
-        }
-    return out
-
-
-RE_LETTER_SIZE = re.compile(r"^(?:[2-5])?XL$|^XXL$|^XS$|^S$|^M$|^L$", re.I)
-
-
-def _map_sr_size(size: str) -> str:
-    s = clean(size)
-    if not s:
-        return ""
-    mapped = map_sr_size(s)
-    if mapped != s:
-        return mapped
-    if RE_LETTER_SIZE.match(s):
-        return map_sr_size(s.upper().replace("XXL", "2XL")) or s.upper()
-    return s
-
-
-def slot_payload(cl_row: dict) -> dict:
-    label = clean(cl_row.get("Custom Label"))
-    parsed = parse_cl_mock_uid(label)
-    assert parsed is not None
-    mock, uid = parsed
-    pos_named = []
-    widths: list[str] = []
-    heights: list[str] = []
-    print_sizes: list[str] = []
-    for n in range(1, 5):
-        pos_named.append(clean(cl_row.get(f"Position {n} Name")))
-        widths.append(mm_cell(cl_row.get(f"Width {n} (mm)")))
-        heights.append(mm_cell(cl_row.get(f"Height {n} (mm)")))
-        print_sizes.append(clean(cl_row.get(f"Print Size {n}")))
-
-    from_pp = split_positions(clean(cl_row.get("Print Positions")))
-    names: list[str] = []
-    for i in range(4):
-        name = pos_named[i] or (from_pp[i] if i < len(from_pp) else "")
-        names.append(name)
-
-    n_wh = 0
-    for i in range(4):
-        if widths[i] and heights[i]:
-            n_wh = i + 1
-    n_pos = 0
-    for i in range(4):
-        if names[i]:
-            n_pos = i + 1
-    n_slots = max(n_wh, n_pos, 1)
-
-    names = names[:n_slots]
-    while len(names) < n_slots:
-        names.append("")
-
-    return {
-        "key": sr_key(mock, uid),
-        "mock": mock,
-        "uid": uid,
-        "n_slots": n_slots,
-        "names": names,
-        "widths": widths[:n_slots] + [""] * max(0, n_slots - 4),
-        "heights": heights[:n_slots] + [""] * max(0, n_slots - 4),
-        "print_sizes": print_sizes[:n_slots] + [""] * max(0, n_slots - 4),
-        "gender": sr_gender(clean(cl_row.get("Gender Apparel")), clean(cl_row.get("Size"))),
-        "size": _map_sr_size(clean(cl_row.get("Size"))),
-        "product_code_cl": clean(cl_row.get("BTC Product Code"))
-        or clean(cl_row.get("Supplier Product Code")),
-        "wh_score": n_wh,
-        "ga_len": len(clean(cl_row.get("Gender Apparel"))),
-    }
-
-
-def desired_sr_rows(payload: dict, mock_meta: dict[str, dict[str, str]]) -> list[dict]:
-    meta = mock_meta.get(payload["mock"], {})
-    names = payload["names"]
-    n = payload["n_slots"]
-    suffixes = suffix_for_slots(names, n)
-    printing_pos = infer_printing_position([n_ for n_ in names if n_]) or meta.get(
-        "printing_position", ""
-    )
-    product_code = meta.get("product_code") or payload["product_code_cl"]
-    guide_psize = meta.get("printing_size", "")
-    nd = str(n)
-    rows: list[dict] = []
-    for i in range(n):
-        psize = payload["print_sizes"][i] if i < len(payload["print_sizes"]) else ""
-        if not psize:
-            psize = guide_psize
-        w = payload["widths"][i] if i < len(payload["widths"]) else ""
-        h = payload["heights"][i] if i < len(payload["heights"]) else ""
-        rows.append(
-            {
-                "SKU Value": payload["key"],
-                "Number of Designs": nd,
-                "Size Width": w,
-                "Size Height": h,
-                "Suffix": suffixes[i],
-                "Gender": payload["gender"],
-                "Size": payload["size"],
-                "Printing Position": printing_pos,
-                "Product Code": product_code,
-                "Printing Size": psize,
-            }
-        )
-    return rows
-
-
-def blank(val) -> bool:
-    return clean(val) == ""
-
-
-def fill_cell(existing: dict, col: str, incoming: str, counts: dict, prefixed: str) -> None:
-    if not incoming:
-        return
-    if not blank(existing.get(col)):
-        counts[f"skip_already_{prefixed}_{col}"] += 1
-        return
-    existing[col] = incoming
-    counts[f"filled_{prefixed}_{col}"] += 1
-
-
-def empty_sr_row() -> dict:
-    return {c: "" for c in SR_COLS}
-
-
-def pick_cl_payloads(cl: pd.DataFrame) -> tuple[dict[str, dict], dict]:
-    stats: dict[str, int] = defaultdict(int)
-    best: dict[str, dict] = {}
-    records = cl.to_dict("records")
-    stats["cl_label_rows"] = len(records)
-    for rec in records:
-        parsed = parse_cl_mock_uid(rec.get("Custom Label", ""))
-        if parsed is None:
-            stats["cl_skipped_not_mock_uid"] += 1
-            continue
-        stats["cl_mock_uid_rows"] += 1
-        payload = slot_payload(rec)
-        key = payload["key"]
-        prev = best.get(key)
-        if prev is None:
-            best[key] = payload
-        elif payload["wh_score"] > prev["wh_score"] or (
-            payload["wh_score"] == prev["wh_score"]
-            and payload["ga_len"] > prev["ga_len"]
-        ):
-            stats["cl_duplicate_keys_replaced"] += 1
-            best[key] = payload
-        else:
-            stats["cl_duplicate_keys_kept_first"] += 1
-    stats["cl_unique_mock_uid_keys"] = len(best)
-    return best, stats
-
-
-def apply_fill(
-    sr_rows: list[dict],
-    payloads: dict[str, dict],
-    mock_meta: dict[str, dict[str, str]],
-) -> tuple[list[dict], dict]:
-    counts: dict[str, int] = defaultdict(int)
-    by_key: dict[str, list[int]] = defaultdict(list)
-    for i, rec in enumerate(sr_rows):
-        key = parse_sr_key(rec.get("SKU Value", ""))
-        if key:
-            by_key[key].append(i)
-            counts["sr_existing_mock_uid_rows"] += 1
-        else:
-            counts["sr_non_mock_or_other_rows"] += 1
-
-    counts["sr_existing_mock_uid_keys"] = len(by_key)
-    appends: list[dict] = []
-    samples_new: list[str] = []
-    samples_extra: list[str] = []
-    samples_filled: list[str] = []
-
-    for key, payload in payloads.items():
-        desired = desired_sr_rows(payload, mock_meta)
-        idxs = by_key.get(key, [])
-        if not idxs:
-            appends.extend(desired)
-            counts["keys_appended"] += 1
-            counts["rows_appended_new_key"] += len(desired)
-            if payload["n_slots"] > 1:
-                counts["new_keys_multi_design"] += 1
-            if len(samples_new) < 8:
-                samples_new.append(f"{key} n={payload['n_slots']}")
-            continue
-
-        counts["keys_already_present"] += 1
-        extra = len(desired) - len(idxs)
-        if extra > 0:
-            counts["keys_extra_design_rows"] += 1
-            counts["rows_appended_extra_design"] += extra
-            nd = str(len(desired))
-            for i in idxs:
-                sr_rows[i]["Number of Designs"] = nd
-            for rec in desired[len(idxs) :]:
-                rec["Number of Designs"] = nd
-                appends.append(rec)
-            if len(samples_extra) < 6:
-                samples_extra.append(f"{key} {len(idxs)}->{len(desired)}")
-
-        n_overlap = min(len(idxs), len(desired))
-        expand = extra > 0
-        before_fills = sum(counts.get(f"filled_existing_{c}", 0) for c in BLANK_FILL_COLS)
-        for j in range(n_overlap):
-            existing = sr_rows[idxs[j]]
-            incoming = desired[j]
-            for col in BLANK_FILL_COLS:
-                if (
-                    col == "Suffix"
-                    and not expand
-                    and len(desired) == 1
-                    and blank(existing.get("Suffix"))
-                ):
-                    counts["skip_single_blank_suffix"] += 1
-                    continue
-                fill_cell(existing, col, incoming.get(col, ""), counts, "existing")
-        after_fills = sum(counts.get(f"filled_existing_{c}", 0) for c in BLANK_FILL_COLS)
-        if after_fills > before_fills and len(samples_filled) < 6:
-            samples_filled.append(key)
-
-    sr_rows.extend(appends)
-    counts["rows_appended_total"] = len(appends)
-    counts["sample_new"] = samples_new  # type: ignore[assignment]
-    counts["sample_extra"] = samples_extra  # type: ignore[assignment]
-    counts["sample_filled"] = samples_filled  # type: ignore[assignment]
-    return sr_rows, counts
 
 
 def dataframe_from_rows(rows: list[dict]) -> pd.DataFrame:
@@ -504,5 +163,17 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
+def _selfcheck() -> None:
+    assert sr_key("m123", "45678") == "M123 (45678)"
+    assert parse_cl_mock_uid("M123-45678") == ("M123", "45678")
+    assert parse_cl_mock_uid("M260-P5-102722") is None
+    assert suffix_for_slots(["Front Center"], 1) == [""]
+    assert suffix_for_slots(["Front Center", "Back Center"], 2) == ["F", "B"]
+
+
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "--selfcheck":
+        _selfcheck()
+        print("fill_size_references_from_cl selfcheck OK")
+        raise SystemExit(0)
     raise SystemExit(main())
