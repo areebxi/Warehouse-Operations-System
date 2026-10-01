@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 
 from pdf_generator import generate_packing_slips_for_tag
-from run_script_impl1 import validate_orders_stock
+from run_stock_validate import validate_orders_stock
 from run_script_impl3 import write_edi_orders_csv, write_stock_issues_csv
 from run_script_impl4 import load_pack_names, load_packs_database
 from run_script_impl5 import (

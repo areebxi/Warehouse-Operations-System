@@ -1,65 +1,58 @@
 """
-PDF Generator - Extracted from plain-orders cursor ai.py
-This file contains only the PDF generation functionality for packing slips.
+PDF Generator — stable façade for packing-slip generation.
+Logic lives in pdf_page / pdf_generate_* / pdf_btc_* helpers.
 """
 
-import pandas as pd
-from fpdf import FPDF
-from pathlib import Path
-from datetime import date
+from __future__ import annotations
 
-from app_paths import APP_ROOT, asset_path, data_path, packs_database_path, product_database_path, tag_output_dir
-from pdf_generator_impl1 import PDF
-from pdf_generator_impl2 import generate_packing_slips_for_tag
-from pdf_generator_impl3 import generate_packing_slips, _load_btc_product_data_by_uid, _resolve_product_image_path, _load_colour_image_basenames_by_uid, _image_filename_from_url
-from pdf_generator_impl4 import _load_pack_titles_map, _load_pack_names_map, _lookup_product_details, _safe_add_single_page, _read_btc_product_data_csv, _row_to_product_dict
+from pdf_btc_images import (  # noqa: F401
+    _image_filename_from_url,
+    _load_colour_image_basenames_by_uid,
+    _read_btc_product_data_csv,
+    _resolve_product_image_path,
+)
+from pdf_btc_product import (  # noqa: F401
+    _load_btc_product_data_by_uid,
+    _load_pack_names_map,
+    _load_pack_titles_map,
+    _lookup_product_details,
+    _row_to_product_dict,
+)
+from pdf_constants import (  # noqa: F401
+    BRAND_IMAGE_FOLDER,
+    BRAND_LOGO_W,
+    BRAND_LOGO_X,
+    BTC_PRODUCT_DATA_FILE,
+    COLUMN_NAMES,
+    DETAILS_X_START,
+    MARGIN,
+    PACKS_DATABASE_FILE,
+    PAGE_HEIGHT,
+    PAGE_WIDTH,
+    PLAIN_ITEMS_CSV,
+    PRODUCT_DATABASE_FILE,
+    PRODUCT_IMAGE_FOLDER,
+    PRODUCT_IMG_H,
+    PRODUCT_IMG_W,
+    PRODUCT_IMG_X,
+    PRODUCT_IMG_Y,
+    SCRIPT_DIR,
+)
+from pdf_generate_cli import generate_packing_slips  # noqa: F401
+from pdf_generate_helpers import _safe_add_single_page  # noqa: F401
+from pdf_generate_tag import generate_packing_slips_for_tag  # noqa: F401
+from pdf_page import PDF  # noqa: F401
 
-# --- PDF Layout Constants ---
-PAGE_WIDTH = 297
-PAGE_HEIGHT = 210
-MARGIN = 10
-PRODUCT_IMG_X = MARGIN
-PRODUCT_IMG_Y = 45
-PRODUCT_IMG_W = 75
-PRODUCT_IMG_H = 95.55
-DETAILS_X_START = PRODUCT_IMG_X + PRODUCT_IMG_W + 10
-BRAND_LOGO_W = 40
-BRAND_LOGO_X = PAGE_WIDTH - MARGIN - BRAND_LOGO_W
-
-# --- Column Names ---
-COLUMN_NAMES = {
-    # In orders.csv (PLAIN_ITEMS_CSV)
-    "order_id": "Order",
-    "sku": "Item SKU",
-    "recipient": "Recipient",
-    "quantity": "Quantity",
-    "process": "Tag",
-    "components": "Components",
-    "component_colours": "Component Colours",
-
-    # In Database.xlsx (PRODUCT_DATABASE_FILE)
-    "product_code": "Product Code",
-    "db_sku": "SKU",
-    "brand": "Brand",
-    "colour": "Colour",
-    "size": "Size",
-    "description": "Description",
-    "package": "Package",
-    "product_image_filename": "Product_Image_URL",
-    "brand_image_filename": "Brand_Image_URL",
-}
-
-# --- File Paths ---
-PLAIN_ITEMS_CSV = "packing_list_tag_30885_20250908_130713.csv"  # Example only (CLI mode)
-PRODUCT_DATABASE_FILE = product_database_path()
-BTC_PRODUCT_DATA_FILE = data_path("BTC_Product_Data.csv")
-PACKS_DATABASE_FILE = packs_database_path()
-
-SCRIPT_DIR = APP_ROOT
-PRODUCT_IMAGE_FOLDER = asset_path("product_images")
-BRAND_IMAGE_FOLDER = asset_path("brand_logos")
-
-_COLOUR_IMAGE_BY_UID_CACHE: dict[str, str] | None = None
+__all__ = [
+    "PDF",
+    "generate_packing_slips",
+    "generate_packing_slips_for_tag",
+    "COLUMN_NAMES",
+    "PLAIN_ITEMS_CSV",
+    "PRODUCT_DATABASE_FILE",
+    "PRODUCT_IMAGE_FOLDER",
+    "BRAND_IMAGE_FOLDER",
+]
 
 if __name__ == "__main__":
     print("PDF Generator - Packing Slips")
@@ -70,5 +63,4 @@ if __name__ == "__main__":
     print(f"3. {PRODUCT_IMAGE_FOLDER} - Product images folder")
     print(f"4. {BRAND_IMAGE_FOLDER} - Brand logos folder")
     print()
-    
     generate_packing_slips()

@@ -53,23 +53,21 @@ from gui_helpers.processing.gui_processing_helpers_folder import (  # noqa: E402
 from gui_helpers.processing.gui_processing_helpers_messages import (  # noqa: E402
     is_plainlg_sku,
 )
-from auto_missing_logo_watcher_impl1 import (  # noqa: E402
-    _build_ctx,
-    _is_inbox_candidate,
-    _output_stem,
-    process_missing_logo_file_headless,
-    watch_loop,
-)
-from auto_missing_logo_watcher_impl2 import (  # noqa: E402
+from auto_missing_logo_inbox import (  # noqa: E402
     _inbox_root,
+    _is_inbox_candidate,
     _iter_inbox_files,
     _move_to,
     _rel_date_shift,
-    _save_batches,
     _setup_logging,
     _wait_stable,
-    process_one,
-    run_once,
+)
+from auto_missing_logo_loop import process_one, run_once, watch_loop  # noqa: E402
+from auto_missing_logo_process import (  # noqa: E402
+    _build_ctx,
+    _output_stem,
+    _save_batches,
+    process_missing_logo_file_headless,
 )
 
 LOG = logging.getLogger("auto_missing_logo_watcher")

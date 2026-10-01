@@ -1,4 +1,4 @@
-"""ShipStationAPI class shell — methods live in mixin modules."""
+"""ShipStationAPI class shell — fetch/export live in shipstation_orders_fetch."""
 
 from __future__ import annotations
 
@@ -7,11 +7,10 @@ from shared.shipstation import (
     ShipStationCredentials,
     load_shipstation_credentials,
 )
-from shipstation_orders_impl_mixin1 import ShipStationAPIMixin1
-from shipstation_orders_impl_mixin2 import ShipStationAPIMixin2
+from shipstation_orders_fetch import ShipStationAPIFetch
 
 
-class ShipStationAPI(ShipStationAPIMixin1, ShipStationAPIMixin2):
+class ShipStationAPI(ShipStationAPIFetch):
     """PO façade over shared ShipStationClient + local CSV/JSON export."""
 
     def __init__(

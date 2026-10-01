@@ -8,6 +8,14 @@ from src.core.size_reference import (
 )
 from src.core.size_lookup_index import get_size_reference_index
 
+
+def _clean_str(value: Any) -> Optional[str]:
+    if value is None or (isinstance(value, float) and pd.isna(value)):
+        return None
+    text = str(value).strip()
+    return text if text else None
+
+
 def get_position_size_entries(
     size_reference_df: Optional[pd.DataFrame],
     lookup_size_code: Optional[str],

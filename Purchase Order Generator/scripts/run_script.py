@@ -25,7 +25,7 @@ from stock_resolver import (
     not_found_status,
     resolve_stock_level,
 )
-from run_script_impl1 import validate_orders_stock
+from run_stock_validate import validate_orders_stock
 from run_script_impl2 import download_ftp_file, normalize_packing_rows, _pack_key
 from run_script_impl3 import write_edi_orders_csv, write_stock_issues_csv, _unique_complete_skus, is_discount_line_item
 from run_script_impl4 import load_packs_database, _download_sftp_file, load_pack_names, _log_cached_stock_file

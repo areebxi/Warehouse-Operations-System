@@ -1,18 +1,17 @@
+"""ShipStationAPI fetch/export methods for Purchase Order Generator."""
+
 from __future__ import annotations
-import csv
-import json
-import sys
-from datetime import datetime
-from pathlib import Path
+
 from typing import Dict, List, Optional
-from shared.shipstation import (  # noqa: E402
-    ShipStationClient,
-    ShipStationCredentials,
-    ShipStationError,
-    load_shipstation_credentials,
+
+from shared.shipstation import ShipStationError  # noqa: E402
+from shipstation_orders_export import (  # noqa: E402
+    export_orders_to_csv as _export_orders_to_csv,
+    export_orders_to_json as _export_orders_to_json,
 )
 
-class ShipStationAPIMixin2:
+
+class ShipStationAPIFetch:
     def get_orders_by_tag(
         self,
         tag_id: int | str,
@@ -54,16 +53,11 @@ class ShipStationAPIMixin2:
             order_date=order_date,
         )
 
+    def export_orders_to_csv(self, orders, filename=None):
+        return _export_orders_to_csv(orders, filename)
+
     def export_orders_to_json(self, orders: List[Dict], filename: str = None) -> str:
-        if not filename:
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"awaiting_dispatch_orders_{timestamp}.json"
-
-        with open(filename, "w", encoding="utf-8") as jsonfile:
-            json.dump(orders, jsonfile, indent=2, ensure_ascii=False, default=str)
-
-        print(f"Orders exported to {filename}")
-        return filename
+        return _export_orders_to_json(orders, filename)
 
     def get_order_details(self, order_id: int) -> Optional[Dict]:
         try:
@@ -71,4 +65,3 @@ class ShipStationAPIMixin2:
         except ShipStationError as e:
             print(f"Error fetching order {order_id}: {e}")
             return None
-

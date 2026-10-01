@@ -11,12 +11,10 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import app_paths  # noqa: F401 — configures import paths
 
-from test_validate_orders_stock_impl1 import TestIssueRowExports  # noqa: E402
-from test_validate_orders_stock_impl2 import (  # noqa: E402
-    TestDiscountSkipping,
-    TestNormalizePackingRows,
-)
-from test_validate_orders_stock_impl3 import TestRealTagJsonFixture  # noqa: E402
+from validate_orders_stock_discount import TestDiscountSkipping  # noqa: E402
+from validate_orders_stock_fixture import TestRealTagJsonFixture  # noqa: E402
+from validate_orders_stock_issues import TestIssueRowExports  # noqa: E402
+from validate_orders_stock_normalize import TestNormalizePackingRows  # noqa: E402
 
 __all__ = [
     "TestIssueRowExports",
