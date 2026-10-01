@@ -41,3 +41,12 @@ SKU keys are **stricter** than `shared.cl_sku_match.resolve_label`: CL after fir
 Dry-run: run date, mix yes/no (Hashim 300-order gate), process names with orders / lines / units, `RESEND`, `UNMATCHED` (reasons). Testing always reports `1st Shift`. Say clearly that Input was **not** written.
 
 `--run`: same report plus paths of CSVs written to `1st Shift`.
+
+## Structure & boundaries
+
+- **Orchestration:** `scripts/run_sorter.py` (dry-run default; `--run` writes).
+- **Domain:** `scripts/grouping.py` (façade) plus `grouping_*.py` modules (`models`, `finish`, `intake`, `slots`, `peel`, `garments`, `fixed`, `shift`, `parts`, `names`, `bins`, `io`, `report`); also `fixed_batches.py`, `leftover_batches.py`, `catalogs.py`.
+- **I/O:** Packing Input via `shared.paths.sorter_input_csv_path`; Logs; sorter DB under `database/order-grouping-sorter/`.
+- **Legacy oversized:** `test_grouping.py` (see `../docs/ARCHITECTURE.md`). Production `grouping.py` is split.
+- **Must not:** import Packing internals (CSV columns are copied, not imported); overwrite catalogs on a run; use universal 3-key `resolve_label` for grouping finish keys.
+- Architecture: `.cursor/rules/architecture.mdc`.

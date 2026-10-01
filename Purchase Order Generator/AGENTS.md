@@ -38,3 +38,13 @@ Grouping column **`Supplier Name`** filled 2026-09-09 on Plain Database (`BTC Ac
 ## Report changes
 
 Report tags/orders processed, stock misses, output folder name, and any data files updated (with backup path if created).
+
+## Structure & boundaries
+
+- **Orchestration:** `scripts/run_script.py`, `scripts/run_script_gui.py`.
+- **Domain / stock:** stock helpers and resolvers under `scripts/` (e.g. `stock_resolver.py`, fill/sync utilities).
+- **Generation:** `scripts/pdf_generator.py` (packing slips today).
+- **Integrations:** `scripts/shipstation_orders.py` via `shared.shipstation`; BTC FTP settings in `config.py` (not secrets).
+- **Legacy oversized:** `run_script.py`, `pdf_generator.py`, `shipstation_orders.py` (see `../docs/ARCHITECTURE.md`).
+- **Must not:** import Packing/Sorter internals; path resolution outside `shared.paths`; paste credentials into docs.
+- Architecture: `.cursor/rules/architecture.mdc`.

@@ -41,3 +41,12 @@ PE taxonomy: `Category` and `Department` ← PE `Department`; `Sub-Category` and
 ## After any CSV change
 
 Tell the supervisor exactly what changed: file, rows/labels, columns, before→after, count, backup path. On **fill**, also report the Database Transfer sync (row counts + backup paths).
+
+## Structure & boundaries
+
+- **Orchestration:** `scripts/` entry CLIs (`fill_from_seeds.py`, `add_labels.py`, `sync_database_transfer.py`, `db_update.py`).
+- **Domain / shared fills:** `shared/areeb_taxonomy.py`, `supply_method.py`, `printing_type.py`, `supplier_name.py` (multi-app — do not fork in this folder).
+- **I/O:** live paths only via `shared.paths`; helpers under `database/custom-label-database/`.
+- **Legacy oversized:** `fill_from_seeds.py`, `add_labels.py`, `phase5_print_sizes.py`, `size_code_logic.py` (see `../docs/ARCHITECTURE.md`).
+- **Must not:** import other apps’ internals; resolve paths outside `shared.paths`; re-implement SKU match / finish gate / supply method / printing type.
+- Policy detail: parent `.cursor/rules/custom-label-database/`. Architecture: `.cursor/rules/architecture.mdc`.

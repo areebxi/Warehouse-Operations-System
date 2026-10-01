@@ -60,3 +60,15 @@ Live paths via `shared/paths.py` / `load_config` (I/O + yaml in this app; ShipSt
 
 Report convert counts, process groups, label successes/failures, void results, and artifact paths. Redact secrets.
 
+
+
+## Structure & boundaries
+
+- **Orchestration:** `scripts/app/main` and `scripts/app/flows/` (convert / print / void / report).
+- **Integrations:** `scripts/app/providers/` (ShipStation via `shared.shipstation` credentials).
+- **Generation:** `scripts/app/pdf/`.
+- **I/O:** `DTF Des Files/`, `Output/`, `shipping_config.yaml`; secrets via `shared.paths` / `config/ShipStation/.env`.
+- **Legacy oversized:** `print_labels/run.py`, `process_order.py`, `providers/real/provider.py` (see `../docs/ARCHITECTURE.md`).
+- **Must not:** import Packing/Queue/Sorter internals; hardcode secrets; auto-read SharedInbox until built.
+- Architecture: `.cursor/rules/architecture.mdc`.
+

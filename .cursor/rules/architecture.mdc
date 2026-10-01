@@ -1,0 +1,34 @@
+---
+description: Modular architecture — 200-line limit, layers, shared vs app, boundaries
+alwaysApply: true
+---
+
+# Architecture
+
+Principles only. Detail: `docs/ARCHITECTURE.md`. Warehouse standing terms: `supervisor-chat`. Approval: `warehouse-system-map`. SKU match: `cl-sku-match`. Handoff: `shared-inbox`. Existence of code: `ponytail`. Large splits: `best-advice-first`. New behaviour: `requirement-understanding`.
+
+## 200-line limit
+
+New or modified `.py` / `.ps1` / `.bat` / `.js`: **≤200 physical lines**. Exempt: `Versions/`, `backups/`, `__pycache__`, data files, `.md` / `.mdc`. Tests also ≤200 — split by behaviour under test.
+
+**Legacy ratchet:** a file already over 200 may not grow. If a change would add real logic, first extract *only the responsibility being touched* into a cohesive same-app module. No drive-by refactors of the rest. A large multi-file split needs supervisor approval (`best-advice-first`).
+
+**Cohesion over line count.** Never split related code into meaningless fragments. `ponytail` decides whether code should exist; this rule decides where it lives.
+
+## Layers (keep separate when practical)
+
+Orchestration (CLI/GUI/runner) · domain logic · data access (CSV/xlsx under `database/`) · integrations (`shared/shipstation/`, NocoDB, FTP) · file generation (PDF/Excel/CSV writers) · validation.
+
+## Shared vs app
+
+`shared/` only when **two or more apps** genuinely use it. All path resolution in `shared/paths.py`. Reuse `cl_sku_match`, `supply_method`, `printing_type`, `supplier_name`, `taxonomy_*`, `shipstation`. Never re-implement SKU matching, the finish gate (plain/printed, printed-wins), supply method, or printing type inside an app.
+
+## App boundaries
+
+Apps do not import each other’s internals. Hand data via files (Sorter → Packing Input; Packing → SharedInbox → Queue). Changing ownership is an architecture proposal, not an edit.
+
+## Workflow
+
+Inspect before editing. Load only the target app’s `AGENTS.md` and `.cursor/rules/<slug>/` whose globs match. Read `docs/ARCHITECTURE.md` for cross-app work, shared code, handoffs, data ownership, integrations, or architecture decisions.
+
+**After editing:** `python scripts/check_line_limit.py` on touched paths; no duplicated logic, boundary leak, or unrelated diff; run that app’s existing tests.

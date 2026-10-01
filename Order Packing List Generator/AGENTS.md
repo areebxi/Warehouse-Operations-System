@@ -40,3 +40,13 @@ DTF Des also lands in SharedInbox for Queue Missing Logo auto-run.
 ## Report changes
 
 Say what ran (inputs, date, shift), what was written under Output and SharedInbox, unmatched counts, and any config touched. Log resolved bugs to `.cursor/issue-log.md`.
+
+## Structure & boundaries
+
+- **Orchestration:** `packing_list_app.py`, `pipeline_runtime/`, `pipeline_packing_list_app/`.
+- **Domain:** `pipeline_*` services (CL lookup, assign process, split, shipstation helpers).
+- **Generation:** `pipeline_generate_packing_list_pdf/`, `pipeline_generate_excel_outputs/`.
+- **I/O:** app `{Input,Output,Logs}`; SharedInbox via `shared.paths`; DB under `database/order-packing-list-generator/`.
+- **Legacy oversized:** preflight `app.py`, packing runners, PDF `reporting.py` (see `../docs/ARCHITECTURE.md`).
+- **Must not:** import Sorter/Queue/Shipping/PO internals; path resolution outside `shared.paths`; re-implement `cl_sku_match`.
+- Architecture: `.cursor/rules/architecture.mdc`.

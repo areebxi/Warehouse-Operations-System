@@ -31,3 +31,12 @@ Live paths via `shared/paths.py` (DB in `database/`; settings + I/O in this app;
 ## Report changes
 
 Report mode, input file(s), size hits/misses, output paths. Log resolved issues to `.cursor/issue-log.md`.
+
+## Structure & boundaries
+
+- **Orchestration:** `queue_app.py`, `scripts/auto_missing_logo_watcher.py`.
+- **Domain:** `scripts/src/core/` (canvas, sizes, image rules).
+- **I/O:** `scripts/src/io/`; GUI helpers under `scripts/gui_helpers/`.
+- **Legacy oversized:** `canvas_arranger.py`, `queue_app.py`, `size_code_extractor.py`, watcher (see `../docs/ARCHITECTURE.md`).
+- **Must not:** import Packing/Shipping/Sorter internals; path resolution outside `shared.paths`; invent size codes.
+- Architecture: `.cursor/rules/architecture.mdc`.
