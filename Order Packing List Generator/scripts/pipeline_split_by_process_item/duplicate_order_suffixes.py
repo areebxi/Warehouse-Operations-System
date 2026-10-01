@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from scripts.pipeline_runtime.order_number_csv import coerce_order_number_columns
+from pipeline_runtime.order_number_csv import coerce_order_number_columns
 
 from .common import _customise_is_yes, _normalize, _order_number_column
 from .grouping_quantity import _get_qty

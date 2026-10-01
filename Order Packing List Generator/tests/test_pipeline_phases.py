@@ -65,10 +65,10 @@ class TestPipelinePhases(unittest.TestCase):
         proc.write_text("Order Number\n1\n", encoding="utf-8")
 
         with patch(
-            "scripts.pipeline_runtime.runner.run_step8_pdf_generation_impl",
+            "pipeline_runtime.runner_pdf_phase.run_step8_pdf_generation_impl",
             return_value="ok",
         ) as mock_s8, patch(
-            "scripts.pipeline_runtime.runner.fetch_input_csv"
+            "pipeline_runtime.runner_steps_1_5.fetch_input_csv"
         ) as mock_fetch:
             output_root, unmatched, missing, report = run_pipeline(
                 **self._common_kwargs(), phases="pdf"
@@ -123,31 +123,37 @@ class TestPipelinePhases(unittest.TestCase):
         def fake_excel(csv_path, output_root, dispatch_date, **kwargs):
             (Path(output_root) / f"{Path(csv_path).stem}.xlsx").write_bytes(b"PK")
 
-        with patch("scripts.pipeline_runtime.runner.fetch_input_csv", side_effect=fake_fetch), patch(
-            "scripts.pipeline_runtime.runner.write_fetched_csv", side_effect=fake_write
+        with patch(
+            "pipeline_runtime.runner_steps_1_5.fetch_input_csv", side_effect=fake_fetch
         ), patch(
-            "scripts.pipeline_runtime.runner.apply_packing_rules_to_csv"
+            "pipeline_runtime.runner_steps_1_5.write_fetched_csv", side_effect=fake_write
         ), patch(
-            "scripts.pipeline_runtime.runner.enrich_packing_data", side_effect=fake_enrich
+            "pipeline_runtime.runner_steps_1_5.apply_packing_rules_to_csv"
         ), patch(
-            "scripts.pipeline_runtime.runner.fill_packing_columns", side_effect=fake_fill
+            "pipeline_runtime.runner_steps_1_5.enrich_packing_data",
+            side_effect=fake_enrich,
         ), patch(
-            "scripts.pipeline_runtime.runner.run_split_and_assign_position_codes",
+            "pipeline_runtime.runner_steps_1_5.fill_packing_columns",
+            side_effect=fake_fill,
+        ), patch(
+            "pipeline_runtime.runner_steps_1_5.run_split_and_assign_position_codes",
             side_effect=fake_split_pos,
         ), patch(
-            "scripts.pipeline_runtime.runner.run_assign_process_number", side_effect=fake_assign
+            "pipeline_runtime.runner_steps_1_5.run_assign_process_number",
+            side_effect=fake_assign,
         ), patch(
-            "scripts.pipeline_runtime.runner.run_split_by_process_and_item_number",
+            "pipeline_runtime.runner_steps_6_7.run_split_by_process_and_item_number",
             side_effect=fake_split6,
         ), patch(
-            "scripts.pipeline_runtime.runner.filter_step6_csvs_for_missing_logos",
+            "pipeline_runtime.runner_steps_1_5.filter_step6_csvs_for_missing_logos",
             side_effect=fake_filter,
         ), patch(
-            "scripts.pipeline_runtime.runner._update_all_orders_log"
+            "pipeline_runtime.runner_steps_6_7._update_all_orders_log"
         ), patch(
-            "scripts.pipeline_runtime.runner.run_generate_excel_outputs", side_effect=fake_excel
+            "pipeline_runtime.runner_steps_6_7.run_generate_excel_outputs",
+            side_effect=fake_excel,
         ), patch(
-            "scripts.pipeline_runtime.runner.run_step8_pdf_generation_impl"
+            "pipeline_runtime.runner_finish.run_step8_pdf_generation_impl"
         ) as mock_s8:
             output_root, unmatched, missing, report = run_pipeline(
                 **self._common_kwargs(), phases="excel"

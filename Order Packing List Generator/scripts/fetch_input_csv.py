@@ -1,6 +1,6 @@
 """Backward-compatible CLI wrapper for step 1 (ShipStation CSV fetch)."""
 
-from scripts.pipeline_cl_lookup.fetch_input_csv import (
+from pipeline_cl_lookup.fetch_input_csv import (
     OUTPUT_COLUMNS,
     fetch_input_csv,
     main,

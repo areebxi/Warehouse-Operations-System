@@ -3,12 +3,12 @@ from __future__ import annotations
 import asyncio
 from pathlib import Path
 
-from scripts.app.config.load import AppConfig
-from scripts.app.flows.void_labels.read_void_list import read_void_order_numbers
-from scripts.app.flows.void_labels.void_shipments import VoidResult, void_for_order
-from scripts.app.logging.jsonl import JsonlLogger
-from scripts.app.logging.orders_audit import OrderAuditLogger
-from scripts.app.providers.select_provider import get_provider
+from app.config.load import AppConfig
+from app.flows.void_labels.read_void_list import read_void_order_numbers
+from app.flows.void_labels.void_shipments import VoidResult, void_for_order
+from app.logging.jsonl import JsonlLogger
+from app.logging.orders_audit import OrderAuditLogger
+from app.providers.select_provider import get_provider
 
 
 def _void_csv_path(cfg: AppConfig) -> Path:

@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple
 
-from scripts.pipeline_generate_packing_list_pdf.back_print_hint import FBPI_SIDE_SUFFIX_LOOKUP
+from pipeline_generate_packing_list_pdf.back_print_hint import FBPI_SIDE_SUFFIX_LOOKUP
 
 
 def resolve_custom_logo_context_impl(

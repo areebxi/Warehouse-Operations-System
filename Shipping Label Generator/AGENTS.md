@@ -64,11 +64,11 @@ Report convert counts, process groups, label successes/failures, void results, a
 
 ## Structure & boundaries
 
-- **Orchestration:** `scripts/app/main` and `scripts/app/flows/` (convert / print / void / report).
+- **Orchestration:** `scripts/app/main` and `scripts/app/flows/` (convert / print / void / report; façades + `*_impl*` helpers).
 - **Integrations:** `scripts/app/providers/` (ShipStation via `shared.shipstation` credentials).
 - **Generation:** `scripts/app/pdf/`.
 - **I/O:** `DTF Des Files/`, `Output/`, `shipping_config.yaml`; secrets via `shared.paths` / `config/ShipStation/.env`.
-- **Legacy oversized:** `print_labels/run.py`, `process_order.py`, `providers/real/provider.py` (see `../docs/ARCHITECTURE.md`).
+- **200-line:** live Shipping scripts cleared; keep new/changed modules ≤200 (see `../docs/ARCHITECTURE.md`).
 - **Must not:** import Packing/Queue/Sorter internals; hardcode secrets; auto-read SharedInbox until built.
 - Architecture: `.cursor/rules/architecture.mdc`.
 

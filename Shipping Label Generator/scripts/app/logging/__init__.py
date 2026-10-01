@@ -1,3 +1,3 @@
-from scripts.app.logging.jsonl import JsonlLogger
+from app.logging.jsonl import JsonlLogger
 
 __all__ = ["JsonlLogger"]

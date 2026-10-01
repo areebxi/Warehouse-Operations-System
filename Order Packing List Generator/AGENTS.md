@@ -43,10 +43,10 @@ Say what ran (inputs, date, shift), what was written under Output and SharedInbo
 
 ## Structure & boundaries
 
-- **Orchestration:** `packing_list_app.py`, `pipeline_runtime/`, `pipeline_packing_list_app/`.
+- **Orchestration:** `packing_list_app.py`, `pipeline_runtime/` (step façades + helpers), `pipeline_packing_list_app/`.
 - **Domain:** `pipeline_*` services (CL lookup, assign process, split, shipstation helpers).
-- **Generation:** `pipeline_generate_packing_list_pdf/`, `pipeline_generate_excel_outputs/`.
+- **Generation:** `pipeline_generate_packing_list_pdf/` (`runtime_api.py` → `runtime_api_bind*`, draw/reporting modules), `pipeline_generate_excel_outputs/`.
 - **I/O:** app `{Input,Output,Logs}`; SharedInbox via `shared.paths`; DB under `database/order-packing-list-generator/`.
-- **Legacy oversized:** preflight `app.py`, packing runners, PDF `reporting.py` (see `../docs/ARCHITECTURE.md`).
+- **200-line:** live Packing scripts cleared; keep new/changed modules ≤200 (see `../docs/ARCHITECTURE.md`).
 - **Must not:** import Sorter/Queue/Shipping/PO internals; path resolution outside `shared.paths`; re-implement `cl_sku_match`.
 - Architecture: `.cursor/rules/architecture.mdc`.

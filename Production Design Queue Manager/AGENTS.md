@@ -34,9 +34,10 @@ Report mode, input file(s), size hits/misses, output paths. Log resolved issues 
 
 ## Structure & boundaries
 
-- **Orchestration:** `queue_app.py`, `scripts/auto_missing_logo_watcher.py`.
-- **Domain:** `scripts/src/core/` (canvas, sizes, image rules).
-- **I/O:** `scripts/src/io/`; GUI helpers under `scripts/gui_helpers/`.
-- **Legacy oversized:** `canvas_arranger.py`, `queue_app.py`, `size_code_extractor.py`, watcher (see `../docs/ARCHITECTURE.md`).
+- **Orchestration:** `queue_app.py`; Missing Logo watcher `scripts/auto_missing_logo_watcher.py` → `auto_missing_logo_{process,loop,inbox}.py`.
+- **Domain:** `scripts/src/core/` (canvas, sizes, image rules; façades + `*_impl*` helpers).
+- **I/O:** `scripts/src/io/`; GUI helpers under `scripts/gui_helpers/` (missing-logo / personalised: `gui_processing_ui_*.py` + `*_load.py`).
+- **Logging:** `scripts/src/system/logging/console.py` → `console_setup` / `console_close` / `console_state`.
+- **200-line:** live Queue scripts cleared; keep new/changed modules ≤200 (see `../docs/ARCHITECTURE.md`).
 - **Must not:** import Packing/Shipping/Sorter internals; path resolution outside `shared.paths`; invent size codes.
 - Architecture: `.cursor/rules/architecture.mdc`.

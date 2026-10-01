@@ -5,7 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from scripts.app.util.win_console import configure_windows_console
+from app.util.win_console import configure_windows_console
 
 
 def _repo_root() -> Path:

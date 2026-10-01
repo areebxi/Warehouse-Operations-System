@@ -82,7 +82,7 @@ def split_matched_unmatched(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFram
     """
     if "Gender Apparel" not in df.columns:
         raise ValueError("Step-3 CSV must contain column 'Gender Apparel'.")
-    from scripts.pipeline_split_by_process_item.merge_group_mask import (
+    from pipeline_split_by_process_item.merge_group_mask import (
         expand_issue_mask_to_merge_groups,
     )
 

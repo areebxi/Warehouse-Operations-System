@@ -4,10 +4,10 @@ import argparse
 import sys
 from pathlib import Path
 
-from scripts.app.config.load import load_config
-from scripts.app.flows.amendments.run import read_order_numbers_file, run_amendments_check
-from scripts.app.logging.jsonl import JsonlLogger
-from scripts.app.util.win_console import configure_windows_console
+from app.config.load import load_config
+from app.flows.amendments.run import read_order_numbers_file, run_amendments_check
+from app.logging.jsonl import JsonlLogger
+from app.util.win_console import configure_windows_console
 
 # warehouse root on path for shared.paths
 _WAREHOUSE = Path(__file__).resolve().parents[4]

@@ -28,22 +28,10 @@ from shared.supplier_name import (
     classify_packs_row,
     classify_plain_row,
 )
+from fill_supplier_name_impl import backup_file, header_index
 
 PLAIN_SHEET = "Sheet1"
 PACKS_SHEET = "01-Database"
-
-
-def backup_file(path: Path, dest_dir: Path) -> Path:
-    dest_dir.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    dest = dest_dir / f"{path.stem}.bak_{stamp}{path.suffix}"
-    shutil.copy2(path, dest)
-    return dest
-
-
-def header_index(headers: list[str]) -> dict[str, int]:
-    return {h: i for i, h in enumerate(headers) if h}
-
 
 def _print_counts(title: str, path: Path, stats: dict[str, int], samples: list[str]) -> None:
     print(f"{title}: {path}")
@@ -53,7 +41,6 @@ def _print_counts(title: str, path: Path, stats: dict[str, int], samples: list[s
         print(f"  {label}: {stats[key]:,}")
     for line in samples:
         print(f"  e.g. {line}")
-
 
 def fill_cl(cat, *, dry_run: bool) -> dict[str, int]:
     path = wh.cl_csv_path()
@@ -95,7 +82,6 @@ def fill_cl(cat, *, dry_run: bool) -> dict[str, int]:
     print("  wrote", path)
     return dict(stats)
 
-
 def _ensure_xlsx_col(ws, headers: list[str], idx: dict[str, int]) -> dict[str, int]:
     if COL in idx:
         return idx
@@ -104,7 +90,6 @@ def _ensure_xlsx_col(ws, headers: list[str], idx: dict[str, int]) -> dict[str, i
     headers.append(COL)
     idx[COL] = col_i - 1
     return idx
-
 
 def fill_plain(cat, *, dry_run: bool) -> dict[str, int]:
     path = wh.plain_database_path()
@@ -146,7 +131,6 @@ def fill_plain(cat, *, dry_run: bool) -> dict[str, int]:
     wb.close()
     print("  wrote", path)
     return dict(stats)
-
 
 def fill_packs(cat, *, dry_run: bool) -> dict[str, int]:
     path = wh.packs_database_path()
@@ -191,7 +175,6 @@ def fill_packs(cat, *, dry_run: bool) -> dict[str, int]:
     print("  wrote", path)
     return dict(stats)
 
-
 def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--target", choices=("cl", "plain", "packs", "all"), default="all")
@@ -209,7 +192,6 @@ def main() -> int:
     if "packs" in targets:
         fill_packs(cat, dry_run=args.dry_run)
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

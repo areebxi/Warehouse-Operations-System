@@ -3,6 +3,7 @@ import pandas as pd
 import re
 from collections import Counter, defaultdict
 from pathlib import Path
+from scripts.print_sizes_mock_analysis_impl import infer_printing_position, db_size, db_gender, clean, extract_mock
 
 BASE = Path(r"d:\Custom Label Database")
 CONFIG = BASE / "Configuration Workbook.xlsx"
@@ -14,9 +15,6 @@ df = pd.read_excel(UPDATED, usecols=[
     "Print Positions", "Category"
 ])
 
-def clean(s):
-    if pd.isna(s): return ""
-    return str(s).strip()
 
 for c in df.columns:
     df[c] = df[c].apply(clean)
@@ -24,9 +22,6 @@ for c in sr.columns:
     sr[c] = sr[c].apply(lambda x: clean(x) if not pd.isna(x) else "")
 
 # Extract mock from Print Positions
-def extract_mock(pp):
-    m = re.search(r"\(M(\d+)\)", pp)
-    return f"M{m.group(1)}" if m else ""
 
 df["Mock"] = df["Print Positions"].apply(extract_mock)
 
@@ -126,44 +121,6 @@ PP_TO_SR = {
 }
 
 # Count rows matchable via mock + printing position + gender + size
-def db_gender(ga):
-    g = ga.lower()
-    if "kid" in g or "child" in g or "youth" in g or "junior" in g: return "Kids"
-    if "men" in g or "boy" in g: return "Men"
-    if "women" in g or "ladies" in g or "girl" in g: return "Women"
-    return "Men"  # default?
-
-def db_size(sz):
-    # map Phase-standardized sizes to Size Ref format
-    m = {
-        "1-2 Years": "1-2Y", "2-3 Years": "2-3Y", "3-4 Years": "3-4Y",
-        "5-6 Years": "5-6Y", "7-8 Years": "7-8Y", "9-11 Years": "9-11Y",
-        "12-13 Years": "12-13Y", "12-14 Years": "14-15Y", "14-15 Years": "14-15Y",
-        "Small": "Small", "Medium": "Medium", "Large": "Large",
-        "Extra Large": "XL", "Extra Small": "XS",
-        "2XL": "2XL", "3XL": "3XL", "4XL": "4XL", "5XL": "5XL",
-    }
-    return m.get(sz, sz)
-
-def infer_printing_position(pp):
-    pp_clean = re.sub(r"\s*\(M\d+\)\s*$", "", pp)
-    if pp_clean in PP_TO_SR:
-        return PP_TO_SR[pp_clean]
-    parts = re.split(r",\s*", pp_clean)
-    has_front = any("front" in p.lower() and "back" not in p.lower() for p in parts)
-    has_back = any("back" in p.lower() for p in parts)
-    has_pocket = any("pocket" in p.lower() or "chest" in p.lower() for p in parts)
-    if has_pocket and has_back:
-        return "Left Chest & Back Print"
-    if has_front and has_back:
-        return "Front & Back Print"
-    if has_pocket:
-        return "Left Chest"
-    if has_back and not has_front:
-        return "Back Print"
-    if has_front:
-        return "Front Print"
-    return ""
 
 # Build index: (mock, gender, size, printing_position, suffix) -> wh
 idx = {}

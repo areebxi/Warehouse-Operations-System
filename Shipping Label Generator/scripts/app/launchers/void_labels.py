@@ -5,11 +5,11 @@ import asyncio
 import sys
 from pathlib import Path
 
-from scripts.app.config.load import load_config
-from scripts.app.flows.void_labels.read_void_list import read_void_order_numbers
-from scripts.app.flows.void_labels.void_shipments import VoidResult, void_for_order
-from scripts.app.logging.jsonl import JsonlLogger
-from scripts.app.providers.select_provider import get_provider
+from app.config.load import load_config
+from app.flows.void_labels.read_void_list import read_void_order_numbers
+from app.flows.void_labels.void_shipments import VoidResult, void_for_order
+from app.logging.jsonl import JsonlLogger
+from app.providers.select_provider import get_provider
 
 
 def _repo_root() -> Path:

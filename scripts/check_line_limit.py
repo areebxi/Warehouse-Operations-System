@@ -20,7 +20,13 @@ def warehouse_root() -> Path:
 
 
 def is_exempt(path: Path) -> bool:
-    return any(part in EXEMPT_PARTS for part in path.parts)
+    if any(part in EXEMPT_PARTS for part in path.parts):
+        return True
+    # Historical archive under Custom Label Database/docs/archive/**
+    parts = path.parts
+    if "docs" in parts and "archive" in parts:
+        return True
+    return False
 
 
 def line_count(path: Path) -> int:

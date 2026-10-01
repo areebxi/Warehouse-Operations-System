@@ -2,7 +2,7 @@ import io
 from pathlib import Path
 from typing import Dict, Optional, Tuple, Union
 
-from scripts.pipeline_generate_packing_list_pdf.images import (
+from pipeline_generate_packing_list_pdf.images import (
     prepare_image_from_url_impl,
     prepare_image_impl,
 )

@@ -17,6 +17,7 @@ from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
+from scripts.phase2_cleanup_impl import apply_map
 
 BASE = Path(r"D:\Custom Label Database")
 SRC = BASE / "Custom Label Database_Updated.xlsx"
@@ -44,19 +45,6 @@ SIZE_TO_WORD = {
     "XL": "Extra Large",
     "XS": "Extra Small",
 }
-
-
-def apply_map(series: pd.Series, mapping: dict[str, str]) -> tuple[pd.Series, dict[str, int]]:
-    counts: dict[str, int] = {}
-    out = series.copy()
-    for src, dst in mapping.items():
-        mask = out == src
-        n = int(mask.sum())
-        if n:
-            counts[f"{src} -> {dst}"] = n
-            out = out.mask(mask, dst)
-    return out, counts
-
 
 def main() -> None:
     print(f"Backing up to {BACKUP.name} ...", flush=True)
@@ -206,7 +194,6 @@ Left unchanged: `2XL`, `3XL`, `4XL`, `5XL`, age bands, months, `A4`/`11Oz`/etc.
     LOG.write_text(log, encoding="utf-8")
     print(f"Changelog: {LOG}", flush=True)
     print("Phase 2 complete.", flush=True)
-
 
 if __name__ == "__main__":
     main()

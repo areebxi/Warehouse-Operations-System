@@ -41,10 +41,10 @@ Report tags/orders processed, stock misses, output folder name, and any data fil
 
 ## Structure & boundaries
 
-- **Orchestration:** `scripts/run_script.py`, `scripts/run_script_gui.py`.
-- **Domain / stock:** stock helpers and resolvers under `scripts/` (e.g. `stock_resolver.py`, fill/sync utilities).
-- **Generation:** `scripts/pdf_generator.py` (packing slips today).
-- **Integrations:** `scripts/shipstation_orders.py` via `shared.shipstation`; BTC FTP settings in `config.py` (not secrets).
-- **Legacy oversized:** `run_script.py`, `pdf_generator.py`, `shipstation_orders.py` (see `../docs/ARCHITECTURE.md`).
+- **Orchestration:** `scripts/run_script.py`, `scripts/run_script_gui.py` (GUI mixins under `run_script_gui_impl*`).
+- **Domain / stock:** `run_script_impl1.py` → `run_stock_validate.py` (+ pack/single/issue helpers); `stock_resolver.py`; fill/sync utilities.
+- **Generation:** `scripts/pdf_generator.py` → `pdf_generator_impl*` (packing slips today).
+- **Integrations:** `scripts/shipstation_orders.py` → export/impl mixins via `shared.shipstation`; BTC FTP settings in `config.py` (not secrets).
+- **200-line:** live PO scripts cleared; keep new/changed modules ≤200 (see `../docs/ARCHITECTURE.md`).
 - **Must not:** import Packing/Sorter internals; path resolution outside `shared.paths`; paste credentials into docs.
 - Architecture: `.cursor/rules/architecture.mdc`.

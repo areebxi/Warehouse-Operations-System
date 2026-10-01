@@ -4,10 +4,10 @@ from typing import Callable, Dict, List, Optional, Tuple
 import pandas as pd
 from reportlab.pdfgen import canvas
 
-from scripts.pipeline_generate_packing_list_pdf.draw_page_date_header import (
+from pipeline_generate_packing_list_pdf.draw_page_date_header import (
     format_dispatch_date_header,
 )
-from scripts.pipeline_runtime.order_number_csv import read_csv_with_order_numbers
+from pipeline_runtime.order_number_csv import read_csv_with_order_numbers
 
 
 def csv_to_pdf_impl(

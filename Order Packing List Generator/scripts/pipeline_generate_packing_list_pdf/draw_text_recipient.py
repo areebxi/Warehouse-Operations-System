@@ -1,0 +1,112 @@
+"""Text drawing helpers for packing list PDFs (wrapped lines, recipient styling)."""
+from __future__ import annotations
+from typing import Dict, List, Tuple
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfgen import canvas
+from pipeline_generate_packing_list_pdf.core_helpers import truncate_impl
+from . import pdf_page_layout as L
+def draw_recipient_name_in_box_impl(
+    c: canvas.Canvas,
+    x: float,
+    y: float,
+    w: float,
+    h: float,
+    text: str,
+    vertical_nudge: float = 0,
+) -> None:
+    if not text:
+        return
+
+    font = L.FONT_BOLD
+    base_size = L.FONT_SIZE_BANNER
+    big_size = base_size * 1.75
+
+    c.setFillColorRGB(*L.WHITE)
+
+    # Build wrapped lines at base font size, similar to draw_text_in_box_impl (wrap=True)
+    words = text.split()
+    if not words:
+        return
+
+    lines: List[str] = []
+    current = ""
+    for word in words:
+        candidate = (current + " " + word).strip()
+        if c.stringWidth(candidate, font, base_size) <= w or not current:
+            current = candidate
+        else:
+            lines.append(current)
+            current = word
+    if current:
+        lines.append(current)
+    if not lines:
+        return
+
+    line_height = base_size * 1.2
+    total_height = line_height * len(lines)
+    start_y = y + (h + total_height) / 2.0 - line_height + vertical_nudge
+
+    for i, line in enumerate(lines):
+        baseline = start_y - i * line_height
+        if i == 0:
+            # First line: emphasize first three characters and first three characters after the first space,
+            # both at 2× size, with the rest at base size.
+            first_prefix_end = min(3, len(line))
+
+            # Find the first space after the initial big segment.
+            space_idx = line.find(" ", first_prefix_end)
+
+            segments: List[Tuple[str, float]] = []
+
+            if first_prefix_end > 0:
+                # Segment 1: first up-to-3 characters (big).
+                segments.append((line[0:first_prefix_end], big_size))
+
+            if space_idx != -1 and space_idx + 1 < len(line):
+                # We have at least a second word.
+                second_prefix_start = space_idx + 1
+                second_prefix_end = min(second_prefix_start + 3, len(line))
+
+                # Segment 2: text between the first big segment and the start of the second word (including space).
+                middle = line[first_prefix_end:second_prefix_start]
+                if middle:
+                    segments.append((middle, base_size))
+
+                # Segment 3: first up-to-3 characters of the second word (big).
+                second_prefix = line[second_prefix_start:second_prefix_end]
+                if second_prefix:
+                    segments.append((second_prefix, big_size))
+
+                # Segment 4: remainder of the line after the second big segment (base).
+                tail = line[second_prefix_end:]
+                if tail:
+                    segments.append((tail, base_size))
+            else:
+                # Fallback: only first up-to-3 characters big, rest base size (existing behavior).
+                suffix = line[first_prefix_end:]
+                if suffix:
+                    segments.append((suffix, base_size))
+
+            # Compute total width of all segments.
+            total_width = 0.0
+            for text_segment, size in segments:
+                c.setFont(font, size)
+                total_width += c.stringWidth(text_segment, font, size)
+
+            # Left-align the first (styled) line within the box.
+            lx = x
+
+            # Draw segments sequentially along the baseline.
+            cx = lx
+            for text_segment, size in segments:
+                if not text_segment:
+                    continue
+                c.setFont(font, size)
+                c.drawString(cx, baseline, text_segment)
+                cx += c.stringWidth(text_segment, font, size)
+        else:
+            c.setFont(font, base_size)
+            tw = c.stringWidth(line, font, base_size)
+            # Left-align subsequent lines within the box.
+            lx = x
+            c.drawString(lx, baseline, line)

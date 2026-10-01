@@ -7,16 +7,16 @@ from typing import Callable, Optional
 
 import pandas as pd
 
-from scripts.pipeline_preflight_issues.image_dry_run import (
+from pipeline_preflight_issues.image_dry_run import (
     build_preflight_stem_maps,
     flag_missing_images,
 )
-from scripts.pipeline_runtime.order_number_csv import read_csv_with_order_numbers
-from scripts.pipeline_split_by_process_item.duplicate_order_suffixes import (
+from pipeline_runtime.order_number_csv import read_csv_with_order_numbers
+from pipeline_split_by_process_item.duplicate_order_suffixes import (
     assign_merge_order_number_suffixes,
 )
-from scripts.pipeline_split_by_process_item.grouping_quantity import _expand_df_by_quantity
-from scripts.pipeline_split_by_process_item.merge_group_mask import (
+from pipeline_split_by_process_item.grouping_quantity import _expand_df_by_quantity
+from pipeline_split_by_process_item.merge_group_mask import (
     expand_issue_mask_to_merge_groups,
 )
 

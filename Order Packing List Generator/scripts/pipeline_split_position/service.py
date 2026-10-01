@@ -3,7 +3,7 @@ from typing import Callable, Optional
 
 import pandas as pd
 
-from scripts.pipeline_runtime.order_number_csv import read_csv_with_order_numbers
+from pipeline_runtime.order_number_csv import read_csv_with_order_numbers
 
 from .config import DEFAULT_POSITION_LABEL, PROCESS_INFO_SHEET, REQUIRED_COLUMNS, SCRIPT_NAME
 from .io_process_info import load_logo_ids_to_positions, load_multiple_positions, load_process_info_pq

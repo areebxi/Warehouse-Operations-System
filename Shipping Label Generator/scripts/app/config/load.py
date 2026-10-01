@@ -9,7 +9,7 @@ from typing import Any
 import yaml
 from dotenv import load_dotenv
 
-from scripts.app.config.defaults import default_config_dict
+from app.config.defaults import default_config_dict
 
 
 def _deep_merge(base: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:

@@ -9,8 +9,8 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from scripts.pipeline_split_by_process_item.common import format_batch_pin, pin_batch_shift
-from scripts.pipeline_generate_packing_list_pdf.core_helpers import (
+from pipeline_split_by_process_item.common import format_batch_pin, pin_batch_shift
+from pipeline_generate_packing_list_pdf.core_helpers import (
     PROCESS_ITEM_RE,
     parse_process_and_item_impl,
     safe_str_impl,

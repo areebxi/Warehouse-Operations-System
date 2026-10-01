@@ -4,7 +4,7 @@ from datetime import datetime
 
 from reportlab.pdfgen import canvas
 
-from scripts.pipeline_generate_packing_list_pdf import pdf_page_layout as L
+from pipeline_generate_packing_list_pdf import pdf_page_layout as L
 
 
 def format_dispatch_date_header(date_dd_mm_yyyy: str) -> tuple[str, str]:

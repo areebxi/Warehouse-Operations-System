@@ -1,7 +1,7 @@
 from typing import Optional
 
-from scripts.pipeline_generate_packing_list_pdf.core_helpers import is_plain_order_sku_impl
-from scripts.pipeline_generate_packing_list_pdf.draw_page_date_header import (
+from pipeline_generate_packing_list_pdf.core_helpers import is_plain_order_sku_impl
+from pipeline_generate_packing_list_pdf.draw_page_date_header import (
     draw_page_date_header_impl,
 )
 
@@ -83,6 +83,7 @@ def prepare_draw_page_state_impl(
     pdf_page_index=0,
     dispatch_date_label: Optional[str] = None,
     dispatch_day_name: Optional[str] = None,
+    **_,
 ):
     top_h = pt_h(top_h_pt)
     top_y = rl_y(top_h_pt)

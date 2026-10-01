@@ -7,8 +7,8 @@ This module re-exports the public API used by the pipeline runner and tests.
 
 from __future__ import annotations
 
-from scripts.pipeline_generate_packing_list_pdf.cli import main_impl
-from scripts.pipeline_generate_packing_list_pdf.runtime_api import (
+from pipeline_generate_packing_list_pdf.cli import main_impl
+from pipeline_generate_packing_list_pdf.runtime_api import (
     build_image_stem_map,
     build_order_counts,
     build_process_totals,
@@ -21,7 +21,7 @@ from scripts.pipeline_generate_packing_list_pdf.runtime_api import (
     load_position_code_to_draw,
     render_one_pdf,
 )
-from scripts.pipeline_generate_packing_list_pdf.runtime_config import DEFAULT_WORKBOOK
+from pipeline_generate_packing_list_pdf.runtime_config import DEFAULT_WORKBOOK
 
 _build_image_stem_map = build_image_stem_map
 _render_one_pdf = render_one_pdf

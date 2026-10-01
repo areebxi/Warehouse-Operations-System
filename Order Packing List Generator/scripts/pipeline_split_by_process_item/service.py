@@ -6,10 +6,10 @@ from typing import Callable, Optional
 
 import pandas as pd
 
-from scripts.pipeline_generate_packing_list_pdf.runtime_api import load_position_code_to_draw
-from scripts.pipeline_generate_packing_list_pdf.runtime_config import DEFAULT_POSITION_CODE
+from pipeline_generate_packing_list_pdf.runtime_api import load_position_code_to_draw
+from pipeline_generate_packing_list_pdf.runtime_config import DEFAULT_POSITION_CODE
 
-from scripts.pipeline_runtime.order_number_csv import (
+from pipeline_runtime.order_number_csv import (
     coerce_order_number_columns,
     read_csv_with_order_numbers,
 )

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from scripts.app.util.process_numbers import process_number_sort_key
+from app.util.process_numbers import process_number_sort_key
 
 
 OUTPUT_COLUMNS = [

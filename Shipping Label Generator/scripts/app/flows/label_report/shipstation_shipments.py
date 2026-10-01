@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
-from scripts.app.providers.real.provider import RealProvider
+from app.providers.real.provider import RealProvider
 
 
 @dataclass(frozen=True)

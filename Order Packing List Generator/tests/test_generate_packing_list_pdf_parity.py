@@ -8,35 +8,15 @@ import pandas as pd
 
 from scripts import generate_packing_list_pdf as gp
 from scripts.pipeline_generate_packing_list_pdf.service import render_one_pdf_impl
+from test_generate_packing_list_pdf_parity_canvas import FakeCanvas
 
-_SVC = "scripts.pipeline_generate_packing_list_pdf.service"
-_API = "scripts.pipeline_generate_packing_list_pdf.runtime_api"
-
-
-class _FakeCanvas:
-    created = []
-
-    def __init__(self, filename, pagesize=None):
-        self.filename = filename
-        self.pagesize = pagesize
-        self.title = None
-        self.pages_shown = 0
-        self.saved = False
-        _FakeCanvas.created.append(self)
-
-    def setTitle(self, title):
-        self.title = title
-
-    def showPage(self):
-        self.pages_shown += 1
-
-    def save(self):
-        self.saved = True
+_SVC = "pipeline_generate_packing_list_pdf.service"
+_API = "pipeline_generate_packing_list_pdf.runtime_api_bind_b"
 
 
 class GeneratePackingListPdfParityTests(unittest.TestCase):
     def setUp(self):
-        _FakeCanvas.created = []
+        FakeCanvas.created = []
 
     def test_csv_to_pdf_single_file_behavior(self):
         df = pd.DataFrame([{"Order Number": "A-1"}, {"Order Number": "A-2"}])
@@ -73,7 +53,7 @@ class GeneratePackingListPdfParityTests(unittest.TestCase):
                 ),
                 patch(f"{_SVC}.canvas") as canvas_mod_mock,
             ):
-                canvas_mod_mock.Canvas = _FakeCanvas
+                canvas_mod_mock.Canvas = FakeCanvas
                 n_pages, paths, missing_logo_df, missing_apparel_df = gp.csv_to_pdf(
                     csv_path,
                     out_path,
@@ -91,9 +71,9 @@ class GeneratePackingListPdfParityTests(unittest.TestCase):
             self.assertEqual(paths, [out_path])
             self.assertEqual(build_map_mock.call_count, 3)
             self.assertEqual(draw_page_mock.call_count, 2)
-            self.assertEqual(len(_FakeCanvas.created), 1)
-            self.assertTrue(_FakeCanvas.created[0].saved)
-            self.assertEqual(_FakeCanvas.created[0].pages_shown, 2)
+            self.assertEqual(len(FakeCanvas.created), 1)
+            self.assertTrue(FakeCanvas.created[0].saved)
+            self.assertEqual(FakeCanvas.created[0].pages_shown, 2)
             self.assertIsNotNone(missing_logo_df)
             self.assertIsNotNone(missing_apparel_df)
             self.assertEqual(len(missing_logo_df), 1)
@@ -120,7 +100,7 @@ class GeneratePackingListPdfParityTests(unittest.TestCase):
                 ),
                 patch(f"{_SVC}.canvas") as canvas_mod_mock,
             ):
-                canvas_mod_mock.Canvas = _FakeCanvas
+                canvas_mod_mock.Canvas = FakeCanvas
                 gp.csv_to_pdf(
                     csv_path,
                     out_path,
@@ -151,7 +131,7 @@ class GeneratePackingListPdfParityTests(unittest.TestCase):
                 ),
                 patch(f"{_SVC}.canvas") as canvas_mod_mock,
             ):
-                canvas_mod_mock.Canvas = _FakeCanvas
+                canvas_mod_mock.Canvas = FakeCanvas
                 n_pages, paths, missing_logo_df, missing_apparel_actual_df = gp.csv_to_pdf(
                     csv_path,
                     out_path,
@@ -164,9 +144,9 @@ class GeneratePackingListPdfParityTests(unittest.TestCase):
             self.assertEqual(paths[1].name, "output_Part 2.pdf")
             self.assertIsNone(missing_logo_df)
             self.assertIsNone(missing_apparel_actual_df)
-            self.assertEqual(len(_FakeCanvas.created), 2)
-            self.assertEqual(_FakeCanvas.created[0].pages_shown, 50)
-            self.assertEqual(_FakeCanvas.created[1].pages_shown, 1)
+            self.assertEqual(len(FakeCanvas.created), 2)
+            self.assertEqual(FakeCanvas.created[0].pages_shown, 50)
+            self.assertEqual(FakeCanvas.created[1].pages_shown, 1)
 
     def test_render_one_pdf_formats_multiple_outputs(self):
         draw_map = {"X": "Front"}

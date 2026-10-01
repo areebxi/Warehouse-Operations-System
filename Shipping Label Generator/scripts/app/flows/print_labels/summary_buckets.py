@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from scripts.app.util.process_numbers import is_consecutive_process, process_number_sort_key
+from app.util.process_numbers import is_consecutive_process, process_number_sort_key
 
 
 # Share a summary only when a process has exactly this many orders/labels.

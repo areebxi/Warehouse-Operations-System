@@ -28,21 +28,10 @@ from shared.supply_method import (
     classify_packs_row,
     classify_plain_row,
 )
+from scripts.fill_supply_method_impl import backup_file, header_index
 
 PLAIN_SHEET = "Sheet1"
 PACKS_SHEET = "01-Database"
-
-
-def backup_file(path: Path, dest_dir: Path) -> Path:
-    dest_dir.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    dest = dest_dir / f"{path.stem}.bak_{stamp}{path.suffix}"
-    shutil.copy2(path, dest)
-    return dest
-
-
-def header_index(headers: list[str]) -> dict[str, int]:
-    return {h: i for i, h in enumerate(headers) if h}
 
 
 def _print_counts(title: str, path: Path, stats: dict[str, int], samples: list[str]) -> None:

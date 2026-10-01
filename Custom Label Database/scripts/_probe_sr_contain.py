@@ -5,16 +5,10 @@ import re
 from collections import Counter, defaultdict
 
 import pandas as pd
+from scripts._probe_sr_contain_impl import clean
 
 DB = r"D:\Custom Label Database\Custom Label Database.xlsx"
 SR = r"D:\Custom Label Database\support\Configuration Workbook.xlsx"
-
-
-def clean(v) -> str:
-    if v is None or (isinstance(v, float) and pd.isna(v)):
-        return ""
-    s = str(v).strip()
-    return "" if s.lower() in ("nan", "none") else s
 
 
 def main() -> None:

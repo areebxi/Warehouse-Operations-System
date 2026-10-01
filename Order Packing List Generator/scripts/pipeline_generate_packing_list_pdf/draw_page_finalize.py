@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple
 
-from scripts.pipeline_generate_packing_list_pdf.runtime_config import BACK_PRINT_REFERENCE_IMAGE
+from pipeline_generate_packing_list_pdf.runtime_config import BACK_PRINT_REFERENCE_IMAGE
 
 
 def finalize_logo_sections_impl(
@@ -50,6 +50,7 @@ def finalize_logo_sections_impl(
     image_reader_cls,
     pdf_asset_log: Optional[Callable[[str], None]] = None,
     pdf_page_index: int = 0,
+    **_,
 ) -> bool:
     def _logo_image_for_slot(slot_index: int) -> Optional[Path]:
         return logo_image_for_slot(

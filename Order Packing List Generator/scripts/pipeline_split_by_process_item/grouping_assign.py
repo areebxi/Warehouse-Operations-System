@@ -1,6 +1,6 @@
 import pandas as pd
 
-from scripts.pipeline_runtime.order_number_csv import coerce_order_number_columns
+from pipeline_runtime.order_number_csv import coerce_order_number_columns
 
 from .common import (
     _normalize,

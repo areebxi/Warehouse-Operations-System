@@ -9,7 +9,7 @@ import re
 import subprocess
 import shutil
 from typing import Optional, List, Tuple, Union
-
+from src.io.rar_utils_impl import copy_rar_to_dtf_queues
 
 def detect_rar_tool() -> Optional[str]:
     """Detect available RAR tool (WinRAR or 7-Zip)."""
@@ -46,7 +46,6 @@ def detect_rar_tool() -> Optional[str]:
 
     return None
 
-
 def _build_rar_command(
     rar_tool: str,
     rar_path: str,
@@ -66,7 +65,6 @@ def _build_rar_command(
         return cmd, png_dir, rar_path_7z
 
     raise ValueError(f"Unknown RAR tool: {rar_tool}")
-
 
 def _verify_archive_created(
     rar_tool: str,
@@ -88,7 +86,6 @@ def _verify_archive_created(
         return True, rar_path
 
     return False, "RAR file was not created"
-
 
 def create_rar_from_pngs(png_files: List[str], rar_path: str) -> Tuple[bool, str]:
     """Create a RAR/7z archive from PNG files."""
@@ -125,7 +122,6 @@ def create_rar_from_pngs(png_files: List[str], rar_path: str) -> Tuple[bool, str
     except Exception as e:
         return False, f"Error creating RAR: {str(e)}"
 
-
 def _extract_name_part_from_source(source_file_path: str) -> Optional[str]:
     """Extract name part before first '-' from a source file path."""
     file_name = os.path.splitext(os.path.basename(source_file_path))[0]
@@ -137,7 +133,6 @@ def _extract_name_part_from_source(source_file_path: str) -> Optional[str]:
         name_part = file_name.strip()
 
     return name_part if name_part else None
-
 
 def _generate_folder_processing_name(saved_files_info: List[Union[Tuple[str, ...], str]]) -> Optional[str]:
     """Generate RAR name for folder processing."""
@@ -163,7 +158,6 @@ def _generate_folder_processing_name(saved_files_info: List[Union[Tuple[str, ...
         return "-".join(name_parts[:3]) + f"-and-{len(name_parts) - 3}-more.rar"
     return "-".join(name_parts) + ".rar"
 
-
 def _generate_single_file_name(saved_files_info: List[Union[Tuple[str, ...], str]]) -> str:
     """Generate RAR name for single file processing."""
     if not saved_files_info:
@@ -187,7 +181,6 @@ def _generate_single_file_name(saved_files_info: List[Union[Tuple[str, ...], str
 
     return f"{file_name}.rar"
 
-
 def generate_rar_name(
     saved_files_info: List[Union[Tuple[str, ...], str]],
     is_folder_processing: bool = False,
@@ -199,24 +192,3 @@ def generate_rar_name(
             return rar_name
 
     return _generate_single_file_name(saved_files_info)
-
-
-def copy_rar_to_dtf_queues(rar_path: str, dtf_queues_folder: Optional[str]) -> Tuple[bool, str]:
-    """Copy a .rar/.7z to the configured DTF Queues folder."""
-    if not dtf_queues_folder:
-        return False, "DTF Queues folder not configured"
-
-    if not os.path.exists(dtf_queues_folder):
-        return False, f"DTF Queues folder does not exist: {dtf_queues_folder}"
-
-    if not os.path.exists(rar_path):
-        return False, f"RAR file does not exist: {rar_path}"
-
-    try:
-        rar_filename = os.path.basename(rar_path)
-        dest_path = os.path.join(dtf_queues_folder, rar_filename)
-        shutil.copy2(rar_path, dest_path)
-        return True, dest_path
-    except Exception as e:
-        return False, f"Error copying RAR file: {str(e)}"
-

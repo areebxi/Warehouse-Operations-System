@@ -4,7 +4,7 @@ import argparse
 import re
 from pathlib import Path
 
-from scripts.app.pdf.merge_combined import (
+from app.pdf.merge_combined import (
     merge_combined_alternating,
     merge_combined_by_process,
     merge_combined_single_summary,

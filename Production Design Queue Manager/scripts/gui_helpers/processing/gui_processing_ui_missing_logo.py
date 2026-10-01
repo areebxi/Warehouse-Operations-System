@@ -1,32 +1,34 @@
 """Missing-logo GUI processing flow."""
 
+from __future__ import annotations
+
 import os
 import time
+import traceback
+from datetime import datetime
 from tkinter import messagebox
 
 from src.system.logging.utils import (
     start_size_determination_log,
-    log_size_determination,
     finish_size_determination_log,
     save_error_to_file,
     get_run_logger,
 )
 from src.system.logging.run_logger import log_run_event
-from src.core.design_folder_routing import find_designs_for_dtf_row
 from src.core.canvas_arranger import pack_designs
 from gui_helpers.common.gui_progress import update_progress, reset_progress
 from .gui_processing_helpers import (
     auto_detect_customise_column,
-    create_design_log_entry,
-    track_missing_size_reference_multi,
-    is_plainlg_sku,
     handle_missing_designs_error,
     handle_missing_designs_warning,
     finalize_arrangement,
 )
+from .gui_processing_ui_missing_logo_load import load_missing_logo_designs
 
 
-def process_missing_logo_file(gui, df, order_column, sku_column, file_path=None, show_progress=True):
+def process_missing_logo_file(
+    gui, df, order_column, sku_column, file_path=None, show_progress=True
+):
     """Process missing-logo mode for one file."""
     logger = get_run_logger()
     try:
@@ -39,7 +41,8 @@ def process_missing_logo_file(gui, df, order_column, sku_column, file_path=None,
         item_skus = df.loc[mask, sku_column].tolist()
         customise_vals = (
             df.loc[mask, customise_col].tolist()
-            if customise_col else [None] * len(order_numbers)
+            if customise_col
+            else [None] * len(order_numbers)
         )
         log_run_event(
             "processing_started",
@@ -56,7 +59,9 @@ def process_missing_logo_file(gui, df, order_column, sku_column, file_path=None,
             finish_size_determination_log()
             return
         if len(order_numbers) != len(item_skus):
-            messagebox.showwarning("Warning", "Order Number and Item SKU columns have different lengths!")
+            messagebox.showwarning(
+                "Warning", "Order Number and Item SKU columns have different lengths!"
+            )
             finish_size_determination_log()
             return
 
@@ -65,84 +70,34 @@ def process_missing_logo_file(gui, df, order_column, sku_column, file_path=None,
         missing_sizes = []
         missing_size_row_indices = []
         total_orders = len(order_numbers)
-        log_stats = {'total_designs': 0, 'personalised_found': 0, 'all_in_one_found': 0, 'size_reference_used': 0, 'original_dimensions_used': 0}
+        log_stats = {
+            "total_designs": 0,
+            "personalised_found": 0,
+            "all_in_one_found": 0,
+            "size_reference_used": 0,
+            "original_dimensions_used": 0,
+        }
         order_total_counts = {}
         for order_number in order_numbers:
             order_total_counts[order_number] = order_total_counts.get(order_number, 0) + 1
-        order_occurrences = {}
 
-        if show_progress:
-            update_progress(gui, 0, f"Loading designs: 0/{total_orders}")
-
-        for idx, (order_number, item_sku, customise) in enumerate(zip(order_numbers, item_skus, customise_vals)):
-            if is_plainlg_sku(item_sku):
-                continue
-            if show_progress:
-                progress = (idx / total_orders) * 50
-                update_progress(gui, progress, f"Loading designs: {idx+1}/{total_orders}")
-
-            order_occurrences[order_number] = order_occurrences.get(order_number, 0) + 1
-            duplicate_index = order_occurrences[order_number] - 1
-            is_duplicate_order = order_total_counts.get(order_number, 0) > 1
-
-            if gui.sku_missing_cl_print_size(item_sku):
-                missing_entry = f"{order_number} ({item_sku})"
-                if missing_entry not in missing_sizes:
-                    missing_sizes.append(missing_entry)
-                    track_missing_size_reference_multi(
-                        df, order_column, sku_column, order_number, item_sku, missing_size_row_indices
-                    )
-
-            design_items, source = find_designs_for_dtf_row(
-                order_number=order_number,
-                item_sku=item_sku,
-                customise=customise,
-                duplicate_index=duplicate_index,
-                is_duplicate_order=is_duplicate_order,
-                designs_folder=gui.designs_folder,
-                single_designs_folder=gui.single_designs_folder,
-                double_designs_folder=gui.double_designs_folder,
-                mm_to_pixel=gui.mm_to_pixel,
-                canvas_width_mm=gui.canvas_width_mm,
-                canvas_height_mm=gui.canvas_height_mm,
-                design_padding=gui.design_padding,
-                print_size_overrides=getattr(gui, "print_size_overrides", None)
-                or gui.pocket_design_ids_set,
-                cl_csv_path=getattr(gui, "cl_csv_path", None),
-            )
-            found_in_personalised = source == "personalised"
-            if design_items:
-                if found_in_personalised:
-                    log_stats["personalised_found"] += len(design_items)
-                else:
-                    log_stats["all_in_one_found"] += len(design_items)
-
-            if not design_items:
-                missing_orders.append(f"{order_number} (SKU: {item_sku})")
-                continue
-
-            for design_data in design_items:
-                design_type = design_data.get('design_type', 'single')
-                if design_type == 'double':
-                    log_stats['original_dimensions_used'] += 1
-                elif design_data.get('size_info'):
-                    log_stats['size_reference_used'] += 1
-                else:
-                    log_stats['original_dimensions_used'] += 1
-                log_stats['total_designs'] += 1
-                design_type_for_log = design_type if found_in_personalised else 'Standard'
-                log_size_determination(create_design_log_entry(order_number, design_type_for_log, design_data, item_sku))
-                designs.append({
-                    'sku': design_data['sku'],
-                    'image': design_data['image'],
-                    'path': design_data['path'],
-                    'width': design_data['width'],
-                    'height': design_data['height'],
-                    'width_mm': design_data['width_mm'],
-                    'height_mm': design_data['height_mm'],
-                    'size_code': design_data.get('size_code'),
-                    'design_type': design_type,
-                })
+        load_missing_logo_designs(
+            gui,
+            df=df,
+            order_column=order_column,
+            sku_column=sku_column,
+            order_numbers=order_numbers,
+            item_skus=item_skus,
+            customise_vals=customise_vals,
+            order_total_counts=order_total_counts,
+            show_progress=show_progress,
+            total_orders=total_orders,
+            missing_sizes=missing_sizes,
+            missing_size_row_indices=missing_size_row_indices,
+            missing_orders=missing_orders,
+            log_stats=log_stats,
+            designs=designs,
+        )
 
         if not designs:
             log_run_event(
@@ -161,20 +116,27 @@ def process_missing_logo_file(gui, df, order_column, sku_column, file_path=None,
 
         handle_missing_designs_warning(missing_orders, file_path, "missing_logo")
         if missing_sizes:
-            saved_file = gui.save_missing_size_reference_rows(df, missing_size_row_indices, file_path)
+            saved_file = gui.save_missing_size_reference_rows(
+                df, missing_size_row_indices, file_path
+            )
             warning_msg = (
-                f"Could not find size reference for {len(missing_sizes)} designs in {os.path.basename(file_path) if file_path else 'file'}:\n"
+                f"Could not find size reference for {len(missing_sizes)} designs in "
+                f"{os.path.basename(file_path) if file_path else 'file'}:\n"
                 + ", ".join(missing_sizes[:10])
                 + ("..." if len(missing_sizes) > 10 else "")
                 + "\n\nUsing image dimensions instead."
             )
             if saved_file:
-                warning_msg += f"\n\nRows with missing size references have been saved to:\n{saved_file}"
+                warning_msg += (
+                    f"\n\nRows with missing size references have been saved to:\n{saved_file}"
+                )
             messagebox.showwarning("Warning", warning_msg)
 
         if show_progress:
             update_progress(gui, 60, "Arranging designs on canvas...")
-        batches = pack_designs(designs, gui.canvas_width_mm, gui.canvas_height_mm, gui.mm_to_pixel, gui.design_padding)
+        batches = pack_designs(
+            designs, gui.canvas_width_mm, gui.canvas_height_mm, gui.mm_to_pixel, gui.design_padding
+        )
         log_run_event(
             "processing_completed",
             mode="missing_logo",
@@ -203,18 +165,20 @@ def process_missing_logo_file(gui, df, order_column, sku_column, file_path=None,
             messagebox.showerror("Error", f"Failed to arrange designs:\n{str(e)}")
         except Exception:
             pass
-        import traceback
         traceback.print_exc()
-        error_traceback = ''.join(traceback.format_exception(type(e), e, e.__traceback__))
-        from datetime import datetime
-        content = f"Failed to Arrange Designs (Missing Logo Mode)\n"
-        content += f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
-        content += f"File: {os.path.basename(file_path) if file_path else 'Unknown file'}\n"
-        content += f"Error: {e}\n"
-        content += f"\n{'='*80}\n"
-        content += f"Full Traceback:\n{error_traceback}\n"
+        error_traceback = "".join(traceback.format_exception(type(e), e, e.__traceback__))
+        content = (
+            "Failed to Arrange Designs (Missing Logo Mode)\n"
+            f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+            f"File: {os.path.basename(file_path) if file_path else 'Unknown file'}\n"
+            f"Error: {e}\n\n{'=' * 80}\nFull Traceback:\n{error_traceback}\n"
+        )
         save_error_to_file(content, "error")
-        logger.error("process_missing_logo_file: exception while processing file=%s error=%s", os.path.basename(file_path) if file_path else None, e)
+        logger.error(
+            "process_missing_logo_file: exception while processing file=%s error=%s",
+            os.path.basename(file_path) if file_path else None,
+            e,
+        )
         log_run_event(
             "processing_failed",
             level="error",

@@ -1,6 +1,6 @@
 from typing import Callable, Dict, List, Optional, Tuple
 
-from scripts.pipeline_generate_packing_list_pdf.position_draw_mapping import (
+from pipeline_generate_packing_list_pdf.position_draw_mapping import (
     lookup_draw_for_position_code,
 )
 

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from scripts.app.config.load import AppConfig
-from scripts.app.logging.jsonl import JsonlLogger
-from scripts.app.providers.base import Provider
-from scripts.app.providers.real.provider import RealProvider
+from app.config.load import AppConfig
+from app.logging.jsonl import JsonlLogger
+from app.providers.base import Provider
+from app.providers.real.provider import RealProvider
 
 
 def get_provider(cfg: AppConfig, log: JsonlLogger) -> Provider:

@@ -3,7 +3,7 @@ from typing import Callable, Optional
 
 import pandas as pd
 
-from scripts.pipeline_runtime.order_number_csv import (
+from pipeline_runtime.order_number_csv import (
     coerce_order_number_columns,
     read_csv_with_order_numbers,
 )

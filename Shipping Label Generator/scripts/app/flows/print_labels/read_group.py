@@ -1,35 +1,17 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pandas as pd
+from app.flows.print_labels.read_group_impl import GroupedOrders, OrderInput
 
 if TYPE_CHECKING:
-    from scripts.app.logging.orders_audit import OrderAuditLogger
+    from app.logging.orders_audit import OrderAuditLogger
 
 
 _PROCESS_PREFIX_RE = re.compile(r"^Process\s*", re.IGNORECASE)
-
-
-@dataclass(frozen=True)
-class OrderInput:
-    order_number: str
-    customer_name: str = ""
-
-
-@dataclass(frozen=True)
-class GroupedOrders:
-    process_number: str
-    orders: list[OrderInput]
-    source_file: str = ""
-    source_index: int = 0
-
-    @property
-    def order_numbers(self) -> list[str]:
-        return [o.order_number for o in self.orders]
 
 
 def _norm(s: str) -> str:

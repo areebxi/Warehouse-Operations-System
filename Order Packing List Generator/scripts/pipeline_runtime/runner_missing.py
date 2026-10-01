@@ -7,13 +7,13 @@ from zipfile import BadZipFile
 import pandas as pd
 from pandas.errors import ParserError
 
-from scripts.pipeline_fill_prime_images.service import fill_apparel_and_logo_from_df
-from scripts.pipeline_runtime.order_number_csv import (
+from pipeline_fill_prime_images.service import fill_apparel_and_logo_from_df
+from pipeline_runtime.order_number_csv import (
     read_csv_with_order_numbers,
     read_excel_with_order_numbers,
 )
-from scripts.pipeline_runtime.pipeline_log import PipelineLog
-from scripts.pipeline_runtime.runner_step6_outputs import (
+from pipeline_runtime.pipeline_log import PipelineLog
+from pipeline_runtime.runner_step6_outputs import (
     MISSING_LOGO_IMAGE_COLUMNS,
     run_step6_style_outputs,
 )

@@ -1,4 +1,4 @@
-from scripts.pipeline_generate_packing_list_pdf.pdf_page_layout import (
+from pipeline_generate_packing_list_pdf.pdf_page_layout import (
     B0_Y_PT,
     B1_Y_PT,
     BANNER_H_PT,

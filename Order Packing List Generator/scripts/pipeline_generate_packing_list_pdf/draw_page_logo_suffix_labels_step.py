@@ -18,12 +18,12 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Callable, List, Optional, Tuple
 
-from scripts.pipeline_generate_packing_list_pdf.back_print_hint import (
+from pipeline_generate_packing_list_pdf.back_print_hint import (
     label_for_logo_slot,
     label_from_stem_after_anchor,
     resolve_apparel_logo_anchor,
 )
-from scripts.pipeline_generate_packing_list_pdf.draw_page_apparel_and_logos import (
+from pipeline_generate_packing_list_pdf.draw_page_apparel_and_logos import (
     _pdf_asset_log_line,
 )
 

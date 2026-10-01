@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Callable, Optional
 
-from scripts.pipeline_runtime.order_number_csv import read_csv_with_order_numbers
+from pipeline_runtime.order_number_csv import read_csv_with_order_numbers
 
 from .rules import apply_packing_rules, get_packing_rules
 

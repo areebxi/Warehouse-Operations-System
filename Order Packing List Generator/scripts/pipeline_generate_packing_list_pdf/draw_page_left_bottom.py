@@ -1,10 +1,10 @@
 import re
 from typing import Callable, List, Optional, Tuple
 
-from scripts.pipeline_generate_packing_list_pdf.draw_page_apparel_and_logos import (
+from pipeline_generate_packing_list_pdf.draw_page_apparel_and_logos import (
     _pdf_asset_log_line,
 )
-from scripts.pipeline_generate_packing_list_pdf import pdf_page_layout as L
+from pipeline_generate_packing_list_pdf import pdf_page_layout as L
 
 _URL_PATTERN = re.compile(r"https?://[^\s\"'<>]+", re.IGNORECASE)
 
