@@ -25,6 +25,7 @@ Where locked decisions live. **Do not copy** locks here; link to the owner. Chat
 | Taxonomy pick-list | `.cursor/rules/order-grouping-sorter/taxonomy-picklist.mdc`; `shared/taxonomy_*.py`; `database/order-grouping-sorter/taxonomy_picklists.csv` |
 | Fixed batches criteria | `database/order-grouping-sorter/fixed_batches.csv` (+ locks / sorter rules) |
 | Session truth / verify / persist | `.cursor/rules/session-independence.mdc` |
+| Docs-first read + same-turn doc sync | `.cursor/rules/docs-first.mdc` |
 | Built state (cross-app) | [`PROJECT_STATE.md`](PROJECT_STATE.md); per-app `docs/HANDOFF.md` |
 | Packing / Queue resolved bugs | `Order Packing List Generator/.cursor/issue-log.md`; `Production Design Queue Manager/.cursor/issue-log.md` |
 | Requirement gate before implement | `.cursor/rules/requirement-understanding.mdc` |

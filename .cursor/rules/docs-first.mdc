@@ -1,0 +1,19 @@
+---
+description: Prefer docs first; same-turn sync when code/behaviour changes
+alwaysApply: true
+---
+
+# Docs first + same-turn sync
+
+**Prefer docs** for orientation, how-to-run, intended rules, handoffs. Session start: see `session-independence.mdc` (AGENTS + HANDOFF + matching rules; cross-app PROJECT_STATE / ARCHITECTURE). Do not open large code trees to “learn” the app.
+
+**Open code only when needed:** implement/fix; verify exists/unused/`shared/` consumers; run the app’s existing test/self-check before “fixed”. Prefer the smallest file that proves the claim. Truth axes: `session-independence.mdc`. Layers/limits: `architecture.mdc`.
+
+**Same-turn sync (keep docs current):** if this turn changes behaviour, entrypoints, handoffs, dry-run/`--run`, or not-built status → update the owner doc **before** saying done:
+- app how-to-run / built state → that app’s `docs/HANDOFF.md` (`AGENTS.md` only if a handbook claim changed)
+- cross-app handoff / built vs not-built → `docs/PROJECT_STATE.md`
+- locks → owner in `docs/DECISIONS.md`
+
+**No doc fiction:** never write built/not-built/column shapes from memory — verify in code, then write the doc.
+
+**Stale doc while working:** flag FACT inconsistency (doc path + code path). Docs-only and code clearly right → fix the doc same turn. Grouping / matching / approval / live writes → stop and ask.

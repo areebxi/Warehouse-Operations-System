@@ -11,8 +11,8 @@ Disagree (locked X, code Y) = flagged inconsistency (cite both). Grouping / matc
 
 **FACT / INFERENCE / UNKNOWN** — never present inference as fact; never "we decided" without citing the owner file. Label only in plans/reports when it changes a decision.
 
-**Session start:** target app `AGENTS.md` + `docs/HANDOFF.md` + matching `.cursor/rules/<slug>/`. Cross-app only: `docs/PROJECT_STATE.md` + `docs/ARCHITECTURE.md`. Then code you will touch. Do not scan unrelated apps.
+**Session start:** target app `AGENTS.md` + `docs/HANDOFF.md` + matching `.cursor/rules/<slug>/`. Cross-app only: `docs/PROJECT_STATE.md` + `docs/ARCHITECTURE.md`. Then code you will touch. Do not scan unrelated apps. Read order + when to open code + same-turn doc sync: `docs-first.mdc`.
 
 **Verify before claiming:** locate before "exists"; search refs before "unused"; check consumers before editing `shared/`; run the app's existing test/self-check before "fixed".
 
-**Persist same turn:** new lock → owner in `docs/DECISIONS.md`. Built-state change → app HANDOFF (+ `PROJECT_STATE.md` if cross-app). Grouping locks: `supervisor-chat.mdc` hook → `order-grouping-locks.md` + progress xlsx; glossary → `order-grouping-sorter/standing-terms.mdc`.
+**Persist same turn:** new lock → owner in `docs/DECISIONS.md`. Built-state change → app HANDOFF (+ `PROJECT_STATE.md` if cross-app). Grouping locks: `supervisor-chat.mdc` hook → `order-grouping-locks.md` + progress xlsx; glossary → `order-grouping-sorter/standing-terms.mdc`. Behaviour/handoff edits also follow `docs-first.mdc` sync.
