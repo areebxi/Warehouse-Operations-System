@@ -48,4 +48,4 @@ Report tags/orders processed, stock misses, output folder name, and any data fil
 - **Integrations:** `scripts/shipstation_orders.py` → export/impl mixins via `shared.shipstation`; BTC FTP settings in `config.py` (not secrets).
 - **200-line:** live PO scripts cleared; keep new/changed modules ≤200 (see `../docs/ARCHITECTURE.md`).
 - **Must not:** import Packing/Sorter internals; path resolution outside `shared.paths`; paste credentials into docs.
-- Architecture: `.cursor/rules/architecture.mdc`.
+- Architecture: `.cursor/rules/global/architecture.mdc`.

@@ -50,4 +50,4 @@ Dry-run: run date, mix yes/no (Hashim 300-order gate), process names with orders
 - **I/O:** Packing Input via `shared.paths.sorter_input_csv_path`; Logs; sorter DB under `database/order-grouping-sorter/`.
 - **Legacy oversized:** none in production grouping path; `test_grouping.py` is a thin runner over `test_grouping_*.py` behaviour modules (see `../docs/ARCHITECTURE.md`).
 - **Must not:** import Packing internals (CSV columns are copied, not imported); overwrite catalogs on a run; use universal 3-key `resolve_label` for grouping finish keys.
-- Architecture: `.cursor/rules/architecture.mdc`.
+- Architecture: `.cursor/rules/global/architecture.mdc`.

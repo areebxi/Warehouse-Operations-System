@@ -69,5 +69,5 @@ Report convert counts, process groups, label successes/failures, void results, a
 - **I/O:** `DTF Des Files/`, `Output/`, `shipping_config.yaml`; secrets via `shared.paths` / `config/ShipStation/.env`.
 - **200-line:** live Shipping scripts cleared; keep new/changed modules ≤200 (see `../docs/ARCHITECTURE.md`).
 - **Must not:** import Packing/Queue/Sorter internals; hardcode secrets; auto-read SharedInbox until built.
-- Architecture: `.cursor/rules/architecture.mdc`.
+- Architecture: `.cursor/rules/global/architecture.mdc`.
 

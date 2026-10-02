@@ -116,6 +116,6 @@ No production writes / void / print batches / fills unless the supervisor alread
 
 1. First-level folder with the exact official name  
 2. `AppName/AGENTS.md` (capped handbook) + living `docs/`  
-3. `.cursor/rules/<app-slug>/*.mdc` — start with 2–4 rules, `alwaysApply: false`, `globs: "Exact App Folder Name/**"`  
+3. `.cursor/rules/<app-slug>/*.mdc` — start with 2–4 rules, `alwaysApply: false`, `globs: "Exact App Folder Name/**"`; cross-app / always-on goes in `.cursor/rules/global/` (see [`.cursor/rules/README.md`](.cursor/rules/README.md))  
 4. One short section in this file  
 5. Wire paths through `shared/paths.py` — DB under `database/<slug>/`; shared joins under `database/shared/`; secrets under `config/ShipStation/`

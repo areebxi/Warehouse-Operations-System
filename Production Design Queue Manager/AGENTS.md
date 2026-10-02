@@ -41,4 +41,4 @@ Report mode, input file(s), size hits/misses, output paths. Log resolved issues 
 - **Logging:** `scripts/src/system/logging/console.py` → `console_setup` / `console_close` / `console_state`.
 - **200-line:** live Queue scripts cleared; keep new/changed modules ≤200 (see `../docs/ARCHITECTURE.md`).
 - **Must not:** import Packing/Shipping/Sorter internals; path resolution outside `shared.paths`; invent size codes.
-- Architecture: `.cursor/rules/architecture.mdc`.
+- Architecture: `.cursor/rules/global/architecture.mdc`.

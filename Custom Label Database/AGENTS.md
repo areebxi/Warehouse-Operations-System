@@ -50,4 +50,4 @@ Tell the supervisor exactly what changed: file, rows/labels, columns, before→a
 - **I/O:** live paths only via `shared.paths`; helpers under `database/custom-label-database/`.
 - **Split modules:** `size_code_logic.py` façade (`size_code_*.py`); `phase5_print_sizes.py` (`phase5_*.py`); `fill_size_references_from_cl.py` (`fill_sr_from_cl_*.py`); `fill_from_seeds.py` / `add_labels.py` (`fill_seeds_*` / `add_labels_*`).
 - **Must not:** import other apps’ internals; resolve paths outside `shared.paths`; re-implement SKU match / finish gate / supply method / printing type.
-- Policy detail: parent `.cursor/rules/custom-label-database/`. Architecture: `.cursor/rules/architecture.mdc`.
+- Policy detail: parent `.cursor/rules/custom-label-database/`. Architecture: `.cursor/rules/global/architecture.mdc`.

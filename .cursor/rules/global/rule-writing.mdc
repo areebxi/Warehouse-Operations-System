@@ -1,0 +1,18 @@
+---
+description: How to write and place rules — one home, two tiers, LLM-clear
+alwaysApply: true
+---
+
+# Rule writing
+
+**One home:** project rules live only under `.cursor/rules/`. Do not add a parallel root `rules/` or nest under `AppName/.cursor/rules/`.
+
+**Two tiers:**
+- `global/` — always-on or cross-app shared
+- `<app-slug>/` — that app’s policy only (globs for that app)
+
+**Write for any LLM:** plain language; one concern per file; keep short and actionable; concrete do/don’t; define or link standing terms (do not redefine); no chat-only knowledge — point at the owner doc.
+
+**Frontmatter required:** `description` + either `alwaysApply: true` or `globs`.
+
+**Same turn:** behaviour/handoff changes still update owner docs (`docs-first`, `session-independence`). Index: `.cursor/rules/README.md`.

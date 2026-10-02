@@ -1,6 +1,6 @@
 # Warehouse architecture
 
-Detailed reference. Always-on principles: `.cursor/rules/architecture.mdc`. Parent map and proven joins: [`AGENTS.md`](../AGENTS.md). Grouping standing terms: `.cursor/rules/order-grouping-sorter/standing-terms.mdc`. Chat protocol: `.cursor/rules/supervisor-chat.mdc`.
+Detailed reference. Always-on principles: `.cursor/rules/global/architecture.mdc`. Parent map and proven joins: [`AGENTS.md`](../AGENTS.md). Grouping standing terms: `.cursor/rules/order-grouping-sorter/standing-terms.mdc`. Chat protocol: `.cursor/rules/global/supervisor-chat.mdc`. Rules map: [`.cursor/rules/README.md`](../.cursor/rules/README.md).
 
 ## Pipeline
 
@@ -107,7 +107,7 @@ Until the supervisor asks:
 
 ## Layers and 200-line policy
 
-See `.cursor/rules/architecture.mdc`. Summary:
+See `.cursor/rules/global/architecture.mdc`. Summary:
 
 - Keep orchestration, domain, data access, integrations, file generation, and validation separate when practical.
 - New/modified `.py`/`.ps1`/`.bat`/`.js` ≤ **200** physical lines (tests included). Exempt: `Versions/`, `backups/`, `__pycache__`, data, `.md`/`.mdc`.

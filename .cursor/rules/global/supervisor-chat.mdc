@@ -15,4 +15,4 @@ Standing terms (always-on):
 
 Grouping vocabulary (batch, shift, fixed batch, today/ship-by, finish gates, B50/B100, …): `.cursor/rules/order-grouping-sorter/standing-terms.mdc` + `order-grouping-locks.md`. Load with sorter / locks work — not every chat.
 
-Catalog fill terms (Supply Method, Printing Type, Supplier Name, Areeb, BTC/Uneek/Absolute paths): `.cursor/rules/custom-label-database/` (+ `cl-sku-match.mdc`). Packing later / missing-logo reprint: `.cursor/rules/order-packing-list-generator/`.
+Catalog fill terms (Supply Method, Printing Type, Supplier Name, Areeb, BTC/Uneek/Absolute paths): `.cursor/rules/custom-label-database/` (+ `global/cl-sku-match.mdc`). Packing later / missing-logo reprint: `.cursor/rules/order-packing-list-generator/`.

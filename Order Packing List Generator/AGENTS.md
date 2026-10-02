@@ -50,4 +50,4 @@ Say what ran (inputs, date, shift), what was written under Output and SharedInbo
 - **I/O:** app `{Input,Output,Logs}`; SharedInbox via `shared.paths`; DB under `database/order-packing-list-generator/`.
 - **200-line:** live Packing scripts cleared; keep new/changed modules ≤200 (see `../docs/ARCHITECTURE.md`).
 - **Must not:** import Sorter/Queue/Shipping/PO internals; path resolution outside `shared.paths`; re-implement `cl_sku_match`.
-- Architecture: `.cursor/rules/architecture.mdc`.
+- Architecture: `.cursor/rules/global/architecture.mdc`.
