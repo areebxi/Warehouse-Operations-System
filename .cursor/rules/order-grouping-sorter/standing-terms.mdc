@@ -1,0 +1,30 @@
+---
+description: Order grouping standing terms (glossary)
+alwaysApply: false
+globs: "Order Grouping Sorter/**,order-grouping-locks.md,database/order-grouping-sorter/**,scripts/write_order_grouping_progress.py"
+---
+
+# Grouping standing terms
+
+Owner glossary for sorter / locks chats. Persist new locks same turn into `order-grouping-locks.md` + progress xlsx (hook stays in `supervisor-chat.mdc`). Detail / history: `order-grouping-locks.md`. Run behaviour: `grouping.mdc`. Catalog fill policy (Supply Method, Printing Type, Supplier Name, Areeb): `.cursor/rules/custom-label-database/` — not duplicated here.
+
+- **today** (ship-by) = run date **or overdue**, **or blank ship-by** (treat as today — if in ShipStation `awaiting_shipment`, pull today; locked 2026-09-24). Unparseable **non-blank** ship-by → unmatched. **Skip store `DTFOcean.co.uk WP`**. **Future ship-by** is not skipped. **Hashim #037:** Shift 1 **order** volume **above 300** → separate process CSVs for today vs later; ≤300 → may mix. Do not dump overflow into Shift 2/3 as caps. Filename has **no** today/future slot.
+- **order pool** = ShipStation `awaiting_shipment` **only**. No supervisor CSV/file (export has no tags).
+- **batch** = one output CSV / pile (filename stem). Fixed: `B80` / `B100` / …; leftover Graph: `B1`, `B2`, … (skip reserved). Packing PIN: `{B}-S{n}-{process_number} Item {item_number}` (batch+shift only from filename). Leftover criteria: `database/order-grouping-sorter/leftover_batches/{YYYY-MM-DD}.csv`.
+- **fixed batch** = locked `B` code: **`B10` / `B40` / `B50` / `B70` / `B80` / `B90` / `B100` / `B1000` / `B1050` / `B1080` / `B2300` / `B2400` / `B3100` / `B3500` / `B3600` / `B3700` / `B4000` / `B5000` / `B5080` / `B5500` / `B8000` / `B8050`** (shift is only `S{n}`). Row order in `fixed_batches.csv` = priority (first match wins; locked 2026-09-28). **B100** = own ready-made FOTL short-sleeve **Warehouse Stock**; **B50** = same as B100 but **Supplier On Demand** (locked 2026-09-30; B50 only). **Plain batch** leftover: `B2000`, `B2100`, `B2200`, `B2500`, `B2600`, `B2700`, … in order made.
+- **process number** = increment inside a batch (`-1`, `-2`, …). Colour 3+ groups first, then **50 units** per process number. Same customer order stays on one process number. Not a new batch file.
+- **item number** = `Item {n}` (space, not hyphen) — line inside that process number.
+- **shift** = Packing Input folder + filename field 1 (after optional fixed-batch prefix). **Testing:** every sorter `--run` writes **`1st Shift` / `S1`**. **Production later:** nth `--run` of the day = nth shift. No 300/100/100 write caps. `RESEND` / `UNMATCHED` have no shift slot; land in **this run’s** folder.
+- **Packs colour** = **later**. Do not guess Item 1 Colour. Do not dump mixed packs to unmatched. Packs still split on Areeb + Brand Name + Pack Size.
+- **Fawad** = process-name slot for ShipStation store **MAS Clothing**. Amazon is **not** its own channel (`own`).
+- **Definite match:** never guess. No definite match → **`UNMATCHED`**. Same customer order stays together.
+- **Mixed P vs R** = majority printed **units**; **even → readymade**. Whole order together. Not unmatched. Locked 2026-09-17.
+- **Personalised ready** = customised (P) piles only with tag **`1004- Personalised Design-Ready-`** (exact). Without → held this run. Readymade / plain unaffected. Locked 2026-09-25.
+- **Mixed supply-method** = whole order **Supplier On Demand**. Not unmatched. Locked 2026-09-22.
+- **Resend** = tag **`1014-ALL-RESEND` only** (not 1015/1016/1017).
+- **display** (Grouping Data Usage) = print that field on the **packing PDF** for that order’s page. Does not turn grouping off.
+- Plain process files are also **stock-ordering piles**. Packs vs Gildan T-shirts = **30-chain** (product type / brand), not package-type.
+- Graph values are **examples**, not a closed list — **except** Hashim #038 pick-list (`taxonomy_picklists.csv` / `taxonomy-picklist.mdc`).
+- **In-house manufacturer** = iron-on or sticker in warehouse. **Plain cannot be in-house** → unmatched.
+- Finish / SKU keys / printed-wins / attribute source: `grouping.mdc` (sorter stricter keys than universal `resolve_label`).
+- **Order Grouping Sorter** = reads `awaiting_shipment` + three catalogs; writes one CSV per process into Packing Input. Default dry-run; `--run` writes. Testing: **`1st Shift`** every `--run`.

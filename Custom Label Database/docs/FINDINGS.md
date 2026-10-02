@@ -324,7 +324,7 @@ Script **defaults** may still point at old names (`ProductExport.xlsx`, `14-01-M
 
 ## Working habits that matter
 
-- **Save everything as we go** in this folder, including a copy of the chat transcript in `docs/chats/`. Chat UI is not memory; a new computer still starts a new thread, but can read the copies.
+- **Save everything as we go** into docs and parent CL rules. Chat is not memory; do **not** copy transcripts into `docs/chats/` (`save-chats` retired).
 - Backup under `backups/` before a write.
 - Prefer `--dry-run` and scoped `--iloc-from` / `--shirts-only` / `--w1-blank`.
 - Report every CSV change in the reply (file, labels, columns, before→after, count, backup).

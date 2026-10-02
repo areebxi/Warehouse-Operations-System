@@ -1,6 +1,7 @@
 # Order Grouping Sorter — handbook
 
 Domain handbook for the **Warehouse Automation System Engineer**. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/order-grouping-sorter/`. Locks: `../order-grouping-locks.md`. Details: `docs/`.
+Current state: `docs/HANDOFF.md`, kept as present-tense state, not a log.
 
 Live paths via `shared/paths.py`. A grouping **run** only **reads** CL + Plain Database + Packs. Sorter DB: `database/order-grouping-sorter/` — `taxonomy_picklists.csv` (Hashim #038), `fixed_batches.csv` (B80/B100/… criteria), and `leftover_batches/{YYYY-MM-DD}.csv` (written each run for leftover B1/B2…).
 

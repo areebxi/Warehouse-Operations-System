@@ -1,13 +1,12 @@
 # Historical logs
 
-These files are **dated execution logs** from the original Excel working copies (`Custom Label Database_Updated.xlsx` and numbered work packets). They are not the way of working now.
+These files are **dated execution logs**. They are not the present-tense way of working.
 
-Living docs: `docs/README.md`, `docs/HANDOFF.md`, `docs/FINDINGS.md`, `docs/WORKSPACE.md`, plus `AGENTS.md` and `.cursor/rules/`.
+Living docs: `docs/README.md`, `docs/HANDOFF.md` (present-tense state), `docs/FINDINGS.md`, `docs/WORKSPACE.md`, plus `AGENTS.md` and `.cursor/rules/`.
 
-Useful residue (already copied into FINDINGS):
+| File | What |
+|------|------|
+| [`HANDOFF_FILL_LOG.md`](HANDOFF_FILL_LOG.md) | Former HANDOFF diary — dated UNMATCHED fills, SPC seeds, Size References fills (through 2 Oct 2026). Moved out so HANDOFF stays ≤60 lines of current state. |
+| Phase / maker archives | Original Excel working-copy approvals and changelogs (`Custom Label Database_Updated.xlsx` era) |
 
-- Exact-duplicate removal and `_x000D_` / age-band cleanup
-- Colour typo and abbreviation expands; Navy/Royal left distinct
-- Same-label merge declined
-- Apparel Image bulk rewrite (~34,755) and later Workbook restore
-- Print millimetres originally filled from Print Sizes.xlsx + Size References
+Useful residue already in FINDINGS: exact-duplicate removal; colour expands; Apparel Image bulk rewrite; print mm origins.

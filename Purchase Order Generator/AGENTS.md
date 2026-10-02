@@ -1,6 +1,7 @@
 # Purchase Order Generator — handbook
 
 Domain handbook for the **Warehouse Automation System Engineer**. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/purchase-order-generator/`. Layout facts: `FOLDER_LAYOUT.md`, `docs/`.
+Current state: `docs/HANDOFF.md`, kept as present-tense state, not a log.
 
 Also known in older docs as **Plain Orders**. Live paths via `shared/paths.py` (DB in `database/`; assets/output/config in this app; PE + Tags + ShipStation shared).
 

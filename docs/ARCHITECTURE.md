@@ -1,6 +1,6 @@
 # Warehouse architecture
 
-Detailed reference. Always-on principles: `.cursor/rules/architecture.mdc`. Parent map and proven joins: [`AGENTS.md`](../AGENTS.md). Standing terms: `.cursor/rules/supervisor-chat.mdc`.
+Detailed reference. Always-on principles: `.cursor/rules/architecture.mdc`. Parent map and proven joins: [`AGENTS.md`](../AGENTS.md). Grouping standing terms: `.cursor/rules/order-grouping-sorter/standing-terms.mdc`. Chat protocol: `.cursor/rules/supervisor-chat.mdc`.
 
 ## Pipeline
 

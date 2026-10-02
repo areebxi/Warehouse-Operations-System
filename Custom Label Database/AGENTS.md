@@ -1,6 +1,7 @@
 # Custom Label Database — handbook
 
 Domain handbook for the **Warehouse Automation System Engineer**. Supervisor = user. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/custom-label-database/`. Facts: `docs/FINDINGS.md`, `docs/HANDOFF.md`, `docs/WORKSPACE.md`.
+Current state: `docs/HANDOFF.md`, kept as present-tense state, not a log.
 
 **Save as you go** into this app’s docs (and parent CL rules when policy changes). Chat is not memory.
 

@@ -22,7 +22,7 @@ Attribute source (separate): Packs whole → else CL after-first (or whole when 
 
 ## Intake
 
-Skip `post-order-designs`. Tag `1014-ALL-RESEND` only → file `RESEND` (not 1015/1016/1017). Customised (P) piles only with tag **`1004- Personalised Design-Ready-`**; without it → held (not written). Blank or unparseable `shipByDate` → `UNMATCHED`. **Hashim #037:** Shift 1 **order** volume **above 300** → split process CSVs today vs later dates; ≤300 may mix. Do **not** dump overflow into Shift 2/3. Today/overdue always get CSVs this run. **Testing:** every `--run` writes `1st Shift` / S1 (replaces CSVs). Production later: nth `--run` of the day = nth shift. Ignore SS shift tags. Whole order stays together.
+Skip `post-order-designs`. Tag `1014-ALL-RESEND` only → file `RESEND` (not 1015/1016/1017). Customised (P) piles only with tag **`1004- Personalised Design-Ready-`**; without it → held (not written). **Blank ship-by → today** (run date; locked 2026-09-24). Unparseable **non-blank** ship-by → `UNMATCHED`. **Hashim #037:** Shift 1 **order** volume **above 300** → split process CSVs today vs later dates; ≤300 may mix. Do **not** dump overflow into Shift 2/3. Today/overdue always get CSVs this run. **Testing:** every `--run` writes `1st Shift` / S1 (replaces CSVs). Production later: nth `--run` of the day = nth shift. Ignore SS shift tags. Whole order stays together.
 
 ## Names
 

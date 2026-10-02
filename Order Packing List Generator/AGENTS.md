@@ -1,6 +1,7 @@
 # Order Packing List Generator — handbook
 
 Domain handbook for the **Warehouse Automation System Engineer**. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/order-packing-list-generator/`. Details: `docs/`, `USAGE.md`, `README.md`.
+Current state: `docs/HANDOFF.md`, kept as present-tense state, not a log.
 
 Live paths via `shared/paths.py` (DB in `database/`; run I/O + GUI config in this app; Tags + SharedInbox + ShipStation shared).
 

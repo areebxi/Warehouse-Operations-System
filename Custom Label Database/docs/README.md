@@ -9,7 +9,7 @@ Living (no phases):
 | [`HANDOFF.md`](HANDOFF.md) | Current snapshot, pending work, how to continue |
 | [`FINDINGS.md`](FINDINGS.md) | Every key finding and locked lesson |
 | [`WORKSPACE.md`](WORKSPACE.md) | Paths and file roles |
-| [`chats/`](chats/) | Copies of Cursor chat transcripts |
+| [`chats/`](chats/) | Leftover transcript copies only — **do not add new ones** (`save-chats` retired) |
 
 Historical execution logs sit in [`archive/`](archive/).
 

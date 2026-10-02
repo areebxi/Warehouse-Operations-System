@@ -1,6 +1,7 @@
 # Production Design Queue Manager — handbook
 
 Domain handbook for the **Warehouse Automation System Engineer**. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/production-design-queue-manager/`. Details: `USAGE.md`, `docs/DOCUMENTATION.md`.
+Current state: `docs/HANDOFF.md`, kept as present-tense state, not a log.
 
 Live paths via `shared/paths.py` (DB in `database/`; settings + I/O in this app; SharedInbox + CL CSV shared).
 
