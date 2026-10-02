@@ -1,9 +1,14 @@
-"""ShipStation Classic V1 sync HTTP client (read helpers)."""
+"""Normalize ShipStation listtags / stores JSON payloads."""
+
 from __future__ import annotations
-import time
-from typing import Any, Callable, Optional
-import requests
-from .credentials import ShipStationCredentials, load_shipstation_credentials
+
+from typing import Any
+
+
+class ShipStationError(RuntimeError):
+    """Raised when a ShipStation API call fails."""
+
+
 def parse_listtags_payload(data: Any) -> list[dict[str, Any]]:
     """Normalize accounts/listtags JSON into [{tagId, name}, ...] sorted by name."""
     tags: Any
@@ -38,6 +43,8 @@ def parse_listtags_payload(data: Any) -> list[dict[str, Any]]:
         out.append({"tagId": tid, "name": str(name or "").strip()})
     out.sort(key=lambda x: (x["name"].casefold(), x["tagId"]))
     return out
+
+
 def parse_stores_payload(data: Any) -> list[dict[str, Any]]:
     """Normalize /stores JSON into [{storeId, storeName}, ...]."""
     stores: Any

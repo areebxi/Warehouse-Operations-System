@@ -17,7 +17,7 @@ Last recorded after 2 Oct UNMATCHED fill + transfer sync: CL **132,605** rows; S
 
 ## How fills run
 
-No live write without **yes / fill / run**. Propose + dry-run first. Typical path: `add_labels.py` / `fill_from_seeds.py` → `fill_size_references_from_cl.py` → **`sync_database_transfer.py`**. Fast add is append-only (`add_labels.py`). Policy and column rules live in parent `.cursor/rules/custom-label-database/` — do not re-decide them here.
+No live write without **yes / fill / run**. Propose + dry-run first. Typical path: `add_labels.py` / `fill_from_seeds.py` → `fill_size_references_from_cl.py` → **`sync_database_transfer.py`**. Fast add is append-only (`add_labels.py`). `add_labels` peers (locked with 2 Oct UNMATCHED fill): `N##` mocks; `-Yes` colour-family size peers; bag `ClaPk` → Classic Pink; alnum acrylic codes without PE peer → `A515-PHOTO`. Policy and column rules live in parent `.cursor/rules/custom-label-database/` — do not re-decide them here.
 
 ## Standing do-nots (reminders)
 

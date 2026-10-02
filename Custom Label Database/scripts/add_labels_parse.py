@@ -23,8 +23,9 @@ SEED_COLS = (
     "Customise",
 )
 
-RE_MOCK_P_UID = re.compile(r"^(M\d+)(?:-P\d+)?-(\d+)$", re.I)
-RE_MOCK_TOKEN = re.compile(r"^(M\d+)(?:-P\d+)?-", re.I)
+# N01-P7-67361 (letter+digits mock). M407-P1-1D114 (alnum trailing code, not PE UID).
+RE_MOCK_P_UID = re.compile(r"^([A-Z]\d+)(?:-P\d+)?-([A-Z0-9]+)$", re.I)
+RE_MOCK_TOKEN = re.compile(r"^([A-Z]\d+)(?:-P\d+)?-", re.I)
 RE_C800T_AGE = re.compile(
     # Optional -P# — listing SKUs sometimes omit it (M281-C800T-30-3>6).
     # ShipStation / HTML sometimes encodes > as &gt;.
@@ -112,6 +113,7 @@ _BAG_COLOUR = {
     "red": "Red",
     "bur": "Burgundy",
     "cpnk": "Classic Pink",
+    "clapk": "Classic Pink",
 }
 
 # Supervisor 15 Sep 2026: packing shirt colour tokens that are not the CL code.

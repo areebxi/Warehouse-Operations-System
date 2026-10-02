@@ -76,11 +76,14 @@ def _peer_keys_for_label(label: str) -> set[str]:
         p_tok = p_m.group(1).upper() if p_m else None
         if p_tok:
             keys.add(f"{mock}-{p_tok}-{uid}".casefold())
-        for p in ("P5", "P3", "P6"):
+        for p in ("P5", "P3", "P6", "P7", "P1"):
             keys.add(f"{mock}-{p}-{uid}".casefold())
         keys.add(f"{mock}-{uid}".casefold())
         # Same-UID other mock (e.g. M260-P5-3263 → M76-3263 garment clone)
-        keys.add(f"__suffix__:-{uid}")
+        keys.add(f"__suffix__:-{uid.casefold()}")
+        # ponytail: alnum trailing codes (1D114) are not PE UIDs — acrylic default peer.
+        if any(ch.isalpha() for ch in uid):
+            keys.add("a515-photo")
         return keys
     if bag:
         prod = bag.group(1).upper()
@@ -132,10 +135,17 @@ def _peer_keys_for_label(label: str) -> set[str]:
     if label.rsplit("-", 1)[-1].casefold() == "yes":
         stripped = label.rsplit("-", 1)[0]
         keys.add(stripped.casefold())
+        parts = stripped.split("-")
+        if len(parts) >= 2:
+            # F/B-M-T-NVY-S-YES → family peers F/B-M-T-NVY-L-YES (size missing).
+            keys.add(f"__prefix__:{'-'.join(parts[:-1]).casefold()}-")
         aliased = _alias_shirt_colour_label(stripped)
         if aliased.casefold() != stripped.casefold():
             keys.add(aliased.casefold())
             keys.add(f"__prefix__:{aliased.casefold()}")
             keys.add(f"__prefix__:{aliased.casefold()}-")
+            a_parts = aliased.split("-")
+            if len(a_parts) >= 2:
+                keys.add(f"__prefix__:{'-'.join(a_parts[:-1]).casefold()}-")
         return keys
     return keys

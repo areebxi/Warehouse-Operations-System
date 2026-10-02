@@ -3,6 +3,14 @@ import time
 from typing import Any, Callable, Optional
 import requests
 from .credentials import ShipStationCredentials, load_shipstation_credentials
+from .sync_client_parse import (
+    ShipStationError,
+    parse_listtags_payload,
+    parse_stores_payload,
+)
+
+LogFn = Callable[[str], None]
+
 
 class ShipStationClient:
     def __init__(
@@ -179,5 +187,3 @@ class ShipStationClient:
         if not isinstance(data, dict):
             raise ShipStationError(f"Unexpected ShipStation order response for {order_id}.")
         return data
-class ShipStationError(RuntimeError):
-    """Raised when a ShipStation API call fails."""

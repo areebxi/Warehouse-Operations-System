@@ -16,6 +16,7 @@ from add_labels import (  # noqa: E402
     RE_BAG_COLOUR,
     RE_C800T_AGE,
     RE_GILDAN_5000,
+    RE_MOCK_P_UID,
     RE_TRANSFER,
     RE_WAREHOUSE_GARMENT,
     _ACRYLIC_PAPER,
@@ -70,6 +71,15 @@ def main() -> None:
     assert customise_for_label("M55-120852") == ""
     assert RE_BAG_COLOUR.match("BG-BG140S-ClaRdOW-O/S-YES")
     assert _BAG_COLOUR["clardow"] == "Classic Red-Off White"
+    assert _BAG_COLOUR["clapk"] == "Classic Pink"
+    assert RE_MOCK_P_UID.match("N01-P7-67361")
+    assert RE_MOCK_P_UID.match("M407-P1-1D114")
+    assert "__suffix__:-67361" in _peer_keys_for_label("N01-P7-67361")
+    assert "a515-photo" in _peer_keys_for_label("M407-P1-1D114")
+    assert any(
+        k.startswith("__prefix__:f/b-m-t-nvy-")
+        for k in _peer_keys_for_label("F/B-M-T-NVY-S-YES")
+    )
     assert any(
         k.startswith("__prefix__:bg-bg140s-")
         for k in _peer_keys_for_label("BG-BG140S-ClaRdOW-O/S-YES")

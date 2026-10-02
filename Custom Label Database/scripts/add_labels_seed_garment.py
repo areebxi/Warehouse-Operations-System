@@ -27,6 +27,9 @@ def _extras_mock(
     p_tok = p_m.group(1).upper() if p_m else None
     peer = _peer_for_mock_uid(peers, mock, uid, p_tok)
     extras: dict[str, str] = {}
+    # ponytail: Amazon acrylic blocks use M##-P#-1D### with no PE/CL peer — A515-PHOTO.
+    if peer is None and any(ch.isalpha() for ch in uid):
+        peer = peers.get("a515-photo")
     if not p_tok:
         extras["Print Positions"] = "Front Center"
     return peer, extras
@@ -131,15 +134,25 @@ def _extras_yes_shirt(
     lab: str, peers: dict[str, dict[str, str]]
 ) -> tuple[dict[str, str] | None, dict[str, str]]:
     stripped = lab.rsplit("-", 1)[0]
+    extras: dict[str, str] = {}
     peer = peers.get(stripped.casefold())
     if not peer:
         aliased = _alias_shirt_colour_label(stripped)
         peer = peers.get(aliased.casefold())
         if not peer:
-            prefix = aliased.casefold()
+            parts = aliased.split("-")
+            family = "-".join(parts[:-1]).casefold() + "-" if len(parts) >= 2 else ""
             for key, row in peers.items():
-                if key == prefix or key.startswith(prefix + "-"):
+                if family and key.startswith(family):
                     peer = row
                     if clean(row.get("Print Positions")) == "Front Center":
                         break
-    return peer, {}
+                elif key == aliased.casefold() or key.startswith(aliased.casefold() + "-"):
+                    peer = row
+                    if clean(row.get("Print Positions")) == "Front Center":
+                        break
+            if peer and len(parts) >= 2:
+                sz = map_sr_size(parts[-1]) or parts[-1]
+                if sz:
+                    extras["Size"] = sz
+    return peer, extras
