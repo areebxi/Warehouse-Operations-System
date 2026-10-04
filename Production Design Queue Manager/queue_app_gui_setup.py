@@ -101,19 +101,24 @@ class DesignArrangerGUISetup:
         
         # Auto-load Color Bar from app directory
         self.color_bar_image, self.color_bar_path = load_color_bar_from_app_dir()
-        
-        self._reload_data_sources()
-        
-        # Create UI
+
+        # Paint the shell first; CL CSV + Configuration Workbook take ~10s and
+        # must not block the Tk thread (Windows "Not Responding").
         self.create_ui()
+        self._reload_data_sources()
 
     def _reload_data_sources(self) -> None:
         """Reload CL print sizes + workbook pocket overrides from GUI paths."""
+        from gui_helpers.common.gui_background import run_keeping_ui_alive
+
+        cl_path = self.cl_csv_var.get()
+        wb_path = self.config_workbook_var.get()
+
+        def _load():
+            return load_queue_data_sources(cl_path, wb_path)
+
         self.cl_csv_path, self.print_size_overrides, self.config_workbook_path = (
-            load_queue_data_sources(
-                self.cl_csv_var.get(),
-                self.config_workbook_var.get(),
-            )
+            run_keeping_ui_alive(self, _load)
         )
         self.pocket_design_ids_set = set(self.print_size_overrides.keys())
 

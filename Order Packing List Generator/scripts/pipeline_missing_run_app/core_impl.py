@@ -12,6 +12,10 @@ from pipeline_runtime.order_number_csv import read_csv_with_order_numbers
 from pipeline_runtime.runner import ALL_ORDERS_PATH, PROJECT_ROOT, _run_step6_style_outputs
 import sys
 from shared import paths as wh  # noqa: E402
+from .core_build import _build_missing_run_df, _coerce_pipeline_log
+
+# Mirror core.py — avoid importing core (circular: core imports this module).
+MISSING_PDF_SUBDIRS = ("Missing Logo", "Missing Apparel")
 
 def run_missing_run_from_all_orders(
     missing_input_path: str | Path,

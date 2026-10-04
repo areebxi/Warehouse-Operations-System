@@ -41,11 +41,7 @@ from gui_helpers.ui import (
     gui_canvas_settings,
     create_ui as create_ui_func,
 )
-from gui_helpers.processing import (
-    gui_processing_ui,
-    gui_processing_core,
-    gui_size_reference,
-)
+from gui_helpers.processing import gui_size_reference
 from gui_helpers.preview import gui_preview
 from gui_helpers.common import (
     gui_save,

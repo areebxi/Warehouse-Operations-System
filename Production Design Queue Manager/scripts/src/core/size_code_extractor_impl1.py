@@ -3,8 +3,8 @@ import pandas as pd
 from typing import Optional, List, Set, Union, Dict, Tuple, Mapping
 from src.io.file_handlers import extract_design_code, remove_apparel_size_prefix
 from src.core.size_lookup_index import get_size_reference_index
-from src.core.size_reference import _build_size_result
 from src.core.size_code_override import (
+    PrintSizeOverrides,
     _as_override_map,
     _check_pocket_design,
     _detect_pocket_size_code,
@@ -19,6 +19,11 @@ from src.core.size_code_extractor_impl2 import (
 from src.core.size_code_extractor_impl3 import (
     _find_bare_base_match,
     _sku_hyphen_tokens,
+)
+from src.core.size_code_brackets import (
+    _is_gender_garment_token,
+    _leading_dash_size_parts,
+    _strip_trailing_sku_flags,
 )
 
 def _search_reference_size_codes(sku_str: str, size_reference_df: pd.DataFrame) -> Optional[str]:
@@ -125,40 +130,8 @@ def extract_size_code(
     if common_code:
         return common_code
     return None
-def build_print_size_override_info(
-    sku: Union[str, pd.Series, None],
-    print_size_overrides: Optional[Union[PrintSizeOverrides, Set[str], Mapping]],
-    mm_to_pixel_factor: float,
-) -> Optional[Dict[str, float]]:
-    """Build size_info from Override Print Size, or hardcoded dims when Width/Height blank."""
-    hit = find_print_size_override(sku, print_size_overrides)
-    if hit is None:
-        return None
 
-    token, width_mm, height_mm = hit
-    if width_mm is not None and height_mm is not None:
-        return _build_size_result(
-            float(width_mm),
-            float(height_mm),
-            mm_to_pixel_factor,
-            token,
-            f"Override Print Size: {token}",
-            OVERRIDE_MATCH_TYPE,
-            "Width",
-            "Height",
-        )
 
-    fb_w, fb_h = hardcoded_pocket_dimensions_mm(sku)
-    return _build_size_result(
-        fb_w,
-        fb_h,
-        mm_to_pixel_factor,
-        token,
-        f"Override Print Size: {token} (fallback)",
-        OVERRIDE_FALLBACK_MATCH_TYPE,
-        "hardcoded_width",
-        "hardcoded_height",
-    )
 def _bracket_matches_sku(bracket_code: str, tokens: List[str], token_set: Set[str]) -> bool:
     """Return True if a Size Reference bracket code applies to this SKU.
 
@@ -186,9 +159,3 @@ def _bracket_matches_sku(bracket_code: str, tokens: List[str], token_set: Set[st
             return True
         return False
     return bracket_code in token_set
-def hardcoded_pocket_dimensions_mm(sku: Union[str, pd.Series, None]) -> Tuple[float, float]:
-    """Legacy pocket fallback: 65x80 kids, otherwise 80x100."""
-    sku_str = str(sku).upper() if sku is not None and not (isinstance(sku, float) and pd.isna(sku)) else ""
-    if "-K-" in sku_str:
-        return 65.0, 80.0
-    return 80.0, 100.0

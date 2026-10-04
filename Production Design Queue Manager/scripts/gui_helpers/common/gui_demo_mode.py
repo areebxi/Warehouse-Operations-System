@@ -49,18 +49,6 @@ def apply_resolved_folders(gui) -> None:
     gui.double_designs_folder = double
 
 
-def has_normal_folder(gui) -> bool:
-    if use_demo(gui):
-        return True
-    return bool(getattr(gui, "designs_folder", None))
-
-
-def has_personalised_folders(gui) -> bool:
-    if use_demo(gui):
-        return True
-    return bool(gui.single_designs_folder) and bool(gui.double_designs_folder)
-
-
 def has_missing_logo_folders(gui) -> bool:
     if use_demo(gui):
         return True

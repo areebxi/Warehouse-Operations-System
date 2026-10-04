@@ -4,6 +4,7 @@ from typing import Optional, List, Set, Union, Dict, Tuple, Mapping
 from src.io.file_handlers import extract_design_code, remove_apparel_size_prefix
 from src.core.size_lookup_index import get_size_reference_index
 from src.core.size_reference import _build_size_result
+from src.core.size_code_brackets import _bracket_matches_sku
 
 def _bases_requiring_brackets(
     size_reference_df: pd.DataFrame,

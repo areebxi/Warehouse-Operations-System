@@ -1,6 +1,6 @@
 # Custom Label Database — current state
 
-**Updated:** 2 October 2026  
+**Updated:** 4 October 2026  
 **Handbook:** `AGENTS.md` · Parent: `../AGENTS.md` · **Facts:** `FINDINGS.md` · **Paths:** `WORKSPACE.md` · **Policy:** parent `.cursor/rules/custom-label-database/`  
 **Dated fill log (archive):** [`archive/HANDOFF_FILL_LOG.md`](archive/HANDOFF_FILL_LOG.md)
 
@@ -13,7 +13,7 @@
 | `database/custom-label-database/support/` | Shirts Print Sizes, Mocks, Workbook helpers |
 | `Database Transfer/Workbook.xlsx` + `Configuration Workbook.xlsx` | Mirror after fill via `sync_database_transfer.py` (locked 2026-09-25) |
 
-Last recorded after 2 Oct UNMATCHED fill + transfer sync: CL **132,605** rows; Size References **97,845**.
+Last recorded after 4 Oct UNMATCHED fill (+5: `B-M-T-WHI-M-YES`, `P5-ACPPLQ-A515-PB`, `N01-P7-235932`, `W696-NAT-O/S-Yes`, `M407-P3-1D112`) + transfer sync: CL **132,610** rows; Size References **97,845**. `M407-P3-1D112` defaulted A5 15mm (buyer note said A4).
 
 ## How fills run
 

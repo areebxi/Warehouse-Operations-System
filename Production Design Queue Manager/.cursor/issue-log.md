@@ -4,6 +4,26 @@ Newest entries first. Maintained automatically per `.cursor/rules/issue-resoluti
 
 ---
 
+### 2026-10-04 13:42 UTC+1
+**Issue:** GUI had one Run button but backend still kept three mode entry points (Normal / Personalised / Missing Logo) plus dead single-file UI processors.
+**Resolution:** Removed dead `arrange_designs` / `arrange_personalised` / `process_folder` / `process_folder_personalised` / UI single-file processors. Keep only Run → `arrange_missing_logo_designs` → `process_folder_missing_logo` (Customise-column routing). Domain `process_single_designs` / `process_personalised_designs` unchanged.
+
+### 2026-10-04 13:29 UTC+1
+**Issue:** Multi-file Run looked like only one file arranged/saved (e.g. P50 worked; P1000/P5000 produced nothing).
+**Resolution:** Not a multi-file loop bug. IronOn resize passed `apply_max_design_size` into `select_best_orientation`, which no longer accepted that kwarg after the 300×500 split; the TypeError was swallowed in `load_and_resize_design`. Restored the parameter in `image_orientation.py` / `image_orientation_select.py` (matches Working Copy).
+
+### 2026-10-04 13:03 UTC+1
+**Issue:** Queue canvas empty, design folders not restoring, progress missing on folder runs, and P100 Missing Logo crashed on Override Print Size SKUs (`NameError: OVERRIDE_MATCH_TYPE`).
+**Resolution:** Incomplete façade/impl split: wired packing helpers into `canvas_arranger_impl`, size-match helpers into `size_reference_impl`, lazy-import for folder labels, stop demo/None saves from wiping Drive paths, add per-design progress in folder cores, and use `size_code_override.build_print_size_override_info` (constants live there).
+
+### 2026-10-04 09:41 UTC+1
+**Issue:** Queue GUI went “Not Responding” for ~11s on startup.
+**Resolution:** Paint UI first, then load CL CSV + Configuration Workbook via `run_keeping_ui_alive` (workbook open alone ~9s). Window stays responsive while data loads.
+
+### 2026-10-04 09:12 UTC+1
+**Issue:** Queue GUI failed to start with `NameError: _warehouse_settings_path is not defined`.
+**Resolution:** Import `_warehouse_settings_path` from `settings_manager_paths` into `settings_manager_impl.py` after the settings-manager split.
+
 ### 2026-09-22 05:33 UTC+1
 **Issue:** Duplicate-order SKU search never set pocket/sleeve flags, so 1-SP files like `{order}-{index}-P-{sku}.jpg` next to the main PNG were ignored (legacy `{Order}-P.png` still worked only for unique orders).
 **Resolution:** JPEG in 1-SP is a position hint only. Queue the matching PNG at 80×100 (`-P-`, including kids) or 100×100 (`-S-`/`-S1-`/`-S2-`). Do not queue the JPEG. JPEG-only does not invent a design. Token tables in `sku_position_hints.py`; find in `vba_file_search_core.py`; apply in `design_processing_personalised.py`. `IMAGE_EXTENSIONS` stays `['.png']`.

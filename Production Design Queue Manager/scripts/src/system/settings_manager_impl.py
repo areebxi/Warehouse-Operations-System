@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from typing import Optional, Dict, Any
 from src.system.interfaces import ISettingsManager
+from src.system.settings_manager_paths import _warehouse_settings_path
 
 class SettingsManager(ISettingsManager):
     """Manages application settings persistence.

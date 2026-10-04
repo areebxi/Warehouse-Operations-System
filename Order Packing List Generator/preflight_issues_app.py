@@ -6,6 +6,13 @@ Preflight Issues App entrypoint.
 Launch with `python preflight_issues_app.py`.
 """
 
+import sys
+from pathlib import Path
+
+_SCRIPTS = Path(__file__).resolve().parent / "scripts"
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
+
 from scripts.preflight_issues_app import main
 
 

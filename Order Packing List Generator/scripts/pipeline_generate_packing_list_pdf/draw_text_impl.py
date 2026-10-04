@@ -5,6 +5,8 @@ from reportlab.pdfgen import canvas
 from pipeline_generate_packing_list_pdf.core_helpers import truncate_impl
 from . import pdf_page_layout as L
 
+_FONT_METRICS_CACHE: Dict[Tuple[str, float], Tuple[float, float]] = {}
+
 def draw_text_in_box_impl(
     c: canvas.Canvas,
     x: float,

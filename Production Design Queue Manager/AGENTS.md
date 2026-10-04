@@ -21,7 +21,7 @@ Live paths via `shared/paths.py` (DB in `database/`; settings + I/O in this app;
 
 **Auto:** watcher on SharedInbox → Missing Logo using settings folders → timestamped PNG under app Output → move source to `Processed/` (or `Failed/`). No approval.
 
-**GUI:** Load DTF Des → Normal / Personalised / Missing Logo → pack canvas → preview → Save PNG. GUI batches still need supervisor approval.
+**GUI:** Load DTF Des → **Run** (Customise column picks Normal vs Single/Double folders) → pack canvas → preview → Save PNG. GUI batches still need supervisor approval.
 
 ## Hard do-nots
 

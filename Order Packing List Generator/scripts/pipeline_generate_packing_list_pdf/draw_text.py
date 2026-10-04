@@ -12,8 +12,6 @@ from pipeline_generate_packing_list_pdf.core_helpers import truncate_impl
 from . import pdf_page_layout as L
 from pipeline_generate_packing_list_pdf.draw_text_impl import draw_text_in_box_impl, draw_text_in_padded_box_impl, _get_font_ascent_descent
 
-_FONT_METRICS_CACHE: Dict[Tuple[str, float], Tuple[float, float]] = {}
-
 
 def draw_recipient_name_in_box_impl(
     c: canvas.Canvas,

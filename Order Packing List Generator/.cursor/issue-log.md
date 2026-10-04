@@ -2,6 +2,18 @@
 
 Issues discussed with the AI agent, newest first.
 
+## 2026-10-04 10:43
+
+**Issue:** Packing pipeline crashed with a chain of NameErrors after an imported façade→impl split (`_emit`, `_FONT_METRICS_CACHE`, `_pdf_asset_log_line`, then `Path`).
+
+**Resolution:** Step 5 imports helpers from `service_assign`; font metrics cache lives in `draw_text_impl`; apparel/logo façade rewired to clean `logo_rows`/`logo_cell`/`apparel_square`/`image_primitives`/`back_layout`; `reporting_format` imports `Path`; also wired orphans in `orders_to_csv_impl` and missing-run `core_impl`.
+
+## 2026-10-04 09:12
+
+**Issue:** Packing List, Preflight, and Missing Run GUIs failed to start (`pipeline_*` / `shared` ModuleNotFoundError; Preflight then crashed on config load).
+
+**Resolution:** Entry points add `scripts/` (and warehouse for Missing) to `sys.path`. Restored missing `self` on `PreflightConfigMixin._parse_saved_input_files`.
+
 ## 2026-09-25 14:40
 
 **Issue:** Output folders and `missing_logo_orders_*.csv` still used the full sorter stem after PIN/Excel/PDF were shortened to `B#-S#`.

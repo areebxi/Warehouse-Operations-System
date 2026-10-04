@@ -7,6 +7,16 @@ from src.core.image_utils import (
     NON_BAR_MARGIN,
 )
 from src.core.canvas_placement import place_row_grid
+from src.core.canvas_arranger_rotate import (
+    _create_design_dict,
+    _place_completed_row,
+    _rotate_landscape_for_packing,
+)
+from src.core.canvas_arranger_row import (
+    _handle_row_full,
+    _start_new_batch,
+    _try_add_design_to_row,
+)
 from typing import List, Dict, Any, Optional, Tuple
 
 def pack_designs(

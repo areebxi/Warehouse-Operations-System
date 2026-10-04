@@ -14,6 +14,7 @@ from .config import (
 from .design_id_process_tracker import prepare_tracker_assign_kwargs
 from .logo_logic import compute_logo_id_unit_counts
 from .normalize import _customise_is_yes, _normalize, _normalize_key, _parse_ship_by, _prime_is_yes
+from .service_assign import _emit, _log_step5_process_assign_summary, assign_process_numbers
 from .workbook import build_gender_to_start_number, get_shift_code, load_process_info_sheet
 
 def run(

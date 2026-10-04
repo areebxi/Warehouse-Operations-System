@@ -66,31 +66,6 @@ def load_dataframe_from_file(file_path: str) -> pd.DataFrame:
     return pd.read_csv(file_path) if file_path.endswith('.csv') else pd.read_excel(file_path)
 
 
-def process_file_in_folder_standard(gui, file_path: str, df: pd.DataFrame, processing_func) -> Tuple[List[Dict], List[List[Dict]], List[int], Optional[str]]:
-    try:
-        column = auto_detect_sku_column(df)
-        if not column:
-            return [], [], [], f"{os.path.basename(file_path)}: No SKU column found"
-        file_designs, file_batches, missing_row_indices = processing_func(gui, df, column, file_path)
-        return file_designs, file_batches, missing_row_indices, None
-    except Exception as e:
-        return [], [], [], f"{os.path.basename(file_path)}: {str(e)}"
-
-
-def process_file_in_folder_personalised(gui, file_path: str, df: pd.DataFrame, processing_func) -> Tuple[List[Dict], List[List[Dict]], List[int], Optional[str]]:
-    try:
-        order_column = auto_detect_order_column(df)
-        if not order_column:
-            return [], [], [], f"{os.path.basename(file_path)}: No Order Number column found"
-        sku_column = auto_detect_sku_column(df)
-        if not sku_column:
-            return [], [], [], f"{os.path.basename(file_path)}: No Item SKU column found"
-        file_designs, file_batches, missing_row_indices = processing_func(gui, df, order_column, sku_column, file_path)
-        return file_designs, file_batches, missing_row_indices, None
-    except Exception as e:
-        return [], [], [], f"{os.path.basename(file_path)}: {str(e)}"
-
-
 def process_file_in_folder_missing_logo(gui, file_path: str, df: pd.DataFrame, processing_func) -> Tuple[List[Dict], List[List[Dict]], List[int], Optional[str]]:
     try:
         order_column = auto_detect_order_column(df)

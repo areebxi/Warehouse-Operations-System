@@ -5,6 +5,7 @@ from datetime import datetime
 from src.core.canvas_arranger import pack_designs
 from src.core.design_folder_routing import find_designs_for_dtf_row
 from gui_helpers.common.gui_background import run_keeping_ui_alive
+from gui_helpers.common.gui_progress import update_progress
 from src.system.logging.utils import (
     finish_size_determination_log,
     log_size_determination,
@@ -53,10 +54,19 @@ def process_missing_logo_file_for_folder(gui, df, order_column, sku_column, file
         for order_number in order_numbers:
             order_total_counts[order_number] = order_total_counts.get(order_number, 0) + 1
         order_occurrences = {}
+        total_orders = len(order_numbers)
+        update_progress(gui, 0, f"Loading designs: 0/{total_orders}")
 
-        for order_number, item_sku, customise in zip(order_numbers, item_skus, customise_vals):
+        for idx, (order_number, item_sku, customise) in enumerate(
+            zip(order_numbers, item_skus, customise_vals)
+        ):
             if is_plainlg_sku(item_sku):
                 continue
+            update_progress(
+                gui,
+                (idx / total_orders) * 90,
+                f"Loading designs: {idx + 1}/{total_orders}",
+            )
             order_occurrences[order_number] = order_occurrences.get(order_number, 0) + 1
             duplicate_index = order_occurrences[order_number] - 1
             is_duplicate_order = order_total_counts.get(order_number, 0) > 1
@@ -135,6 +145,7 @@ def process_missing_logo_file_for_folder(gui, df, order_column, sku_column, file
             missing_sizes, missing_size_row_indices, df, file_path, gui, save_rows=False
         )
         finish_size_determination_log(log_stats)
+        update_progress(gui, 95, "Arranging designs on canvas...")
         batches = pack_designs(
             designs, gui.canvas_width_mm, gui.canvas_height_mm, gui.mm_to_pixel, gui.design_padding
         )

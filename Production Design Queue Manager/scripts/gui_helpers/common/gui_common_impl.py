@@ -88,8 +88,9 @@ def load_path_setting(
         else:
             setattr(gui, gui_attr, setting_value)
 
-        # Update label if provided
+        # Update label if provided (lazy import avoids cycle with gui_common)
         if label_attr:
+            from gui_helpers.common.gui_common import update_label_with_path
             update_label_with_path(gui, label_attr, setting_value)
 
         return True

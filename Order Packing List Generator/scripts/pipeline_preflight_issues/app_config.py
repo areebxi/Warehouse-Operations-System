@@ -57,7 +57,7 @@ class PreflightConfigMixin:
             self.use_demo_images_var.set(data["use_demo_images"])
 
 
-    def _parse_saved_input_files(data: dict) -> list[Path]:
+    def _parse_saved_input_files(self, data: dict) -> list[Path]:
         raw = data.get("input_files")
         paths: list[Path] = []
         if isinstance(raw, list):

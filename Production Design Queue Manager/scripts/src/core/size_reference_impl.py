@@ -1,6 +1,12 @@
 from __future__ import annotations
 import pandas as pd
 from src.core.size_lookup_index import get_indexed_row, get_size_reference_index
+from src.core.size_reference_match import (
+    _build_size_result,
+    _find_dimension_value,
+    _find_matching_row,
+    _row_get,
+)
 from typing import Any, Optional, Dict, List, Tuple, Union
 
 def get_size_from_reference(
