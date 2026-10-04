@@ -4,6 +4,14 @@ Newest entries first. Maintained automatically per `.cursor/rules/issue-resoluti
 
 ---
 
+### 2026-10-04 15:56 UTC+1
+**Issue:** Auto Missing Logo queue PNGs used date/time stems (`P50_20261004_154350.png`) instead of GUI names.
+**Resolution:** `_output_stem` in `auto_missing_logo_process.py` now matches GUI (`P50.png` / `P50_Part N.png`); re-runs overwrite.
+
+### 2026-10-04 15:45 UTC+1
+**Issue:** Design queues not auto-made after Packing List SharedInbox dual-write.
+**Resolution:** Watcher was failing (empty design folders) or stalling on Drive I/O. With folders set and a fresh watcher, SharedInbox → PNG → Processed works. Keep folders configured in Queue settings.
+
 ### 2026-10-04 13:42 UTC+1
 **Issue:** GUI had one Run button but backend still kept three mode entry points (Normal / Personalised / Missing Logo) plus dead single-file UI processors.
 **Resolution:** Removed dead `arrange_designs` / `arrange_personalised` / `process_folder` / `process_folder_personalised` / UI single-file processors. Keep only Run → `arrange_missing_logo_designs` → `process_folder_missing_logo` (Customise-column routing). Domain `process_single_designs` / `process_personalised_designs` unchanged.

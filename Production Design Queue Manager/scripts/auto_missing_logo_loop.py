@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import logging
 import sys
 import time
 from pathlib import Path
@@ -100,25 +99,3 @@ def watch_loop() -> None:
         except Exception:
             LOG.exception("Watcher loop error")
         time.sleep(POLL_SECONDS)
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Auto Missing Logo watcher for Shared Inbox")
-    parser.add_argument(
-        "--once",
-        action="store_true",
-        help="Process current inbox files once and exit",
-    )
-    args = parser.parse_args()
-    _setup_logging()
-    if args.once:
-        n = run_once()
-        raise SystemExit(0 if n >= 0 else 1)
-    from shared.missing_logo_watcher import claim_this_process
-
-    claim_this_process()
-    watch_loop()
-
-
-if __name__ == "__main__":
-    main()

@@ -64,17 +64,14 @@ def _build_ctx(settings: dict) -> SimpleNamespace:
 
 
 def _output_stem(file_path: Path) -> str:
-    stem = re.sub(r"^DTF\s*Des-", "", file_path.stem, flags=re.IGNORECASE).strip()
-    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    return f"{stem}_{stamp}"
+    # Match GUI naming: P50.png / P50_Part 1.png (overwrite on re-run).
+    return re.sub(r"^DTF\s*Des-", "", file_path.stem, flags=re.IGNORECASE).strip()
 
 
 def _save_batches(ctx: SimpleNamespace, batches: list, file_path: Path) -> list[Path]:
     out_dir = wh.queue_output_dir() / datetime.now().strftime("%Y-%m-%d")
     out_dir.mkdir(parents=True, exist_ok=True)
     stem = _output_stem(file_path)
-    # DES label without timestamp for canvas text; file name keeps timestamp
-    des_label = re.sub(r"^DTF\s*Des-", "", file_path.stem, flags=re.IGNORECASE).strip()
     saved: list[Path] = []
     for i, batch in enumerate(batches, 1):
         part_text = f"PART {i}" if len(batches) > 1 else None
@@ -85,7 +82,7 @@ def _save_batches(ctx: SimpleNamespace, batches: list, file_path: Path) -> list[
             ctx.mm_to_pixel,
             ctx.dpi,
             color_bar_image=ctx.color_bar_image,
-            des_text=des_label,
+            des_text=stem,
             part_text=part_text,
         )
         if len(batches) > 1:

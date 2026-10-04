@@ -3,9 +3,9 @@ Headless Missing Logo watcher for Shared Inbox/DTF Des.
 
 Watches warehouse Shared Inbox/DTF Des/{date}/{shift}/ for new DTF Des files,
 runs Missing Logo using folders from queue_app_settings.json, auto-saves PNG
-with unique timestamps, then moves the source to Processed/ (or Failed/).
+then moves the source to Processed/ (or Failed/).
 
-No Tk GUI. No approval gate. Re-runs always generate a new queue PNG.
+No Tk GUI. No approval gate. PNG names match GUI (P50.png); re-runs overwrite.
 """
 
 from __future__ import annotations
