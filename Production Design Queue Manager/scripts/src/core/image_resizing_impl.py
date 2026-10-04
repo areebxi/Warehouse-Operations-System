@@ -1,10 +1,11 @@
 from __future__ import annotations
+
 from PIL import Image
 from typing import Optional, Dict, Tuple
-from src.system.logging.utils import get_run_logger
-from src.core.size_reference import COLOR_BAR_WIDTH, COLOR_BAR_SPACING
+
 from src.core.image_orientation import apply_orientation_if_enabled
-from src.core.sku_position_hints import target_mm_for_position_token
+from src.core.image_resizing_calc import calculate_image_dimensions
+
 
 def resize_image_with_constraints(
     img: Image.Image,
@@ -19,6 +20,7 @@ def resize_image_with_constraints(
     design_padding: int = 25,
     allow_orientation: bool = False,
     filename_position_token: Optional[str] = None,
+    apply_max_design_size: bool = True,
 ) -> Tuple[Image.Image, int, int, float, float]:
     """Resize the image to calculated constrained dimensions."""
     dim_kwargs = {
@@ -31,6 +33,7 @@ def resize_image_with_constraints(
         "canvas_height_mm": canvas_height_mm,
         "design_padding": design_padding,
         "filename_position_token": filename_position_token,
+        "apply_max_design_size": apply_max_design_size,
     }
 
     working_img, width_px, height_px, width_mm, height_mm = apply_orientation_if_enabled(

@@ -1,7 +1,13 @@
+"""Resolve customise / Normal Logo F/B/P/S(+LOCATION) context for one PDF row."""
+
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple
 
 from pipeline_generate_packing_list_pdf.back_print_hint import FBPI_SIDE_SUFFIX_LOOKUP
+from pipeline_generate_packing_list_pdf.draw_page_location_slot import (
+    append_location_slot,
+    lookup_location_path,
+)
 
 
 def resolve_custom_logo_context_impl(
@@ -16,6 +22,9 @@ def resolve_custom_logo_context_impl(
     find_image_custom_exact: Callable[..., Optional[Path]],
     find_image_custom_logo: Callable[..., Optional[Path]],
     find_image_custom_fbpi: Callable[..., Optional[Path]],
+    logo_normal_dir: Optional[Path] = None,
+    logo_normal_stem_map: Optional[Dict[str, Path]] = None,
+    find_image_normal_logo: Optional[Callable[..., Optional[Path]]] = None,
 ) -> Tuple[bool, bool, Optional[Path], List[Tuple[Path, str]]]:
     is_customised = safe_str(row_series.get("Customise", "")).lower() == "yes"
     base_order_for_scope = safe_str(row_series.get("Order Number (Base)"))
@@ -45,6 +54,8 @@ def resolve_custom_logo_context_impl(
                     if base_custom_path is not None:
                         break
                 for suffix, label in FBPI_SIDE_SUFFIX_LOOKUP:
+                    if len(fbpi_slots) >= 4:
+                        break
                     side_candidates: List[str] = []
                     if item_sku:
                         side_candidates.append(f"{base_name}-{suffix}-{item_sku}")
@@ -63,9 +74,53 @@ def resolve_custom_logo_context_impl(
                     logo_customise_dir, base_name, logo_custom_stem_map, recursive=True
                 )
                 for suffix, label in FBPI_SIDE_SUFFIX_LOOKUP:
+                    if len(fbpi_slots) >= 4:
+                        break
                     candidate_stem = f"{base_name}-{suffix}"
                     p = find_image_custom_fbpi(logo_custom_stem_map, candidate_stem)
                     if p is not None:
                         fbpi_slots.append((p, label))
+
+            location_path = None
+            names_to_try: List[str] = []
+            for name in (
+                base_name,
+                safe_str(row_series.get("Order Number", "")),
+                safe_str(row_series.get("Order Number (Base)", "")),
+            ):
+                if name and name not in names_to_try:
+                    names_to_try.append(name)
+            for name in names_to_try:
+                location_path = lookup_location_path(
+                    base_name=name,
+                    item_sku=item_sku,
+                    is_scoped=is_scoped_custom_merge,
+                    logo_customise_dir=logo_customise_dir,
+                    logo_custom_stem_map=logo_custom_stem_map,
+                    find_image_custom_exact=find_image_custom_exact,
+                    find_image_custom_fbpi=find_image_custom_fbpi,
+                )
+                if location_path is not None:
+                    break
+            fbpi_slots, base_custom_path = append_location_slot(
+                fbpi_slots, location_path, base_custom_path
+            )
+    elif (
+        (not is_plain_order)
+        and (not is_customised)
+        and (logo_normal_dir or logo_normal_stem_map is not None)
+        and find_image_custom_fbpi is not None
+    ):
+        # Non-customise: F/B/P/S(+S1/S2/SL/SR) from Normal Logo. LOCATION is customise-only.
+        logo_tokens = logo_design_tokens(row_series.get("Logo/Design Image"))
+        base_name = logo_tokens[0] if logo_tokens else ""
+        if base_name:
+            for suffix, label in FBPI_SIDE_SUFFIX_LOOKUP:
+                if len(fbpi_slots) >= 4:
+                    break
+                p = find_image_custom_fbpi(logo_normal_stem_map, f"{base_name}-{suffix}")
+                if p is not None:
+                    fbpi_slots.append((p, label))
+            base_custom_path = None
 
     return is_customised, is_scoped_custom_merge, base_custom_path, fbpi_slots

@@ -1,17 +1,7 @@
-"""
-Optional orientation optimization for size-referenced designs.
+"""Optional orientation for size-referenced designs.
 
-When enabled, compares original vs 90°-rotated layout (same size_info on both;
-rotation already swaps pixel axes). Picks the orientation with larger output
-area, with a target-box tie-break when areas match.
-
-Toggle ENABLE_AUTO_ORIENTATION to disable without touching resize logic.
-
-Auto-orientation runs only when is_iron_on_order(...) is True for the order/SKU.
-
-A3 forced landscape (ENABLE_A3_LANDSCAPE): when size_code is A3, rotates the
-image 90° clockwise and swaps the size-reference box to landscape before resize.
-IronOn auto-orientation is skipped for A3 so the forced transform is not overridden.
+ENABLE_AUTO_ORIENTATION: pick original vs 90° by output area (IronOn only).
+ENABLE_A3_LANDSCAPE: A3 size_code forces rotate 90° + swap size box (skips IronOn).
 """
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, Optional, Tuple, Union
@@ -19,17 +9,17 @@ from typing import Any, Callable, Dict, Optional, Tuple, Union
 from PIL import Image
 
 from src.system.logging.utils import get_run_logger
-from src.core.image_orientation_impl import apply_a3_landscape_transform, swap_size_info_landscape, is_iron_on_order, is_a3_size
+from src.core.image_orientation_impl import (
+    A3_SIZE_CODE,
+    IRON_ON_MARKER,
+    apply_a3_landscape_transform,
+    is_a3_size,
+    is_iron_on_order,
+    swap_size_info_landscape,
+)
 
-# Set False to restore pre-orientation behavior for all resize callers.
 ENABLE_AUTO_ORIENTATION = True
-
-# Set False to disable forced A3 landscape (rotate 90° + swap size box).
 ENABLE_A3_LANDSCAPE = True
-
-IRON_ON_MARKER = "ironon"
-A3_SIZE_CODE = "A3"
-
 
 DimensionCalculator = Callable[..., Tuple[int, int, float, float, str]]
 

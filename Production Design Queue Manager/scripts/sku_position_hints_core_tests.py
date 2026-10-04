@@ -1,7 +1,7 @@
 from sku_position_hints_fixtures import *  # noqa: F403
 
 def test_token_tables() -> None:
-    assert POSITION_HINT_TOKENS == ("P", "S", "S1", "S2")
+    assert POSITION_HINT_TOKENS == ("S1", "S2", "SL", "SR", "P", "S")
     assert POSITION_HINT_EXTENSIONS == (".jpg", ".jpeg")
     assert POSITION_HINT_MM["P"] == (80.0, 100.0)
     assert POSITION_HINT_MM["S"] == (100.0, 100.0)

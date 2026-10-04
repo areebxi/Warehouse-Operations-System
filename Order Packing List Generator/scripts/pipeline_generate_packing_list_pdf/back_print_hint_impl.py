@@ -1,7 +1,15 @@
 from __future__ import annotations
+
 from pathlib import Path
 from typing import Callable, List, Optional, Tuple
+
+from pipeline_generate_packing_list_pdf.back_print_hint_labels import (
+    fbpi_side_label_for_slot,
+    logo_filename_indicates_back,
+    resolve_logo_anchor_for_slot,
+)
 from pipeline_generate_packing_list_pdf.core_helpers import classify_position_token_impl
+
 
 def slot_is_back_print(
     slot_index: int,
@@ -25,7 +33,12 @@ def slot_is_back_print(
         fbpi_slots=fbpi_slots,
         logo_design_tokens=logo_design_tokens,
     )
-    fbpi_label = fbpi_side_label_for_slot(slot_index, fbpi_slots)
+    fbpi_label = fbpi_side_label_for_slot(
+        slot_index,
+        fbpi_slots,
+        sides_start_at_zero=bool(fbpi_slots)
+        and safe_str(row_series.get("Customise", "")).lower() != "yes",
+    )
     if logo_filename_indicates_back(img_path, anchor, fbpi_side_label=fbpi_label):
         return True
 
@@ -47,6 +60,8 @@ def slot_is_back_print(
                 return True
 
     return False
+
+
 def resolve_position_tokens_for_row(
     row_series,
     position_code_to_draw: Optional[dict[str, str]],
@@ -69,6 +84,8 @@ def resolve_position_tokens_for_row(
     if not banner_source:
         return []
     return position_tokens(banner_source)
+
+
 def next_logo_slot_index(slot_index: int) -> Optional[int]:
     """Logo slot index to the right in the same grid row, if any."""
     return {0: 1, 2: 3, 3: 4}.get(slot_index)

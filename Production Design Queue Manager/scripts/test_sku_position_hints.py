@@ -31,7 +31,7 @@ from src.io.file_handlers import (
 )
 from src.io.file_utilities import IMAGE_EXTENSIONS
 from test_sku_position_hints_impl1 import test_legacy_pocket_sleeve_png_kids_65x80, test_duplicate_png_plus_p_jpeg_queues_png_only, test_normal_mode_ignores_jpeg_hints, _personalised, test_unique_order_png_size_reference, test_slash_in_sku_becomes_hyphen
-from test_sku_position_hints_impl2 import test_unique_order_ignores_sku_jpeg_hint, test_apparel_size_s_in_sku_is_not_sleeve, test_kids_sku_filename_p_hint_is_80x100_not_65x80, test_p_wins_over_later_tokens_and_index_zero_stem, _entries, test_duplicate_png_plus_s1_jpeg, test_jpeg_only_falls_through_to_double, test_double_folder_sku_png_unchanged, test_token_tables, _png, _jpg, _near
+from test_sku_position_hints_impl2 import test_unique_order_ignores_sku_jpeg_hint, test_apparel_size_s_in_sku_is_not_sleeve, test_kids_sku_filename_p_hint_is_80x100_not_65x80, test_first_token_wins_and_index_zero_stem, _entries, test_duplicate_png_plus_s1_jpeg, test_jpeg_only_falls_through_to_double, test_double_folder_sku_png_unchanged, test_token_tables, _png, _jpg, _near
 
 ORDER = "204-6115657-9842723"
 SKU = "189397LG-M-T-BLK-4XL-YES"
@@ -51,7 +51,7 @@ def main() -> None:
     test_double_folder_sku_png_unchanged()
     test_normal_mode_ignores_jpeg_hints()
     test_kids_sku_filename_p_hint_is_80x100_not_65x80()
-    test_p_wins_over_later_tokens_and_index_zero_stem()
+    test_first_token_wins_and_index_zero_stem()
     test_slash_in_sku_becomes_hyphen()
     test_unique_order_ignores_sku_jpeg_hint()
     print("sku_position_hints ok")

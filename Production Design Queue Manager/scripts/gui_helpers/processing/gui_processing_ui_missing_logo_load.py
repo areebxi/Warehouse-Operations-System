@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from src.core.design_folder_routing import find_designs_for_dtf_row
+from gui_helpers.common.gui_background import run_keeping_ui_alive
 from src.system.logging.utils import log_size_determination
 from gui_helpers.common.gui_progress import update_progress
 from .gui_processing_helpers import (
@@ -52,7 +53,9 @@ def load_missing_logo_designs(
                     df, order_column, sku_column, order_number, item_sku, missing_size_row_indices
                 )
 
-        design_items, source = find_designs_for_dtf_row(
+        design_items, source = run_keeping_ui_alive(
+            gui,
+            find_designs_for_dtf_row,
             order_number=order_number,
             item_sku=item_sku,
             customise=customise,

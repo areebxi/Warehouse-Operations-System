@@ -53,6 +53,8 @@ def draw_page_impl(
         apparel_image_dir=apparel_image_dir,
         logo_customise_dir=logo_customise_dir,
         logo_custom_stem_map=logo_custom_stem_map,
+        logo_normal_dir=logo_normal_dir,
+        logo_normal_stem_map=logo_normal_stem_map,
         apparel_stem_map=apparel_stem_map,
         position_code_to_draw=position_code_to_draw,
         pdf_asset_log=pdf_asset_log,

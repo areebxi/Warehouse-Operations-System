@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 from src.core.canvas_arranger import pack_designs
 from src.core.design_folder_routing import find_designs_for_dtf_row
+from gui_helpers.common.gui_background import run_keeping_ui_alive
 from src.system.logging.utils import (
     finish_size_determination_log,
     log_size_determination,
@@ -68,7 +69,9 @@ def process_missing_logo_file_for_folder(gui, df, order_column, sku_column, file
                         df, order_column, sku_column, order_number, item_sku, missing_size_row_indices
                     )
 
-            design_items, source = find_designs_for_dtf_row(
+            design_items, source = run_keeping_ui_alive(
+                gui,
+                find_designs_for_dtf_row,
                 order_number=order_number,
                 item_sku=item_sku,
                 customise=customise,

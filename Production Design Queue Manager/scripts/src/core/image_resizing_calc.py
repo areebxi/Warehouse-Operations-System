@@ -8,9 +8,12 @@ This module provides:
 from PIL import Image
 from typing import Optional, Dict, Tuple
 from src.system.logging.utils import get_run_logger
-from src.core.size_reference import COLOR_BAR_WIDTH, COLOR_BAR_SPACING
 from src.core.image_orientation import apply_orientation_if_enabled
 from src.core.sku_position_hints import target_mm_for_position_token
+from src.core.image_max_design_size import apply_max_design_size_mm
+from src.core.image_canvas_constraints import apply_canvas_constraints_mm
+
+
 def calculate_image_dimensions(
     img: Image.Image,
     size_info: Optional[Dict[str, float]],
@@ -23,6 +26,7 @@ def calculate_image_dimensions(
     canvas_height_mm: Optional[float] = None,
     design_padding: int = 25,
     filename_position_token: Optional[str] = None,
+    apply_max_design_size: bool = True,
 ) -> Tuple[int, int, float, float, str]:
     """Calculate image dimensions with size constraints (pocket/sleeve + canvas bounds)."""
     logger = get_run_logger()
@@ -50,7 +54,7 @@ def calculate_image_dimensions(
 
     log_lines = []
     log_lines.append(
-        f"Sizing image — order: {order_number or 'N/A'}, SKU: {item_sku or 'N/A'}, "
+        f"Sizing image - order: {order_number or 'N/A'}, SKU: {item_sku or 'N/A'}, "
         f"original: {original_width}x{original_height}px, "
         f"pocket={is_pocket}, sleeve={is_sleeve}, "
         f"filename_token={filename_position_token or 'N/A'}"
@@ -64,7 +68,7 @@ def calculate_image_dimensions(
         match_type = size_info.get("match_type", "N/A")
         log_lines.append(
             f"  Size reference: {merge_entry} "
-            f"(code={size_code}, match={match_type}) → "
+            f"(code={size_code}, match={match_type}) -> "
             f"target {target_width_px}x{target_height_px}px"
         )
 
@@ -152,36 +156,28 @@ def calculate_image_dimensions(
         )
 
     # Apply canvas constraints (if provided)
-    if canvas_width_mm is not None:
-        canvas_width_px = int(canvas_width_mm * mm_to_pixel_factor)
-        effective_canvas_width_px = canvas_width_px - COLOR_BAR_WIDTH - COLOR_BAR_SPACING
-        max_width_px = effective_canvas_width_px - (2 * design_padding)
+    width_px, height_px, width_mm, height_mm = apply_canvas_constraints_mm(
+        width_px,
+        height_px,
+        width_mm,
+        height_mm,
+        mm_to_pixel_factor,
+        canvas_width_mm=canvas_width_mm,
+        canvas_height_mm=canvas_height_mm,
+        design_padding=design_padding,
+        log_lines=log_lines,
+    )
 
-        if width_px > max_width_px:
-            scale_factor = max_width_px / width_px
-            log_lines.append(
-                f"  canvas width constraint: effective_canvas_width_px={effective_canvas_width_px}px "
-                f"(including color bar reservation), max_width_px={max_width_px}px -> "
-                f"scale_factor={scale_factor:.4f}"
-            )
-            width_px = int(width_px * scale_factor)
-            height_px = int(height_px * scale_factor)
-            width_mm = width_px / mm_to_pixel_factor
-            height_mm = height_px / mm_to_pixel_factor
-
-    if canvas_height_mm is not None:
-        canvas_height_px = int(canvas_height_mm * mm_to_pixel_factor)
-        max_height_px = canvas_height_px
-        if height_px > max_height_px:
-            scale_factor = max_height_px / height_px
-            log_lines.append(
-                f"  canvas height constraint: max_height_px={max_height_px}px -> "
-                f"scale_factor={scale_factor:.4f}"
-            )
-            width_px = int(width_px * scale_factor)
-            height_px = int(height_px * scale_factor)
-            width_mm = width_px / mm_to_pixel_factor
-            height_mm = height_px / mm_to_pixel_factor
+    # Global max print size: never exceed 300mm × 500mm (skipped for double-folder designs)
+    width_px, height_px, width_mm, height_mm = apply_max_design_size_mm(
+        width_px,
+        height_px,
+        width_mm,
+        height_mm,
+        mm_to_pixel_factor,
+        apply_max_design_size=apply_max_design_size,
+        log_lines=log_lines,
+    )
 
     log_lines.append(
         f"  final dimensions -> {width_px}x{height_px}px "

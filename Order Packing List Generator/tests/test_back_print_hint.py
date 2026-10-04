@@ -111,6 +111,8 @@ class LabelForLogoSlotTests(unittest.TestCase):
             def get(self, key, default=None):
                 if key == "Logo/Design Image":
                     return "order-1"
+                if key == "Customise":
+                    return "Yes"
                 return default
 
         label = label_for_logo_slot(

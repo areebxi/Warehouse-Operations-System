@@ -142,6 +142,7 @@ def process_personalised_designs(
             design_padding,
             item_sku=item_sku,
             order_label=order_number,
+            apply_max_design_size=False,
         )
         if not resized:
             continue

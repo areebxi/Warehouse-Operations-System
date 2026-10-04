@@ -79,6 +79,9 @@ def count_image_lookup_stats_impl(
                             find_image_custom_exact=find_image_custom_exact,
                             find_image_custom_logo=find_image_custom_logo,
                             find_image_custom_fbpi=find_image_custom_fbpi,
+                            logo_normal_dir=logo_normal_dir,
+                            logo_normal_stem_map=logo_normal_stem_map,
+                            find_image_normal_logo=find_image_normal_logo,
                         )
                         p0 = logo_image_for_slot(
                             0,

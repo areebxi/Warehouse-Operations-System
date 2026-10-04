@@ -79,6 +79,9 @@ def prepare_draw_page_state_impl(
     position_tokens,
     find_image,
     prepare_image,
+    logo_normal_dir=None,
+    logo_normal_stem_map=None,
+    find_image_normal_logo=None,
     pdf_asset_log=None,
     pdf_page_index=0,
     dispatch_date_label: Optional[str] = None,
@@ -113,7 +116,19 @@ def prepare_draw_page_state_impl(
     )
 
     is_customised, is_scoped_custom_merge, base_custom_path, fbpi_slots = resolve_custom_logo_context(
-        row_series, order_number_counts, is_plain_order=is_plain_order, logo_customise_dir=logo_customise_dir, logo_custom_stem_map=logo_custom_stem_map, safe_str=safe_str, logo_design_tokens=logo_design_tokens, find_image_custom_exact=find_image_custom_exact, find_image_custom_logo=find_image_custom_logo, find_image_custom_fbpi=find_image_custom_fbpi
+        row_series,
+        order_number_counts,
+        is_plain_order=is_plain_order,
+        logo_customise_dir=logo_customise_dir,
+        logo_custom_stem_map=logo_custom_stem_map,
+        safe_str=safe_str,
+        logo_design_tokens=logo_design_tokens,
+        find_image_custom_exact=find_image_custom_exact,
+        find_image_custom_logo=find_image_custom_logo,
+        find_image_custom_fbpi=find_image_custom_fbpi,
+        logo_normal_dir=logo_normal_dir,
+        logo_normal_stem_map=logo_normal_stem_map,
+        find_image_normal_logo=find_image_normal_logo,
     )
 
     position_has_slash = draw_position_banners(

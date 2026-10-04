@@ -29,14 +29,19 @@ def maybe_run_customise_suffix_labels(
     pdf_page_index: int,
     **S,
 ) -> None:
+    from pipeline_generate_packing_list_pdf.back_print_hint import has_fbpi_side_files
+
     safe_str = S["safe_str"]
     get_field_value = S["get_field_value"]
     find_image = S["find_image"]
     logo_image_for_slot = S["logo_image_for_slot"]
     if (
         is_plain_order
-        or safe_str(row_series.get("Customise", "")).lower() != "yes"
         or position_has_slash
+        or (
+            safe_str(row_series.get("Customise", "")).lower() != "yes"
+            and not has_fbpi_side_files(fbpi_slots)
+        )
     ):
         return
 

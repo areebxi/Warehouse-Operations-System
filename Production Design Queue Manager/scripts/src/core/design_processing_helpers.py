@@ -68,6 +68,7 @@ def load_and_resize_design(
     item_sku: Optional[Union[str, pd.Series]] = None,
     order_label: Optional[Union[str, int]] = None,
     filename_position_token: Optional[str] = None,
+    apply_max_design_size: bool = True,
 ) -> Optional[Tuple[Image.Image, int, int, float, float, Optional[Dict[str, Any]]]]:
     """Load a design image and resize according to constraints.
 
@@ -91,6 +92,7 @@ def load_and_resize_design(
             "design_padding": design_padding,
             "allow_orientation": allow_orientation,
             "filename_position_token": filename_position_token,
+            "apply_max_design_size": apply_max_design_size,
         }
         if size_info or filename_position_token:
             resized = resize_image_with_constraints(

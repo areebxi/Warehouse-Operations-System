@@ -1,8 +1,18 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 import os
 from typing import Dict, List, Optional, Tuple, Union
 from src.core.sku_position_hints import POSITION_HINT_EXTENSIONS, POSITION_HINT_TOKENS, flags_for_position_token
 from src.io.file_utilities import IMAGE_EXTENSIONS
+from src.io.vba_file_search_core_impl2 import (
+    _build_search_orders,
+    _demo_design_fallback,
+    _normalize_sku_for_filename,
+    _search_double_design,
+    _search_double_design_folder,
+    _search_single_regular,
+    _search_single_variants,
+    _sku_based_stem_prefix,
+)
 
 def find_design_file_vba_logic(
     order_number: Union[str, int],
@@ -18,9 +28,11 @@ def find_design_file_vba_logic(
         return None, None, False, False
 
     order_str = str(order_number).strip()
+    sku_str = _normalize_sku_for_filename(item_sku) if item_sku is not None else ""
 
-    if is_duplicate_order and item_sku is not None and str(item_sku).strip():
-        sku_str = _normalize_sku_for_filename(item_sku)
+    # Prefer order+SKU naming for every row when Item SKU is available
+    # (not only duplicates).
+    if sku_str:
         expected_stem = f"{_sku_based_stem_prefix(order_str, duplicate_index)}{sku_str}"
 
         if single_designs_folder and (folder_type is None or folder_type == 'single'):
@@ -32,22 +44,23 @@ def find_design_file_vba_logic(
             if file_path:
                 return file_path, 'double', False, False
 
-        fallback_stems: List[str] = []
-        if duplicate_index > 0:
-            fallback_stems.append(f"{order_str}-{duplicate_index}")
-        fallback_stems.append(order_str)
+        if is_duplicate_order:
+            fallback_stems: List[str] = []
+            if duplicate_index > 0:
+                fallback_stems.append(f"{order_str}-{duplicate_index}")
+            fallback_stems.append(order_str)
 
-        if single_designs_folder and (folder_type is None or folder_type == 'single'):
-            for stem in fallback_stems:
-                file_path = _search_exact_png_stem(single_designs_folder, stem, exclude_path)
-                if file_path:
-                    return file_path, 'single', False, False
-        if double_designs_folder and (folder_type is None or folder_type == 'double'):
-            for stem in fallback_stems:
-                file_path = _search_exact_png_stem(double_designs_folder, stem, exclude_path)
-                if file_path:
-                    return file_path, 'double', False, False
-        return None, None, False, False
+            if single_designs_folder and (folder_type is None or folder_type == 'single'):
+                for stem in fallback_stems:
+                    file_path = _search_exact_png_stem(single_designs_folder, stem, exclude_path)
+                    if file_path:
+                        return file_path, 'single', False, False
+            if double_designs_folder and (folder_type is None or folder_type == 'double'):
+                for stem in fallback_stems:
+                    file_path = _search_exact_png_stem(double_designs_folder, stem, exclude_path)
+                    if file_path:
+                        return file_path, 'double', False, False
+            return None, None, False, False
 
     order_str_with_suffix = f"{order_str}-{duplicate_index}" if duplicate_index > 0 else order_str
 
@@ -155,7 +168,7 @@ def find_sku_position_variant_files(
     folder_path: Optional[str],
     exclude_path: Optional[str] = None,
 ) -> List[Dict[str, str]]:
-    """Companion JPEGs next to a SKU-named PNG. Token order: P, S, S1, S2."""
+    """Companion JPEGs next to a SKU-named PNG. First hit in POSITION_HINT_TOKENS wins."""
     if not folder_path or not os.path.isdir(folder_path):
         return []
     if item_sku is None or not str(item_sku).strip():
@@ -169,6 +182,8 @@ def find_sku_position_variant_files(
         if path:
             found.append({"path": path, "token": token})
     return found
+
+
 def _search_exact_png_stem(
     folder_path: str,
     expected_stem: str,

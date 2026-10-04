@@ -59,18 +59,26 @@ def _search_single_variants(
     single_designs_folder: str,
     exclude_path: Optional[str]
 ) -> Tuple[Optional[str], bool, bool]:
-    result = _check_exact_variant(single_designs_folder, search_order, "-P.png", True, exclude_path)
-    if result:
-        return result
-    result = _check_exact_variant(single_designs_folder, search_order, "-S.png", False, exclude_path)
-    if result:
-        return result
-    result = _check_case_insensitive_variant(single_designs_folder, search_order, "-p.png", True, exclude_path)
-    if result:
-        return result
-    result = _check_case_insensitive_variant(single_designs_folder, search_order, "-s.png", False, exclude_path)
-    if result:
-        return result
+    png_variants = (
+        ("-S1.png", False),
+        ("-S2.png", False),
+        ("-SL.png", False),
+        ("-SR.png", False),
+        ("-P.png", True),
+        ("-S.png", False),
+    )
+    for suffix, is_pocket in png_variants:
+        result = _check_exact_variant(
+            single_designs_folder, search_order, suffix, is_pocket, exclude_path
+        )
+        if result:
+            return result
+    for suffix, is_pocket in png_variants:
+        result = _check_case_insensitive_variant(
+            single_designs_folder, search_order, suffix.lower(), is_pocket, exclude_path
+        )
+        if result:
+            return result
     return _search_variants_in_directory(single_designs_folder, search_order, exclude_path)
 
 

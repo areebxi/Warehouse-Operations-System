@@ -14,6 +14,7 @@ from src.system.logging.utils import (
 from src.system.logging.run_logger import log_run_event
 from src.core.design_processor import process_single_designs
 from src.core.canvas_arranger import pack_designs
+from gui_helpers.common.gui_background import run_keeping_ui_alive
 from gui_helpers.common.gui_progress import update_progress, reset_progress
 from .gui_processing_helpers import (
     auto_detect_customise_column,
@@ -83,7 +84,9 @@ def process_single_file(gui, df, column, file_path=None, show_progress=True):
                     missing_sizes.append(missing_entry)
                     track_missing_size_reference(df, column, sku, missing_size_row_indices)
 
-            design_items = process_single_designs(
+            design_items = run_keeping_ui_alive(
+                gui,
+                process_single_designs,
                 sku,
                 gui.designs_folder,
                 gui.mm_to_pixel,

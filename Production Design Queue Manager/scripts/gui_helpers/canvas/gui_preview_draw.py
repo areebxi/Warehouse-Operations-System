@@ -3,8 +3,11 @@
 import time
 import tkinter as tk
 
+from PIL import ImageTk
+
 from src.system.logging.run_logger import log_run_event
 
+from gui_helpers.common.gui_background import run_keeping_ui_alive
 from .gui_preview_helpers import (
     LEFT_PADDING,
     OUTLINE_ALLOWANCE,
@@ -92,8 +95,15 @@ def draw_preview(gui, reuse_cache=False):
             photo = get_cached_batch_photo(
                 gui,
                 cache_key,
-                lambda b=batch: build_batch_preview_image(
-                    b, canvas_width_px, max_height_px, scale
+                lambda b=batch: ImageTk.PhotoImage(
+                    run_keeping_ui_alive(
+                        gui,
+                        build_batch_preview_image,
+                        b,
+                        canvas_width_px,
+                        max_height_px,
+                        scale,
+                    )
                 ),
             )
             gui._preview_photos.append(photo)

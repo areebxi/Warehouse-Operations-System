@@ -1,8 +1,11 @@
 from __future__ import annotations
-from dataclasses import dataclass
-from typing import Any, Callable, Dict, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple, Union
 from PIL import Image
 from src.system.logging.utils import get_run_logger
+
+IRON_ON_MARKER = "ironon"
+A3_SIZE_CODE = "A3"
+
 
 def apply_a3_landscape_transform(
     img: Image.Image, size_info: Dict[str, Any]

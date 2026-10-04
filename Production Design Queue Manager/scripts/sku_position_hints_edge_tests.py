@@ -65,23 +65,24 @@ def test_kids_sku_filename_p_hint_is_80x100_not_65x80() -> None:
         assert _near(results[0]["height_mm"], 100)
         assert not _near(results[0]["width_mm"], 65)
 
-def test_p_wins_over_later_tokens_and_index_zero_stem() -> None:
+def test_first_token_wins_and_index_zero_stem() -> None:
     with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         single = os.path.join(tmp, "1-SP")
         double = os.path.join(tmp, "2-DP")
         os.makedirs(single)
         os.makedirs(double)
-        png = _png(single, f"{ORDER}-{SKU}.png", (80, 100))
+        png = _png(single, f"{ORDER}-{SKU}.png", (100, 100))
         _jpg(single, f"{ORDER}-S-{SKU}.jpg")
         _jpg(single, f"{ORDER}-P-{SKU}.jpg")
         _jpg(single, f"{ORDER}-S1-{SKU}.jpeg")
         token, is_pocket, is_sleeve = resolve_sku_position_hint(ORDER, 0, SKU, single)
-        assert token == "P"
-        assert is_pocket is True
-        assert is_sleeve is False
+        # Token order: S1 before P — first hit wins.
+        assert token == "S1"
+        assert is_pocket is False
+        assert is_sleeve is True
         results = _personalised(single, double, duplicate_index=0)
         assert results[0]["path"] == png
-        assert results[0]["sku"] == f"{ORDER} (Single-Pocket)"
+        assert results[0]["sku"] == f"{ORDER} (Single-Sleeve-S1)"
 
 def test_slash_in_sku_becomes_hyphen() -> None:
     with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:

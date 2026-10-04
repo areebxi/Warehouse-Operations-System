@@ -70,7 +70,9 @@ def finalize_logo_sections_impl(
             find_image_normal_logo=find_image_normal_logo,
         )
 
-    has_explicit_fbpi_logo = bool(fbpi_slots)
+    from pipeline_generate_packing_list_pdf.back_print_hint import has_fbpi_side_files
+
+    has_explicit_fbpi_logo = has_fbpi_side_files(fbpi_slots)
     draw_logo_overlays(
         c,
         row_series,

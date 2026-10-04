@@ -5,6 +5,10 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Dict, Optional
 
+from pipeline_generate_packing_list_pdf.image_lookup_side_skip import (
+    fbpi_stem_matches_token,
+    skip_custom_logo_prefix_stem,
+)
 from pipeline_generate_packing_list_pdf.image_lookup_stem import (
     _demo_fallback,
     _path_if_file,
@@ -12,18 +16,15 @@ from pipeline_generate_packing_list_pdf.image_lookup_stem import (
     probe_exact_image_impl,
 )
 
+
 def find_image_custom_fbpi_impl(
     stem_map: Optional[Dict[str, Path]],
     base_token: str,
 ) -> Optional[Path]:
-    """Find Customise F/B/P/I image by exact stem, then by stems starting with base_token.
+    """Find F/B/P/S image by exact side-letter stem, then hyphen remainder.
 
-    Used only with the pre-built logo_custom_stem_map for the Customise Logo/Design
-    folder. Lookup order:
-      1. Exact stem == base_token
-      2. First stem that startswith(base_token) (case-sensitive)
-      3. First stem that startswith(base_token.lower()) (case-insensitive)
-    Returns the corresponding Path or None.
+    ``base_token`` is ``{order}-{f|b|p|s|s1|s2|sl|sr}`` (or LOCATION). Does not treat
+    ``{order}-PRINTLOC`` as pocket (``{order}-P``).
     """
     if not base_token or stem_map is None:
         return None
@@ -32,19 +33,20 @@ def find_image_custom_fbpi_impl(
     if exact is not None:
         return exact
 
-    for stem, path in stem_map.items():
-        if stem.startswith(base_token):
-            found = _path_if_file(path)
-            if found is not None:
-                return found
-
+    remainder: Optional[Path] = None
     base_lower = base_token.lower()
     for stem, path in stem_map.items():
-        if stem.lower().startswith(base_lower):
-            found = _path_if_file(path)
-            if found is not None:
-                return found
-
+        if not fbpi_stem_matches_token(stem, base_token):
+            continue
+        found = _path_if_file(path)
+        if found is None:
+            continue
+        if stem.lower() == base_lower:
+            return found
+        if remainder is None:
+            remainder = found
+    if remainder is not None:
+        return remainder
     return _demo_fallback("custom", base_token)
 
 
@@ -98,12 +100,7 @@ def find_image_custom_logo_impl(
     *,
     recursive: bool = True,
 ) -> Optional[Path]:
-    """Find a logo/design image by token in the custom directory or stem map.
-
-    Same lookup order as find_image_normal_logo_impl: exact stem match, then stem
-    starting with token, then case-insensitive. Used when Customise=Yes and we
-    look up each Logo/Design Image token in the custom dirs.
-    """
+    """Find custom logo by token; prefix matches skip LOCATION and F/B/P/S side files."""
     if not token:
         return None
     if stem_map is not None:
@@ -111,13 +108,15 @@ def find_image_custom_logo_impl(
         if exact is not None:
             return exact
         for stem, path in stem_map.items():
-            if stem.startswith(token):
+            if stem.startswith(token) and not skip_custom_logo_prefix_stem(stem, token):
                 found = _path_if_file(path)
                 if found is not None:
                     return found
         token_lower = token.lower()
         for stem, path in stem_map.items():
-            if stem.lower().startswith(token_lower):
+            if stem.lower().startswith(token_lower) and not skip_custom_logo_prefix_stem(
+                stem, token
+            ):
                 found = _path_if_file(path)
                 if found is not None:
                     return found
@@ -137,12 +136,20 @@ def find_image_custom_logo_impl(
     for ext in (".png", ".jpg", ".jpeg"):
         iterator = root_dir.rglob(f"*{ext}") if recursive else root_dir.glob(f"*{ext}")
         for p in iterator:
-            if p.is_file() and p.stem.startswith(token):
+            if (
+                p.is_file()
+                and p.stem.startswith(token)
+                and not skip_custom_logo_prefix_stem(p.stem, token)
+            ):
                 return p
     token_lower = token.lower()
     for ext in (".png", ".jpg", ".jpeg"):
         iterator = root_dir.rglob(f"*{ext}") if recursive else root_dir.glob(f"*{ext}")
         for p in iterator:
-            if p.is_file() and p.stem.lower().startswith(token_lower):
+            if (
+                p.is_file()
+                and p.stem.lower().startswith(token_lower)
+                and not skip_custom_logo_prefix_stem(p.stem, token)
+            ):
                 return p
     return _demo_fallback("custom", token)

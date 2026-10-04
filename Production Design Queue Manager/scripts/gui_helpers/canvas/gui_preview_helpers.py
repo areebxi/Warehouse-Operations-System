@@ -1,5 +1,7 @@
 """Helper functions for preview drawing."""
 
+import os
+
 from PIL import Image, ImageDraw, ImageFont, ImageTk
 from gui_helpers.common.gui_theme import PREVIEW_BG, PREVIEW_BG_RGBA
 
@@ -10,6 +12,16 @@ OUTLINE_ALLOWANCE = 4
 BATCH_SPACING_PX = 204  # 200 + border allowance
 # Default view is zoomed out from fitting one batch width
 DEFAULT_PREVIEW_ZOOM = 0.475
+
+
+def _preview_design_label(design) -> str:
+    """Prefer design filename stem (e.g. 5968ALG-B); fall back to sku field."""
+    path = design.get("path")
+    if path:
+        stem = os.path.splitext(os.path.basename(str(path)))[0]
+        if stem:
+            return stem
+    return str(design.get("sku", "") or "")
 
 
 def calculate_preview_scale(gui, batches_to_draw, canvas_width_px, canvas_height_px):
@@ -27,7 +39,6 @@ def calculate_preview_scale(gui, batches_to_draw, canvas_width_px, canvas_height
             batch_heights.append(canvas_height_px)
     max_height_px = max(batch_heights) if batch_heights else canvas_height_px
 
-    # Leave left/right margin so the black outline is not clipped by the viewport edge
     usable_width = max(
         preview_width - LEFT_PADDING - RIGHT_PADDING - OUTLINE_ALLOWANCE,
         1,
@@ -38,7 +49,10 @@ def calculate_preview_scale(gui, batches_to_draw, canvas_width_px, canvas_height
 
 
 def build_batch_preview_image(batch, canvas_width_px, max_height_px, scale):
-    """Composite all designs in a batch into one scaled preview image."""
+    """Composite all designs in a batch into one scaled PIL preview image.
+
+    Pure Pillow work (no Tk), so it can run on a worker thread.
+    """
     out_w = max(int(canvas_width_px * scale), 1)
     out_h = max(int(max_height_px * scale), 1)
     composite = Image.new("RGBA", (out_w, out_h), PREVIEW_BG_RGBA)
@@ -63,11 +77,11 @@ def build_batch_preview_image(batch, canvas_width_px, max_height_px, scale):
             composite.paste(thumb, (x, y), thumb)
             draw.rectangle([x, y, x + box_w - 1, y + box_h - 1], outline=(0, 0, 0, 255), width=1)
             if box_w > 50 and box_h > 20:
-                sku = str(design.get("sku", ""))
-                if sku:
+                label = _preview_design_label(design)
+                if label:
                     draw.text(
                         (x + box_w / 2, y - 2),
-                        sku,
+                        label,
                         fill=(0, 0, 0, 255),
                         font=font,
                         anchor="mb",
@@ -80,7 +94,7 @@ def build_batch_preview_image(batch, canvas_width_px, max_height_px, scale):
                 fill=(200, 200, 200, 255),
             )
 
-    return ImageTk.PhotoImage(composite)
+    return composite
 
 
 def get_cached_batch_photo(gui, cache_key, builder):

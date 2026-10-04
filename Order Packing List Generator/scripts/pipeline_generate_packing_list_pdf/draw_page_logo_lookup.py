@@ -55,6 +55,12 @@ def logo_image_for_slot_impl(
     if not logo_normal_dir and logo_normal_stem_map is None:
         return None
     tokens = logo_design_tokens(row_series.get("Logo/Design Image"))
+    # Non-customise with F/B/P/S side files: sides fill from slot 0 (no bare base).
+    if fbpi_slots:
+        if 0 <= slot_index < len(fbpi_slots):
+            path, _label = fbpi_slots[slot_index]
+            return path
+        return None
     if slot_index >= len(tokens):
         return None
     token = tokens[slot_index]

@@ -21,6 +21,7 @@ from src.io.file_handlers import (
     resolve_sku_position_hint,
 )
 from src.io.file_utilities import IMAGE_EXTENSIONS
+from sku_position_hints_fixtures import FACTOR, ORDER, SKU, _entries, _jpg, _near, _personalised, _png
 
 def test_legacy_pocket_sleeve_png_kids_65x80() -> None:
     with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
@@ -158,12 +159,14 @@ def test_unique_order_png_size_reference() -> None:
         double = os.path.join(tmp, "2-DP")
         os.makedirs(single)
         os.makedirs(double)
-        png = _png(single, "12345.png", (200, 300))
+        sku = "77989LG-M-T-BLK-M"
+        # Unique orders prefer {Order}-{SKU}.png first.
+        png = _png(single, f"12345-{sku}.png", (200, 300))
         results = _personalised(
             single,
             double,
             order_number="12345",
-            item_sku="77989LG-M-T-BLK-M",
+            item_sku=sku,
             duplicate_index=0,
             is_duplicate_order=False,
             cl_entries=_entries(200, 300),

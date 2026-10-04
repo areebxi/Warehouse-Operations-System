@@ -1,4 +1,10 @@
-"""Coerce Order Number columns from CSV int64/float dtypes to object strings."""
+"""Coerce order-number-like columns from CSV int64/float dtypes to object strings.
+
+Pure-numeric ShipStation/Shopify order numbers (e.g. ``4184116956``) are inferred
+as ``int64`` on CSV re-read. Customise rows store the same value in
+``Logo/Design Image``; writing stems like ``4184116956`` / ``4184116956-1`` into
+an int64 column raises ``Invalid value '…' for dtype 'int64'`` on strict pandas.
+"""
 
 from __future__ import annotations
 
@@ -8,7 +14,14 @@ from typing import Any, Mapping
 
 import pandas as pd
 
-_ORDER_NUMBER_KEYS = frozenset({"order number", "order number (base)"})
+# Columns that must stay Python strings (never int64/float) across CSV round-trips.
+_STRING_IDENTITY_KEYS = frozenset(
+    {
+        "order number",
+        "order number (base)",
+        "logo/design image",
+    }
+)
 
 
 def _is_integer_like(val) -> bool:
@@ -40,19 +53,19 @@ def order_number_to_str(val) -> str:
 
 
 def _column_keys(df: pd.DataFrame) -> list[str]:
-    return [c for c in df.columns if str(c).strip().lower() in _ORDER_NUMBER_KEYS]
+    return [c for c in df.columns if str(c).strip().lower() in _STRING_IDENTITY_KEYS]
 
 
-def _order_number_dtype_map(columns: Any) -> dict[str, str]:
+def _string_identity_dtype_map(columns: Any) -> dict[str, str]:
     return {
         str(c): str
         for c in columns
-        if str(c).strip().lower() in _ORDER_NUMBER_KEYS
+        if str(c).strip().lower() in _STRING_IDENTITY_KEYS
     }
 
 
 def coerce_order_number_columns(df: pd.DataFrame) -> pd.DataFrame:
-    """Return a copy with Order Number / Order Number (Base) as object string columns."""
+    """Return a copy with Order Number / Base / Logo/Design Image as object strings."""
     cols = _column_keys(df)
     if not cols:
         return df
@@ -69,7 +82,7 @@ def read_csv_with_order_numbers(
     dtype: Mapping[str, Any] | None = None,
     **kwargs: Any,
 ) -> pd.DataFrame:
-    """Read a CSV and force Order Number columns to clean string values."""
+    """Read a CSV and force order-number / logo-design columns to clean strings."""
     path = Path(path)
     header_kwargs = {
         k: v
@@ -77,8 +90,8 @@ def read_csv_with_order_numbers(
         if k not in ("dtype", "converters", "usecols", "nrows", "skiprows")
     }
     header = pd.read_csv(path, encoding=encoding, nrows=0, **header_kwargs)
-    order_dtypes = _order_number_dtype_map(header.columns)
-    merged_dtype: dict[str, Any] = {**(dict(dtype) if dtype else {}), **order_dtypes}
+    string_dtypes = _string_identity_dtype_map(header.columns)
+    merged_dtype: dict[str, Any] = {**(dict(dtype) if dtype else {}), **string_dtypes}
     read_kwargs = dict(kwargs)
     if merged_dtype:
         read_kwargs["dtype"] = merged_dtype
@@ -92,12 +105,12 @@ def read_excel_with_order_numbers(
     dtype: Mapping[str, Any] | None = None,
     **kwargs: Any,
 ) -> pd.DataFrame:
-    """Read an Excel sheet and force Order Number columns to clean string values."""
+    """Read an Excel sheet and force order-number / logo-design columns to strings."""
     path = Path(path)
     kwargs.setdefault("engine", "openpyxl")
     header = pd.read_excel(path, nrows=0, **kwargs)
-    order_dtypes = _order_number_dtype_map(header.columns)
-    merged_dtype: dict[str, Any] = {**(dict(dtype) if dtype else {}), **order_dtypes}
+    string_dtypes = _string_identity_dtype_map(header.columns)
+    merged_dtype: dict[str, Any] = {**(dict(dtype) if dtype else {}), **string_dtypes}
     read_kwargs = dict(kwargs)
     if merged_dtype:
         read_kwargs["dtype"] = merged_dtype

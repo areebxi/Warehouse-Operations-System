@@ -1,5 +1,9 @@
 from typing import Callable, Dict, List, Optional, Tuple
 
+from pipeline_generate_packing_list_pdf.back_print_hint import (
+    BANNER_BLANK_LABELS,
+    has_fbpi_side_files,
+)
 from pipeline_generate_packing_list_pdf.position_draw_mapping import (
     lookup_draw_for_position_code,
 )
@@ -38,7 +42,9 @@ def draw_position_banners_impl(
             if draw_val:
                 banner_source = draw_val
 
-    if banner_source and (not (is_customised and fbpi_slots) or position_has_slash):
+    side_fbpi = has_fbpi_side_files(fbpi_slots)
+    # Blank Position text when F/B/P/S side files drive logo slots (customise or normal).
+    if banner_source and (not side_fbpi or position_has_slash):
         banner_tokens = position_tokens(banner_source)
         if banner_tokens:
             for i in range(2):
@@ -79,15 +85,19 @@ def draw_position_banners_impl(
                         wrap=True,
                     )
 
-    if not position_has_slash and is_customised and fbpi_slots:
+    if not position_has_slash and fbpi_slots:
+        # Customise keeps base in logo slot 0 → sides map to slots 1…; non-customise
+        # sides-only fills from slot 0.
+        slot_offset = 1 if is_customised else 0
         slot_to_banner: Dict[int, Tuple[int, float]] = {
+            0: (1, b0_y_pt),
             1: (2, b0_y_pt),
             2: (0, b1_y_pt),
             3: (1, b1_y_pt),
             4: (2, b1_y_pt),
         }
         for idx, (_path, label) in enumerate(fbpi_slots):
-            slot_index = idx + 1
+            slot_index = idx + slot_offset
             banner_spec = slot_to_banner.get(slot_index)
             if banner_spec is None:
                 continue
@@ -99,7 +109,7 @@ def draw_position_banners_impl(
                 by,
                 bw,
                 bh,
-                "" if label in ("Front", "Back", "Pocket", "Sleeve") else label,
+                "" if label in BANNER_BLANK_LABELS else label,
                 True,
                 white,
                 "center",
@@ -108,4 +118,3 @@ def draw_position_banners_impl(
             )
 
     return position_has_slash
-

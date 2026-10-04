@@ -1,32 +1,37 @@
-"""Back-print detection for logo grid cells and suffix banner labels."""
+"""Logo slot anchor / side-label helpers for back-print and banners."""
+
 from __future__ import annotations
+
 from pathlib import Path
 from typing import Callable, List, Optional, Tuple
-from pipeline_generate_packing_list_pdf.core_helpers import classify_position_token_impl
+
+# Keep in sync with back_print_hint._ANCHORED_SUFFIX_RULES / LOCATION_LABEL.
 _ANCHORED_SUFFIX_RULES: tuple[tuple[str, str, str], ...] = (
     ("-f-", "-f", "Front"),
     ("-b-", "-b", "Back"),
     ("-p-", "-p", "Pocket"),
+    ("-s1-", "-s1", "Left Sleeve"),
+    ("-s2-", "-s2", "Right Sleeve"),
+    ("-sl-", "-sl", "Left Sleeve"),
+    ("-sr-", "-sr", "Right Sleeve"),
     ("-s-", "-s", "Sleeve"),
 )
+LOCATION_LABEL = "LOCATION"
+
+
 def strip_side_suffix_from_token(token: str) -> str:
-    """Remove a trailing ``-f`` / ``-b`` / ``-p`` / ``-s`` segment from a logo token."""
+    """Remove a trailing side segment (f/b/p/s1/s2/sl/sr/s)."""
     if not token:
         return token
     lower = token.lower()
-    for _hyphenated, legacy, _label in reversed(_ANCHORED_SUFFIX_RULES):
-        if lower.endswith(legacy) and (len(lower) == len(legacy) or lower[len(lower) - len(legacy) - 1] == "-"):
+    for _hyphenated, legacy, _label in _ANCHORED_SUFFIX_RULES:
+        if lower.endswith(legacy):
             return token[: len(token) - len(legacy)]
     return token
-def label_from_stem_after_anchor(stem: str, anchor_token: str) -> Optional[str]:
-    """Map stem to Front/Back/Pocket/Sleeve when the marker follows anchor_token.
 
-    The stem must start with anchor_token (case-insensitive). The side marker must be
-    the first segment after that prefix: ``-f-`` / ``-b-`` / … or legacy ``-f`` / ``-b`` /
-    … with nothing else before it. If anchor_token already ends with a legacy suffix
-    (e.g. Step 4 token ``103671LG-f``), the matching label is returned even when the
-    stem equals the token with no remainder.
-    """
+
+def label_from_stem_after_anchor(stem: str, anchor_token: str) -> Optional[str]:
+    """Map stem to Front/Back/Pocket/Sleeve (incl. left/right) after anchor_token."""
     if not stem or not anchor_token:
         return None
     s = stem.lower()
@@ -38,9 +43,11 @@ def label_from_stem_after_anchor(stem: str, anchor_token: str) -> Optional[str]:
         if remainder.startswith(hyphenated) or remainder == legacy:
             return label
     for _hyphenated, legacy, label in _ANCHORED_SUFFIX_RULES:
-        if a.endswith(legacy) and (len(a) == len(legacy) or a[len(a) - len(legacy) - 1] == "-"):
+        if a.endswith(legacy):
             return label
     return None
+
+
 def resolve_logo_anchor_for_slot(
     slot_index: int,
     row_series,
@@ -48,12 +55,7 @@ def resolve_logo_anchor_for_slot(
     fbpi_slots: List[Tuple[Path, str]],
     logo_design_tokens: Callable[..., List[str]],
 ) -> Optional[str]:
-    """Logo/Design Image anchor for suffix detection on this logo slot.
-
-  - **fbpi rows:** always the base token (first comma-separated value, side suffix
-    stripped), so ``order-13-F-98765…`` matches base ``order-13``.
-  - **Otherwise:** the token for that slot (e.g. ``103671LG-f`` from Step 4).
-    """
+    """Logo/Design Image anchor for suffix detection on this logo slot."""
     tokens = logo_design_tokens(row_series.get("Logo/Design Image"))
     if not tokens:
         return None
@@ -67,17 +69,25 @@ def resolve_logo_anchor_for_slot(
     if slot_index < len(tokens):
         return tokens[slot_index]
     return None
+
+
 def fbpi_side_label_for_slot(
     slot_index: int,
     fbpi_slots: List[Tuple[Path, str]],
+    *,
+    sides_start_at_zero: bool = False,
 ) -> Optional[str]:
     """Front/Back/… label from fbpi slot pairing, if any."""
-    if not fbpi_slots or slot_index < 1:
+    if not fbpi_slots:
         return None
-    fbpi_index = slot_index - 1
+    fbpi_index = slot_index if sides_start_at_zero else slot_index - 1
+    if not sides_start_at_zero and slot_index < 1:
+        return None
     if 0 <= fbpi_index < len(fbpi_slots):
         return fbpi_slots[fbpi_index][1]
     return None
+
+
 def resolve_apparel_logo_anchor(
     row_series,
     *,
@@ -88,6 +98,8 @@ def resolve_apparel_logo_anchor(
     if not tokens:
         return None
     return strip_side_suffix_from_token(tokens[0])
+
+
 def label_for_logo_slot(
     stem: str,
     slot_index: int,
@@ -107,7 +119,16 @@ def label_for_logo_slot(
         label = label_from_stem_after_anchor(stem, anchor)
         if label:
             return label
-    return fbpi_side_label_for_slot(slot_index, fbpi_slots)
+    is_customised = str(row_series.get("Customise", "") or "").strip().lower() == "yes"
+    sides_start_at_zero = bool(fbpi_slots) and not is_customised
+    fallback = fbpi_side_label_for_slot(
+        slot_index, fbpi_slots, sides_start_at_zero=sides_start_at_zero
+    )
+    if fallback == LOCATION_LABEL:
+        return None
+    return fallback
+
+
 def logo_filename_indicates_back(
     img_path: Optional[Path],
     anchor_token: Optional[str] = None,

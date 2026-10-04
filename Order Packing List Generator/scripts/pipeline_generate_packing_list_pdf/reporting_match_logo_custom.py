@@ -84,6 +84,9 @@ def collect_custom_logo_detail(
             find_image_custom_exact=find_image_custom_exact,
             find_image_custom_logo=find_image_custom_logo,
             find_image_custom_fbpi=find_image_custom_fbpi,
+            logo_normal_dir=logo_normal_dir,
+            logo_normal_stem_map=logo_normal_stem_map,
+            find_image_normal_logo=find_image_normal_logo,
         )
         attempts_pdf: List[Dict[str, Any]] = [
             {

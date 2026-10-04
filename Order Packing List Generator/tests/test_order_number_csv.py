@@ -49,6 +49,29 @@ def test_read_csv_with_order_numbers(tmp_path):
     assert df["Order Number"].iloc[0] == "4064592969"
 
 
+def test_coerce_logo_design_image_accepts_customise_stem():
+    df = pd.DataFrame(
+        {
+            "Order Number": [4184116956, 4184116956],
+            "Logo/Design Image": [4184116956, 4184116956],
+        }
+    )
+    out = coerce_order_number_columns(df)
+    out.loc[1, "Logo/Design Image"] = "4184116956-1"
+    assert out["Logo/Design Image"].tolist() == ["4184116956", "4184116956-1"]
+
+
+def test_read_csv_forces_logo_design_image_string(tmp_path):
+    path = tmp_path / "logo.csv"
+    path.write_text(
+        "Order Number,Logo/Design Image\n4184116956,4184116956\n",
+        encoding="utf-8",
+    )
+    df = read_csv_with_order_numbers(path)
+    assert df["Logo/Design Image"].dtype == object
+    assert df["Logo/Design Image"].iloc[0] == "4184116956"
+
+
 def test_merge_suffix_assignment_does_not_raise_on_int64_input():
     df = pd.DataFrame(
         {
@@ -65,3 +88,4 @@ def test_merge_suffix_assignment_does_not_raise_on_int64_input():
     )
     out = _sort_and_assign_merge_first(df, size_to_rank=None)
     assert out["Order Number"].tolist() == ["4064592969", "4064592969-1"]
+

@@ -4,6 +4,22 @@ from typing import Optional, List, Set, Union, Dict, Tuple, Mapping
 from src.io.file_handlers import extract_design_code, remove_apparel_size_prefix
 from src.core.size_lookup_index import get_size_reference_index
 from src.core.size_reference import _build_size_result
+from src.core.size_code_override import (
+    _as_override_map,
+    _check_pocket_design,
+    _detect_pocket_size_code,
+    find_print_size_override,
+)
+from src.core.size_code_extractor_impl2 import (
+    _bases_requiring_brackets,
+    _extract_common_size_codes,
+    _extract_pattern_based_codes,
+    _find_bracket_match,
+)
+from src.core.size_code_extractor_impl3 import (
+    _find_bare_base_match,
+    _sku_hyphen_tokens,
+)
 
 def _search_reference_size_codes(sku_str: str, size_reference_df: pd.DataFrame) -> Optional[str]:
     """Search for size codes from reference file within SKU.

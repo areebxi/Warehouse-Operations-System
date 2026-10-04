@@ -6,7 +6,10 @@ import sys
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Set, Tuple
 
-from pipeline_generate_packing_list_pdf.back_print_hint import next_logo_slot_index
+from pipeline_generate_packing_list_pdf.back_print_hint import (
+    has_fbpi_side_files,
+    next_logo_slot_index,
+)
 from pipeline_generate_packing_list_pdf.draw_page_back_layout import (
     _compute_back_print_layout,
 )
@@ -156,13 +159,19 @@ def draw_logo_square_rows_impl(
                     f"file_name={img_path.name!r} | full_path={abs_p}",
                 )
         elif logo_val:
-            had_missing_logo = True
-            _pdf_asset_log_line(
-                pdf_asset_log,
-                f"PDF generation | CSV row {pdf_page_index + 1} | {proc!r} | {slot_label} not drawn | "
-                f"no file for field value={logo_val!r}",
-            )
-            draw_text_in_box(c, lx, ly, lw, lh, "L", True, red, "center", font_size=font_size_banner + 8)
+            # Sides-without-base (customise) or leftover bare token: empty base OK.
+            if idx == 0 and has_fbpi_side_files(fbpi_slots) and img_path is None:
+                draw_text_in_box(c, lx, ly, lw, lh, "", False, black, "center")
+            else:
+                had_missing_logo = True
+                _pdf_asset_log_line(
+                    pdf_asset_log,
+                    f"PDF generation | CSV row {pdf_page_index + 1} | {proc!r} | {slot_label} not drawn | "
+                    f"no file for field value={logo_val!r}",
+                )
+                draw_text_in_box(
+                    c, lx, ly, lw, lh, "L", True, red, "center", font_size=font_size_banner + 8
+                )
         else:
             draw_text_in_box(c, lx, ly, lw, lh, "", False, black, "center")
 

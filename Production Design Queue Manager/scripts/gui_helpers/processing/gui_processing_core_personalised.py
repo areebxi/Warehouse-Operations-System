@@ -12,6 +12,7 @@ from src.system.logging.utils import (
     save_error_to_file,
     start_size_determination_log,
 )
+from gui_helpers.common.gui_background import run_keeping_ui_alive
 from .gui_processing_helpers import (
     auto_detect_customise_column,
     create_design_log_entry,
@@ -76,7 +77,9 @@ def process_personalised_file_for_folder(gui, df, order_column, sku_column, file
                         df, order_column, sku_column, order_number, item_sku, missing_size_row_indices
                     )
 
-            design_items = process_personalised_designs(
+            design_items = run_keeping_ui_alive(
+                gui,
+                process_personalised_designs,
                 order_number,
                 item_sku,
                 duplicate_index,

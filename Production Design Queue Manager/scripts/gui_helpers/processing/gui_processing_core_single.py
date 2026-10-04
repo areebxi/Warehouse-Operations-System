@@ -6,6 +6,7 @@ from tkinter import messagebox
 
 from src.core.canvas_arranger import pack_designs
 from src.core.design_processor import process_single_designs
+from gui_helpers.common.gui_background import run_keeping_ui_alive
 from src.system.logging.utils import (
     finish_size_determination_log,
     log_size_determination,
@@ -53,7 +54,9 @@ def process_single_file_for_folder(gui, df, column, file_path):
                     missing_sizes.append(missing_entry)
                     track_missing_size_reference(df, column, sku, missing_size_row_indices)
 
-            design_items = process_single_designs(
+            design_items = run_keeping_ui_alive(
+                gui,
+                process_single_designs,
                 sku,
                 gui.designs_folder,
                 gui.mm_to_pixel,
