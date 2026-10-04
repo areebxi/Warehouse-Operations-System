@@ -19,6 +19,7 @@ Where locked decisions live. **Do not copy** locks here; link to the owner. Chat
 | SharedInbox handoff | `.cursor/rules/global/shared-inbox.mdc` |
 | ShipStation shared client | `.cursor/rules/global/shipstation.mdc`; `shared/shipstation/`; secrets `config/ShipStation/` |
 | SKU match | `.cursor/rules/global/cl-sku-match.mdc`; `shared/cl_sku_match.py` |
+| Live CL CSV column names (NocoDB) | `shared/cl_columns.py`; `.cursor/rules/custom-label-database/nocodb.mdc` + `live-files.mdc` (locked 2026-10-04: underscored headers; `BTC SKU`→`Supplier_SKU`; `Supply Method`→`Stock_Type`) |
 | Supply Method | `.cursor/rules/custom-label-database/supply-method.mdc`; `shared/supply_method.py` |
 | Printing Type | `.cursor/rules/custom-label-database/printing-type.mdc`; `shared/printing_type.py` |
 | Supplier Name | `.cursor/rules/custom-label-database/supplier-name.mdc`; `shared/supplier_name.py` |
@@ -49,4 +50,4 @@ No `docs/contracts/` — shapes already owned elsewhere:
 
 ## Cross-app architecture locks with no other owner
 
-None added. Existing cross-app locks already sit under `AGENTS.md`, `ARCHITECTURE.md`, `global/shared-inbox.mdc`, or `global/session-independence.mdc`.
+- **2026-10-04 — Live CL CSV is NocoDB underscored.** Readers use `shared/cl_columns.py`. No exporter header remap. Stand-ins: `BTC SKU`→`Supplier_SKU`, `Supply Method`→`Stock_Type` with `normalize_stock_type` (Order on Demand→Supplier On Demand; Seasonal/Non-Seasonal→Warehouse Stock; blank stays blank). Owner: `.cursor/rules/custom-label-database/nocodb.mdc` + `supply-method.mdc` + `Custom Label Database/docs/HANDOFF.md`.

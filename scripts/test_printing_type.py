@@ -31,14 +31,14 @@ def test_mock_id_leading_m_digits_only() -> None:
 def test_mock_printing_type_wins() -> None:
     assert (
         classify_cl_row(
-            {"Custom Label": "M260-214332", "Gender Apparel": "FOTL Mens Valueweight T"},
+            {"Custom_Label": "M260-214332", "Gender_Apparel": "FOTL Mens Valueweight T"},
             mock_types=MOCKS,
         )
         == DTF
     )
     assert (
         classify_cl_row(
-            {"Custom Label": "M61-1D1", "Gender Apparel": "Mug-M61", "Category (Areeb)": "Mugs"},
+            {"Custom_Label": "M61-1D1", "Gender_Apparel": "Mug-M61", "Category (Areeb)": "Mugs"},
             mock_types=MOCKS,
         )
         == SUBLIMATION
@@ -49,8 +49,8 @@ def test_mugs_without_mock_are_sublimation() -> None:
     assert (
         classify_cl_row(
             {
-                "Custom Label": "ATQ-B2c-C1-D4-E13",
-                "Gender Apparel": "Mug",
+                "Custom_Label": "ATQ-B2c-C1-D4-E13",
+                "Gender_Apparel": "Mug",
                 "Category (Areeb)": "Mugs",
             },
             mock_types=MOCKS,
@@ -61,10 +61,10 @@ def test_mugs_without_mock_are_sublimation() -> None:
 
 def test_everything_else_is_dtf() -> None:
     for row in (
-        {"Custom Label": "M-T-BLK-M", "Gender Apparel": "Mens-T-Shirt", "Category (Areeb)": "T-SHIRTS"},
-        {"Custom Label": "DTF-IronOn-A4", "Gender Apparel": "DTF-IronOn-A4", "Category (Areeb)": "Iron-On"},
-        {"Custom Label": "24LBL-A4-STCKR-45mm", "Gender Apparel": "Sticker", "Category (Areeb)": "Stickers"},
-        {"Custom Label": "BG-Chinabag-BLK-O/S", "Gender Apparel": "BG-China-Bag", "Category (Areeb)": "Bags"},
+        {"Custom_Label": "M-T-BLK-M", "Gender_Apparel": "Mens-T-Shirt", "Category (Areeb)": "T-SHIRTS"},
+        {"Custom_Label": "DTF-IronOn-A4", "Gender_Apparel": "DTF-IronOn-A4", "Category (Areeb)": "Iron-On"},
+        {"Custom_Label": "24LBL-A4-STCKR-45mm", "Gender_Apparel": "Sticker", "Category (Areeb)": "Stickers"},
+        {"Custom_Label": "BG-Chinabag-BLK-O/S", "Gender_Apparel": "BG-China-Bag", "Category (Areeb)": "Bags"},
     ):
         assert classify_cl_row(row, mock_types=MOCKS) == DTF, row
 
@@ -72,7 +72,7 @@ def test_everything_else_is_dtf() -> None:
 def test_junk_mock_type_falls_through() -> None:
     assert (
         classify_cl_row(
-            {"Custom Label": "M99-1", "Gender Apparel": "Mens-T-Shirt", "Category (Areeb)": "T-SHIRTS"},
+            {"Custom_Label": "M99-1", "Gender_Apparel": "Mens-T-Shirt", "Category (Areeb)": "T-SHIRTS"},
             mock_types={"m99": "Asif - Laiba Awan"},
         )
         == DTF

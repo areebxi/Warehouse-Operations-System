@@ -45,22 +45,22 @@ def main() -> None:
     for code, name in tax.STYLE_BY_CODE.items():
         assert pick(DIM_PRODUCT_STYLE, code) == name, code
 
-    tee = leftover_cl({"Gender Apparel": "Mens-T-Shirt"})
+    tee = leftover_cl({"Gender_Apparel": "Mens-T-Shirt"})
     assert tee.category == "T-Shirts"
     assert tee.product_type == "Short Sleeve T-Shirt"
     assert tee.product_style == "Standard"
     assert tee.department == "Mens"
 
-    bag = leftover_cl({"Gender Apparel": "BG-BG125L"})
+    bag = leftover_cl({"Gender_Apparel": "BG-BG125L"})
     assert bag.category == "Bags"
     assert bag.product_type == "Backpack"
     assert bag.product_style == "Maxi Fashion Backpack"
 
-    gym = leftover_cl({"Gender Apparel": "BG-BG5"})
+    gym = leftover_cl({"Gender_Apparel": "BG-BG5"})
     assert gym.product_type == "Gymsac"
     assert gym.product_style == "Budget Gymsac"
 
-    invented = leftover_cl({"Gender Apparel": "Mens UniqueWidget T-Shirt"})
+    invented = leftover_cl({"Gender_Apparel": "Mens UniqueWidget T-Shirt"})
     assert invented.category == "T-Shirts"
     assert invented.product_type == "Short Sleeve T-Shirt"
     assert invented.product_style == ""

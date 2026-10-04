@@ -223,7 +223,13 @@ Dedicated BTC / Ralawise / Absolute columns copy from **Supplier Name** (keyword
 - Supplier Product Code → `{Supplier} Product Code`
 - Stock stays blank if the source is empty
 
-On 24 Aug 2026: tens of thousands of rows named BTC Activewear still had **blank BTC SKU / BTC Product Code**. Script exists (`fill_from_seeds.py --steps suppliers`); **ask before** a whole-file fill. Ralawise / Absolute named rows were **0**.
+On 24 Aug 2026: tens of thousands of rows named BTC Activewear still had **blank BTC SKU / BTC Product Code**. Script: `fill_from_seeds.py --steps suppliers` (blank-only copy from Supplier fields).
+
+**Filled 2026-10-04** (`--steps sku,suppliers`): **83,442** `BTC SKU` + **83,205** `BTC Product Code` (+ Absolute blanks: 10 SKU / 6 PC / 164 Stock). Backup `Custom_Label_Database_preFill_20261004_193412.csv`. After: BTC Activewear **119,689** with `BTC SKU`, **4,945** still blank (no Supplier SKU / PE UID). Legacy `BTC Stock ID` column absent; PO stock_resolver reads `BTC SKU` only.
+
+**Append 2026-10-04** from `Purchase Order App - Working Copy/data/Custom Label Database.csv`: **330** Custom Labels not in live CL (324 with WC `BTC Stock ID` → `BTC SKU`; 6 without). Seed cols from WC (`Colour Name`→`Colour`). Fill slice `--iloc-from 132610`. Backups `…_preAppendWC_20261004_194116.csv`, `…_preFill_20261004_194141.csv`. Live rows **132,940**.
+
+**Fill 2026-10-04** `M-T-TBL-XL`: blank → `BTC SKU`/`Supplier SKU` **146241**, `BTC Product Code`/`Supplier Product Code` **64000** (Softstyle Tropical Blue XL). Backup `…_preFill_MT_TBL_20261004_194923.csv`. Other five WC blanks left (no PE match).
 
 ### Grouping fill study — 9 Sep 2026
 

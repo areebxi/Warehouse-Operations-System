@@ -14,6 +14,7 @@ from typing import Mapping, Optional
 
 from openpyxl import load_workbook
 
+from shared import cl_columns as clc
 from shared import paths as wh
 from shared.areeb_taxonomy import cell
 from shared.cl_sku_match import key_after_first_dash, key_till_last_dash
@@ -43,7 +44,7 @@ def load_cl_index(path=None) -> dict[str, dict[str, str]]:
     csv_path = path or wh.cl_csv_path()
     with csv_path.open(encoding="utf-8-sig", newline="") as f:
         rows = [{k: cell(v) for k, v in row.items()} for row in csv.DictReader(f)]
-    return _index_rows(rows, "Custom Label")
+    return _index_rows(rows, clc.CUSTOM_LABEL)
 
 
 def load_xlsx_index(path, sheet: str, key_col: str) -> dict[str, dict[str, str]]:

@@ -38,9 +38,9 @@ def test_b50_on_demand_fotl_ready_made() -> None:
         cl={
             "m-t-wht-m": _cl_row(
                 **{
-                    "Custom Label": "M-T-WHT-M",
-                    "Supply Method": "Supplier On Demand",
-                    "Supplier Name": "BTC Activewear",
+                    "Custom_Label": "M-T-WHT-M",
+                    "Stock_Type": "Supplier On Demand",
+                    "Supplier_Name": "BTC Activewear",
                     "Brand": "Fruit Of The Loom",
                     "Colour": "White",
                 }
@@ -101,9 +101,9 @@ def test_named_ironon_includes_prime_sticker_is_b1050() -> None:
         cl={
             "sticker-a4": _cl_row(
                 **{
-                    "Custom Label": "STICKER-A4",
-                    "Supply Method": "In House Manufacture",
-                    "Supplier Name": "",
+                    "Custom_Label": "STICKER-A4",
+                    "Stock_Type": "In House Manufacture",
+                    "Supplier_Name": "",
                     "Brand": "",
                     "Category (Areeb)": "Stickers",
                     "Product Type (Areeb)": "Sticker",

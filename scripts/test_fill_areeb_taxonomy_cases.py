@@ -77,86 +77,86 @@ def catalogs() -> AreebCatalogs:
 def assert_cl_cases(cat) -> None:
     # CL never copies BTC/Uneek. Same SKU still uses Gender Apparel.
     cl_ignore_btc = cat.classify_cl(
-        {"Supplier SKU": "3264", "Custom Label": "M55-3264", "Gender Apparel": "Mens-T-Shirt"}
+        {"Supplier_SKU": "3264", "Custom_Label": "M55-3264", "Gender_Apparel": "Mens-T-Shirt"}
     )
     assert cl_ignore_btc.source == "cl_standard"
     assert cl_ignore_btc.department == "Mens"
     assert cl_ignore_btc.product_style == "Standard"
 
     cl_ignore_uneek = cat.classify_cl(
-        {"Supplier SKU": "", "Custom Label": "UC104", "Gender Apparel": "Uneek Classic T-shirt"}
+        {"Supplier_SKU": "", "Custom_Label": "UC104", "Gender_Apparel": "Uneek Classic T-shirt"}
     )
     assert cl_ignore_uneek.source == "cl_standard"
     assert cl_ignore_uneek.category == "T-Shirts"
     assert cl_ignore_uneek.product_style == "Classic"
     assert cl_ignore_uneek.department == "Mens"
 
-    tee = leftover_cl({"Gender Apparel": "Mens-T-Shirt", "Brand": "Gildan"})
+    tee = leftover_cl({"Gender_Apparel": "Mens-T-Shirt", "Brand": "Gildan"})
     assert tee.source == "cl_standard"
     assert tee.category == "T-Shirts"
     assert tee.product_type == "Short Sleeve T-Shirt"
     assert tee.product_style == "Standard"
     assert tee.department == "Mens"
 
-    ladies_hoodie = leftover_cl({"Gender Apparel": "Womens-Hoodie"})
+    ladies_hoodie = leftover_cl({"Gender_Apparel": "Womens-Hoodie"})
     assert ladies_hoodie.category == "Sweatshirts & Hoodies"
     assert ladies_hoodie.product_type == "Hoodie"
     assert ladies_hoodie.product_style == "Standard"
     assert ladies_hoodie.department == "Womens"
 
-    gildan = leftover_cl({"Gender Apparel": "GILDAN Heavy Cotton Adult T-Shirt"})
+    gildan = leftover_cl({"Gender_Apparel": "GILDAN Heavy Cotton Adult T-Shirt"})
     assert gildan.product_style == "Heavy Cotton"
     assert gildan.department == "Mens"
 
-    sticker = leftover_cl({"Gender Apparel": "Sticker", "Brand": "ignored"})
+    sticker = leftover_cl({"Gender_Apparel": "Sticker", "Brand": "ignored"})
     assert sticker.category == "Stickers"
     assert sticker.product_type == "Sticker"
     assert sticker.product_style == "Standard"
     assert sticker.department == "General"
 
-    iron = leftover_cl({"Gender Apparel": "DTF-IronOn-A4"})
+    iron = leftover_cl({"Gender_Apparel": "DTF-IronOn-A4"})
     assert iron.category == "Iron-On"
     assert iron.product_type == "Iron-On Transfer"
     assert iron.product_style == "A4"
     assert iron.department == "General"
 
-    bag = leftover_cl({"Gender Apparel": "BG-BG125J"})
+    bag = leftover_cl({"Gender_Apparel": "BG-BG125J"})
     assert bag.category == "Bags"
     assert bag.product_style == "Junior Fashion Backpack"
     assert bag.department == "General"
 
-    combo = leftover_cl({"Gender Apparel": "Kids-T-Shirt-Hoodie"})
+    combo = leftover_cl({"Gender_Apparel": "Kids-T-Shirt-Hoodie"})
     assert combo.category == "Sets"
     assert combo.department == "Kids"
 
-    unknown = leftover_cl({"Gender Apparel": "no-such-ga", "Brand": "X"})
+    unknown = leftover_cl({"Gender_Apparel": "no-such-ga", "Brand": "X"})
     assert not unknown.any_filled()
 
-    fotl = leftover_cl({"Gender Apparel": "FOTL Mens Valueweight T", "Brand": "ignored"})
+    fotl = leftover_cl({"Gender_Apparel": "FOTL Mens Valueweight T", "Brand": "ignored"})
     assert fotl.category == "T-Shirts"
     assert fotl.product_style == "Valueweight"
     assert fotl.department == "Mens"
 
-    crew = leftover_cl({"Gender Apparel": "GILDAN Heavy Blend Adult Crewneck Sweatshirt"})
+    crew = leftover_cl({"Gender_Apparel": "GILDAN Heavy Blend Adult Crewneck Sweatshirt"})
     assert crew.category == "Sweatshirts & Hoodies"
     assert crew.product_style == "Heavy Blend"
     assert crew.department == "Mens"
 
-    hiviz = leftover_cl({"Gender Apparel": "Uneek Hi Viz Short Sleeve Polo Shirt"})
+    hiviz = leftover_cl({"Gender_Apparel": "Uneek Hi Viz Short Sleeve Polo Shirt"})
     assert hiviz.category == "Polo Shirts"
     assert hiviz.department == "Unisex"
 
-    yoko = leftover_cl({"Gender Apparel": "Yoko Hi-Vis Class 2 Waistcoat"})
+    yoko = leftover_cl({"Gender_Apparel": "Yoko Hi-Vis Class 2 Waistcoat"})
     assert yoko.category == "Safetywear"
     assert yoko.product_style == "Class 2"
     assert yoko.department == "Unisex"
 
     cl_left = cat.classify_cl(
         {
-            "Supplier SKU": "",
-            "Custom Label": "M-T-BLK-M",
+            "Supplier_SKU": "",
+            "Custom_Label": "M-T-BLK-M",
             "Brand": "Gildan",
-            "Gender Apparel": "Mens-T-Shirt",
+            "Gender_Apparel": "Mens-T-Shirt",
         }
     )
     assert cl_left.source == "cl_standard"
@@ -175,7 +175,7 @@ def assert_cl_cases(cat) -> None:
     assert overwrite.get("Department (Areeb)") == "Mens"
     assert overwrite.get("Product Style (Areeb)") == "Standard"
 
-    invented = leftover_cl({"Gender Apparel": "Mens UniqueWidget T-Shirt"})
+    invented = leftover_cl({"Gender_Apparel": "Mens UniqueWidget T-Shirt"})
     assert invented.product_style == ""
     cleared = apply_areeb(
         {

@@ -57,9 +57,9 @@ def test_warehouse_stock_supplier_slot_x() -> None:
         cl={
             "m-t-wht-m": _cl_row(
                 **{
-                    "Custom Label": "M-T-WHT-M",
-                    "Supply Method": "Warehouse Stock",
-                    "Supplier Name": "BTC Activewear",
+                    "Custom_Label": "M-T-WHT-M",
+                    "Stock_Type": "Warehouse Stock",
+                    "Supplier_Name": "BTC Activewear",
                     "Brand": "Fruit Of The Loom",
                     "Colour": "White",
                 }
@@ -78,15 +78,15 @@ def test_mixed_supply_goes_on_demand() -> None:
         cl={
             "m-t-blk-2xl-yes": _cl_row(
                 **{
-                    "Custom Label": "M-T-BLK-2XL-YES",
-                    "Supply Method": "Warehouse Stock",
+                    "Custom_Label": "M-T-BLK-2XL-YES",
+                    "Stock_Type": "Warehouse Stock",
                     "Customise": "Yes",
                 }
             ),
             "w407-blk-o/s-yes": _cl_row(
                 **{
-                    "Custom Label": "W407-BLK-O/S-Yes",
-                    "Supply Method": "Supplier On Demand",
+                    "Custom_Label": "W407-BLK-O/S-Yes",
+                    "Stock_Type": "Supplier On Demand",
                     "Customise": "Yes",
                     "Category (Areeb)": "Bags",
                     "Product Type (Areeb)": "Tote",

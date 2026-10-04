@@ -1,8 +1,9 @@
 """
-Custom Label → BTC SKU fallback when primary free_stock lookup fails.
+Custom Label → Supplier_SKU fallback when primary free_stock lookup fails.
 
-Reads live Custom Label Database app CSV (Custom_Label_Database.csv).
-Stock id column in that file is ``BTC SKU`` (mapped in code from former BTC Stock ID).
+Reads live Custom Label Database CSV (Custom_Label_Database.csv).
+Stock id column is ``Supplier_SKU`` (NocoDB stand-in for retired ``BTC SKU``,
+locked 2026-10-04).
 """
 
 from __future__ import annotations
@@ -18,6 +19,7 @@ _WAREHOUSE_ROOT = APP_ROOT.parent
 if str(_WAREHOUSE_ROOT) not in sys.path:
     sys.path.insert(0, str(_WAREHOUSE_ROOT))
 
+from shared import cl_columns as clc  # noqa: E402
 from shared.cl_sku_match import (  # noqa: E402
     default_cl_csv_path,
     normalize_label,
@@ -28,7 +30,8 @@ from shared.cl_sku_match import (  # noqa: E402
 DEFAULT_CL_CSV = default_cl_csv_path(APP_ROOT)
 # Legacy archived copies under Data/archive
 LEGACY_LOCAL_CL_CSV = "Custom Label Database.csv"
-STOCK_ID_COLUMNS = ("BTC SKU", "BTC Stock ID")
+# NocoDB stand-in for retired "BTC SKU" (supervisor 2026-10-04).
+STOCK_ID_COLUMN = clc.BTC_SKU
 
 STATUS_NOT_IN_CUSTOM_LABEL_DB = "Not in Custom Label Database"
 STATUS_CUSTOM_LABEL_MISSING_STOCK_ID = "Custom Label missing Stock ID"
@@ -92,12 +95,8 @@ def load_custom_label_stock_map(
                 mapping: dict[str, str] = {}
                 empty_ids: set[str] = set()
                 for row in reader:
-                    label = (row.get("Custom Label") or "").strip()
-                    stock_id = ""
-                    for col in STOCK_ID_COLUMNS:
-                        stock_id = (row.get(col) or "").strip()
-                        if stock_id:
-                            break
+                    label = (row.get(clc.CUSTOM_LABEL) or "").strip()
+                    stock_id = (row.get(STOCK_ID_COLUMN) or "").strip()
                     key = _norm_label(label)
                     if not key:
                         continue

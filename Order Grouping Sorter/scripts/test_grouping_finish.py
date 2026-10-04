@@ -90,7 +90,7 @@ def test_printed_wins_and_mixed_flag1_unmatched() -> None:
 
 def test_no_dash_sku_matches_cl_whole() -> None:
     cat = Catalogs(
-        cl={"a515": _cl_row(**{"Custom Label": "A515", "Customise": "Yes"})},
+        cl={"a515": _cl_row(**{"Custom_Label": "A515", "Customise": "Yes"})},
         packs={"set4741": _packs_row()},
     )
     assert finish_for_sku("A515", cat) == "printed"

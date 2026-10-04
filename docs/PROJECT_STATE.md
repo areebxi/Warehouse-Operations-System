@@ -6,7 +6,7 @@ Cross-app snapshot. Per-app detail: each app’s `docs/HANDOFF.md`. Architecture
 
 | App | How it runs | Gate | Proof |
 |-----|-------------|------|-------|
-| Custom Label Database | CLI scripts under `scripts/` (fill, NocoDB, sync) | `--dry-run` opt-in; live writes need **fill** / **yes** | `Custom Label Database/AGENTS.md`; e.g. `scripts/fill_from_seeds.py` |
+| Custom Label Database | CLI scripts under `scripts/` (fill, NocoDB, sync); live CSV refresh `scripts/cl_db_exporter.py` | `--dry-run` opt-in; live writes need **fill** / **yes**; exporter needs **run** / **yes** | `Custom Label Database/AGENTS.md`; `shared/cl_columns.py` (NocoDB headers) |
 | Order Grouping Sorter | CLI `scripts/run_sorter.py` | Default dry-run; `--run` writes | `run_sorter.py` |
 | Order Packing List Generator | GUI `packing_list_app.py` + `pipeline_runner` | Policy **yes** / **run** | `pipeline_packing_list_app/app.py` |
 | Production Design Queue Manager | GUI `queue_app.py`; headless Missing Logo watcher | GUI needs approval; watcher does not | `queue_app.py`; `scripts/auto_missing_logo_watcher.py` |

@@ -17,10 +17,11 @@ from __future__ import annotations
 import re
 from typing import Any, Iterable
 
+from shared import cl_columns as clc
 from shared.areeb_taxonomy import cell
 from shared.supply_method import is_in_house_text
 
-COL = "Supplier Name"
+COL = clc.SUPPLIER_NAME
 
 BTC_ACTIVEWEAR = "BTC Activewear"
 UNEEK_CLOTHING = "Uneek Clothing"
@@ -103,11 +104,11 @@ def classify_supply_name(
 
 
 def classify_cl_row(row: dict[str, Any], cat: Any) -> str:
-    label = row.get("Custom Label")
+    label = row.get(clc.CUSTOM_LABEL)
     return classify_supply_name(
-        sku=row.get("Supplier SKU") or row.get("Warehouse SKU"),
-        product_code=row.get("Supplier Product Code"),
-        gender_apparel=row.get("Gender Apparel"),
+        sku=row.get(clc.SUPPLIER_SKU) or row.get(clc.WAREHOUSE_SKU),
+        product_code=row.get(clc.SUPPLIER_PRODUCT_CODE),
+        gender_apparel=row.get(clc.GENDER_APPAREL),
         custom_label=label,
         extra_keys=(label,),
         allow_blank_in_house=True,

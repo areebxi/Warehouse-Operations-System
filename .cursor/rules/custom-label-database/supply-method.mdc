@@ -6,15 +6,31 @@ globs: "Custom Label Database/**,scripts/fill_supply_method.py,shared/supply_met
 
 # Supply Method
 
-Grouping column **`Supply Method`** on Custom Label, Plain Database, and Packs. Not the old CL `Warehouse Stock` column (China bags).
+Grouping column **`Supply Method`** on Plain Database and Packs. Live CL uses NocoDB **`Stock_Type`** (same role); readers normalize via `shared.supply_method.normalize_stock_type` (locked 2026-10-04). Not the old CL `Warehouse Stock` stock-qty column (China bags).
 
-Code: `shared/supply_method.py`. One-off: `python scripts/fill_supply_method.py`. Future CL rows: `fill_from_seeds.py --steps supply`.
+Code: `shared/supply_method.py`. One-off fill scripts retired while CL is NocoDB-owned.
 
 | Cell | Meaning |
 |---|---|
-| `Warehouse Stock` | **CL:** FOTL men / women / kids t-shirts in the locked colour lists, plus Kids `C800T` / `C8030T` in the locked body colours. **Plain / Packs:** all FOTL men / women / kids t-shirts |
-| `In House Manufacture` | Iron-on or sticker (printed / CL only) |
-| `Supplier On Demand` | Everything else |
+| `Warehouse Stock` | **CL (via Stock_Type):** `Warehouse Stock`, `Warehouse Stock (Non-Seasonal)`, `Warehouse Stock (Seasonal)`. **Plain / Packs / classify rules:** FOTL men / women / kids t-shirts in the locked colour lists, plus Kids `C800T` / `C8030T` in the locked body colours |
+| `In House Manufacture` | Iron-on or sticker (printed / CL only); Stock_Type value of the same name |
+| `Supplier On Demand` | Everything else; Stock_Type `Order on Demand` or `Supplier On Demand` |
+
+Blank `Stock_Type` stays blank (do not invent).
+
+### NocoDB Stock_Type → locked trio (`normalize_stock_type`)
+
+| Live `Stock_Type` | Supply Method |
+|---|---|
+| `Order on Demand` | `Supplier On Demand` |
+| `Supplier On Demand` | `Supplier On Demand` |
+| `Warehouse Stock` | `Warehouse Stock` |
+| `Warehouse Stock (Non-Seasonal)` | `Warehouse Stock` |
+| `Warehouse Stock (Seasonal)` | `Warehouse Stock` |
+| `In House Manufacture` | `In House Manufacture` |
+| (blank) | (blank) |
+
+Seasonal = we stock it in season (e.g. sweatshirts/hoodies); still Warehouse Stock for grouping.
 
 CL decision order:
 

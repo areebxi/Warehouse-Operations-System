@@ -37,10 +37,10 @@ def _ready(*extra: str) -> list[str]:
 
 def _cl_row(**extra: str) -> dict[str, str]:
     row = {
-        "Custom Label": "M-T-BLK-M",
-        "Supply Method": "Supplier On Demand",
-        "Supplier Name": "BTC Activewear",
-        "Printing Type": "DTF",
+        "Custom_Label": "M-T-BLK-M",
+        "Stock_Type": "Supplier On Demand",
+        "Supplier_Name": "BTC Activewear",
+        "Printing_Type": "DTF",
         "Customise": "",
         "Category (Areeb)": "T-SHIRTS",
         "Product Type (Areeb)": "MENS SHORT SLEEVE T-SHIRT",
@@ -62,7 +62,7 @@ def _gildan_tee_cats(**extra: str) -> Catalogs:
 def _sweatshirt_cats(**extra: str) -> Catalogs:
     row = _cl_row(
         **{
-            "Custom Label": "M-SS-BLK-M",
+            "Custom_Label": "M-SS-BLK-M",
             "Category (Areeb)": "Sweatshirts & Hoodies",
             "Product Type (Areeb)": "Sweatshirt",
             "Product Style (Areeb)": "Standard",
@@ -148,9 +148,9 @@ def _fotl_cats(**extra: str) -> Catalogs:
         cl={
             "m-t-wht-m": _cl_row(
                 **{
-                    "Custom Label": "M-T-WHT-M",
-                    "Supply Method": "Warehouse Stock",
-                    "Supplier Name": "BTC Activewear",
+                    "Custom_Label": "M-T-WHT-M",
+                    "Stock_Type": "Warehouse Stock",
+                    "Supplier_Name": "BTC Activewear",
                     "Brand": "Fruit Of The Loom",
                     "Colour": "White",
                     **extra,
@@ -165,9 +165,9 @@ def _iron_cats(*, customise: str = "") -> Catalogs:
         cl={
             "dtf-ironon-a4": _cl_row(
                 **{
-                    "Custom Label": "DTF-IronOn-A4",
-                    "Supply Method": "In House Manufacture",
-                    "Supplier Name": "",
+                    "Custom_Label": "DTF-IronOn-A4",
+                    "Stock_Type": "In House Manufacture",
+                    "Supplier_Name": "",
                     "Brand": "",
                     "Size": "A4",
                     "Colour": "Iron On Sticker",

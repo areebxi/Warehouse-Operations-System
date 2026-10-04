@@ -46,10 +46,10 @@ def test_cl_absolute_wins_over_btc_name() -> None:
     assert (
         classify_cl_row(
             {
-                "Custom Label": "M281-P5-C800T-30-18-24",
-                "Gender Apparel": "C800T-BS",
-                "Supplier SKU": "214332",
-                "Supplier Name": "BTC Activewear",
+                "Custom_Label": "M281-P5-C800T-30-18-24",
+                "Gender_Apparel": "C800T-BS",
+                "Supplier_SKU": "214332",
+                "Supplier_Name": "BTC Activewear",
             },
             CAT,
         )
@@ -57,14 +57,14 @@ def test_cl_absolute_wins_over_btc_name() -> None:
     )
     assert (
         classify_cl_row(
-            {"Custom Label": "AS7-BBe-C1-D9-E1N", "Gender Apparel": "C800T-BS"},
+            {"Custom_Label": "AS7-BBe-C1-D9-E1N", "Gender_Apparel": "C800T-BS"},
             CAT,
         )
         == ABSOLUTE_APPARELS
     )
     assert (
         classify_cl_row(
-            {"Custom Label": "AS8-1", "Gender Apparel": "C8030T-BS"},
+            {"Custom_Label": "AS8-1", "Gender_Apparel": "C8030T-BS"},
             CAT,
         )
         == ABSOLUTE_APPARELS
@@ -74,14 +74,14 @@ def test_cl_absolute_wins_over_btc_name() -> None:
 def test_cl_in_house_blank() -> None:
     assert (
         classify_cl_row(
-            {"Custom Label": "24LBL-A4-STCKR-45mm", "Gender Apparel": "Sticker"},
+            {"Custom_Label": "24LBL-A4-STCKR-45mm", "Gender_Apparel": "Sticker"},
             CAT,
         )
         == ""
     )
     assert (
         classify_cl_row(
-            {"Custom Label": "DTF-IronOn-A4", "Gender Apparel": "DTF-IronOn-A4"},
+            {"Custom_Label": "DTF-IronOn-A4", "Gender_Apparel": "DTF-IronOn-A4"},
             CAT,
         )
         == ""
@@ -92,9 +92,9 @@ def test_cl_btc_and_uneek() -> None:
     assert (
         classify_cl_row(
             {
-                "Custom Label": "M260-214332",
-                "Gender Apparel": "FOTL Mens Valueweight T",
-                "Supplier SKU": "214332",
+                "Custom_Label": "M260-214332",
+                "Gender_Apparel": "FOTL Mens Valueweight T",
+                "Supplier_SKU": "214332",
             },
             CAT,
         )
@@ -102,7 +102,7 @@ def test_cl_btc_and_uneek() -> None:
     )
     assert (
         classify_cl_row(
-            {"Custom Label": "805YWSM", "Gender Apparel": "Uneek Ladies Shirt"},
+            {"Custom_Label": "805YWSM", "Gender_Apparel": "Uneek Ladies Shirt"},
             CAT,
         )
         == UNEEK_CLOTHING
@@ -134,7 +134,7 @@ def test_packs_item1_btc() -> None:
 def test_bz10_body_suit_is_not_absolute() -> None:
     assert (
         classify_cl_row(
-            {"Custom Label": "BZ10-WHT-0-3", "Gender Apparel": "BZ10-Body Suit"},
+            {"Custom_Label": "BZ10-WHT-0-3", "Gender_Apparel": "BZ10-Body Suit"},
             CAT,
         )
         == BTC_ACTIVEWEAR

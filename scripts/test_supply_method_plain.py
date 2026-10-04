@@ -25,7 +25,7 @@ def test_fotl_vest_is_not_warehouse() -> None:
         "Brand": "Fruit Of The Loom",
         "Category (Areeb)": "T-SHIRTS",
         "Product Type (Areeb)": "Athletic Vest",
-        "Gender Apparel": "FOTL Mens Valueweight Athletic Vest",
+        "Gender_Apparel": "FOTL Mens Valueweight Athletic Vest",
     }
     assert classify_cl_row(vest) == SUPPLIER_ON_DEMAND
 def test_harvest_pack_name_is_not_a_vest() -> None:

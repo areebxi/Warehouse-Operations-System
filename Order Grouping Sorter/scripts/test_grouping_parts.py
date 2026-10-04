@@ -36,8 +36,8 @@ def test_inside_file_colour_groups_then_parts() -> None:
     cat = Catalogs(
         cl={
             "m-t-blk-m": _cl_row(**{"Colour": "Black"}),
-            "m-t-nvy-m": _cl_row(**{"Custom Label": "M-T-NVY-M", "Colour": "Navy"}),
-            "m-t-wht-m": _cl_row(**{"Custom Label": "M-T-WHT-M", "Colour": "White"}),
+            "m-t-nvy-m": _cl_row(**{"Custom_Label": "M-T-NVY-M", "Colour": "Navy"}),
+            "m-t-wht-m": _cl_row(**{"Custom_Label": "M-T-WHT-M", "Colour": "White"}),
         }
     )
     # <30 per colour so they stay in one process file; ≥3 black/navy → inside -N groups

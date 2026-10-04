@@ -19,7 +19,7 @@
 | `pdf_generator.py` | Packing slip PDFs |
 | `stock_resolver.py` | Custom label → stock ID |
 | `app_paths.py` | Path helpers for `data/`, `assets/`, `output/` |
-| `fill_btc_stock_id.py`, `validate_btc_product_codes.py`, `sync_database_from_btc_product_data.py`, `download_product_images.py`, etc. | Maintenance tools |
+| `validate_btc_product_codes.py`, `sync_database_from_btc_product_data.py`, `download_product_images.py`, etc. | Maintenance tools |
 
 Run any script from the app root, for example:
 

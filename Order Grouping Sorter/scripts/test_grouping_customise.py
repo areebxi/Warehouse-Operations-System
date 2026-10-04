@@ -44,7 +44,7 @@ def test_mixed_customised_majority_units_tie_readymade() -> None:
         cl={
             "m-t-blk-m": _cl_row(),
             "m-t-wht-m": _cl_row(
-                **{"Custom Label": "M-T-WHT-M", "Customise": "Yes"}
+                **{"Custom_Label": "M-T-WHT-M", "Customise": "Yes"}
             ),
         }
     )

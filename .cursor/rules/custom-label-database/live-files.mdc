@@ -10,7 +10,8 @@ CL app owns catalog **policy**; live files live under `database/`. Resolve via `
 
 | Path | Role |
 |---|---|
-| `database/shared/custom_label/Custom_Label_Database.csv` | **Live** working DB |
+| `database/shared/custom_label/Custom_Label_Database.csv` | **Live** working DB (NocoDB underscored headers; refresh via `scripts/cl_db_exporter.py`) |
+| `database/shared/custom_label/Custom_Label_Database (Areeb).csv` | Pre-NocoDB local reference (do not overwrite) |
 | `database/shared/custom_label/backups/` | Pre-change catalog snapshots |
 | `database/custom-label-database/support/` | Size refs, shirts print sizes, mocks, Workbook restore |
 | `database/custom-label-database/Apparel Images/` | Apparel image library |
@@ -20,6 +21,8 @@ CL app owns catalog **policy**; live files live under `database/`. Resolve via `
 | `Database Transfer/Workbook.xlsx` | Upload mirror of CL (sheet **CL Database**); sync on fill |
 | `Database Transfer/Configuration Workbook.xlsx` | Upload mirror of Size References; sync on fill |
 
-Useful scripts (app `scripts/`): `fill_from_seeds.py`, `generate_from_mocks.py`, `download_apparel_images.py`, `fill_cl_database.py` (legacy template expand), `sync_database_transfer.py` (after fill).
+Column names: `shared/cl_columns.py` (NocoDB). Stand-ins: `BTC SKU`→`Supplier_SKU`, `Supply Method`→`Stock_Type`.
+
+Useful scripts (app `scripts/`): `fill_from_seeds.py`, `generate_from_mocks.py`, `download_apparel_images.py`, `fill_cl_database.py` (legacy template expand), `sync_database_transfer.py` (after fill). Fill tools still expect Areeb-era spaced headers until migrated. Warehouse refresh: `scripts/cl_db_exporter.py`.
 
 Run Python from the Custom Label Database app folder. Prefer scripts over opening the full CSV in the editor.

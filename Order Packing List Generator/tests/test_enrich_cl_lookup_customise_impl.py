@@ -12,7 +12,7 @@ def test_enrich_item_options_skipped_when_cl_already_customise_yes(tmp_path: Pat
     cl_csv = tmp_path / "cl.csv"
     step1 = tmp_path / "step1.csv"
     pd.DataFrame(
-        {"Custom Label": ["MATCH-LABEL"], "Customise": ["Yes"]}
+        {"Custom_Label": ["MATCH-LABEL"], "Customise": ["Yes"]}
     ).to_csv(cl_csv, index=False, encoding="utf-8")
     _write_step1_csv(
         step1,
@@ -119,6 +119,6 @@ def test_enrich_no_phrase_leaves_customise_empty(tmp_path: Path):
 def test_item_options_indicates_custom(value, expected):
     assert _item_options_indicates_custom(value) is expected
 def _write_min_cl_csv(path: Path) -> None:
-    pd.DataFrame({"Custom Label": []}).to_csv(path, index=False, encoding="utf-8")
+    pd.DataFrame({"Custom_Label": []}).to_csv(path, index=False, encoding="utf-8")
 def _write_step1_csv(path: Path, rows: list[dict]) -> None:
     write_fetched_csv(rows, path)

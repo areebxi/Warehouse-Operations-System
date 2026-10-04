@@ -37,9 +37,9 @@ def test_b40_gildan_b1050_sticker_b3700_sweatshirt() -> None:
         cl={
             "sticker-a4": _cl_row(
                 **{
-                    "Custom Label": "STICKER-A4",
-                    "Supply Method": "In House Manufacture",
-                    "Supplier Name": "",
+                    "Custom_Label": "STICKER-A4",
+                    "Stock_Type": "In House Manufacture",
+                    "Supplier_Name": "",
                     "Brand": "",
                     "Category (Areeb)": "Stickers",
                     "Product Type (Areeb)": "Sticker",
@@ -51,7 +51,7 @@ def test_b40_gildan_b1050_sticker_b3700_sweatshirt() -> None:
         cl={
             "m-h-blk-m": _cl_row(
                 **{
-                    "Custom Label": "M-H-BLK-M",
+                    "Custom_Label": "M-H-BLK-M",
                     "Category (Areeb)": "Sweatshirts & Hoodies",
                     "Product Type (Areeb)": "Hoodie",
                     "Brand": "Gildan",
@@ -64,18 +64,18 @@ def test_b40_gildan_b1050_sticker_b3700_sweatshirt() -> None:
         cl={
             "a3-5000-dhr-xl": _cl_row(
                 **{
-                    "Custom Label": "A3-5000-DHR-XL",
+                    "Custom_Label": "A3-5000-DHR-XL",
                     "Brand": "",
-                    "Gender Apparel": "5000",
+                    "Gender_Apparel": "5000",
                     "Category (Areeb)": "T-Shirts",
                     "Product Type (Areeb)": "Short Sleeve T-Shirt",
                 }
             ),
             "m-t-gd05-blk-m": _cl_row(
                 **{
-                    "Custom Label": "M-T-GD05-BLK-M",
+                    "Custom_Label": "M-T-GD05-BLK-M",
                     "Brand": "",
-                    "Gender Apparel": "G5000",
+                    "Gender_Apparel": "G5000",
                     "Category (Areeb)": "T-Shirts",
                     "Product Type (Areeb)": "Short Sleeve T-Shirt",
                 }
@@ -83,9 +83,9 @@ def test_b40_gildan_b1050_sticker_b3700_sweatshirt() -> None:
             # FOTL UID containing 15000 must NOT count as style 5000
             "m221-15000": _cl_row(
                 **{
-                    "Custom Label": "M221-15000",
+                    "Custom_Label": "M221-15000",
                     "Brand": "Fruit Of The Loom",
-                    "Gender Apparel": "FOTL Mens Valueweight Ringer T",
+                    "Gender_Apparel": "FOTL Mens Valueweight Ringer T",
                     "Category (Areeb)": "T-Shirts",
                     "Product Type (Areeb)": "Short Sleeve T-Shirt",
                 }
@@ -118,21 +118,21 @@ def test_b40_gildan_b1050_sticker_b3700_sweatshirt() -> None:
 def test_2026_09_28_batches_and_priority() -> None:
     fotl = _fotl_cats()
     mug = Catalogs(
-        cl={"m61-mug-11oz": _cl_row(**{"Custom Label": "M61-MUG-11OZ", "Printing Type": "Sublimation",
+        cl={"m61-mug-11oz": _cl_row(**{"Custom_Label": "M61-MUG-11OZ", "Printing_Type": "Sublimation",
                                          "Category (Areeb)": "Mugs", "Product Type (Areeb)": "Mug"})}
     )
     baby = Catalogs(
-        cl={"m281-p6-c800t-30-0>3": _cl_row(**{"Custom Label": "M281-P6-C800T-30-0>3",
+        cl={"m281-p6-c800t-30-0>3": _cl_row(**{"Custom_Label": "M281-P6-C800T-30-0>3",
                                                 "Category (Areeb)": "Babywear",
                                                 "Product Type (Areeb)": "Body Suit"})}
     )
     # SKU IronOn wins even when the catalog category is not Iron-On.
     iron_sku = Catalogs(
-        cl={"m280-p5-ironon-a6": _cl_row(**{"Custom Label": "M280-P5-IronOn-A6",
-                                             "Supply Method": "In House Manufacture",
-                                             "Supplier Name": "", "Category (Areeb)": "Other"})}
+        cl={"m280-p5-ironon-a6": _cl_row(**{"Custom_Label": "M280-P5-IronOn-A6",
+                                             "Stock_Type": "In House Manufacture",
+                                             "Supplier_Name": "", "Category (Areeb)": "Other"})}
     )
-    ss = _fotl_cats(**{"Custom Label": "M-T-SS-WHT"})
+    ss = _fotl_cats(**{"Custom_Label": "M-T-SS-WHT"})
     ss = Catalogs(cl={"m-t-ss-wht": ss.cl["m-t-wht-m"]})
     uneek = Catalogs(cl={}, plain={"uc301": _plain_row(**{"SKU": "UC301", "Supplier Name": "Uneek Clothing"})}, packs={})
 

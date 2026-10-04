@@ -64,7 +64,7 @@ def test_printed_under_30_keeps_all_departments_in_one_process() -> None:
             "m-t-blk-m": _cl_row(**{"Department (Areeb)": "Mens", "Size": "M"}),
             "k-t-blk-s": _cl_row(
                 **{
-                    "Custom Label": "K-T-BLK-S",
+                    "Custom_Label": "K-T-BLK-S",
                     "Department (Areeb)": "Kids",
                     "Size": "5-6 Years",
                 }
@@ -89,9 +89,9 @@ def test_flag30_blank_brand_stays_in_parent_not_unmatched() -> None:
         cl={
             "dtf-ironon-a4": _cl_row(
                 **{
-                    "Custom Label": "DTF-IronOn-A4",
-                    "Supply Method": "In House Manufacture",
-                    "Supplier Name": "",
+                    "Custom_Label": "DTF-IronOn-A4",
+                    "Stock_Type": "In House Manufacture",
+                    "Supplier_Name": "",
                     "Brand": "",
                     "Size": "A4",
                     "Colour": "Iron On Sticker",
@@ -103,9 +103,9 @@ def test_flag30_blank_brand_stays_in_parent_not_unmatched() -> None:
             ),
             "sticker-a4": _cl_row(
                 **{
-                    "Custom Label": "STICKER-A4",
-                    "Supply Method": "In House Manufacture",
-                    "Supplier Name": "",
+                    "Custom_Label": "STICKER-A4",
+                    "Stock_Type": "In House Manufacture",
+                    "Supplier_Name": "",
                     "Brand": "",
                     "Size": "A4",
                     "Colour": "",
@@ -137,7 +137,7 @@ def test_flag30_blank_leftover_when_named_value_peels() -> None:
         cl={
             "m-t-blk-m": _cl_row(),
             "m-t-wht-m": _cl_row(
-                **{"Custom Label": "M-T-WHT-M", "Brand": "", "Colour": "White"}
+                **{"Custom_Label": "M-T-WHT-M", "Brand": "", "Colour": "White"}
             ),
         }
     )

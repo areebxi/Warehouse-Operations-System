@@ -97,7 +97,7 @@ def test_named_floor_skips_30chain_and_keeps_inside_file() -> None:
         cl={
             "m-t-blk-m": _cl_row(
                 **{
-                    "Supply Method": "Warehouse Stock",
+                    "Stock_Type": "Warehouse Stock",
                     "Brand": "Fruit Of The Loom",
                     "Colour": "Black",
                     "Department (Areeb)": "Mens",
@@ -105,8 +105,8 @@ def test_named_floor_skips_30chain_and_keeps_inside_file() -> None:
             ),
             "k-t-blk-s": _cl_row(
                 **{
-                    "Custom Label": "K-T-BLK-S",
-                    "Supply Method": "Warehouse Stock",
+                    "Custom_Label": "K-T-BLK-S",
+                    "Stock_Type": "Warehouse Stock",
                     "Brand": "Fruit Of The Loom",
                     "Colour": "Navy",
                     "Department (Areeb)": "Kids",

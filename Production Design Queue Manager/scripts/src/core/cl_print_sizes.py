@@ -18,6 +18,7 @@ _WAREHOUSE_ROOT = _QUEUE_APP_ROOT.parent
 if str(_WAREHOUSE_ROOT) not in sys.path:
     sys.path.insert(0, str(_WAREHOUSE_ROOT))
 
+from shared import cl_columns as clc  # noqa: E402
 from shared.cl_sku_match import (  # noqa: E402
     default_cl_csv_path,
     normalize_label,
@@ -49,10 +50,10 @@ def load_cl_size_table(cl_csv_path: Optional[Path] = None) -> pd.DataFrame:
     if not path.is_file():
         raise FileNotFoundError(f"CL CSV not found: {path}")
     df = pd.read_csv(path, dtype=str, keep_default_na=False, encoding="utf-8-sig")
-    if "Custom Label" not in df.columns:
-        raise ValueError(f"CL CSV missing Custom Label: {path}")
+    if clc.CUSTOM_LABEL not in df.columns:
+        raise ValueError(f"CL CSV missing Custom_Label: {path}")
     index: dict[str, int] = {}
-    for i, label in enumerate(df["Custom Label"].tolist()):
+    for i, label in enumerate(df[clc.CUSTOM_LABEL].tolist()):
         key = normalize_label(label)
         if key and key not in index:
             index[key] = i
@@ -77,11 +78,11 @@ def _parse_mm(value: Any) -> Optional[float]:
 def _slots_from_row(row: pd.Series) -> List[tuple[Optional[str], float, float]]:
     slots: List[tuple[Optional[str], float, float]] = []
     for n in range(1, 5):
-        w = _parse_mm(row.get(f"Width {n} (mm)"))
-        h = _parse_mm(row.get(f"Height {n} (mm)"))
+        w = _parse_mm(row.get(clc.width_mm(n)))
+        h = _parse_mm(row.get(clc.height_mm(n)))
         if w is None or h is None:
             continue
-        name = row.get(f"Position {n} Name")
+        name = row.get(clc.position_name(n))
         name_s = str(name).strip() if name is not None and str(name).strip() not in ("", "nan") else None
         slots.append((name_s, w, h))
     return slots

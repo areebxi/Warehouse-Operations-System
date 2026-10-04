@@ -1,4 +1,4 @@
-"""Unit tests for Custom Label → BTC Stock ID resolution."""
+"""Unit tests for Custom Label → BTC SKU resolution."""
 
 from __future__ import annotations
 
@@ -59,14 +59,14 @@ class TestLoadCustomLabelStockMap(unittest.TestCase):
             csv_path = Path(tmp) / "labels.csv"
             with open(csv_path, "w", encoding="utf-8", newline="") as handle:
                 writer = csv.DictWriter(
-                    handle, fieldnames=["Custom Label", "BTC Stock ID"]
+                    handle, fieldnames=["Custom_Label", "Supplier_SKU"]
                 )
                 writer.writeheader()
                 writer.writerow(
-                    {"Custom Label": "TPC001-NAT-O/S-Yes", "BTC Stock ID": "1111"}
+                    {"Custom_Label": "TPC001-NAT-O/S-Yes", "Supplier_SKU": "1111"}
                 )
                 writer.writerow(
-                    {"Custom Label": "tpc001-nat-o/s-yes", "BTC Stock ID": "2222"}
+                    {"Custom_Label": "tpc001-nat-o/s-yes", "Supplier_SKU": "2222"}
                 )
 
             mapping, empty_ids = load_custom_label_stock_map(
@@ -76,19 +76,19 @@ class TestLoadCustomLabelStockMap(unittest.TestCase):
         self.assertEqual(mapping, {_norm_label("TPC001-NAT-O/S-Yes"): "1111"})
         self.assertEqual(empty_ids, set())
 
-    def test_tracks_labels_with_blank_btc_stock_id(self):
+    def test_tracks_labels_with_blank_btc_sku(self):
         with tempfile.TemporaryDirectory() as tmp:
             csv_path = Path(tmp) / "labels.csv"
             with open(csv_path, "w", encoding="utf-8", newline="") as handle:
                 writer = csv.DictWriter(
-                    handle, fieldnames=["Custom Label", "BTC Stock ID"]
+                    handle, fieldnames=["Custom_Label", "Supplier_SKU"]
                 )
                 writer.writeheader()
                 writer.writerow(
-                    {"Custom Label": "C800T-BLK-3-6M", "BTC Stock ID": ""}
+                    {"Custom_Label": "C800T-BLK-3-6M", "Supplier_SKU": ""}
                 )
                 writer.writerow(
-                    {"Custom Label": "TPC001-NAT-O/S-Yes", "BTC Stock ID": "7299"}
+                    {"Custom_Label": "TPC001-NAT-O/S-Yes", "Supplier_SKU": "7299"}
                 )
 
             mapping, empty_ids = load_custom_label_stock_map(

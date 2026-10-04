@@ -16,7 +16,7 @@ if str(SCRIPTS) not in sys.path:
 from catalogs import Catalogs
 from grouping import FIXED_BATCH_CODES, group_orders
 from leftover_batches import LEFTOVER_HEADER, write_leftover_batches_csv
-from test_grouping import RUN, _cats, _order
+from test_grouping_fixtures import RUN, _cats, _order
 
 
 def _hoodie_cats() -> Catalogs:
@@ -24,10 +24,10 @@ def _hoodie_cats() -> Catalogs:
     return Catalogs(
         cl={
             "m-h-blk-m": {
-                "Custom Label": "M-H-BLK-M",
-                "Supply Method": "Supplier On Demand",
-                "Supplier Name": "BTC Activewear",
-                "Printing Type": "DTF",
+                "Custom_Label": "M-H-BLK-M",
+                "Stock_Type": "Supplier On Demand",
+                "Supplier_Name": "BTC Activewear",
+                "Printing_Type": "DTF",
                 "Customise": "",
                 "Category (Areeb)": "Sweatshirts & Hoodies",
                 "Product Type (Areeb)": "T-Shirt & Hoodie",

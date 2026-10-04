@@ -18,10 +18,11 @@ import re
 from functools import lru_cache
 from typing import Any, Mapping
 
+from shared import cl_columns as clc
 from shared.areeb_taxonomy import cell
 from shared.paths import mocks_database_csv_path
 
-COL = "Printing Type"
+COL = clc.PRINTING_TYPE
 
 DTF = "DTF"
 SUBLIMATION = "Sublimation"
@@ -82,8 +83,8 @@ def classify_cl_row(
     mock_types: Mapping[str, str] | None = None,
 ) -> str:
     return classify_printing_type(
-        custom_label=row.get("Custom Label"),
-        gender_apparel=row.get("Gender Apparel"),
-        category_areeb=row.get("Category (Areeb)"),
+        custom_label=row.get(clc.CUSTOM_LABEL),
+        gender_apparel=row.get(clc.GENDER_APPAREL),
+        category_areeb=row.get(clc.CATEGORY_AREEB),
         mock_types=mock_types,
     )

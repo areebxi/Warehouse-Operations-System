@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from typing import Any, Mapping
 
+from shared import cl_columns as clc
 from shared.areeb_taxonomy.cl_garment import _garment_kind
 from shared.areeb_taxonomy.cl_rules import CL_STANDARD_RULES, CL_STANDARD_RULES_FOLD
 from shared.areeb_taxonomy.cl_style import _style_from_ga
@@ -43,7 +44,7 @@ def _snap_cl_areeb(values: AreebValues) -> AreebValues:
 
 def cl_standard(row: Mapping[str, Any]) -> AreebValues:
     """Warehouse Areeb 4-tuple from Gender Apparel. Department is gender only."""
-    ga = _norm_ga(row.get("Gender Apparel"))
+    ga = _norm_ga(row.get(clc.GENDER_APPAREL))
     if not ga:
         return AreebValues()
     exact = CL_STANDARD_RULES.get(ga) or CL_STANDARD_RULES_FOLD.get(ga.casefold())

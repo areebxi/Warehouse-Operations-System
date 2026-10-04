@@ -13,7 +13,11 @@
 | `database/custom-label-database/support/` | Shirts Print Sizes, Mocks, Workbook helpers |
 | `Database Transfer/Workbook.xlsx` + `Configuration Workbook.xlsx` | Mirror after fill via `sync_database_transfer.py` (locked 2026-09-25) |
 
-Last recorded after 4 Oct UNMATCHED fill (+5: `B-M-T-WHI-M-YES`, `P5-ACPPLQ-A515-PB`, `N01-P7-235932`, `W696-NAT-O/S-Yes`, `M407-P3-1D112`) + transfer sync: CL **132,610** rows; Size References **97,845**. `M407-P3-1D112` defaulted A5 15mm (buyer note said A4).
+**Source of truth (4 Oct 2026 evening):** CL is managed online (NocoDB / Postgres). Local live CSV is refreshed by `scripts/cl_db_exporter.py` → `database/shared/custom_label/Custom_Label_Database.csv` (underscored headers as exported — **no remap**). Prior local copy kept as reference only: `Custom_Label_Database (Areeb).csv`.
+
+Last NocoDB export (4 Oct 2026 ~20:11): **129,862** rows, **75** columns. Warehouse hot paths (Packing enrich, Queue print sizes, Sorter catalogs, PO stock_resolver, shared classifiers) read NocoDB names via `shared/cl_columns.py`. Stand-ins locked 2026-10-04: retired `BTC SKU` → `Supplier_SKU`; retired `Supply Method` → `Stock_Type` with `normalize_stock_type` (`Order on Demand`→`Supplier On Demand`; Seasonal/Non-Seasonal→`Warehouse Stock`; blank stays blank). Areeb taxonomy cols still spaced (`Category (Areeb)`, …). Packing PIN/Excel/PDF column names unchanged. CL app fill scripts are **not used** while CL is NocoDB-owned.
+
+Earlier 4 Oct local fills (Areeb-era reference era): +330 PO WC append; WC `BTC Stock ID` → `BTC SKU` (324; 6 blank); `M-T-TBL-XL` → `146241` / `64000`; dedicated supplier fill **83,442** `BTC SKU` / **83,205** `BTC Product Code`. Backups under `database/shared/custom_label/backups/`.
 
 ## How fills run
 
@@ -27,7 +31,7 @@ No live write without **yes / fill / run**. Propose + dry-run first. Typical pat
 
 ## Current leftovers (ask before acting)
 
-1. BTC dedicated cols — remaining blanks after 10 Sep Package Type leak cleanup; dry-run `--steps suppliers` then ask.
+1. BTC dedicated cols — **4,945** BTC Activewear rows still blank `BTC SKU` (no Supplier SKU / PE UID). Filled blank-only 2026-10-04: 83,442 BTC SKU / 83,205 BTC Product Code.
 2. Non-shirt Width 1 blanks (~485 historically): stickers/mugs/caps/bags/aprons/beanies — mm until catalog/override has sizes.
 3. `--all-mocks` image download (~189 `M##` files left) — does not change CSV.
 4. `generate_from_mocks` — ~293 guide IDs not in DB.
@@ -39,6 +43,7 @@ No live write without **yes / fill / run**. Propose + dry-run first. Typical pat
 ## Useful commands
 
 ```text
+python ../scripts/cl_db_exporter.py
 python scripts/fill_size_references_from_cl.py --dry-run
 python scripts/fill_from_seeds.py --dry-run
 python scripts/fill_from_seeds.py --steps sku,pe --overwrite-pe-taxonomy --dry-run
