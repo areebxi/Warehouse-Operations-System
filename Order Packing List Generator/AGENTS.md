@@ -27,7 +27,7 @@ SKU match today: `shared/cl_sku_match.py` — whole → after-first-dash → til
 
 **Later (not built, 2026-09-17):** every packing list PDF is this app’s — including slips Purchase Order Generator still prints. Enrich/preflight also hit Plain Database + Packs (sorter keys). Catalog hit ≠ unmatched. Do not clone pack/plain SKUs into CL.
 
-DTF Des also lands in SharedInbox for Queue Missing Logo auto-run.
+DTF Des also lands in SharedInbox for the Queue Design Queues watcher.
 
 ## Hard do-nots
 

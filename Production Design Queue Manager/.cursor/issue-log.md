@@ -4,6 +4,10 @@ Newest entries first. Maintained automatically per `.cursor/rules/issue-resoluti
 
 ---
 
+### 2026-10-05 18:54 UTC+1
+**Issue:** SharedInbox watcher name “Missing Logo watcher” was unclear (it builds design queue PNGs from DTF Des).
+**Resolution:** Full rename to Design Queues watcher — `design_queues_watcher.py` / `design_queues_{process,loop,inbox}.py`, `run_design_queues_watcher.bat`, `shared/design_queues_watcher.py`. Packing ensure-on-launch and docs/rules updated. Queue GUI Missing Logo mode and Packing missing-logo strip unchanged.
+
 ### 2026-10-04 15:56 UTC+1
 **Issue:** Auto Missing Logo queue PNGs used date/time stems (`P50_20261004_154350.png`) instead of GUI names.
 **Resolution:** `_output_stem` in `auto_missing_logo_process.py` now matches GUI (`P50.png` / `P50_Part N.png`); re-runs overwrite.

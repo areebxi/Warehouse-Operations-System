@@ -1,9 +1,9 @@
 @echo off
 cd /d "%~dp0"
-title Production Design Queue Manager - Missing Logo watcher
+title Production Design Queue Manager - Design Queues watcher
 echo ========================================
 echo   Production Design Queue Manager
-echo   Missing Logo watcher
+echo   Design Queues watcher
 echo ========================================
 echo.
-python scripts\auto_missing_logo_watcher.py %*
+python scripts\design_queues_watcher.py %*

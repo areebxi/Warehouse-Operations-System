@@ -10,7 +10,7 @@ Live paths via `shared/paths.py` (DB in `database/`; settings + I/O in this app;
 | Live | Other |
 |------|--------|
 | `queue_app.py` / `run_queue_app.bat` | docs |
-| `run_auto_missing_logo.bat` | SharedInbox Missing Logo watcher |
+| `run_design_queues_watcher.bat` | SharedInbox Design Queues watcher |
 | `config/queue_app_settings.json` | Design folder paths |
 | `database/production-design-queue-manager/Configuration Workbook.xlsx` | Pocket / Override Print Size |
 | `database/shared/custom_label/Custom_Label_Database.csv` | Print sizes via universal SKU match |
@@ -19,7 +19,7 @@ Live paths via `shared/paths.py` (DB in `database/`; settings + I/O in this app;
 
 ## How work is done
 
-**Auto:** watcher on SharedInbox → Missing Logo using settings folders → PNG under app Output (same names as GUI, e.g. `P50.png`) → move source to `Processed/` (or `Failed/`). No approval.
+**Auto:** Design Queues watcher on SharedInbox → settings folders → PNG under app Output (same names as GUI, e.g. `P50.png`) → move source to `Processed/` (or `Failed/`). No approval.
 
 **GUI:** Load DTF Des → **Run** (Customise column picks Normal vs Single/Double folders) → pack canvas → preview → Save PNG. GUI batches still need supervisor approval.
 
@@ -27,7 +27,7 @@ Live paths via `shared/paths.py` (DB in `database/`; settings + I/O in this app;
 
 - Do not treat CL Size References CSV or Workbook Size References as the live size table (CL CSV print mm is live).
 - Do not invent size codes; export missing rows and ask before guessing.
-- No live GUI Output batch without **yes / do it / fill / run** (auto Missing Logo is the exception).
+- No live GUI Output batch without **yes / do it / fill / run** (Design Queues watcher is the exception).
 
 ## Report changes
 
@@ -35,7 +35,7 @@ Report mode, input file(s), size hits/misses, output paths. Log resolved issues 
 
 ## Structure & boundaries
 
-- **Orchestration:** `queue_app.py`; Missing Logo watcher `scripts/auto_missing_logo_watcher.py` → `auto_missing_logo_{process,loop,inbox}.py`.
+- **Orchestration:** `queue_app.py`; Design Queues watcher `scripts/design_queues_watcher.py` → `design_queues_{process,loop,inbox}.py`.
 - **Domain:** `scripts/src/core/` (canvas, sizes, image rules; façades + `*_impl*` helpers).
 - **I/O:** `scripts/src/io/`; GUI helpers under `scripts/gui_helpers/` (missing-logo / personalised: `gui_processing_ui_*.py` + `*_load.py`).
 - **Logging:** `scripts/src/system/logging/console.py` → `console_setup` / `console_close` / `console_state`.

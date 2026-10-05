@@ -1,4 +1,4 @@
-"""Headless Missing Logo processing for SharedInbox watcher."""
+"""Headless Design Queues processing for SharedInbox watcher."""
 
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ from gui_helpers.processing.gui_processing_helpers_folder import (
     load_dataframe_from_file,
 )
 from gui_helpers.processing.gui_processing_helpers_messages import is_plainlg_sku
-from auto_missing_logo_inbox import APP_ROOT, LOG, WAREHOUSE_ROOT
+from design_queues_inbox import APP_ROOT, LOG, WAREHOUSE_ROOT
 
 def _build_ctx(settings: dict) -> SimpleNamespace:
     cl_csv_path, overrides, config_workbook_path = load_queue_data_sources(
@@ -93,7 +93,7 @@ def _save_batches(ctx: SimpleNamespace, batches: list, file_path: Path) -> list[
         saved.append(out_path)
     return saved
 
-def process_missing_logo_file_headless(ctx: SimpleNamespace, file_path: Path) -> list[Path]:
+def process_design_queues_file_headless(ctx: SimpleNamespace, file_path: Path) -> list[Path]:
     df = load_dataframe_from_file(str(file_path))
     order_column = auto_detect_order_column(df)
     sku_column = auto_detect_sku_column(df)
@@ -160,7 +160,7 @@ def process_missing_logo_file_headless(ctx: SimpleNamespace, file_path: Path) ->
             )
 
     if not designs:
-        raise ValueError("No designs found for Missing Logo auto-run")
+        raise ValueError("No designs found for Design Queues auto-run")
 
     batches = pack_designs(
         designs,

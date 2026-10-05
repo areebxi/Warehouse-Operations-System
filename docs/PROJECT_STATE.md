@@ -9,7 +9,7 @@ Cross-app snapshot. Per-app detail: each app’s `docs/HANDOFF.md`. Architecture
 | Custom Label Database | CLI scripts under `scripts/` (fill, NocoDB, sync); live CSV refresh `scripts/cl_db_exporter.py` | `--dry-run` opt-in; live writes need **fill** / **yes**; exporter needs **run** / **yes** | `Custom Label Database/AGENTS.md`; `shared/cl_columns.py` (NocoDB headers) |
 | Order Grouping Sorter | CLI `scripts/run_sorter.py` | Default dry-run; `--run` writes | `run_sorter.py` |
 | Order Packing List Generator | GUI `packing_list_app.py` + `pipeline_runner` | Policy **yes** / **run** | `pipeline_packing_list_app/app.py` |
-| Production Design Queue Manager | GUI `queue_app.py`; headless Missing Logo watcher | GUI needs approval; watcher does not | `queue_app.py`; `scripts/auto_missing_logo_watcher.py` |
+| Production Design Queue Manager | GUI `queue_app.py`; headless Design Queues watcher | GUI needs approval; watcher does not | `queue_app.py`; `scripts/design_queues_watcher.py` |
 | Shipping Label Generator | CLI (`convert` / `print` / `void`) | Policy on print/void | `scripts/app/main.py`; `shipping_system.py` |
 | Purchase Order Generator | GUI `Run_GUI.bat` → `run_script_gui.py` (+ CLI helpers) | Policy | `run_script_gui.py`; slips `pdf_generator.py` |
 
@@ -17,13 +17,13 @@ Cross-app snapshot. Per-app detail: each app’s `docs/HANDOFF.md`. Architecture
 
 1. **Sorter → Packing Input** — on `--run`, CSVs to `Order Packing List Generator/Input/{DD-MM-YYYY}/1st Shift/` (`shared.paths` sorter helper). Testing: `SHIFT_PER_RUN = False` → every write is **1st Shift** (`Order Grouping Sorter/scripts/grouping_models.py`, `run_sorter.py`). Filename `{B}-S{n}-…` / `RESEND` / `UNMATCHED`; columns = sorter `CSV_FIELDNAMES` (same as Packing `orders_to_csv.py`).
 2. **Packing → SharedInbox** — Step 7 writes `DTF Des-P{base}.xlsx` to Output and copies to `runtime/SharedInbox/DTF Des/{date}/{shift}/` (`pipeline_generate_excel_outputs/service.py` + `copy_dtf_des_to_shared_inbox`).
-3. **SharedInbox → Queue** — Missing Logo auto-watcher (`shared/missing_logo_watcher.py`; Packing GUI ensures it on launch). Moves to `Processed/` or `Failed/`. No approval.
+3. **SharedInbox → Queue** — Design Queues watcher (`shared/design_queues_watcher.py`; Packing GUI ensures it on launch). Moves to `Processed/` or `Failed/`. No approval.
 4. **Shipping** — manual from app `DTF Des Files/` only. Does **not** read SharedInbox.
 
 ## Testing-mode facts
 
 - Sorter: every `--run` rewrites Packing `1st Shift` (`SHIFT_PER_RUN = False`). Production later: nth `--run` of the day = nth shift.
-- Queue Missing Logo watcher is the standing approval exception (see parent `AGENTS.md` / `ARCHITECTURE.md`).
+- Queue Design Queues watcher is the standing approval exception (see parent `AGENTS.md` / `ARCHITECTURE.md`).
 
 ## Not built (do not implement until asked)
 

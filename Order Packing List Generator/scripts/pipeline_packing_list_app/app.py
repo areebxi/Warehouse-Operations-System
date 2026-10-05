@@ -74,21 +74,21 @@ class PackingListApp(PackingListConfigMixin, PackingListFilesMixin, PackingListI
 
         build_ui(self)
         self.root.protocol("WM_DELETE_WINDOW", self._on_closing)
-        self.root.after(300, self._ensure_missing_logo_watcher)
-    def _ensure_missing_logo_watcher(self) -> None:
+        self.root.after(300, self._ensure_design_queues_watcher)
+    def _ensure_design_queues_watcher(self) -> None:
         """Start Queue SharedInbox watcher if it is not already running."""
         try:
-            from shared.missing_logo_watcher import ensure_running
+            from shared.design_queues_watcher import ensure_running
 
             status, message = ensure_running()
             print(message, flush=True)
             if status == "failed":
                 try:
-                    messagebox.showwarning("Missing Logo watcher", message)
+                    messagebox.showwarning("Design Queues watcher", message)
                 except Exception:
                     pass
         except Exception as exc:
-            print(f"Could not ensure Missing Logo watcher: {exc}", flush=True)
+            print(f"Could not ensure Design Queues watcher: {exc}", flush=True)
     def _get_input_paths(self) -> list[Path]:
         return get_input_paths(self)
     def _drain_log_queue(self) -> bool:

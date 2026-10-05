@@ -38,7 +38,7 @@ Key live files:
 1. **Catalog** — fills/NocoDB against `database/shared/custom_label/Custom_Label_Database.csv`.
 2. **Orders in** — ShipStation → Packing (CSV/API) and Purchase Order Generator.
 3. **Pack** — Packing enriches from CL CSV, writes PDFs/Excel to app `Output/` **and** `runtime/SharedInbox/DTF Des/{date}/{shift}/`.
-4. **Print designs** — Queue Missing Logo auto-watcher consumes SharedInbox; print sizes from CL CSV; Pocket overrides in Queue Configuration Workbook (`database/production-design-queue-manager/`).
+4. **Print designs** — Queue Design Queues watcher consumes SharedInbox; print sizes from CL CSV; Pocket overrides in Queue Configuration Workbook (`database/production-design-queue-manager/`).
 5. **Ship** — Shipping Label Generator from app `DTF Des Files/` (manual; SharedInbox auto-ship later).
 
 Shared matcher: `shared/cl_sku_match.py` — whole SKU → after first dash → till last dash; entire-cell match on Custom Label.
@@ -58,7 +58,7 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 
 ### Production Design Queue Manager
 - **Purpose:** Arrange design images on a DTF print canvas from DTF Des inputs.
-- **Live data:** DB workbook in `database/production-design-queue-manager/`; app `config/` (settings), Input/Output/Logs; SharedInbox auto Missing Logo.
+- **Live data:** DB workbook in `database/production-design-queue-manager/`; app `config/` (settings), Input/Output/Logs; SharedInbox Design Queues watcher.
 - **Talks to:** SharedInbox; CL CSV for print sizes.
 
 ### Shipping Label Generator
@@ -90,7 +90,7 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 | ShipStation Tags | `database/shared/shipstation_tags/ShipStation_Tags.xlsx` (single) |
 | Taxonomy pick-lists | `database/order-grouping-sorter/taxonomy_picklists.csv` (Hashim #038 closed Areeb category / product type / product style / department + PE subcategory). Title Case; type has no gender; style is a named product, never a code. Source `shared/taxonomy_catalog.py`. CL filled 2026-09-16; Plain / Packs stay supplier copy. |
 | Fixed batches | `database/order-grouping-sorter/fixed_batches.csv` — `B80`/`B100`/… codes + match criteria. Sorter loads via `Order Grouping Sorter/scripts/fixed_batches.py`. Leftover `B1`/`B2`/… skip these numbers. |
-| DTF Des-P\*.xlsx | Packing → app Output + SharedInbox; Queue auto Missing Logo |
+| DTF Des-P\*.xlsx | Packing → app Output + SharedInbox; Queue Design Queues watcher |
 | Print sizes (Queue) | CL CSV Width/Height mm; Pocket overrides in Queue Configuration Workbook |
 | New SKU Database | Packing DTF Des Item-SKU remap (`database/order-packing-list-generator/`) |
 | NocoDB | Custom Label Database scripts only |
@@ -110,7 +110,7 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 
 ## Approval
 
-No production writes / void / print batches / fills unless the supervisor already said **yes / do it / fill / run**. Exception: Queue SharedInbox Missing Logo auto-watcher (no approval by design). Propose and dry-run first when that is the app’s practice.
+No production writes / void / print batches / fills unless the supervisor already said **yes / do it / fill / run**. Exception: Queue SharedInbox Design Queues watcher (no approval by design). Propose and dry-run first when that is the app’s practice.
 
 ## Adding a new app
 

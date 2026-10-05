@@ -1,4 +1,4 @@
-"""Poll / once-run loop for SharedInbox Missing Logo watcher."""
+"""Poll / once-run loop for SharedInbox Design Queues watcher."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from src.system import create_settings_manager, setup_error_logging
-from auto_missing_logo_inbox import (
+from design_queues_inbox import (
     LOG,
     POLL_SECONDS,
     WAREHOUSE_ROOT,
@@ -17,7 +17,7 @@ from auto_missing_logo_inbox import (
     _move_to,
     _wait_stable,
 )
-from auto_missing_logo_process import _build_ctx, process_missing_logo_file_headless
+from design_queues_process import _build_ctx, process_design_queues_file_headless
 
 
 def process_one(path: Path, ctx: SimpleNamespace, inbox_root: Path) -> bool:
@@ -31,7 +31,7 @@ def process_one(path: Path, ctx: SimpleNamespace, inbox_root: Path) -> bool:
         from shared.demo_images import demo_image_lookup
 
         with demo_image_lookup(getattr(ctx, "use_demo_images", False)):
-            saved = process_missing_logo_file_headless(ctx, path)
+            saved = process_design_queues_file_headless(ctx, path)
         dest = _move_to(path, inbox_root, "Processed")
         LOG.info("Saved %s PNG(s); moved to %s", len(saved), dest)
         for p in saved:
@@ -71,7 +71,7 @@ def watch_loop() -> None:
     settings = settings_manager.saved_settings or {}
     ctx = _build_ctx(settings)
     inbox_root = _inbox_root()
-    LOG.info("Watching %s (Missing Logo auto-run)", inbox_root)
+    LOG.info("Watching %s (Design Queues auto-run)", inbox_root)
     LOG.info(
         "Testing=%s  Folders: designs=%s single=%s double=%s",
         getattr(ctx, "use_demo_images", False),

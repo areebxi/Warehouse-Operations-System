@@ -1,5 +1,5 @@
 ﻿---
-description: Queue approval — GUI batches vs SharedInbox auto Missing Logo
+description: Queue approval — GUI batches vs SharedInbox Design Queues watcher
 alwaysApply: false
 globs: "Production Design Queue Manager/**"
 ---
@@ -7,4 +7,4 @@ globs: "Production Design Queue Manager/**"
 # Approval
 
 - **GUI** Run batch into Output (+ optional DTF Queues PNG copy): do not run against live data unless the supervisor already said **yes / do it / fill / run**. Confirm folders when unclear.
-- **SharedInbox auto Missing Logo** (`auto_missing_logo_watcher`): **no approval** by design. Uses folders from `queue_app_settings.json`. Re-runs generate new timestamped PNGs.
+- **SharedInbox Design Queues watcher** (`design_queues_watcher`): **no approval** by design. Uses folders from `queue_app_settings.json`. Re-runs overwrite PNGs (`P50.png` / `P50_Part N.png`).

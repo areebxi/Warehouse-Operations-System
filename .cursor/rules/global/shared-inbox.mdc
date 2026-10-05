@@ -7,8 +7,8 @@ globs: "runtime/SharedInbox/**"
 # SharedInbox
 
 - Packing dual-writes `DTF Des-P*.xlsx` into `runtime/SharedInbox/DTF Des/{date}/{shift}/`.
-- Queue Missing Logo auto-watcher processes those files (no approval) and moves them to `Processed/` or `Failed/`.
-- Packing List App starts the watcher on launch via `shared/missing_logo_watcher.py` if it is not already running (no need for `run_auto_missing_logo.bat` in normal use).
+- Queue Design Queues watcher processes those files (no approval) and moves them to `Processed/` or `Failed/`.
+- Packing List App starts the watcher on launch via `shared/design_queues_watcher.py` if it is not already running (no need for `run_design_queues_watcher.bat` in normal use).
 - Path helper: `shared.paths.shared_inbox_dtf_des_root()`.
 - Do not delete live inbox files while packing or the watcher may be writing.
 - Shipping does not auto-read this folder yet.

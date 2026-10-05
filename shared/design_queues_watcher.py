@@ -1,6 +1,6 @@
-"""Ensure the Queue SharedInbox Missing Logo watcher is running.
+"""Ensure the Queue SharedInbox Design Queues watcher is running.
 
-Packing List starts this on launch so operators do not need run_auto_missing_logo.bat.
+Packing List starts this on launch so operators do not need run_design_queues_watcher.bat.
 """
 
 from __future__ import annotations
@@ -14,20 +14,20 @@ from typing import Optional
 
 from shared import paths as wh
 
-_MARKER = "auto_missing_logo_watcher"
+_MARKER = "design_queues_watcher"
 _CREATE_NO_WINDOW = 0x08000000
 _DETACHED_PROCESS = 0x00000008
 _CREATE_NEW_PROCESS_GROUP = 0x00000200
 
 
 def watcher_script_path(from_path: object | None = None) -> Path:
-    return wh.queue_app_dir(from_path) / "scripts" / "auto_missing_logo_watcher.py"
+    return wh.queue_app_dir(from_path) / "scripts" / "design_queues_watcher.py"
 
 
 def pid_file_path(from_path: object | None = None) -> Path:
     # ponytail: PID file under SharedInbox root — ceiling is rare PID reuse after crash;
     # upgrade: also match process image/cmdline if that becomes a problem.
-    return wh.shared_inbox_dtf_des_root(from_path) / ".auto_missing_logo.pid"
+    return wh.shared_inbox_dtf_des_root(from_path) / ".design_queues_watcher.pid"
 
 
 def _pid_alive(pid: int) -> bool:
@@ -109,7 +109,7 @@ def ensure_running(from_path: object | None = None) -> tuple[str, str]:
     """
     if is_running(from_path):
         pid = read_pid(from_path)
-        return "already_running", f"Missing Logo watcher already running (pid {pid})"
+        return "already_running", f"Design Queues watcher already running (pid {pid})"
 
     script = watcher_script_path(from_path)
     if not script.is_file():
@@ -135,11 +135,11 @@ def ensure_running(from_path: object | None = None) -> tuple[str, str]:
 
         proc = subprocess.Popen(cmd, **kwargs)
     except OSError as exc:
-        return "failed", f"Could not start Missing Logo watcher: {exc}"
+        return "failed", f"Could not start Design Queues watcher: {exc}"
 
     # Parent writes PID immediately so a second Packing launch won't double-start
     # before the child claims via claim_this_process().
     if proc.pid and _pid_alive(proc.pid):
         write_pid(proc.pid, from_path=from_path)
-        return "started", f"Started Missing Logo watcher (pid {proc.pid})"
-    return "failed", "Missing Logo watcher exited immediately after start"
+        return "started", f"Started Design Queues watcher (pid {proc.pid})"
+    return "failed", "Design Queues watcher exited immediately after start"

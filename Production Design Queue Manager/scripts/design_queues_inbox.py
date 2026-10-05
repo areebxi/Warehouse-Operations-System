@@ -1,4 +1,4 @@
-"""SharedInbox path helpers for Missing Logo watcher."""
+"""SharedInbox path helpers for Design Queues watcher."""
 
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ Image.MAX_IMAGE_PIXELS = None
 from shared.cl_sku_match import shared_inbox_dtf_des_root  # noqa: E402
 from shared import paths as wh  # noqa: E402
 
-LOG = logging.getLogger("auto_missing_logo_watcher")
+LOG = logging.getLogger("design_queues_watcher")
 STABLE_SECONDS = 2.0
 POLL_SECONDS = 3.0
 DTF_NAME_RE = re.compile(r"dtf\s*des", re.IGNORECASE)
@@ -34,7 +34,7 @@ DTF_NAME_RE = re.compile(r"dtf\s*des", re.IGNORECASE)
 def _setup_logging() -> Path:
     logs_dir = wh.queue_logs_dir()
     logs_dir.mkdir(parents=True, exist_ok=True)
-    log_path = logs_dir / f"auto_missing_logo_{datetime.now().strftime('%Y%m%d')}.log"
+    log_path = logs_dir / f"design_queues_{datetime.now().strftime('%Y%m%d')}.log"
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(message)s",

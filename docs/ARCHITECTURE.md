@@ -13,7 +13,7 @@ flowchart LR
   Pack[Order Packing List Generator]
   Out[Packing Output]
   Inbox[runtime SharedInbox DTF Des]
-  Queue[Queue Missing Logo auto]
+  Queue[Queue Design Queues watcher]
   Ship[Shipping Label Generator manual]
   PO[Purchase Order Generator]
 
@@ -31,7 +31,7 @@ flowchart LR
 1. **Catalog** — Custom Label fills and NocoDB against `database/shared/custom_label/Custom_Label_Database.csv`.
 2. **Sorter** — ShipStation `awaiting_shipment` → process CSVs into Packing `Input/{DD-MM-YYYY}/1st Shift/` (testing). Fixed batches `B80` / `B100` / …; leftover `B1` / `B2` / …; plus `RESEND` and `UNMATCHED`.
 3. **Packing** — Input CSVs → app `Output/` plus `runtime/SharedInbox/DTF Des/{date}/{shift}/`.
-4. **Queue** — SharedInbox Missing Logo auto-watcher (no approval).
+4. **Queue** — SharedInbox Design Queues watcher (no approval).
 5. **Shipping** — manual only from app `DTF Des Files/` (does not auto-read SharedInbox yet).
 6. **Purchase Order Generator** — parallel: tags → BTC stock → packing slips under `output/`.
 
@@ -58,7 +58,7 @@ flowchart LR
 
 ### Production Design Queue Manager
 
-- **Owns:** DTF canvas arrange; GUI modes; SharedInbox Missing Logo auto-watcher.
+- **Owns:** DTF canvas arrange; GUI modes; SharedInbox Design Queues watcher.
 - **Reads:** SharedInbox / DTF Des; CL CSV print mm; Configuration Workbook pocket overrides.
 - **Must not:** treat Size References CSV as live sizes; invent size codes.
 
@@ -94,7 +94,7 @@ Single source of truth: parent [`AGENTS.md`](../AGENTS.md) section **Join points
 
 No live DB/CSV/Output/void/print/fill without supervisor **yes / do it / fill / run**.
 
-**Only automatic exception:** Queue SharedInbox Missing Logo watcher. No new exceptions without supervisor approval.
+**Only automatic exception:** Queue SharedInbox Design Queues watcher. No new exceptions without supervisor approval.
 
 ## Not built — do not implement
 
@@ -126,6 +126,6 @@ Pattern after the ratchet:
 | PO CSV export | `shipstation_orders.py` → `shipstation_orders_export.py` | `shipstation_orders_csv_flatten.py`, `shipstation_orders_item.py` |
 | Queue missing-logo / personalised GUI | `gui_processing_ui_*.py` | `*_load.py`, `gui_processing_core_*.py` |
 | Queue console logging | `src/system/logging/console.py` | `console_setup.py`, `console_close.py`, `console_state.py` |
-| Queue Missing Logo watcher | `auto_missing_logo_watcher.py` | `auto_missing_logo_{process,loop,inbox}.py` |
+| Queue Design Queues watcher | `design_queues_watcher.py` | `design_queues_{process,loop,inbox}.py` |
 | Packing PDF runtime | `runtime_api.py` | `runtime_api_bind{,_a,_b}.py`, draw/reporting modules |
 | Shipping print flow | `process_order.py`, `read_group.py` | `process_order_impl*`, `read_group_impl.py` |

@@ -14,4 +14,4 @@ App DB in `database/production-design-queue-manager/`. Settings + I/O in app fol
 | `Production Design Queue Manager/config/queue_app_settings.json` | Design folders + last paths |
 | `database/shared/custom_label/Custom_Label_Database.csv` | Print sizes (Width/Height mm) |
 | `Production Design Queue Manager/{Input,Output,Logs,Missing Size Reference}` | Run I/O |
-| `runtime/SharedInbox/DTF Des/` | Auto Missing Logo input |
+| `runtime/SharedInbox/DTF Des/` | Design Queues watcher input |

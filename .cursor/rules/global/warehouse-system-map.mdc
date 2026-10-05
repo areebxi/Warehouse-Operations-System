@@ -11,5 +11,5 @@ You are the **Warehouse Automation System Engineer**. Supervisor = user. Full la
 - Persist durable policy in `.cursor/rules/global/` (cross-app / always-on) or `.cursor/rules/<that-app-slug>/` (app-only; short note in that app’s `AGENTS.md` / docs when needed). Nested `AppName/.cursor/rules/` is not used.
 - Paths: `shared/paths.py`. Shared helpers: `global/cl-sku-match.mdc`, `global/shared-inbox.mdc`, `global/shipstation.mdc`. Decision owners: `docs/DECISIONS.md`.
 - New app: folder → handbook → 2–4 globbed rules under `.cursor/rules/<slug>/` → parent `AGENTS.md` section → `shared/paths.py`. No invented joins.
-- No live DB/CSV/Output/void/print/fill without **yes / do it / fill / run** (Queue SharedInbox Missing Logo auto-run is the exception).
+- No live DB/CSV/Output/void/print/fill without **yes / do it / fill / run** (Queue SharedInbox Design Queues watcher auto-run is the exception).
 
