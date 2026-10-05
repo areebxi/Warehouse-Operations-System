@@ -10,8 +10,8 @@ App DB in `database/production-design-queue-manager/`. Settings + I/O in app fol
 
 | Path | Role |
 |------|------|
-| `database/production-design-queue-manager/Configuration Workbook.xlsx` | Pocket / Override Print Size |
-| `Production Design Queue Manager/config/queue_app_settings.json` | Design folders + last paths |
+| `database/production-design-queue-manager/Configuration Workbook.xlsx` | Pocket / Override Print Size; Skip Batches |
+| `Production Design Queue Manager/config/queue_app_settings.json` | Design folders + DTF Queues folder + last paths |
 | `database/shared/custom_label/Custom_Label_Database.csv` | Print sizes (Width/Height mm) |
 | `Production Design Queue Manager/{Input,Output,Logs,Missing Size Reference}` | Run I/O |
 | `runtime/SharedInbox/DTF Des/` | Design Queues watcher input |

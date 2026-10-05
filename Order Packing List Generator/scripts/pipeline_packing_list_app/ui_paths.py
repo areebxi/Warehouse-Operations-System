@@ -6,7 +6,7 @@ from tkinter import ttk
 
 
 def add_path_and_option_rows(app, frm, add_row) -> None:
-    """Rows 11–22: workbook, CL CSV, image dirs, logo-id / missing-logo options."""
+    """Rows 11–23: workbook, CL CSV, image dirs, logo-id / queues / missing-logo options."""
     add_row(11, "Workbook path:", app.workbook_var, browse_dir=False)
     ttk.Label(frm, text="Custom Label Database (CSV):").grid(
         row=12, column=0, sticky="w", padx=(0, 10), pady=3
@@ -49,8 +49,15 @@ def add_path_and_option_rows(app, frm, add_row) -> None:
     app.logo_id_threshold_entry = ttk.Entry(frm, textvariable=app.logo_id_threshold_var, width=8)
     app.logo_id_threshold_entry.grid(row=21, column=1, sticky="w", pady=3)
 
-    ttk.Label(frm, text="Re-run pipeline:").grid(row=22, column=0, sticky="w", padx=(0, 10), pady=3)
+    ttk.Label(frm, text="Make design queues:").grid(
+        row=22, column=0, sticky="w", padx=(0, 10), pady=3
+    )
+    ttk.Checkbutton(frm, text="Enable", variable=app.make_design_queues_var).grid(
+        row=22, column=1, sticky="w", pady=3
+    )
+
+    ttk.Label(frm, text="Re-run pipeline:").grid(row=23, column=0, sticky="w", padx=(0, 10), pady=3)
     app.run_missing_logo_cb = ttk.Checkbutton(
         frm, text="Enable", variable=app.run_missing_logo_pipeline_var
     )
-    app.run_missing_logo_cb.grid(row=22, column=1, sticky="w", pady=3)
+    app.run_missing_logo_cb.grid(row=23, column=1, sticky="w", pady=3)

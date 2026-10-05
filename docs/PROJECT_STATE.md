@@ -16,8 +16,8 @@ Cross-app snapshot. Per-app detail: each app’s `docs/HANDOFF.md`. Architecture
 ## Live handoffs
 
 1. **Sorter → Packing Input** — on `--run`, CSVs to `Order Packing List Generator/Input/{DD-MM-YYYY}/1st Shift/` (`shared.paths` sorter helper). Testing: `SHIFT_PER_RUN = False` → every write is **1st Shift** (`Order Grouping Sorter/scripts/grouping_models.py`, `run_sorter.py`). Filename `{B}-S{n}-…` / `RESEND` / `UNMATCHED`; columns = sorter `CSV_FIELDNAMES` (same as Packing `orders_to_csv.py`).
-2. **Packing → SharedInbox** — Step 7 writes `DTF Des-P{base}.xlsx` to Output and copies to `runtime/SharedInbox/DTF Des/{date}/{shift}/` (`pipeline_generate_excel_outputs/service.py` + `copy_dtf_des_to_shared_inbox`).
-3. **SharedInbox → Queue** — Design Queues watcher (`shared/design_queues_watcher.py`; Packing GUI ensures it on launch). Moves to `Processed/` or `Failed/`. No approval.
+2. **Packing → SharedInbox** — When Make design queues is on, Step 7 writes `DTF Des-P{base}.xlsx` to Output and copies to `runtime/SharedInbox/DTF Des/{date}/{shift}/` (`pipeline_generate_excel_outputs/service.py` + `copy_dtf_des_to_shared_inbox`).
+3. **SharedInbox → Queue** — Packing sync-invokes `design_queues_watcher.py --files` after Excel / before PDFs; continuous watcher also polls (`shared/design_queues_watcher.py`). Skip Batches skips listed batch digits. Headless PNG also copies to DTF Queues folder when set. Moves to `Processed/` or `Failed/`. No approval.
 4. **Shipping** — manual from app `DTF Des Files/` only. Does **not** read SharedInbox.
 
 ## Testing-mode facts

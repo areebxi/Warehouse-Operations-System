@@ -26,6 +26,7 @@ def run_steps_6_to_7(
     log: Optional[PipelineLog],
     lc,
     discover_step6_csvs,
+    make_design_queues: bool = True,
 ) -> list[Path]:
     if log:
         log.step("Step 6/8: Splitting by process and item number...")
@@ -82,6 +83,7 @@ def run_steps_6_to_7(
             log=lc,
             date_dd_mm_yyyy=date_dd_mm_yyyy,
             shift_label=shift_label,
+            make_design_queues=make_design_queues,
         )
         if log:
             log.detail(f"  Step 7/8: completed Excel trio for {csv_path.name}")

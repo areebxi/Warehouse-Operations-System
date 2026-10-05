@@ -37,8 +37,8 @@ Key live files:
 
 1. **Catalog** — fills/NocoDB against `database/shared/custom_label/Custom_Label_Database.csv`.
 2. **Orders in** — ShipStation → Packing (CSV/API) and Purchase Order Generator.
-3. **Pack** — Packing enriches from CL CSV, writes PDFs/Excel to app `Output/` **and** `runtime/SharedInbox/DTF Des/{date}/{shift}/`.
-4. **Print designs** — Queue Design Queues watcher consumes SharedInbox; print sizes from CL CSV; Pocket overrides in Queue Configuration Workbook (`database/production-design-queue-manager/`).
+3. **Pack** — Packing enriches from CL CSV, writes Excel/PDFs to app `Output/`; when Make design queues is on, dual-writes DTF Des to `runtime/SharedInbox/DTF Des/{date}/{shift}/` and syncs Queue before PDFs.
+4. **Print designs** — Queue Design Queues (Packing `--files` sync and/or continuous watcher); print sizes from CL CSV; Pocket overrides + Skip Batches in Queue Configuration Workbook (`database/production-design-queue-manager/`).
 5. **Ship** — Shipping Label Generator from app `DTF Des Files/` (manual; SharedInbox auto-ship later).
 
 Shared matcher: `shared/cl_sku_match.py` — whole SKU → after first dash → till last dash; entire-cell match on Custom Label.
@@ -53,8 +53,8 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 
 ### Order Packing List Generator
 - **Purpose:** ShipStation orders → process CSVs, packing PDFs, Picking / Orders Details / DTF Des Excel. **Later (not built):** every packing list PDF, including slips PO still prints; enrich also Plain + Packs.
-- **Live data:** DB in `database/order-packing-list-generator/`; app `config/`, Input/Output/Logs; shared tags; SharedInbox dual-write.
-- **Talks to:** ShipStation; CL CSV; SharedInbox. Later: shared Plain / Packs (read).
+- **Live data:** DB in `database/order-packing-list-generator/`; app `config/`, Input/Output/Logs; shared tags; optional SharedInbox dual-write + sync Design Queues.
+- **Talks to:** ShipStation; CL CSV; SharedInbox / Queue CLI. Later: shared Plain / Packs (read).
 
 ### Production Design Queue Manager
 - **Purpose:** Arrange design images on a DTF print canvas from DTF Des inputs.
@@ -90,7 +90,8 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 | ShipStation Tags | `database/shared/shipstation_tags/ShipStation_Tags.xlsx` (single) |
 | Taxonomy pick-lists | `database/order-grouping-sorter/taxonomy_picklists.csv` (Hashim #038 closed Areeb category / product type / product style / department + PE subcategory). Title Case; type has no gender; style is a named product, never a code. Source `shared/taxonomy_catalog.py`. CL filled 2026-09-16; Plain / Packs stay supplier copy. |
 | Fixed batches | `database/order-grouping-sorter/fixed_batches.csv` — `B80`/`B100`/… codes + match criteria. Sorter loads via `Order Grouping Sorter/scripts/fixed_batches.py`. Leftover `B1`/`B2`/… skip these numbers. |
-| DTF Des-P\*.xlsx | Packing → app Output + SharedInbox; Queue Design Queues watcher |
+| DTF Des-P\*.xlsx | Packing → app Output (+ SharedInbox when Make design queues on); Queue Design Queues |
+| Skip Batches | Queue Configuration Workbook sheet — batch digits that skip Design Queues PNGs |
 | Print sizes (Queue) | CL CSV Width/Height mm; Pocket overrides in Queue Configuration Workbook |
 | New SKU Database | Packing DTF Des Item-SKU remap (`database/order-packing-list-generator/`) |
 | NocoDB | Custom Label Database scripts only |

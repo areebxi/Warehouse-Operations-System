@@ -61,6 +61,7 @@ CONFIG_KEYS = (
     "use_fixed_process_number",
     "fixed_process_number",
     "run_missing_logo_pipeline",
+    "make_design_queues",
     "use_demo_images",
     "input_mode",
     "shipstation_tag_name",

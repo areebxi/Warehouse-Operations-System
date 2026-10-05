@@ -1,4 +1,4 @@
-"""run_pipeline orchestrator — setup / excel / pdf finish live in sibling modules."""
+"""run_pipeline orchestrator — setup / excel / queues / pdf finish live in sibling modules."""
 
 from __future__ import annotations
 
@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Literal, Optional, Tuple
 
 from pipeline_runtime.pipeline_log import PipelineLog
+from pipeline_runtime.run_design_queues_step import run_design_queues_for_outputs
 from pipeline_runtime.runner_excel_steps import run_excel_steps
 from pipeline_runtime.runner_finish import finish_excel_phase, finish_full_pipeline
 from pipeline_runtime.runner_impl2 import discover_step6_csvs
@@ -35,6 +36,7 @@ def run_pipeline(
     phases: PipelinePhase = "all",
     cl_csv_path: Optional[str | Path] = None,
     use_demo_images: bool = False,
+    make_design_queues: bool = True,
 ) -> Tuple[Path, Optional[Path], Optional[Path], Optional[str]]:
     """Run the packing pipeline for a single input CSV."""
     if phases not in ("all", "excel", "pdf"):
@@ -101,6 +103,7 @@ def run_pipeline(
         log=log,
         lc=ctx["lc"],
         discover_step6_csvs=discover_step6_csvs,
+        make_design_queues=make_design_queues,
     )
 
     if phases == "excel":
@@ -113,6 +116,15 @@ def run_pipeline(
             log=log,
             lc=ctx["lc"],
         )
+
+    # Excel done; sync Design Queues (wait) before packing list PDFs.
+    run_design_queues_for_outputs(
+        [ctx["output_root"]],
+        make_design_queues=make_design_queues,
+        log=ctx["lc"],
+        date_dd_mm_yyyy=ctx["date_dd_mm_yyyy"],
+        shift_label=ctx["shift_label"],
+    )
 
     return finish_full_pipeline(
         output_root=ctx["output_root"],

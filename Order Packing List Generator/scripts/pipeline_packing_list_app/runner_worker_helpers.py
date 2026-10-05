@@ -67,6 +67,7 @@ def make_run_one_pipeline(app):
             phases=phases,  # type: ignore[arg-type]
             cl_csv_path=resolve_cl_csv_path(app),
             use_demo_images=app.use_demo_images_var.get(),
+            make_design_queues=bool(app.make_design_queues_var.get()),
         )
 
     return _run_one_pipeline

@@ -23,6 +23,7 @@ def run(
     *,
     date_dd_mm_yyyy: Optional[str] = None,
     shift_label: Optional[str] = None,
+    make_design_queues: bool = True,
 ) -> None:
     df = read_csv_with_order_numbers(csv_path)
     missing = [c for c in REQUIRED if c not in df.columns]
@@ -65,15 +66,32 @@ def run(
     if log and dtf_path.is_file():
         log(f"  Step 7 Excel: DTF Des -> {dtf_path.resolve()} ({dtf_path.stat().st_size} bytes)")
 
-    if dtf_path.is_file() and date_dd_mm_yyyy and shift_label:
-        inbox_path = copy_dtf_des_to_shared_inbox(
-            dtf_path,
-            date_dd_mm_yyyy=date_dd_mm_yyyy,
-            shift_label=shift_label,
-            log=log,
-        )
-        if log and inbox_path is not None:
-            log(f"  Step 7 Excel: DTF Des shared inbox -> {inbox_path.resolve()}")
+    if (
+        make_design_queues
+        and dtf_path.is_file()
+        and date_dd_mm_yyyy
+        and shift_label
+    ):
+        # Skip Batches: keep out of SharedInbox so the watcher cannot race queues.
+        from shared.skip_batches import load_skip_batches
+
+        if str(process_base) in load_skip_batches():
+            if log:
+                log(
+                    f"  Step 7 Excel: SharedInbox dual-write skipped "
+                    f"(Skip Batches {process_base})"
+                )
+        else:
+            inbox_path = copy_dtf_des_to_shared_inbox(
+                dtf_path,
+                date_dd_mm_yyyy=date_dd_mm_yyyy,
+                shift_label=shift_label,
+                log=log,
+            )
+            if log and inbox_path is not None:
+                log(f"  Step 7 Excel: DTF Des shared inbox -> {inbox_path.resolve()}")
+    elif log and not make_design_queues:
+        log("  Step 7 Excel: SharedInbox dual-write skipped (Make design queues off)")
 
     if log:
         log(f"  Step 7 Excel: finished all three for process base {process_base!r}")

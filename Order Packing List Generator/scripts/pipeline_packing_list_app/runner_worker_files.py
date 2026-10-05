@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from pipeline_runtime.pipeline_log import PipelineLog
+from pipeline_runtime.run_design_queues_step import run_design_queues_for_outputs
 from pipeline_split_by_process_item.common import pin_batch_shift
 
 from .runner_validate import get_input_paths
@@ -129,8 +130,30 @@ def run_file_mode_pipelines(app, *, run_with_log_file, run_one_pipeline) -> tupl
         )
 
     if pdf_jobs:
+        roots = [
+            j["entry"]["output_root"]
+            for j in pdf_jobs
+            if j["entry"].get("output_root") is not None
+        ]
+        banner_q = (
+            f"Batch: Excel complete for {len(pdf_jobs)} inputs — "
+            "Design Queues step…"
+        )
+        emit_batch_banner(app, banner_q, [j["pl"] for j in pdf_jobs])
+        run_design_queues_for_outputs(
+            roots,
+            make_design_queues=bool(app.make_design_queues_var.get()),
+            log=(
+                (lambda msg: emit_batch_banner(app, msg, [j["pl"] for j in pdf_jobs]))
+                if pdf_jobs
+                else None
+            ),
+            date_dd_mm_yyyy=app.date_var.get().strip(),
+            shift_label=app.shift_var.get().strip(),
+        )
         banner = (
-            f"Batch: Excel complete for {len(pdf_jobs)} inputs — starting PDF phase…"
+            f"Batch: Design Queues done — starting PDF phase "
+            f"for {len(pdf_jobs)} inputs…"
         )
         emit_batch_banner(app, banner, [j["pl"] for j in pdf_jobs])
         for job in pdf_jobs:

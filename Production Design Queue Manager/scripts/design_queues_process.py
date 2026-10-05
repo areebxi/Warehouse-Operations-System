@@ -60,6 +60,7 @@ def _build_ctx(settings: dict) -> SimpleNamespace:
         color_bar_image=color_bar_image,
         color_bar_path=color_bar_path,
         is_personalised=True,
+        dtf_queues_folder=settings.get("dtf_queues_folder") or None,
     )
 
 
@@ -91,7 +92,22 @@ def _save_batches(ctx: SimpleNamespace, batches: list, file_path: Path) -> list[
             out_path = out_dir / f"{stem}.png"
         save_canvas_image(canvas, str(out_path), ctx.dpi)
         saved.append(out_path)
+    _copy_saved_to_dtf_queues(ctx, saved)
     return saved
+
+
+def _copy_saved_to_dtf_queues(ctx: SimpleNamespace, saved: list[Path]) -> None:
+    folder = getattr(ctx, "dtf_queues_folder", None)
+    if not folder or not saved:
+        return
+    from src.io.dtf_queues_copy import copy_pngs_to_dtf_queues
+
+    ok, msg = copy_pngs_to_dtf_queues([str(p) for p in saved], folder)
+    if ok:
+        LOG.info("DTF Queues copy: %s", msg.split("\n", 1)[0])
+    else:
+        LOG.warning("DTF Queues copy skipped/failed: %s", msg)
+
 
 def process_design_queues_file_headless(ctx: SimpleNamespace, file_path: Path) -> list[Path]:
     df = load_dataframe_from_file(str(file_path))

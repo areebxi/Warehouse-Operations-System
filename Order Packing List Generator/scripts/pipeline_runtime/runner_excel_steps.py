@@ -30,6 +30,7 @@ def run_excel_steps(
     log: Optional[PipelineLog],
     lc,
     discover_step6_csvs,
+    make_design_queues: bool = True,
 ) -> tuple[list[Path], Optional[Path], Optional[Path]]:
     step5_path, unmatched_path, missing_logo_path, kept_step5 = run_steps_1_to_5(
         input_csv_path=input_csv_path,
@@ -66,5 +67,6 @@ def run_excel_steps(
         log=log,
         lc=lc,
         discover_step6_csvs=discover_step6_csvs,
+        make_design_queues=make_design_queues,
     )
     return step6_csvs, unmatched_path, missing_logo_path

@@ -54,6 +54,7 @@ class PackingListApp(PackingListConfigMixin, PackingListFilesMixin, PackingListI
         self.use_fixed_process_number_var = BooleanVar(value=False)
         self.fixed_process_number_var = StringVar()
         self.run_missing_logo_pipeline_var = BooleanVar(value=False)
+        self.make_design_queues_var = BooleanVar(value=True)
         self.use_demo_images_var = BooleanVar(value=False)
         self.input_mode_var = StringVar(value="file")  # "file" | "tag"
         self.shipstation_tag_var = StringVar()  # Combobox pick (not the selection list)

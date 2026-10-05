@@ -12,14 +12,14 @@ Live paths via `shared/paths.py` (DB in `database/`; settings + I/O in this app;
 | `queue_app.py` / `run_queue_app.bat` | docs |
 | `run_design_queues_watcher.bat` | SharedInbox Design Queues watcher |
 | `config/queue_app_settings.json` | Design folder paths |
-| `database/production-design-queue-manager/Configuration Workbook.xlsx` | Pocket / Override Print Size |
+| `database/production-design-queue-manager/Configuration Workbook.xlsx` | Pocket / Override Print Size; Skip Batches |
 | `database/shared/custom_label/Custom_Label_Database.csv` | Print sizes via universal SKU match |
 | `runtime/SharedInbox/DTF Des/` | Auto input |
 | `{Output,Logs,Missing Size Reference}/` | App-local I/O |
 
 ## How work is done
 
-**Auto:** Design Queues watcher on SharedInbox → settings folders → PNG under app Output (same names as GUI, e.g. `P50.png`) → move source to `Processed/` (or `Failed/`). No approval.
+**Auto:** Design Queues watcher on SharedInbox (or Packing `--files` sync) → settings folders → PNG under app Output (same names as GUI, e.g. `P50.png`) → optional DTF Queues folder copy → move inbox source to `Processed/` (or `Failed/`). **Skip Batches** sheet skips PNG for listed batch digits. No approval.
 
 **GUI:** Load DTF Des → **Run** (Customise column picks Normal vs Single/Double folders) → pack canvas → preview → Save PNG. GUI batches still need supervisor approval.
 

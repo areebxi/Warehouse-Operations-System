@@ -57,6 +57,8 @@ class PackingListConfigMixin:
                 self.fixed_process_number_var.set(data[key])
             elif key == "run_missing_logo_pipeline" and isinstance(data[key], bool):
                 self.run_missing_logo_pipeline_var.set(data[key])
+            elif key == "make_design_queues" and isinstance(data[key], bool):
+                self.make_design_queues_var.set(data[key])
             elif key == "use_demo_images" and isinstance(data[key], bool):
                 self.use_demo_images_var.set(data[key])
             elif key == "input_mode" and isinstance(data[key], str):
@@ -93,6 +95,7 @@ class PackingListConfigMixin:
             "use_fixed_process_number": self.use_fixed_process_number_var.get(),
             "fixed_process_number": (self.fixed_process_number_var.get() or "").strip(),
             "run_missing_logo_pipeline": self.run_missing_logo_pipeline_var.get(),
+            "make_design_queues": self.make_design_queues_var.get(),
             "use_demo_images": self.use_demo_images_var.get(),
             "input_mode": "tag" if (self.input_mode_var.get() or "").strip() == "tag" else "file",
             "shipstation_tags": tags_payload,

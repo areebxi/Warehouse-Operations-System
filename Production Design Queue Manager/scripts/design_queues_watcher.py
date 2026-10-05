@@ -3,7 +3,8 @@ Headless Design Queues watcher for Shared Inbox/DTF Des.
 
 Watches warehouse Shared Inbox/DTF Des/{date}/{shift}/ for new DTF Des files,
 runs Design Queues using folders from queue_app_settings.json, auto-saves PNG
-then moves the source to Processed/ (or Failed/).
+(and copies to DTF Queues folder when configured), then moves inbox sources to
+Processed/ (or Failed/). Skip Batches sheet skips queue PNGs for listed codes.
 
 No Tk GUI. No approval gate. PNG names match GUI (P50.png); re-runs overwrite.
 """
@@ -29,7 +30,7 @@ if str(WAREHOUSE_ROOT) not in sys.path:
 Image.MAX_IMAGE_PIXELS = None
 
 from design_queues_inbox import _setup_logging  # noqa: E402
-from design_queues_loop import run_once, watch_loop  # noqa: E402
+from design_queues_loop import run_files, run_once, watch_loop  # noqa: E402
 
 LOG = logging.getLogger("design_queues_watcher")
 
@@ -41,8 +42,18 @@ def main() -> None:
         action="store_true",
         help="Process current inbox files once and exit",
     )
+    parser.add_argument(
+        "--files",
+        nargs="+",
+        metavar="PATH",
+        help="Process these DTF Des files then exit (Packing sync step)",
+    )
     args = parser.parse_args()
     _setup_logging()
+    if args.files:
+        paths = [Path(p) for p in args.files]
+        n = run_files(paths)
+        raise SystemExit(0 if n == len(paths) else 1)
     if args.once:
         n = run_once()
         raise SystemExit(0 if n >= 0 else 1)

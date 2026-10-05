@@ -30,8 +30,8 @@ flowchart LR
 
 1. **Catalog** — Custom Label fills and NocoDB against `database/shared/custom_label/Custom_Label_Database.csv`.
 2. **Sorter** — ShipStation `awaiting_shipment` → process CSVs into Packing `Input/{DD-MM-YYYY}/1st Shift/` (testing). Fixed batches `B80` / `B100` / …; leftover `B1` / `B2` / …; plus `RESEND` and `UNMATCHED`.
-3. **Packing** — Input CSVs → app `Output/` plus `runtime/SharedInbox/DTF Des/{date}/{shift}/`.
-4. **Queue** — SharedInbox Design Queues watcher (no approval).
+3. **Packing** — Input CSVs → app `Output/` plus (when Make design queues on) `runtime/SharedInbox/DTF Des/{date}/{shift}/`; sync Queue `--files` before PDFs.
+4. **Queue** — SharedInbox Design Queues watcher / Packing `--files` (no approval); Skip Batches; optional DTF Queues PNG copy.
 5. **Shipping** — manual only from app `DTF Des Files/` (does not auto-read SharedInbox yet).
 6. **Purchase Order Generator** — parallel: tags → BTC stock → packing slips under `output/`.
 
@@ -52,14 +52,14 @@ flowchart LR
 
 ### Order Packing List Generator
 
-- **Owns:** eight-step packing pipeline; packing PDFs/Excel; SharedInbox DTF Des dual-write; missing-logo holding CSV.
+- **Owns:** eight-step packing pipeline; packing PDFs/Excel; optional SharedInbox DTF Des dual-write + sync Design Queues before PDF; missing-logo holding CSV.
 - **Reads:** Input CSVs; CL CSV (enrich today); tags; Workbook / New SKU DB under `database/order-packing-list-generator/`.
 - **Must not:** invent CL matches; move secrets into the app alone; strip missing logos after Step 6 naming.
 
 ### Production Design Queue Manager
 
-- **Owns:** DTF canvas arrange; GUI modes; SharedInbox Design Queues watcher.
-- **Reads:** SharedInbox / DTF Des; CL CSV print mm; Configuration Workbook pocket overrides.
+- **Owns:** DTF canvas arrange; GUI modes; SharedInbox Design Queues watcher (Skip Batches; DTF Queues copy).
+- **Reads:** SharedInbox / DTF Des; CL CSV print mm; Configuration Workbook pocket overrides + Skip Batches.
 - **Must not:** treat Size References CSV as live sizes; invent size codes.
 
 ### Shipping Label Generator
@@ -126,6 +126,6 @@ Pattern after the ratchet:
 | PO CSV export | `shipstation_orders.py` → `shipstation_orders_export.py` | `shipstation_orders_csv_flatten.py`, `shipstation_orders_item.py` |
 | Queue missing-logo / personalised GUI | `gui_processing_ui_*.py` | `*_load.py`, `gui_processing_core_*.py` |
 | Queue console logging | `src/system/logging/console.py` | `console_setup.py`, `console_close.py`, `console_state.py` |
-| Queue Design Queues watcher | `design_queues_watcher.py` | `design_queues_{process,loop,inbox}.py` |
+| Queue Design Queues watcher | `design_queues_watcher.py` | `design_queues_{process,loop,inbox,skip}.py` |
 | Packing PDF runtime | `runtime_api.py` | `runtime_api_bind{,_a,_b}.py`, draw/reporting modules |
 | Shipping print flow | `process_order.py`, `read_group.py` | `process_order_impl*`, `read_group_impl.py` |
