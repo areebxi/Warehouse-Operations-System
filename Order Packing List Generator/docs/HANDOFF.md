@@ -1,6 +1,6 @@
 # Order Packing List Generator — snapshot
 
-**Updated:** 4 October 2026 (Normal Logo F/B/P/S sides + Left/Right Sleeve + LOCATION slot + Logo/Design Image string coerce)  
+**Updated:** 5 October 2026 (batch PDF phase: pass `lc` into `run_pdf_only_phase` so PDF copy after Step 8 does not NameError)  
 **Handbook:** `AGENTS.md` · **Policy:** parent `.cursor/rules/order-packing-list-generator/`
 
 ## Continue here
@@ -11,6 +11,7 @@
 - DTF Des: packing `Output/` **and** `SharedInbox/DTF Des/{date}/{shift}/`.
 - Unmatched / preflight: helper apps at project root.
 - Step 8 PDF: non-customise rows can take F/B/P/S(+S1/S2/SL/SR) side files from Normal Logo (sides-only grid). Customise can add a `{order}-LOCATION` image to the logo grid. Sleeve labels: S1/SL=Left, S2/SR=Right.
+- Batch Excel-then-PDF: `run_pdf_only_phase` must receive `lc=ctx["lc"]` (detail logger) when copying PDFs to the optional PDF copy directory after Step 8.
 
 ## Pending / watch
 

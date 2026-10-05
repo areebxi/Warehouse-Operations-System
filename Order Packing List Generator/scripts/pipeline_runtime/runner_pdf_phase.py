@@ -35,6 +35,7 @@ def run_pdf_only_phase(
     date_dd_mm_yyyy: str,
     use_demo: bool,
     log: Optional[PipelineLog],
+    lc,
     discover_step6_csvs,
 ) -> tuple[Path, None, None, Optional[str]]:
     step6_csvs = discover_step6_csvs(output_root, token)

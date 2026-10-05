@@ -2,6 +2,12 @@
 
 Issues discussed with the AI agent, newest first.
 
+## 2026-10-05 18:43
+
+**Issue:** Batch PDF phase crashed after `Step 8/8: Done.` with `name 'lc' is not defined` when PDF copy directory was set.
+
+**Resolution:** `run_pdf_only_phase` used `lc` without receiving it; pass `lc=ctx["lc"]` from `runner_impl1` (same as excel/full finish paths).
+
 ## 2026-10-04 10:43
 
 **Issue:** Packing pipeline crashed with a chain of NameErrors after an imported façade→impl split (`_emit`, `_FONT_METRICS_CACHE`, `_pdf_asset_log_line`, then `Path`).

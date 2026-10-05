@@ -76,6 +76,7 @@ def run_pipeline(
             date_dd_mm_yyyy=ctx["date_dd_mm_yyyy"],
             use_demo=ctx["use_demo"],
             log=log,
+            lc=ctx["lc"],
             discover_step6_csvs=discover_step6_csvs,
         )
 
