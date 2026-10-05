@@ -60,7 +60,7 @@ class DesignArrangerGUISetup:
         self.designs_folder = None
         self.single_designs_folder = None  # Single designs folder for personalised
         self.double_designs_folder = None  # Double designs folder for personalised
-        self.dtf_queues_folder = None  # DTF Queues folder for RAR upload
+        self.dtf_queues_folder = None  # DTF Queues folder for PNG copy
         self.cl_csv_path = str(wh.cl_csv_path())
         self.config_workbook_path = str(wh.queue_config_workbook_path())
         self.size_reference_df = None  # archive sheet not used for live sizing
@@ -188,7 +188,7 @@ class DesignArrangerGUISetup:
         gui_file_selection.select_double_designs_folder(self)
     
     def select_dtf_queues_folder(self):
-        """Select DTF Queues folder for RAR upload"""
+        """Select DTF Queues folder for PNG copy"""
         gui_file_selection.select_dtf_queues_folder(self)
     
     def remove_dtf_queues_folder(self):

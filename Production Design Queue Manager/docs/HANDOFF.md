@@ -1,11 +1,12 @@
 # Production Design Queue Manager — snapshot
 
-**Updated:** 4 October 2026 (auto PNG names match GUI; single Run path; IronOn max-size)  
+**Updated:** 5 October 2026 (save copies PNGs to DTF Queues; RAR removed)  
 **Handbook:** `AGENTS.md`
 
 ## Continue here
 
 - GUI: `run_queue_app.bat` or `pythonw queue_app.py`.
+- Save PNG(s) writes to `Output/YYYY-MM-DD/` and, if DTF Queues Folder is set, copies those PNGs there (no RAR).
 - Auto Missing Logo: Packing List starts the watcher on launch, or `run_auto_missing_logo.bat` (SharedInbox; folders from `config/queue_app_settings.json`).
 - Auto Output PNGs use the same names as GUI (`P50.png`, `P50_Part 1.png`); re-runs overwrite.
 - Print sizes: CL CSV; Pocket overrides: Configuration Workbook.

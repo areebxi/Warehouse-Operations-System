@@ -9,8 +9,7 @@ Custom Label Database/          ← scripts + docs (this app)
 database/
 ├── shared/
 │   ├── custom_label/
-│   │   ├── Custom_Label_Database.csv   ← LIVE catalog
-│   │   └── backups/
+│   │   └── Custom_Label_Database.csv   ← LIVE catalog
 │   ├── btc_product_data/BTC_Product_Data.csv
 │   ├── uneek_product_data/Uneek_Product_Data.xlsx
 │   └── absolute_product_data/Absolute_Product_Data.xlsx
@@ -25,7 +24,7 @@ database/
 |------|------|
 | `database/shared/custom_label/Custom_Label_Database.csv` | Live database. Prefer CSV. |
 | `database/custom-label-database/support/` | Helpers (Size References, Shirts Print Sizes, Mocks, Workbook). |
-| `database/shared/custom_label/backups/` | Catalog snapshots. |
+| `backups/custom-label/` | Catalog snapshots (`cl_backups_dir()`). |
 | `database/custom-label-database/Apparel Images/` | Apparel image library. |
 | `scripts/` | Fillers, generators, NocoDB round-trip, image download. |
 
@@ -48,6 +47,6 @@ python scripts/db_update.py
 
 - App root = parent of `scripts/`
 - Helpers = `database/custom-label-database/support/` (`custom_label_support_dir()`)
-- Catalog backups = `database/shared/custom_label/backups/` (`cl_backups_dir()`)
+- Catalog backups = `backups/custom-label/` (`cl_backups_dir()`)
 - Apparel images = `database/custom-label-database/Apparel Images/` (`images_apparel_dir()`)
 - If the live CSV is open in Excel/Cursor, writes hit `PermissionError`. The filler then writes `Custom_Label_Database_write_fallback.csv`. Swap onto live after the file is closed; do not leave a second “live” CSV.

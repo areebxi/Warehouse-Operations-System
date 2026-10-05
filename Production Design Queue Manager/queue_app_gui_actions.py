@@ -116,24 +116,6 @@ class DesignArrangerGUIActions:
         """Clear preview canvas"""
         return gui_preview.clear_preview(self)
 
-    def create_rar_from_pngs(self, png_files, rar_path):
-        """Create RAR archive from PNG files"""
-        from src.io import create_rar_from_pngs
-
-        return create_rar_from_pngs(png_files, rar_path)
-
-    def generate_rar_name(self, saved_files_info, is_folder_processing=False):
-        """Generate RAR filename based on saved files"""
-        from src.io import generate_rar_name
-
-        return generate_rar_name(saved_files_info, is_folder_processing)
-
-    def copy_rar_to_dtf_queues(self, rar_path, dtf_queues_folder):
-        """Copy RAR file to DTF Queues folder"""
-        from src.io import copy_rar_to_dtf_queues
-
-        return copy_rar_to_dtf_queues(rar_path, dtf_queues_folder)
-
     def create_and_save_canvas(
         self,
         arranged_designs,

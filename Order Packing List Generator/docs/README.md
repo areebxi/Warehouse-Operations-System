@@ -11,4 +11,4 @@ Living (no phases):
 | [`../USAGE.md`](../USAGE.md) | GUI usage |
 | [`../README.md`](../README.md) | Project overview |
 
-Historical changelog: [`archive/CHANGELOG.md`](archive/CHANGELOG.md). Policy: parent `.cursor/rules/order-packing-list-generator/`.
+Historical changelog: [`../../backups/docs/order-packing-list-generator/CHANGELOG.md`](../../backups/docs/order-packing-list-generator/CHANGELOG.md). Policy: parent `.cursor/rules/order-packing-list-generator/`.

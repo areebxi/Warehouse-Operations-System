@@ -8,10 +8,10 @@ Live **database** files for the warehouse system. App folders hold code + run I/
 | `shared/uneek_product_data/Uneek_Product_Data.xlsx` | Uneek Product Data (CL + PO) |
 | `shared/absolute_product_data/Absolute_Product_Data.xlsx` | Absolute Product Data (babysuits C800T / C8020T / C8030T only) |
 | `shared/shipstation_tags/ShipStation_Tags.xlsx` | ShipStation tags (Packing + PO) |
-| `shared/custom_label/Custom_Label_Database.csv` | Live CL catalog (+ `backups/`) |
-| `shared/plain/Plain Database.xlsx` | Shared plain catalog (grouping + PO; + `archive/`) |
-| `shared/packs/Packs Database.xlsx` | Shared packs catalog (grouping + PO; + `archive/`) |
-| `shared/archive/` | Shared backups / former local copies |
+| `shared/custom_label/Custom_Label_Database.csv` | Live CL catalog (snapshots: repo-root `backups/custom-label/`) |
+| `shared/plain/Plain Database.xlsx` | Shared plain catalog (grouping + PO; snapshots: `backups/plain/`) |
+| `shared/packs/Packs Database.xlsx` | Shared packs catalog (grouping + PO; snapshots: `backups/packs/`) |
+| repo-root `backups/shared/` | Former local copies still read by a few scripts (`data_archive_dir()`) |
 | `custom-label-database/support/` | Size refs, mocks, shirts print sizes |
 | `custom-label-database/Apparel Images/` | CL apparel images |
 | `order-packing-list-generator/` | Packing Workbook, New SKU DB, All Orders log |

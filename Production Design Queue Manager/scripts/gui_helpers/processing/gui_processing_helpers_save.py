@@ -52,22 +52,22 @@ def check_and_confirm_file_overwrite(files_to_save: List[Tuple]) -> bool:
     return True
 
 
-def create_rar_and_copy(gui, saved_file_paths: List[str], source_path: Optional[str], output_folder: str, dtf_queues_folder: Optional[str]) -> str:
+def copy_pngs_to_queues(
+    gui,
+    saved_file_paths: List[str],
+    dtf_queues_folder: Optional[str],
+) -> str:
+    """Copy saved PNGs to DTF Queues folder when configured. Returns UI suffix text."""
     if not dtf_queues_folder:
         return ""
     try:
         from gui_helpers.common.gui_progress import update_progress
-        from src.io.rar_utils import create_rar_from_pngs, generate_rar_name, copy_rar_to_dtf_queues
-        update_progress(gui, 90, "Creating RAR archive...")
-        rar_name = generate_rar_name([(fp, source_path) for fp in saved_file_paths], is_folder_processing=False)
-        rar_path = os.path.join(output_folder, rar_name)
-        success, result = create_rar_from_pngs(saved_file_paths, rar_path)
+        from src.io.dtf_queues_copy import copy_pngs_to_dtf_queues
+
+        update_progress(gui, 95, "Copying PNGs to DTF Queues folder...")
+        success, result = copy_pngs_to_dtf_queues(saved_file_paths, dtf_queues_folder)
         if success:
-            update_progress(gui, 95, "Copying RAR to DTF Queues folder...")
-            copy_success, copy_result = copy_rar_to_dtf_queues(result, dtf_queues_folder)
-            if copy_success:
-                return f"\n\nRAR created and copied to DTF Queues folder:\n{os.path.basename(result)}"
-            return f"\n\nRAR created but copy failed:\n{copy_result}"
-        return f"\n\nRAR creation failed:\n{result}"
+            return f"\n\nPNGs copied to DTF Queues folder:\n{result}"
+        return f"\n\nPNG copy to DTF Queues failed:\n{result}"
     except Exception as e:
-        return f"\n\nRAR creation error: {str(e)}"
+        return f"\n\nPNG copy to DTF Queues error: {str(e)}"

@@ -363,4 +363,4 @@ If the live CSV is locked: filler writes `Custom_Label_Database_write_fallback.c
 
 ## Do not reopen as a project plan
 
-Old dated approval/changelog files are in `docs/archive/`. They refer to `Custom Label Database_Updated.xlsx` and numbered work packets. The living way of working is this file + `FINDINGS.md` + parent `.cursor/rules/custom-label-database/`.
+Old dated approval/changelog files are in this folder. They refer to `Custom Label Database_Updated.xlsx` and numbered work packets. The living way of working is this file + `FINDINGS.md` + parent `.cursor/rules/custom-label-database/`.

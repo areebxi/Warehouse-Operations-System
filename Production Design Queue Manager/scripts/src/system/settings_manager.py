@@ -12,7 +12,7 @@ Settings include:
     - designs_folder: Path to designs folder (for standard processing)
     - single_designs_folder: Path to single designs folder (for personalised mode)
     - double_designs_folder: Path to double designs folder (for personalised mode)
-    - dtf_queues_folder: Path to DTF queues folder (for RAR export)
+    - dtf_queues_folder: Path to DTF queues folder (PNG copy destination)
 """
 import os
 import json

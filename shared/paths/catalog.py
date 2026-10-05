@@ -13,8 +13,13 @@ def cl_csv_path(from_path: object | None = None) -> Path:
     return database_shared_dir(from_path) / "custom_label" / "Custom_Label_Database.csv"
 
 
+def backups_root(from_path: object | None = None) -> Path:
+    """Repo-root folder for snapshots, old code copies, and doc archives."""
+    return warehouse_root_from(from_path) / "backups"
+
+
 def cl_backups_dir(from_path: object | None = None) -> Path:
-    return database_shared_dir(from_path) / "custom_label" / "backups"
+    return backups_root(from_path) / "custom-label"
 
 
 def btc_product_data_path(from_path: object | None = None) -> Path:
@@ -42,7 +47,7 @@ def plain_database_path(from_path: object | None = None) -> Path:
 
 
 def plain_database_archive_dir(from_path: object | None = None) -> Path:
-    return database_shared_dir(from_path) / "plain" / "archive"
+    return backups_root(from_path) / "plain"
 
 
 def packs_database_path(from_path: object | None = None) -> Path:
@@ -51,11 +56,19 @@ def packs_database_path(from_path: object | None = None) -> Path:
 
 
 def packs_database_archive_dir(from_path: object | None = None) -> Path:
-    return database_shared_dir(from_path) / "packs" / "archive"
+    return backups_root(from_path) / "packs"
 
 
 def data_archive_dir(from_path: object | None = None) -> Path:
-    return database_shared_dir(from_path) / "archive"
+    return backups_root(from_path) / "shared"
+
+
+def size_references_backups_dir(from_path: object | None = None) -> Path:
+    return backups_root(from_path) / "size-references"
+
+
+def database_transfer_backups_dir(from_path: object | None = None) -> Path:
+    return backups_root(from_path) / "database-transfer"
 
 
 def custom_label_support_dir(from_path: object | None = None) -> Path:
@@ -91,6 +104,7 @@ def database_transfer_config_workbook_path(from_path: object | None = None) -> P
 __all__ = [
     "cl_app_dir",
     "cl_csv_path",
+    "backups_root",
     "cl_backups_dir",
     "btc_product_data_path",
     "uneek_product_data_path",
@@ -101,6 +115,8 @@ __all__ = [
     "packs_database_path",
     "packs_database_archive_dir",
     "data_archive_dir",
+    "size_references_backups_dir",
+    "database_transfer_backups_dir",
     "custom_label_support_dir",
     "custom_label_database_dir",
     "size_references_csv_path",

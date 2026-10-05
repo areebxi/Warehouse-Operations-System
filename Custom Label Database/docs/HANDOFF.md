@@ -1,8 +1,8 @@
 # Custom Label Database — current state
 
-**Updated:** 4 October 2026  
+**Updated:** 5 October 2026  
 **Handbook:** `AGENTS.md` · Parent: `../AGENTS.md` · **Facts:** `FINDINGS.md` · **Paths:** `WORKSPACE.md` · **Policy:** parent `.cursor/rules/custom-label-database/`  
-**Dated fill log (archive):** [`archive/HANDOFF_FILL_LOG.md`](archive/HANDOFF_FILL_LOG.md)
+**Dated fill log (archive):** [`../../backups/docs/custom-label-database/HANDOFF_FILL_LOG.md`](../../backups/docs/custom-label-database/HANDOFF_FILL_LOG.md)
 
 ## Live
 
@@ -43,12 +43,15 @@ No live write without **yes / fill / run**. Propose + dry-run first. Typical pat
 ## Useful commands
 
 ```text
-python ../scripts/cl_db_exporter.py
+export_cl_db.bat
+python scripts/cl_db_exporter.py
 python scripts/fill_size_references_from_cl.py --dry-run
 python scripts/fill_from_seeds.py --dry-run
 python scripts/fill_from_seeds.py --steps sku,pe --overwrite-pe-taxonomy --dry-run
 python scripts/add_labels.py --skus …
 python scripts/sync_database_transfer.py
 ```
+
+Double-click repo-root `export_cl_db.bat` (or run from warehouse root) to replace live `Custom_Label_Database.csv` from NocoDB. Needs supervisor **run** / **yes**.
 
 If the live CSV is locked: filler writes `Custom_Label_Database_write_fallback.csv`. Close the live file, then swap.

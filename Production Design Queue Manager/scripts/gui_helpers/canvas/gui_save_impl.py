@@ -9,12 +9,7 @@ from src.io.file_handlers import extract_text_after_des
 from src.core.image_utils import create_canvas_image
 from gui_helpers.common.gui_progress import update_progress, reset_progress
 from gui_helpers.processing.gui_processing_helpers_save import (
-    extract_input_file_name,
     get_output_folder,
-    create_output_folder_safe,
-    generate_save_file_paths,
-    check_and_confirm_file_overwrite,
-    create_rar_and_copy,
 )
 from src.system.logging.run_logger import log_run_event
 

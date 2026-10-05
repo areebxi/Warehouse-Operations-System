@@ -19,7 +19,7 @@ Rules:
 - Keep Workbook transfer column aliases: `Colour` → `Colour Name`, `Apparel Image` → `Picture Name`, `Print Positions` → `Position`.
 - Size References sheet mirrors the live CSV columns as-is (no `SKU Value 2` / `SKU Value 3` — removed 2026-09-25).
 - Leave other Workbook sheets and **Override Print Size** untouched.
-- Backup both xlsx under `Database Transfer/backups/` before overwrite.
+- Backup both xlsx under `backups/database-transfer/` before overwrite.
 - Script: `python "Custom Label Database/scripts/sync_database_transfer.py"` from warehouse root (or `python scripts/sync_database_transfer.py` from the CL app folder).
 
 Do not treat Database Transfer as the live catalog — live remains the CSVs.

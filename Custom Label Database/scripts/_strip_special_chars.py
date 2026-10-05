@@ -4,8 +4,14 @@ from __future__ import annotations
 import argparse
 import re
 import shutil
+import sys
 from datetime import datetime
 from pathlib import Path
+
+_WAREHOUSE = Path(__file__).resolve().parents[2]
+if str(_WAREHOUSE) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE))
+from shared.paths import size_references_backups_dir  # noqa: E402
 
 import pandas as pd
 
@@ -86,7 +92,7 @@ def main() -> None:
         print("Dry-run: not writing.", flush=True)
         return
 
-    bak_dir = BASE / "support" / "backups"
+    bak_dir = size_references_backups_dir()
     bak_dir.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     bak = bak_dir / f"Custom Label Database_preStripSpecial_{stamp}.xlsx"

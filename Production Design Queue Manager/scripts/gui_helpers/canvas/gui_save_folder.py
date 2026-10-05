@@ -5,10 +5,12 @@ import re
 import threading
 from tkinter import messagebox
 
-from src.io.rar_utils import create_rar_from_pngs, generate_rar_name, copy_rar_to_dtf_queues
 from gui_helpers.common.gui_progress import update_progress, reset_progress
 from gui_helpers.canvas.gui_save import create_and_save_canvas, _ui
-from gui_helpers.processing.gui_processing_helpers_save import get_output_folder
+from gui_helpers.processing.gui_processing_helpers_save import (
+    get_output_folder,
+    copy_pngs_to_queues,
+)
 
 
 def save_folder_files_separately(gui):
@@ -63,7 +65,6 @@ def save_folder_files_separately(gui):
     def _worker():
         saved_files = []
         saved_file_paths = []
-        saved_files_info = []
         try:
             for idx, (batch, save_path, batch_num, total_batches, _file_name, source_file_path) in enumerate(
                 all_files_to_save, 1
@@ -84,31 +85,8 @@ def save_folder_files_separately(gui):
                 )
                 saved_files.append(os.path.basename(save_path))
                 saved_file_paths.append(save_path)
-                saved_files_info.append((save_path, source_file_path))
 
-            rar_info = ""
-            if dtf_queues_folder:
-                try:
-                    update_progress(gui, 90, "Creating RAR archive...")
-                    rar_name = generate_rar_name(saved_files_info, is_folder_processing=True)
-                    rar_path = os.path.join(output_folder, rar_name)
-                    success, result = create_rar_from_pngs(saved_file_paths, rar_path)
-                    if success:
-                        update_progress(gui, 95, "Copying RAR to DTF Queues folder...")
-                        copy_success, copy_result = copy_rar_to_dtf_queues(
-                            result, dtf_queues_folder
-                        )
-                        if copy_success:
-                            rar_info = (
-                                f"\n\nRAR created and copied to DTF Queues folder:\n"
-                                f"{os.path.basename(result)}"
-                            )
-                        else:
-                            rar_info = f"\n\nRAR created but copy failed:\n{copy_result}"
-                    else:
-                        rar_info = f"\n\nRAR creation failed:\n{result}"
-                except Exception as e:
-                    rar_info = f"\n\nRAR creation error: {str(e)}"
+            queues_info = copy_pngs_to_queues(gui, saved_file_paths, dtf_queues_folder)
 
             update_progress(gui, 100, "Save complete!")
             msg = (
@@ -116,7 +94,7 @@ def save_folder_files_separately(gui):
                 f"file(s) successfully!\n\nFolder: {output_folder}\n\nFiles:\n"
                 + "\n".join(saved_files[:20])
                 + ("\n..." if len(saved_files) > 20 else "")
-                + rar_info
+                + queues_info
             )
 
             def _done():

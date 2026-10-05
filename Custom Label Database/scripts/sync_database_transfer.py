@@ -29,7 +29,7 @@ sys.path.insert(0, str(_WAREHOUSE_ROOT))
 from shared.paths import (  # noqa: E402
     cl_csv_path,
     database_transfer_config_workbook_path,
-    database_transfer_dir,
+    database_transfer_backups_dir,
     database_transfer_workbook_path,
     size_references_csv_path,
 )
@@ -64,8 +64,8 @@ def _write_df_sheet(wb: Workbook, title: str, df: pd.DataFrame) -> None:
 
 
 def _backup(path: Path) -> Path:
-    bak_dir = database_transfer_dir() / "backups"
-    bak_dir.mkdir(exist_ok=True)
+    bak_dir = database_transfer_backups_dir()
+    bak_dir.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     dest = bak_dir / f"{path.stem}_preSync_{stamp}{path.suffix}"
     shutil.copy2(path, dest)

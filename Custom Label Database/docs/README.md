@@ -11,6 +11,6 @@ Living (no phases):
 | [`WORKSPACE.md`](WORKSPACE.md) | Paths and file roles |
 | [`chats/`](chats/) | Leftover transcript copies only — **do not add new ones** (`save-chats` retired) |
 
-Historical execution logs sit in [`archive/`](archive/).
+Historical execution logs sit in [`../../backups/docs/custom-label-database/`](../../backups/docs/custom-label-database/).
 
 **Policy** lives in the warehouse parent: `.cursor/rules/custom-label-database/*.mdc` (globs for this app). Nested `.cursor/rules` under this app were removed to avoid drift. **Save everything as we go** — this folder’s docs plus those parent rules are the memory, not the chat.

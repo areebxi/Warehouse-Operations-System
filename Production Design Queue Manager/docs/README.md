@@ -10,4 +10,4 @@ Living:
 | [`DOCUMENTATION.md`](DOCUMENTATION.md) | Full reference |
 | [`../USAGE.md`](../USAGE.md) | Day-to-day usage |
 
-`Versions/` holds old app snapshots — not the living way of working. Policy: parent `.cursor/rules/production-design-queue-manager/`.
+`backups/versions/production-design-queue-manager/` holds old app snapshots — not the living way of working. Policy: parent `.cursor/rules/production-design-queue-manager/`.

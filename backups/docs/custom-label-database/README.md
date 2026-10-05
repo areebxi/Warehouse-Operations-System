@@ -2,7 +2,7 @@
 
 These files are **dated execution logs**. They are not the present-tense way of working.
 
-Living docs: `docs/README.md`, `docs/HANDOFF.md` (present-tense state), `docs/FINDINGS.md`, `docs/WORKSPACE.md`, plus `AGENTS.md` and `.cursor/rules/`.
+Living docs: `Custom Label Database/docs/README.md`, `Custom Label Database/docs/HANDOFF.md` (present-tense state), `Custom Label Database/docs/FINDINGS.md`, `Custom Label Database/docs/WORKSPACE.md`, plus `Custom Label Database/AGENTS.md` and `.cursor/rules/custom-label-database/`.
 
 | File | What |
 |------|------|

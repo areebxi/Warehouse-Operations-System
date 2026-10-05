@@ -48,7 +48,7 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 
 ### Custom Label Database
 - **Purpose:** Catalog fills and NocoDB sync.
-- **Live data:** `database/shared/custom_label/` (+ backups); helpers in `database/custom-label-database/support/`; BTC Product Data in `database/shared/btc_product_data/`; Uneek Product Data in `database/shared/uneek_product_data/`; Absolute Product Data in `database/shared/absolute_product_data/`.
+- **Live data:** `database/shared/custom_label/`; snapshots in repo-root `backups/` (not beside the live CSV). Helpers in `database/custom-label-database/support/`; BTC Product Data in `database/shared/btc_product_data/`; Uneek Product Data in `database/shared/uneek_product_data/`; Absolute Product Data in `database/shared/absolute_product_data/`.
 - **Talks to:** NocoDB; BTC / Uneek Product Data / Size helpers. Not ShipStation.
 
 ### Order Packing List Generator

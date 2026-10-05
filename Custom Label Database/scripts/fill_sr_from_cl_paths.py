@@ -17,6 +17,7 @@ from shared.paths import (  # noqa: E402
     cl_csv_path,
     custom_label_support_dir,
     mocks_database_csv_path,
+    size_references_backups_dir,
     warehouse_root_from,
 )
 
@@ -31,7 +32,7 @@ if not DEFAULT_SR.is_file():
 DEFAULT_MOCKS = mocks_database_csv_path(_ROOT)
 if not DEFAULT_MOCKS.is_file():
     DEFAULT_MOCKS = _LEGACY_SUPPORT / "Mocks Database.csv"
-BACKUPS = _SUPPORT / "backups"
+BACKUPS = size_references_backups_dir(_ROOT)
 
 # Supervisor removed SKU Value 2 / SKU Value 3 (2026-09-25) — not needed.
 SR_COLS = [

@@ -92,7 +92,7 @@ def select_double_designs_folder(gui):
 
 
 def select_dtf_queues_folder(gui):
-    """Select DTF Queues folder for RAR upload"""
+    """Select DTF Queues folder for PNG copy"""
     import queue_app
 
     app_dir = os.path.dirname(os.path.abspath(queue_app.__file__))

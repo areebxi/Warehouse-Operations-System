@@ -97,7 +97,7 @@ class SettingsManager(ISettingsManager):
             designs_folder: Path to designs folder (for standard processing)
             single_designs_folder: Path to single designs folder (for personalised mode)
             double_designs_folder: Path to double designs folder (for personalised mode)
-            dtf_queues_folder: Path to DTF queues folder (for RAR export)
+            dtf_queues_folder: Path to DTF queues folder (PNG copy destination)
             
         Note:
             Only the active input method (file or folder) is saved. If both

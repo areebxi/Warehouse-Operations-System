@@ -10,4 +10,4 @@ Living:
 | [`REQUIREMENTS.md`](REQUIREMENTS.md) | Behavior / parity source |
 | [`../README.md`](../README.md) | Setup / run |
 
-Historical build plan and implementation log: [`archive/`](archive/). Policy: parent `.cursor/rules/shipping-label-generator/`.
+Historical build plan and implementation log: [`../../backups/docs/shipping-label-generator/`](../../backups/docs/shipping-label-generator/). Policy: parent `.cursor/rules/shipping-label-generator/`.

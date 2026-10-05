@@ -5,4 +5,4 @@
 - Does not use packing **Orders Details** as input.
 - Flows: convert → canonical orders; print → labels + process/combined PDFs; void → void list.
 - Processed inputs archive under `DTF Des Files - Processed/` with manifest hashing.
-- Old PLAN/IMPLEMENTATION docs are in `docs/archive/` (build history, not daily process).
+- Old PLAN/IMPLEMENTATION docs are in `backups/docs/shipping-label-generator/` (build history, not daily process).

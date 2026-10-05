@@ -19,7 +19,7 @@ This folder contains your full packing list pipeline, the main GUI app, and the 
   - `All Orders.csv` – consolidated log of step‑6 split runs.
   - `Missing Input.csv` – queries for the missing‑run pipeline.
 - **`Unmatched SKU Files/`** – Per‑day, per‑shift CSVs of unmatched SKUs moved out of step 4; also default output for Preflight Issues CSVs.
-- **`Versions/`** – Older versions of the main GUI app kept for reference.
+- **`backups/versions/order-packing-list-generator/`** – Older versions of the main GUI app kept for reference.
 
 ### Running the main app
 

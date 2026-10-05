@@ -37,7 +37,7 @@ Packing slip PDFs look up product details in `Plain Database.xlsx` by **SKU** (s
 .venv\Scripts\python.exe scripts\sync_database_from_btc_product_data.py
 ```
 
-Options: `--dry-run` (counts only), `--no-backup`, `--output path\to\Plain Database.xlsx`. A backup is written to `database/shared/plain/archive/` before overwrite. Existing rows are unchanged; **Package** is left blank for newly added SKUs.
+Options: `--dry-run` (counts only), `--no-backup`, `--output path\to\Plain Database.xlsx`. A backup is written to `backups/plain/` before overwrite. Existing rows are unchanged; **Package** is left blank for newly added SKUs.
 
 ### Download product images for PDFs
 
@@ -53,7 +53,7 @@ Use `--dry-run` to preview, `--sku 218408` for one stock id, or `--no-brands` fo
 
 - Shared: `database/shared/plain/Plain Database.xlsx`, `database/shared/packs/Packs Database.xlsx`, Tags, CL, BTC/Uneek/Absolute Product Data
 - PO app DB: `database/purchase-order-generator/` — stock CSV (+ Movie Poster SKUs)
-- Archives: `database/shared/plain/archive/`, `database/shared/packs/archive/`
+- Archives: `backups/plain/`, `backups/packs/`
 
 FTP/SFTP downloads the configured stock CSV into `database/purchase-order-generator/` automatically (see below).
 

@@ -22,7 +22,7 @@ def warehouse_root() -> Path:
 def is_exempt(path: Path) -> bool:
     if any(part in EXEMPT_PARTS for part in path.parts):
         return True
-    # Historical archive under Custom Label Database/docs/archive/**
+    # Leftover app docs/archive trees. Moved archives live under backups/ (already exempt).
     parts = path.parts
     if "docs" in parts and "archive" in parts:
         return True

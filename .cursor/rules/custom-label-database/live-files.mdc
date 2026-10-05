@@ -12,7 +12,7 @@ CL app owns catalog **policy**; live files live under `database/`. Resolve via `
 |---|---|
 | `database/shared/custom_label/Custom_Label_Database.csv` | **Live** working DB (NocoDB underscored headers; refresh via `scripts/cl_db_exporter.py`) |
 | `database/shared/custom_label/Custom_Label_Database (Areeb).csv` | Pre-NocoDB local reference (do not overwrite) |
-| `database/shared/custom_label/backups/` | Pre-change catalog snapshots |
+| `backups/custom-label/` | Pre-change catalog snapshots (`cl_backups_dir()`) |
 | `database/custom-label-database/support/` | Size refs, shirts print sizes, mocks, Workbook restore |
 | `database/custom-label-database/Apparel Images/` | Apparel image library |
 | `database/shared/btc_product_data/BTC_Product_Data.csv` | BTC Product Data (UID join) |

@@ -21,7 +21,7 @@ For technical architecture, API details, and change history, see [docs/DOCUMENTA
 11. [Configuration Workbook](#configuration-workbook)
 12. [Canvas Settings](#canvas-settings)
 13. [Preview and Save](#preview-and-save)
-14. [Output Files and RAR Archives](#output-files-and-rar-archives)
+14. [Output Files and DTF Queues](#output-files-and-dtf-queues)
 15. [Logs and Diagnostics](#logs-and-diagnostics)
 16. [Troubleshooting](#troubleshooting)
 17. [Quick Reference](#quick-reference)
@@ -30,7 +30,7 @@ For technical architecture, API details, and change history, see [docs/DOCUMENTA
 
 ## What Queue App Does
 
-Queue App reads **DTF Des** files (Excel or CSV order lists), finds matching design images in your folders, resizes them using a **Size Reference** table, and packs them onto a **print canvas** (default 570 mm × 3000 mm at 300 DPI). You preview the layout, then save high-quality PNG files (and optionally a RAR archive for upload). The 570 mm width is the usable DTF area on a 600 mm PET film after 15 mm silver hold plates on each side — see [Canvas Settings](#canvas-settings).
+Queue App reads **DTF Des** files (Excel or CSV order lists), finds matching design images in your folders, resizes them using a **Size Reference** table, and packs them onto a **print canvas** (default 570 mm × 3000 mm at 300 DPI). You preview the layout, then save high-quality PNG files (and optionally copy them to a DTF Queues folder). The 570 mm width is the usable DTF area on a 600 mm PET film after 15 mm silver hold plates on each side — see [Canvas Settings](#canvas-settings).
 
 **Typical workflow:**
 
@@ -72,7 +72,6 @@ The window opens **maximized**. Paths you select are saved automatically in `con
 |-------------|---------|
 | Python | 3.7 or higher |
 | Packages | `pandas`, `openpyxl`, `Pillow` (see `requirements.txt`) |
-| Optional | WinRAR or 7-Zip (for automatic RAR creation) |
 
 ### Files you need in the app folder
 
@@ -121,7 +120,7 @@ The window has a **scrollable left panel** (controls) and a **right panel** titl
 | **Normal Designs Folder** | Standard (Normal mode) design library |
 | **Single Designs Folder (Personalised)** | Personalised single designs |
 | **Double Designs Folder (Personalised)** | Personalised double designs |
-| **DTF Queues Folder** | Select or Remove DTF Queues Folder (RAR upload destination) |
+| **DTF Queues Folder** | Select or Remove DTF Queues Folder (PNG copy destination) |
 | **Canvas Information** | Canvas Size readout; Width (mm), Height (mm), DPI (for printing) |
 
 ### Right panel — Preview
@@ -144,7 +143,7 @@ Multi-batch layouts show a **Batch n / total** label on each batch in the previe
 4. **Select paths** (each is remembered for next time):
    - **Select DTF Des File** or **Select Input Folder**
    - **Select Normal Designs Folder** (and **Select Single Designs Folder** / **Select Double Designs Folder** if using Personalised or Missing Logo)
-   - **Select DTF Queues Folder** (optional — for RAR copy after save)
+   - **Select DTF Queues Folder** (optional — for PNG copy after save)
 5. Process and save once to confirm folders and output.
 
 Settings are stored in:
@@ -176,7 +175,7 @@ Matches designs from the **Normal Designs Folder** using the **Item SKU** column
 
 1. **Select DTF Des File** → choose your `.xlsx` / `.xls` / `.csv`.
 2. **Select Normal Designs Folder** → folder containing design PNGs/JPGs.
-3. *(Optional)* **Select DTF Queues Folder** for RAR upload after save.
+3. *(Optional)* **Select DTF Queues Folder** for PNG copy after save.
 4. Click **Normal**.
 5. Watch the progress bar; review the preview.
 6. Click **Save PNG(s)**.
@@ -367,18 +366,18 @@ Designs are packed left-to-right with fixed gaps (~**8 mm** between designs, ~**
 
 | Button | When to use |
 |--------|-------------|
-| **Save PNG(s)** | Write PNG(s) to `Output/YYYY-MM-DD/` and create RAR if tools are installed (runs in the background so the window stays responsive) |
+| **Save PNG(s)** | Write PNG(s) to `Output/YYYY-MM-DD/` and copy them to DTF Queues if configured (runs in the background so the window stays responsive) |
 | **Clear Preview** | Clear the preview canvas without deleting saved files |
 
 After arrange, there is **no** success popup — use the stats label and preview. Save still shows success/error dialogs when finished.
 
 ### Progress during save
 
-The progress bar and label update per batch/file and during RAR creation. If a save is already running, a short “Save in progress” message appears instead of starting a second save.
+The progress bar and label update per batch/file and while copying PNGs to DTF Queues. If a save is already running, a short “Save in progress” message appears instead of starting a second save.
 
 ---
 
-## Output Files and RAR Archives
+## Output Files and DTF Queues
 
 ### PNG files
 
@@ -391,17 +390,9 @@ The progress bar and label update per batch/file and during RAR creation. If a s
 | **Folder processing** | Separate PNG set per input file |
 | **Header text** | Text after `des-` in the source filename + part number if applicable |
 
-### RAR archives
+### DTF Queues copy
 
-After saving PNGs, the app can:
-
-1. Create a RAR (WinRAR preferred) or 7z (7-Zip fallback) in `Output/YYYY-MM-DD/`.
-2. Copy it to **DTF Queues Folder** if configured.
-
-**RAR naming examples:**
-
-- Single file: `P200.rar`
-- Multiple files: `P200-P211.rar` or `P200-P211-P300-and-5-more.rar`
+After saving PNGs, if **DTF Queues Folder** is configured, the app copies those PNG files into that folder (same names; overwrites on conflict).
 
 Use **Remove DTF Queues Folder** to stop copying without changing other settings.
 
@@ -437,7 +428,7 @@ Related (not run logs):
 | Folder | Contents |
 |--------|----------|
 | **`Missing Size Reference/`** | Exported rows with missing size codes (project root, next to `Output/` and `Logs/`) |
-| **`Output/YYYY-MM-DD/`** | PNG and RAR files (one subfolder per day) |
+| **`Output/YYYY-MM-DD/`** | PNG files (one subfolder per day) |
 
 When you start via **`run_queue_app.bat`** / **`pythonw`**, there is no live CMD mirror — open the latest `console_log_*.txt` in **`Logs/`** to see the same detail that used to appear in the console. If you start with **`python queue_app.py`**, output is written to both the console and the log file.
 
@@ -474,10 +465,10 @@ Ensure the DTF Des file has a column named **Item - SKU** or containing **SKU**.
 - Check the stats label for design count.
 - Look in **`Logs/`** for preview/processing messages or errors.
 
-### RAR not created
+### PNGs not copied to DTF Queues
 
-- Install **WinRAR** or **7-Zip**.
-- Confirm write access to `Output/`.
+- Confirm **DTF Queues Folder** is selected and still exists.
+- Confirm write access to that folder and to `Output/`.
 - Read **`Logs/`** (`console_log_*.txt`) for details.
 
 ### Designs wrong size on canvas
@@ -511,12 +502,12 @@ Ensure the DTF Des file has a column named **Item - SKU** or containing **SKU**.
 | **Select Normal Designs Folder** | Standard design library |
 | **Select Single Designs Folder** | Personalised single designs |
 | **Select Double Designs Folder** | Personalised double designs |
-| **Select DTF Queues Folder** | RAR copy destination |
-| **Remove DTF Queues Folder** | Disable RAR copy |
+| **Select DTF Queues Folder** | PNG copy destination |
+| **Remove DTF Queues Folder** | Disable PNG copy to DTF Queues |
 | **Normal** | Process by SKU |
 | **Personalised** | Process by order number |
 | **Missing Logo** | Personalised first, then standard |
-| **Save PNG(s)** | Export PNG + RAR |
+| **Save PNG(s)** | Export PNG (+ copy to DTF Queues if set) |
 | **Clear Preview** | Clear preview only |
 
 ### Mode vs folders vs columns
@@ -531,7 +522,7 @@ Ensure the DTF Des file has a column named **Item - SKU** or containing **SKU**.
 
 ```
 Output/
-  YYYY-MM-DD/            # PNG and RAR files for that day
+  YYYY-MM-DD/            # PNG files for that day
 Logs/                    # console_log_*.txt and *size_determination_*.txt
 Missing Size Reference/
 ```

@@ -11,7 +11,7 @@ This directory contains all the core modules for the Queue App application.
 
 ### File Operations
 - **`file_handlers.py`** - File operations (finding designs, loading databases, extracting codes)
-- **`rar_utils.py`** - RAR archive creation and management
+- **`dtf_queues_copy.py`** - Copy saved PNGs to the DTF Queues folder
 
 ### Utilities
 - **`settings_manager.py`** - Application settings management

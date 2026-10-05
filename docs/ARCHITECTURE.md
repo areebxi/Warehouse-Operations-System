@@ -112,7 +112,7 @@ See `.cursor/rules/global/architecture.mdc`. Summary:
 - Keep orchestration, domain, data access, integrations, file generation, and validation separate when practical.
 - New/modified `.py`/`.ps1`/`.bat`/`.js` ≤ **200** physical lines (tests included). Exempt: `Versions/`, `backups/`, `__pycache__`, data, `.md`/`.mdc`.
 - **Legacy ratchet:** oversize files may not grow; extract only the touched responsibility into a cohesive same-app module.
-- Checker: `python scripts/check_line_limit.py` (paths optional). Exempt: `Versions/`, `backups/`, `__pycache__`, and `Custom Label Database/docs/archive/**` (incl. `download-images.ps1`).
+- Checker: `python scripts/check_line_limit.py` (paths optional). Exempt: `Versions/`, `backups/` (includes the moved doc archive and `download-images.ps1`), `__pycache__`.
 
 ## Legacy size inventory
 

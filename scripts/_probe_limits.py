@@ -28,7 +28,7 @@ for f in files:
     n = len(p.read_text(encoding="utf-8", errors="replace").splitlines()) if p.exists() else -1
     print(f"{n:5}  {f}")
 
-print("archive exempt", is_exempt(ROOT / "Custom Label Database/docs/archive/maker/download-images.ps1"))
+print("archive exempt", is_exempt(ROOT / "backups/docs/custom-label-database/maker/download-images.ps1"))
 bad = offenders(iter_sources([warehouse_root()]))
 print("offenders", len(bad))
 for n, p in bad[:15]:

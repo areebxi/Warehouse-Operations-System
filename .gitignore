@@ -109,6 +109,11 @@ runtime/**
 # --- Old snapshot trees ---
 **/Versions/
 
+# --- Repo-root snapshots (data + old code). Keep the map and doc archives. ---
+backups/*
+!backups/README.md
+!backups/docs/
+
 # --- Large binary dumps ---
 *.zip
 *.7z
@@ -120,4 +125,3 @@ runtime/**
 **/.cursor/debug*.log
 Order Grouping Sorter/Today's Manually Made Files/**
 Order Grouping Sorter/scripts/_tmp_*/
-Database Transfer/backups/**

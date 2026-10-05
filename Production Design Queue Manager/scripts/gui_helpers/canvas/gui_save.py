@@ -20,7 +20,7 @@ from gui_helpers.processing.gui_processing_helpers_save import (
     create_output_folder_safe,
     generate_save_file_paths,
     check_and_confirm_file_overwrite,
-    create_rar_and_copy,
+    copy_pngs_to_queues,
 )
 from src.system.logging.run_logger import log_run_event
 from gui_helpers.canvas.gui_save_impl import save_canvas_for_file, create_and_save_canvas
@@ -100,12 +100,8 @@ def save_canvas_image(gui):
                 saved_files.append(os.path.basename(file_path))
                 saved_file_paths.append(file_path)
 
-            rar_info = create_rar_and_copy(
-                gui,
-                saved_file_paths,
-                source_path,
-                output_folder,
-                dtf_queues_folder,
+            queues_info = copy_pngs_to_queues(
+                gui, saved_file_paths, dtf_queues_folder
             )
 
             duration_ms = int((time.perf_counter() - started_at) * 1000)
@@ -125,13 +121,13 @@ def save_canvas_image(gui):
                     f"Saved {batch_count} canvas images successfully!\n\n"
                     f"Folder: {output_folder}\n\nFiles:\n"
                     + "\n".join(saved_files)
-                    + rar_info
+                    + queues_info
                 )
             else:
                 msg = (
                     f"Canvas image saved successfully!\n\n"
                     f"Folder: {output_folder}\nFile: {saved_files[0]}"
-                    + rar_info
+                    + queues_info
                 )
 
             def _done():

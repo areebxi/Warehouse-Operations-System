@@ -53,8 +53,8 @@ def rewrite_sr(path: Path, ps: dict, *, dry_run: bool) -> tuple[int, int, list[s
 
     if not dry_run and changed:
         stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        bak_dir = path.parent / "backups"
-        bak_dir.mkdir(exist_ok=True)
+        bak_dir = wh.size_references_backups_dir()
+        bak_dir.mkdir(parents=True, exist_ok=True)
         bak = bak_dir / f"Size_References_preRewriteFrontA4_{stamp}.csv"
         shutil.copy2(path, bak)
         print(f"SR backup: {bak}", flush=True)
@@ -99,8 +99,8 @@ def rewrite_cl(path: Path, ps: dict, *, dry_run: bool) -> tuple[int, int, list[s
 
     if not dry_run and changed:
         stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        bak_dir = path.parent / "backups"
-        bak_dir.mkdir(exist_ok=True)
+        bak_dir = wh.cl_backups_dir()
+        bak_dir.mkdir(parents=True, exist_ok=True)
         bak = bak_dir / f"Custom_Label_Database_preRewriteFrontA4_{stamp}.csv"
         shutil.copy2(path, bak)
         print(f"CL backup: {bak}", flush=True)
