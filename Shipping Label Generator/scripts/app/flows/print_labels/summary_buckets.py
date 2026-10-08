@@ -3,8 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from app.util.process_numbers import is_consecutive_process, process_number_sort_key
-
 
 # Share a summary only when a process has exactly this many orders/labels.
 # Processes with more than this get their own summary page.
@@ -71,6 +69,22 @@ class SummaryBucket:
         return max(counts.items(), key=lambda kv: kv[1])[0]
 
 
+def _sort_key(pn: str) -> tuple[int, str]:
+    s = str(pn).strip()
+    if s.isdigit():
+        return (0, f"{int(s):020d}")
+    return (1, s.lower())
+
+
+def _is_consecutive_process(prev: str, curr: str) -> bool:
+    """True only for numeric neighbors like 100 -> 101 (not 100 -> 200)."""
+    a = str(prev).strip()
+    b = str(curr).strip()
+    if not (a.isdigit() and b.isdigit()):
+        return False
+    return int(b) == int(a) + 1
+
+
 def _can_share(order_count: int, *, share_exact: int = SHARE_SUMMARY_EXACT_LABELS) -> bool:
     """Share only when the process has exactly one label (by default)."""
     return int(order_count) == int(share_exact)
@@ -96,7 +110,7 @@ def bucket_process_groups_for_shared_summaries(
 
     ordered = sorted(
         results,
-        key=lambda r: (int(r.source_index), process_number_sort_key(r.process_number)),
+        key=lambda r: (int(r.source_index), _sort_key(r.process_number)),
     )
     buckets: list[SummaryBucket] = []
     pending: list[ProcessGroupResult] = []
@@ -117,7 +131,7 @@ def bucket_process_groups_for_shared_summaries(
         if _can_share(r.order_count, share_exact=share_exact):
             if pending and (
                 pending[-1].source_key != r.source_key
-                or not is_consecutive_process(pending[-1].process_number, r.process_number)
+                or not _is_consecutive_process(pending[-1].process_number, r.process_number)
             ):
                 _flush_pending()
             pending.append(r)

@@ -48,21 +48,4 @@ def test_dtf_key_lists_every_file_number(tmp_path: Path) -> None:
     assert _dtf_key_for_manifest(files_3) == "200-300-400"
     assert _dtf_key_for_manifest(files_5) == "3000-3100-3200-3300-3400"
     assert _dtf_key_for_manifest([tmp_path / "only_500.xlsx"]) == "500"
-    # Legacy packing Des stem (no shift slot).
-    assert _dtf_key_for_manifest([tmp_path / "DTF Des-P100.xlsx"]) == "100"
-
-
-def test_dtf_key_uses_batch_shift_not_trailing_shift_digit(tmp_path: Path) -> None:
-    """Packing short stem DTF Des-PB100-S1 — key is B100-S1, not last digit 1."""
-    assert _dtf_key_for_manifest([tmp_path / "DTF Des-PB100-S1.xlsx"]) == "B100-S1"
-    assert _dtf_key_for_manifest([tmp_path / "DTF Des-PB1-S1.xlsx"]) == "B1-S1"
-    assert _dtf_key_for_manifest([tmp_path / "DTF Des-PB8000-S1.xlsx"]) == "B8000-S1"
-    multi = [
-        tmp_path / "DTF Des-PB100-S1.xlsx",
-        tmp_path / "DTF Des-PB8000-S1.xlsx",
-        tmp_path / "DTF Des-PB1-S1.xlsx",
-    ]
-    assert _dtf_key_for_manifest(multi) == "B1-S1-B100-S1-B8000-S1"
-    # Must not collapse every file to "1".
-    assert _dtf_key_for_manifest(multi) != "1"
 

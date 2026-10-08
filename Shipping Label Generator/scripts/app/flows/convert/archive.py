@@ -4,7 +4,7 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-from app.util.time import utc_compact_timestamp, utc_iso_seconds
+from scripts.app.util.time import utc_compact_timestamp, utc_iso_seconds
 
 
 MANIFEST_NAME = ".processed_manifest.json"

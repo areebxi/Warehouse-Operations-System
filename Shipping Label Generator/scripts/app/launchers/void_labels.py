@@ -5,11 +5,11 @@ import asyncio
 import sys
 from pathlib import Path
 
-from app.config.load import load_config
-from app.flows.void_labels.read_void_list import read_void_order_numbers
-from app.flows.void_labels.void_shipments import VoidResult, void_for_order
-from app.logging.jsonl import JsonlLogger
-from app.providers.select_provider import get_provider
+from scripts.app.config.load import load_config
+from scripts.app.flows.void_labels.read_void_list import read_void_order_numbers
+from scripts.app.flows.void_labels.void_shipments import VoidResult, void_for_order
+from scripts.app.logging.jsonl import JsonlLogger
+from scripts.app.providers.select_provider import get_provider
 
 
 def _repo_root() -> Path:
@@ -19,16 +19,10 @@ def _repo_root() -> Path:
 
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="void-labels")
-    warehouse = _repo_root().parent
-    import sys
-    if str(warehouse) not in sys.path:
-        sys.path.insert(0, str(warehouse))
-    from shared import paths as wh
-
     p.add_argument(
         "--config",
-        default=str(wh.shipping_yaml_path()),
-        help="Path to shipping_config.yaml",
+        default=str(_repo_root() / "shipping_config.yaml"),
+        help="Path to shipping_config.yaml (default: shipping_config.yaml)",
     )
     p.add_argument(
         "--void-csv",

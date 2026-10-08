@@ -4,16 +4,15 @@ import argparse
 import sys
 from pathlib import Path
 
-from app.config.load import load_config
-from app.flows.amendments.run import read_order_numbers_file, run_amendments_check
-from app.logging.jsonl import JsonlLogger
-from app.util.win_console import configure_windows_console
+from scripts.app.config.load import load_config
+from scripts.app.flows.amendments.run import read_order_numbers_file, run_amendments_check
+from scripts.app.logging.jsonl import JsonlLogger
+from scripts.app.util.win_console import configure_windows_console
 
-# warehouse root on path for shared.paths
-_WAREHOUSE = Path(__file__).resolve().parents[4]
-if str(_WAREHOUSE) not in sys.path:
-    sys.path.insert(0, str(_WAREHOUSE))
-from shared import paths as wh  # noqa: E402
+
+def _repo_root() -> Path:
+    # scripts/app/launchers/ -> repo root
+    return Path(__file__).resolve().parents[3]
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -26,7 +25,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--config",
-        default=str(wh.shipping_yaml_path()),
+        default=str(_repo_root() / "shipping_config.yaml"),
         help="Path to shipping_config.yaml",
     )
     p.add_argument(

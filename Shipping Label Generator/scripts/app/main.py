@@ -3,13 +3,13 @@ from __future__ import annotations
 import argparse
 import sys
 
-from app.config.load import load_config
-from app.flows.convert.run import run_convert
-from app.flows.label_report.run import run_label_report
-from app.flows.print_labels.run import run_manual_print, run_print
-from app.flows.void_labels.run import run_void
-from app.logging.jsonl import JsonlLogger
-from app.util.win_console import configure_windows_console
+from scripts.app.config.load import load_config
+from scripts.app.flows.convert.run import run_convert
+from scripts.app.flows.label_report.run import run_label_report
+from scripts.app.flows.print_labels.run import run_manual_print, run_print
+from scripts.app.flows.void_labels.run import run_void
+from scripts.app.logging.jsonl import JsonlLogger
+from scripts.app.util.win_console import configure_windows_console
 
 
 def _build_parser() -> argparse.ArgumentParser:

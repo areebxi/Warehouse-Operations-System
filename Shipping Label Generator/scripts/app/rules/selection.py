@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from app.models.order import Order
-from app.models.shipment import Shipment
-from app.rules.order_status import is_order_cancelled
+from scripts.app.models.order import Order
+from scripts.app.models.shipment import Shipment
+from scripts.app.rules.order_status import is_order_cancelled
 
 
 @dataclass(frozen=True)

@@ -5,7 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from app.util.win_console import configure_windows_console
+from scripts.app.util.win_console import configure_windows_console
 
 
 def _repo_root() -> Path:
@@ -38,7 +38,7 @@ def _pause() -> None:
 
 def _print_header() -> None:
     print("=" * 60)
-    print("Shipping Label Generator")
+    print("Shipping Label App")
     print("=" * 60)
     print(f"Workspace: {_repo_root()}")
     print(f"Python: {sys.executable}")
@@ -64,7 +64,7 @@ def main() -> int:
         print("  2) Print labels (output/Order_Numbers/YYYY-MM-DD/Order Numbers.csv -> dated PDFs)")
         print("  3) Convert + Print (one run)")
         print("  4) Manual Print (Manual Print Input/Order Numbers.csv -> manual outputs)")
-        print("  5) Void labels (Void Label Input/void_labels.csv)")
+        print("  5) Void labels (void label input/void_labels.csv)")
         print("  6) Exit")
         choice = (input("\nEnter choice (1-6): ") or "").strip()
 

@@ -1,16 +1,26 @@
 from __future__ import annotations
 
-import asyncio
-import sys
-from pathlib import Path
 from typing import Any
 
-from app.flows.amendments.tags import OrderTagInfo
-from app.providers.real.provider import RealProvider
-from app.flows.amendments.shipstation_tags_impl import _list_account_tags_sync, list_account_tags, get_cached_account_tags, clear_account_tags_cache
+from scripts.app.flows.amendments.tags import OrderTagInfo
+from scripts.app.providers.real.provider import RealProvider
 
 # Cache listtags per RealProvider instance for the lifetime of a print run.
 _account_tags_cache: dict[int, dict[int, str]] = {}
+
+
+def clear_account_tags_cache() -> None:
+    _account_tags_cache.clear()
+
+
+async def get_cached_account_tags(provider: RealProvider) -> dict[int, str]:
+    key = id(provider)
+    cached = _account_tags_cache.get(key)
+    if cached is not None:
+        return cached
+    loaded = await list_account_tags(provider)
+    _account_tags_cache[key] = loaded
+    return loaded
 
 
 def _get(d: dict[str, Any], *keys: str) -> Any:
@@ -40,6 +50,34 @@ def _parse_tag_ids(raw: Any) -> list[int]:
         if n is not None:
             out.append(n)
     return out
+
+
+async def list_account_tags(provider: RealProvider) -> dict[int, str]:
+    """
+    Map tagId -> name from ShipStation GET /accounts/listtags.
+    """
+    data = await provider._request_json(method="GET", path="/accounts/listtags")
+    items: list[Any]
+    if isinstance(data, list):
+        items = data
+    elif isinstance(data, dict):
+        # Be defensive: some gateways wrap lists.
+        raw = data.get("tags") or data.get("list") or []
+        items = raw if isinstance(raw, list) else []
+    else:
+        items = []
+
+    out: dict[int, str] = {}
+    for it in items:
+        if not isinstance(it, dict):
+            continue
+        tid = _as_int(_get(it, "tagId", "tag_id", "id"))
+        name = str(_get(it, "name", "tagName", "tag_name") or "").strip()
+        if tid is None or not name:
+            continue
+        out[tid] = name
+    return out
+
 
 def _order_tag_info_from_raw(
     *,

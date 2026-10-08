@@ -5,7 +5,7 @@ This module does not change Convert/Print/Void behavior.
 Later, Print can call helpers here to skip labeled orders that still need amendments.
 """
 
-from app.flows.amendments.tags import (
+from scripts.app.flows.amendments.tags import (
     AMENDMENTS_SKIP_REASON,
     AMENDMENTS_TAG_NAME,
     OrderTagInfo,

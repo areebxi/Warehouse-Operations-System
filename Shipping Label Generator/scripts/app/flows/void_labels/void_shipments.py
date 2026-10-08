@@ -3,13 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from app.config.load import AppConfig
-from app.logging.jsonl import JsonlLogger
-from app.providers.base import Provider
-from app.util.retries import call_with_retries
+from scripts.app.config.load import AppConfig
+from scripts.app.logging.jsonl import JsonlLogger
+from scripts.app.providers.base import Provider
+from scripts.app.util.retries import call_with_retries
 
 if TYPE_CHECKING:
-    from app.logging.orders_audit import OrderAuditLogger
+    from scripts.app.logging.orders_audit import OrderAuditLogger
 
 
 @dataclass(frozen=True)

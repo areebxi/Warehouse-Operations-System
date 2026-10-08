@@ -4,7 +4,7 @@ import csv
 from dataclasses import dataclass
 from pathlib import Path
 
-from app.util.time import utc_iso_seconds
+from scripts.app.util.time import utc_iso_seconds
 
 
 @dataclass(frozen=True)

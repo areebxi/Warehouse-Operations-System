@@ -2,7 +2,13 @@
 setlocal EnableExtensions
 cd /d "%~dp0\.."
 
-py -m scripts.app.main convert %*
+call "%~dp0resolve_python.bat"
+if errorlevel 1 (
+  pause
+  exit /b 1
+)
+
+%PY% -m scripts.app.main convert %*
 if errorlevel 1 (
   set rc=%errorlevel%
   echo.
@@ -10,7 +16,7 @@ if errorlevel 1 (
   exit /b %rc%
 )
 
-py -m scripts.app.main print %*
+%PY% -m scripts.app.main print %*
 set rc=%errorlevel%
 echo.
 pause

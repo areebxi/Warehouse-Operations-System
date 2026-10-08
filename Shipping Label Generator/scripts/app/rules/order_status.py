@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from app.models.order import Order
+from scripts.app.models.order import Order
 
 _CANCELLED_STATUSES = frozenset({"cancelled", "canceled"})
 

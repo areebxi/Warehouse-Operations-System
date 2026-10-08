@@ -3,12 +3,12 @@ from __future__ import annotations
 import asyncio
 from pathlib import Path
 
-from app.config.load import AppConfig
-from app.flows.amendments.shipstation_tags import inspect_order_tags, list_account_tags
-from app.flows.amendments.tags import AMENDMENTS_TAG_NAME, amendments_skip_reason
-from app.logging.jsonl import JsonlLogger
-from app.providers.real.provider import RealProvider
-from app.providers.select_provider import get_provider
+from scripts.app.config.load import AppConfig
+from scripts.app.flows.amendments.shipstation_tags import inspect_order_tags, list_account_tags
+from scripts.app.flows.amendments.tags import AMENDMENTS_TAG_NAME, amendments_skip_reason
+from scripts.app.logging.jsonl import JsonlLogger
+from scripts.app.providers.real.provider import RealProvider
+from scripts.app.providers.select_provider import get_provider
 
 
 def _print_order_info(info) -> None:

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
-from app.logging.jsonl import JsonlLogger
+from scripts.app.logging.jsonl import JsonlLogger
 
 
 def _utc_iso() -> str:
