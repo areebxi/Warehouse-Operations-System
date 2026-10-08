@@ -1,6 +1,6 @@
 # Production Design Queue Manager — snapshot
 
-**Updated:** 5 October 2026 (Packing sync queues; Skip Batches; DTF Queues copy on headless)  
+**Updated:** 6 October 2026 (CL spaced-header rename for print sizes)  
 **Handbook:** `AGENTS.md`
 
 ## Continue here
@@ -11,7 +11,7 @@
 - Headless save also copies PNGs to DTF Queues folder when configured (same as GUI Save).
 - **Skip Batches** sheet in Configuration Workbook: batch digits listed there skip queue PNGs (file still Processed; leftover Output/DTF Queues PNGs removed). Matches sorter `PB70-S1` and packing `P3570` stems. Packing also skips SharedInbox dual-write for those batches (avoids watcher race).
 - Auto Output PNGs use the same names as GUI (`P50.png`, `P50_Part 1.png`); re-runs overwrite.
-- Print sizes: CL CSV; Pocket overrides + Skip Batches: Configuration Workbook.
+- Print sizes: CL CSV via `shared/cl_columns` (legacy spaced headers renamed to NocoDB names on load); Pocket overrides + Skip Batches: Configuration Workbook.
 - GUI action: one **Run** button — Customise=Yes uses Single/Double folders; otherwise Normal designs folder.
 - Personalised duplicate SKU files: 1-SP JPEG `-P-`/`-S-`/`-S1-`/`-S2-`/`-SL-`/`-SR-` is a size hint; only the PNG is queued.
 - Designs capped at 300×500 mm (double-folder path exempt). Unique orders also try `{Order}-{SKU}.png` first.

@@ -18,6 +18,11 @@ from run_script import (
     write_packing_list_csv,
     write_stock_issues_csv,
 )
+from run_script_gui_settings import (
+    effective_cl_csv_path,
+    effective_packs_database_path,
+    effective_plain_database_path,
+)
 from shipstation_orders import ShipStationAPI
 
 
@@ -69,15 +74,22 @@ class ShipStationGuiExportMixin:
             self.log_message("[STOCK] Loading stock levels (config FTP_LOCAL_FILE)...")
             stock_levels = load_stock_levels(log=self.log_message)
 
+            cl_path = effective_cl_csv_path(self.gui_settings)
+            plain_path = effective_plain_database_path(self.gui_settings)
+            packs_path = effective_packs_database_path(self.gui_settings)
+            self.log_message(f"[SETTINGS] Custom Label CSV: {cl_path}")
+            self.log_message(f"[SETTINGS] Plain Database: {plain_path}")
+            self.log_message(f"[SETTINGS] Packs Database: {packs_path}")
+
             self.log_message("[PACKS] Loading Packs Database for component mapping...")
-            packs_map = load_packs_database()
-            pack_names_map = load_pack_names()
+            packs_map = load_packs_database(excel_path=str(packs_path))
+            pack_names_map = load_pack_names(excel_path=str(packs_path))
             self.log_message(
                 f"[PACKS] Packs map entries: {len(packs_map)}; Pack Names: {len(pack_names_map)}"
             )
 
             custom_label_map, labels_missing_stock_id = load_custom_label_stock_map(
-                log=self.log_message
+                path=cl_path, log=self.log_message
             )
 
             self.log_message(
@@ -129,6 +141,8 @@ class ShipStationGuiExportMixin:
                 in_stock_items=in_stock_items,
                 packs_map=packs_map,
                 pack_names_map=pack_names_map,
+                plain_database_path=str(plain_path),
+                packs_database_path=str(packs_path),
             )
 
             self.log_message("\n[SUCCESS] Export completed!")

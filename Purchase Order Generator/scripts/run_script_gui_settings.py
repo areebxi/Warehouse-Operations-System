@@ -4,12 +4,18 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 
 import openpyxl
 
-from app_paths import DATA_DIR, shipstation_tags_path
+from app_paths import DATA_DIR, packs_database_path, product_database_path, shipstation_tags_path
+from stock_resolver import _default_cl_path
 
 GUI_SETTINGS_PATH = DATA_DIR / "gui_settings.json"
+
+KEY_CL_CSV = "custom_label_csv_path"
+KEY_PLAIN_DB = "plain_database_path"
+KEY_PACKS_DB = "packs_database_path"
 
 
 def load_gui_settings() -> dict:
@@ -33,6 +39,39 @@ def save_gui_settings(settings: dict) -> None:
             json.dump(settings, handle, indent=2)
     except Exception as e:
         print(f"[WARNING] Could not save GUI settings: {e}")
+
+
+def _override_or_default(settings: dict, key: str, default: Path) -> Path:
+    raw = str(settings.get(key) or "").strip()
+    if raw:
+        path = Path(raw)
+        if path.is_file():
+            return path
+    return Path(default)
+
+
+def default_cl_csv_path() -> Path:
+    return _default_cl_path()
+
+
+def default_plain_database_path() -> Path:
+    return product_database_path()
+
+
+def default_packs_database_path() -> Path:
+    return packs_database_path()
+
+
+def effective_cl_csv_path(settings: dict) -> Path:
+    return _override_or_default(settings, KEY_CL_CSV, default_cl_csv_path())
+
+
+def effective_plain_database_path(settings: dict) -> Path:
+    return _override_or_default(settings, KEY_PLAIN_DB, default_plain_database_path())
+
+
+def effective_packs_database_path(settings: dict) -> Path:
+    return _override_or_default(settings, KEY_PACKS_DB, default_packs_database_path())
 
 
 def load_tag_mapping():

@@ -17,9 +17,18 @@ from pdf_generate_item import render_slip_item
 from pdf_page import PDF
 
 
-def generate_packing_slips_for_tag(csv_filename, tag_id, output_path=None):
+def generate_packing_slips_for_tag(
+    csv_filename,
+    tag_id,
+    output_path=None,
+    *,
+    plain_database_path=None,
+    packs_database_path=None,
+):
     """Generate PDF packing slips for a specific tag ID CSV file. Returns True if a PDF was saved."""
     print(f"\n[PDF] Starting PDF generation for tag {tag_id}...")
+    plain_path = Path(plain_database_path) if plain_database_path else Path(PRODUCT_DATABASE_FILE)
+    packs_path = Path(packs_database_path) if packs_database_path else Path(PACKS_DATABASE_FILE)
 
     try:
         orders_df = pd.read_csv(
@@ -32,16 +41,16 @@ def generate_packing_slips_for_tag(csv_filename, tag_id, output_path=None):
             },
         )
         products_df = pd.read_excel(
-            PRODUCT_DATABASE_FILE,
+            plain_path,
             dtype={COLUMN_NAMES["db_sku"]: str, COLUMN_NAMES["product_code"]: str},
         )
-        pack_names_map = _load_pack_names_map(PACKS_DATABASE_FILE)
-        pack_titles_map = _load_pack_titles_map(PACKS_DATABASE_FILE)
+        pack_names_map = _load_pack_names_map(str(packs_path))
+        pack_titles_map = _load_pack_titles_map(str(packs_path))
         export_by_uid = _load_btc_product_data_by_uid()
         try:
             from run_script import load_packs_database
 
-            packs_components_map = load_packs_database(str(PACKS_DATABASE_FILE))
+            packs_components_map = load_packs_database(str(packs_path))
         except Exception:
             packs_components_map = {}
 

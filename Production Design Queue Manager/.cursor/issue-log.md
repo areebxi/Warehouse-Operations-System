@@ -4,6 +4,10 @@ Newest entries first. Maintained automatically per `.cursor/rules/issue-resoluti
 
 ---
 
+### 2026-10-06 17:37 UTC+1
+**Issue:** Queue Run on `DTF Des-P300` showed “Processed … successfully” but loaded zero designs.
+**Resolution:** Live CL CSV still had Areeb-era spaced headers (`Custom Label`, `Width 1 (mm)`, …) while Queue expected NocoDB names; `ValueError` aborted load and empty result was counted as success. `shared/cl_columns.rename_legacy_headers` + Queue `load_cl_size_table` rename before the hard check; Run exceptions re-raise so failures surface.
+
 ### 2026-10-05 18:54 UTC+1
 **Issue:** SharedInbox watcher name “Missing Logo watcher” was unclear (it builds design queue PNGs from DTF Des).
 **Resolution:** Full rename to Design Queues watcher — `design_queues_watcher.py` / `design_queues_{process,loop,inbox}.py`, `run_design_queues_watcher.bat`, `shared/design_queues_watcher.py`. Packing ensure-on-launch and docs/rules updated. Queue GUI Missing Logo mode and Packing missing-logo strip unchanged.

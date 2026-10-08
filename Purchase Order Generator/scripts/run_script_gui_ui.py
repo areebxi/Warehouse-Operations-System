@@ -18,7 +18,6 @@ class ShipStationGuiUiMixin:
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
         main_frame.columnconfigure(1, weight=1)
-        main_frame.rowconfigure(3, weight=1)
 
         title_label = ttk.Label(main_frame, text="Purchase Order App", font=("Arial", 16, "bold"))
         title_label.grid(row=0, column=0, columnspan=3, pady=(0, 20))
@@ -53,18 +52,23 @@ class ShipStationGuiUiMixin:
         )
         self.clear_pdf_folder_button.pack(side=tk.LEFT, padx=(6, 0))
 
+        log_row = self.setup_db_path_rows(main_frame, start_row=3)
+        main_frame.rowconfigure(log_row, weight=1)
+
         self.logs_text = scrolledtext.ScrolledText(
             main_frame, height=20, width=80, font=("Consolas", 9)
         )
         self.logs_text.grid(
-            row=3, column=0, columnspan=3, sticky=(tk.W, tk.E, tk.N, tk.S), pady=(20, 0)
+            row=log_row, column=0, columnspan=3, sticky=(tk.W, tk.E, tk.N, tk.S), pady=(20, 0)
         )
 
         self.progress = ttk.Progressbar(main_frame, mode="indeterminate")
-        self.progress.grid(row=4, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=(10, 0))
+        self.progress.grid(
+            row=log_row + 1, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=(10, 0)
+        )
 
         self.status_label = ttk.Label(main_frame, text="Ready", font=("Arial", 9))
-        self.status_label.grid(row=5, column=0, columnspan=3, pady=(5, 0))
+        self.status_label.grid(row=log_row + 2, column=0, columnspan=3, pady=(5, 0))
 
     def browse_pdf_copy_folder(self):
         """Let the user pick a folder; remember it for later runs."""

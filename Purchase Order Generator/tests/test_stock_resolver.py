@@ -98,6 +98,43 @@ class TestLoadCustomLabelStockMap(unittest.TestCase):
         self.assertEqual(mapping, {_norm_label("TPC001-NAT-O/S-Yes"): "7299"})
         self.assertEqual(empty_ids, {_norm_label("C800T-BLK-3-6M")})
 
+    def test_areeb_spaced_headers_and_btc_sku_fallback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            csv_path = Path(tmp) / "labels.csv"
+            with open(csv_path, "w", encoding="utf-8", newline="") as handle:
+                writer = csv.DictWriter(
+                    handle,
+                    fieldnames=["Custom Label", "Supplier SKU", "BTC SKU"],
+                )
+                writer.writeheader()
+                writer.writerow(
+                    {
+                        "Custom Label": "M-T-BLK-M",
+                        "Supplier SKU": "1111",
+                        "BTC SKU": "9999",
+                    }
+                )
+                writer.writerow(
+                    {
+                        "Custom Label": "W121-WHILY-L-Yes",
+                        "Supplier SKU": "",
+                        "BTC SKU": "201416",
+                    }
+                )
+
+            mapping, empty_ids = load_custom_label_stock_map(
+                path=csv_path, log=lambda _msg: None
+            )
+
+        self.assertEqual(
+            mapping,
+            {
+                _norm_label("M-T-BLK-M"): "1111",
+                _norm_label("W121-WHILY-L-Yes"): "201416",
+            },
+        )
+        self.assertEqual(empty_ids, set())
+
 
 class TestNotFoundStatus(unittest.TestCase):
     def test_not_in_custom_label_db(self):

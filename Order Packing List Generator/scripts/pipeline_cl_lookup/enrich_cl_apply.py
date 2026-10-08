@@ -58,6 +58,9 @@ def load_cl_database(cl_csv_path) -> pd.DataFrame:
     if not path.is_file():
         raise FileNotFoundError(f"Custom Label Database CSV not found: {path}")
     df = pd.read_csv(path, dtype=str, keep_default_na=False, encoding="utf-8-sig")
+    # Legacy spaced header (Areeb-era CSV) → NocoDB name used by shared.cl_columns.
+    if CUSTOM_LABEL_COL not in df.columns and "Custom Label" in df.columns:
+        df = df.rename(columns={"Custom Label": CUSTOM_LABEL_COL})
     if CUSTOM_LABEL_COL not in df.columns:
         raise ValueError(f"CL CSV must have a column named '{CUSTOM_LABEL_COL}': {path}")
     df[CUSTOM_LABEL_COL] = df[CUSTOM_LABEL_COL].astype(str).str.strip()

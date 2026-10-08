@@ -205,7 +205,7 @@ New app folder **`Order Grouping Sorter`**. Not inside Packing. Reads ShipStatio
 | B3500 | Glow In The Dark | any line Item Name contains `Glow In The Dark` (hyphen/spacing variants count). First-match peel (above FOTL). |
 | B5500 | Design 179975LG | any line Item SKU contains `179975LG`. First-match peel (above FOTL). |
 | B1050 | Stickers | any line Item SKU contains `STICKER`. Contain peel (above iron-on / Gildan). Manual floor 1050. |
-| B40 | Gildan T-Shirts | printed + `gildan_tee`: Brand Gildan + Category T-Shirts, **or** style token `5000` / `G5000` in Item SKU or Gender Apparel (not a substring of `15000`). Manual floor 40. |
+| B40 | Gildan T-Shirts | printed + `gildan_tee`: Category T-Shirts + (Brand Gildan **or** Gender Apparel contains `GILDAN` **or** style token `5000` / `G5000` in Item SKU or Gender Apparel; not a substring of `15000`). Manual floor 40. Locked Gender Apparel contains 2026-10-07. |
 | B3700 | Sweatshirts | printed + Product Type (Areeb) = Sweatshirt (not Hoodie). Manual floor 3700. |
 | B80 | Fawad Short Sleeve FOTL T-Shirts Ready-Made | printed DTF, MAS Clothing, non-prime, readymade, Warehouse Stock, Category T-SHIRTS, short-sleeve / kids tee (not long sleeve) |
 | B90 | Fawad Short Sleeve FOTL T-Shirts Personalized | same as B80, CL Customise = Yes |
@@ -225,7 +225,13 @@ Fixed-batch CSVs live in the shift folder (`Input/{date}/{1st|2nd|3rd} Shift/B10
 
 **B50 locked 2026-09-30:** own / non-prime / ready-made FOTL short-sleeve **Supplier On Demand** — same match rules as B100 except supply-method. B100 = colors kept in warehouse and restocked; B50 = colors ordered, arrive later. `ss_fotl` = Brand Fruit of the Loom + short-sleeve T-Shirts; Warehouse Stock vs On Demand is the CSV supply-method cell only. Scope is **B50 only** (no B4000 / B80 / B90 / primes On Demand mirrors).
 
+**B40 Gender Apparel locked 2026-10-07:** `gildan_tee` also matches when Category is T-Shirts and Gender Apparel contains `GILDAN` (case-insensitive), even if Brand is blank/other. Still also Brand = Gildan, or style token `5000` / `G5000` in Item SKU / Gender Apparel.
+
 **Leftover batches CSV locked 2026-09-23:** each sorter run (dry-run and `--run`) writes `database/order-grouping-sorter/leftover_batches/{YYYY-MM-DD}.csv` with the same columns as `fixed_batches.csv`. One file per run date; overwritten on the next sorter run for that date. Rows = leftover `B1`/`B2`/… piles only (Graph + 30-chain slots). Fixed-batch codes are not listed. Path: `shared.paths.sorter_leftover_batches_path`. Writer: `Order Grouping Sorter/scripts/leftover_batches.py`.
+
+**Chat fast path locked 2026-10-07:** supervisor says **run the group sorter** / **group my awaiting shipment** / **run the sorter** (or clear equivalent) → agent runs `--run` immediately (no dry-run first; short report when done). CLI with no flags stays dry-run. Owner: `.cursor/rules/order-grouping-sorter/approval.mdc` + `supervisor-chat.mdc` standing term.
+
+**Catalog cache locked 2026-10-07:** Plain / Packs keyed indexes are pickled under `database/order-grouping-sorter/catalog_cache/` (`plain.pkl` / `packs.pkl`). Invalidate when source xlsx path / mtime / size / sheet / key column changes. CL still loads from CSV each run. Module: `Order Grouping Sorter/scripts/catalog_cache.py`. Path helper: `shared.paths.sorter_catalog_cache_path`.
 
 ## Catalog fill (step 2) — Areeb 30-chain (locked 2026-09-08)
 

@@ -43,6 +43,9 @@ def run_selfchecks() -> None:
     assert _alias_shirt_colour_label("M-T-PUE-L") == "M-T-PRP-L"
     assert RE_BAG_COLOUR.match("BG-BG140S-ClaRdOW-O/S-YES")
     assert _BAG_COLOUR["clardow"] == "Classic Red-Off White"
+    assert _BAG_COLOUR["orn"] == "Orange"
+    assert _BAG_COLOUR["brirl"] == "Bright Royal"
+    assert _BAG_COLOUR["dusgn"] == "Dusty Green"
     assert _sticker_size("50cmx50cm") == "50cm x 50cm"
     assert _sticker_mm("50cmx50cm") == ("500", "500")
     assert _sticker_mm("20cm x 20cm") == ("200", "200")

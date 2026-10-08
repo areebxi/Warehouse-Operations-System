@@ -44,7 +44,7 @@ def _snap_cl_areeb(values: AreebValues) -> AreebValues:
 
 def cl_standard(row: Mapping[str, Any]) -> AreebValues:
     """Warehouse Areeb 4-tuple from Gender Apparel. Department is gender only."""
-    ga = _norm_ga(row.get(clc.GENDER_APPAREL))
+    ga = _norm_ga(row.get(clc.GENDER_APPAREL) or row.get("Gender Apparel"))
     if not ga:
         return AreebValues()
     exact = CL_STANDARD_RULES.get(ga) or CL_STANDARD_RULES_FOLD.get(ga.casefold())

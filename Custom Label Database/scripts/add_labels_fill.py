@@ -23,6 +23,18 @@ from fill_from_seeds import (
 )
 
 
+def _copy_nocodb_onto_spaced(df: pd.DataFrame) -> None:
+    """Fill steps write NocoDB names; Areeb CSV keeps spaced headers."""
+    from shared.cl_columns import legacy_header_aliases
+
+    for spaced, under in legacy_header_aliases().items():
+        if spaced not in df.columns or under not in df.columns:
+            continue
+        blank = df[spaced].fillna("").astype(str).str.strip().eq("")
+        incoming = df[under].fillna("").astype(str)
+        df.loc[blank, spaced] = incoming[blank]
+
+
 def fill_rows(df: pd.DataFrame, pe_index: pd.DataFrame, counts: dict) -> None:
     step_supplier_sku(df, counts)
     step_pe_enrich(df, pe_index, counts)
@@ -47,3 +59,4 @@ def fill_rows(df: pd.DataFrame, pe_index: pd.DataFrame, counts: dict) -> None:
     step_supply(df, counts)
     step_printing_type(df, counts)
     step_supplier_name(df, counts)
+    _copy_nocodb_onto_spaced(df)

@@ -107,6 +107,7 @@ _BAG_COLOUR = {
     "blabk": "Black-Black",
     "limgn": "Lime",
     "dusbe": "Dusty Blue",
+    "dusgn": "Dusty Green",
     "nat": "Natural",
     "blk": "Black",
     "nvy": "Navy",
@@ -114,6 +115,8 @@ _BAG_COLOUR = {
     "bur": "Burgundy",
     "cpnk": "Classic Pink",
     "clapk": "Classic Pink",
+    "orn": "Orange",
+    "brirl": "Bright Royal",
 }
 
 # Supervisor 15 Sep 2026: packing shirt colour tokens that are not the CL code.

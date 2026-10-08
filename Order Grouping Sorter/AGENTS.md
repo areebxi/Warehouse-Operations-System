@@ -3,7 +3,7 @@
 Domain handbook for the **Warehouse Automation System Engineer**. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/order-grouping-sorter/`. Locks: `../order-grouping-locks.md`. Details: `docs/`.
 Current state: `docs/HANDOFF.md`, kept as present-tense state, not a log.
 
-Live paths via `shared/paths.py`. A grouping **run** only **reads** CL + Plain Database + Packs. Sorter DB: `database/order-grouping-sorter/` — `taxonomy_picklists.csv` (Hashim #038), `fixed_batches.csv` (B80/B100/… criteria), and `leftover_batches/{YYYY-MM-DD}.csv` (written each run for leftover B1/B2…).
+Live paths via `shared/paths.py`. A grouping **run** only **reads** CL + Plain Database + Packs. Sorter DB: `database/order-grouping-sorter/` — `taxonomy_picklists.csv` (Hashim #038), `fixed_batches.csv` (B80/B100/… criteria), `leftover_batches/{YYYY-MM-DD}.csv` (written each run for leftover B1/B2…), and `catalog_cache/` (Plain/Packs pickles). Chat “run the group sorter” → straight `--run`.
 
 ## Live vs helpers
 
@@ -13,6 +13,7 @@ Live paths via `shared/paths.py`. A grouping **run** only **reads** CL + Plain D
 | `database/order-grouping-sorter/taxonomy_picklists.csv` | Closed Areeb category / product type / product style / department + PE subcategory |
 | `database/order-grouping-sorter/fixed_batches.csv` | Fixed batch codes + match criteria (`B80` / `B100` / …) |
 | `database/order-grouping-sorter/leftover_batches/{YYYY-MM-DD}.csv` | Leftover `B1`/`B2`… criteria for that run date (same columns as fixed; overwritten each sorter run) |
+| `database/order-grouping-sorter/catalog_cache/` | Plain/Packs index pickles (auto; gitignored) |
 | `database/shared/custom_label/Custom_Label_Database.csv` | Finish + printed attributes |
 | `database/shared/plain/Plain Database.xlsx` | Plain catalog |
 | `database/shared/packs/Packs Database.xlsx` | Packs catalog |
@@ -46,7 +47,7 @@ Dry-run: run date, mix yes/no (Hashim 300-order gate), process names with orders
 ## Structure & boundaries
 
 - **Orchestration:** `scripts/run_sorter.py` (dry-run default; `--run` writes).
-- **Domain:** `scripts/grouping.py` (façade) plus `grouping_*.py` modules (`models`, `finish`, `intake`, `slots`, `peel`, `garments`, `fixed`, `shift`, `parts`, `names`, `bins`, `io`, `report`); also `fixed_batches.py`, `leftover_batches.py`, `catalogs.py`.
+- **Domain:** `scripts/grouping.py` (façade) plus `grouping_*.py` modules (`models`, `finish`, `intake`, `slots`, `peel`, `garments`, `fixed`, `shift`, `parts`, `names`, `bins`, `io`, `report`); also `fixed_batches.py`, `leftover_batches.py`, `catalogs.py`, `catalog_cache.py`.
 - **I/O:** Packing Input via `shared.paths.sorter_input_csv_path`; Logs; sorter DB under `database/order-grouping-sorter/`.
 - **Legacy oversized:** none in production grouping path; `test_grouping.py` is a thin runner over `test_grouping_*.py` behaviour modules (see `../docs/ARCHITECTURE.md`).
 - **Must not:** import Packing internals (CSV columns are copied, not imported); overwrite catalogs on a run; use universal 3-key `resolve_label` for grouping finish keys.

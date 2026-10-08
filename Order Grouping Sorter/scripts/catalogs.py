@@ -4,6 +4,7 @@ CL key = after first dash → Custom Label; if the SKU has no dash, whole SKU
 (not universal resolve_label).
 Plain key = till last dash or whole SKU → SKU.
 Packs key = whole SKU → Channel Child SKU.
+Plain / Packs use disk cache (see catalog_cache.py).
 """
 
 from __future__ import annotations
@@ -12,12 +13,12 @@ import csv
 from dataclasses import dataclass, field
 from typing import Mapping, Optional
 
-from openpyxl import load_workbook
-
 from shared import cl_columns as clc
 from shared import paths as wh
 from shared.areeb_taxonomy import cell
 from shared.cl_sku_match import key_after_first_dash, key_till_last_dash
+
+from catalog_cache import load_xlsx_index
 
 PLAIN_SHEET = "Sheet1"
 PACKS_SHEET = "01-Database"
@@ -43,27 +44,17 @@ def _index_rows(rows: list[dict[str, str]], key_col: str) -> dict[str, dict[str,
 def load_cl_index(path=None) -> dict[str, dict[str, str]]:
     csv_path = path or wh.cl_csv_path()
     with csv_path.open(encoding="utf-8-sig", newline="") as f:
-        rows = [{k: cell(v) for k, v in row.items()} for row in csv.DictReader(f)]
+        reader = csv.DictReader(f)
+        rename = clc.rename_legacy_headers(
+            [name for name in (reader.fieldnames or []) if name]
+        )
+        rows = [
+            clc.normalize_cl_record(
+                {k: cell(v) for k, v in row.items() if k}, rename
+            )
+            for row in reader
+        ]
     return _index_rows(rows, clc.CUSTOM_LABEL)
-
-
-def load_xlsx_index(path, sheet: str, key_col: str) -> dict[str, dict[str, str]]:
-    wb = load_workbook(path, read_only=True, data_only=True)
-    try:
-        ws = wb[sheet]
-        it = ws.iter_rows(values_only=True)
-        headers = [cell(h) for h in next(it)]
-        rows: list[dict[str, str]] = []
-        for raw in it:
-            row = {
-                headers[i]: cell(raw[i]) if i < len(raw) else ""
-                for i in range(len(headers))
-                if headers[i]
-            }
-            rows.append(row)
-    finally:
-        wb.close()
-    return _index_rows(rows, key_col)
 
 
 @dataclass
@@ -114,6 +105,13 @@ class Catalogs:
 def load_catalogs() -> Catalogs:
     return Catalogs(
         cl=load_cl_index(),
-        plain=load_xlsx_index(wh.plain_database_path(), PLAIN_SHEET, "SKU"),
-        packs=load_xlsx_index(wh.packs_database_path(), PACKS_SHEET, "Channel Child SKU"),
+        plain=load_xlsx_index(
+            wh.plain_database_path(), PLAIN_SHEET, "SKU", cache_stem="plain"
+        ),
+        packs=load_xlsx_index(
+            wh.packs_database_path(),
+            PACKS_SHEET,
+            "Channel Child SKU",
+            cache_stem="packs",
+        ),
     )

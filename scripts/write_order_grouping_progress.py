@@ -11,7 +11,6 @@ if str(ROOT) not in sys.path:
 
 from write_order_grouping_progress_board import sheet_board
 from write_order_grouping_progress_sheets import sheet_catalog, sheet_design
-from write_order_grouping_progress_style import f, put, widths
 
 
 def main() -> int:
@@ -19,11 +18,9 @@ def main() -> int:
 
     out = ROOT / "order-grouping-progress.xlsx"
     wb = Workbook()
-    sheet_board(wb.active)
-    sheet_catalog(wb.create_sheet("Catalog joins"))
-    sheet_design(wb.create_sheet("Design notes"))
-    for ws in wb.worksheets:
-        widths(ws)
+    sheet_board(wb)
+    sheet_catalog(wb)
+    sheet_design(wb)
     wb.save(out)
     print(f"Wrote {out}")
     return 0

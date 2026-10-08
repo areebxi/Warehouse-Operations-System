@@ -28,6 +28,20 @@ def sorter_leftover_batches_dir(from_path: object | None = None) -> Path:
     return sorter_data_dir(from_path) / "leftover_batches"
 
 
+def sorter_catalog_cache_dir(from_path: object | None = None) -> Path:
+    """Pickled Plain/Packs indexes; rebuild when source xlsx mtime/size changes."""
+    return sorter_data_dir(from_path) / "catalog_cache"
+
+
+def sorter_catalog_cache_path(
+    stem: str,
+    *,
+    from_path: object | None = None,
+) -> Path:
+    """One pickle per catalog stem, e.g. plain.pkl / packs.pkl."""
+    return sorter_catalog_cache_dir(from_path) / f"{stem}.pkl"
+
+
 def sorter_leftover_batches_path(
     run_date: object,
     *,
@@ -62,6 +76,8 @@ __all__ = [
     "sorter_fixed_batches_path",
     "sorter_leftover_batches_dir",
     "sorter_leftover_batches_path",
+    "sorter_catalog_cache_dir",
+    "sorter_catalog_cache_path",
     "sorter_logs_dir",
     "sorter_input_csv_path",
 ]

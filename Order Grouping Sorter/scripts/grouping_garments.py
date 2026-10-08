@@ -81,10 +81,12 @@ def _has_gildan_5000_token(text: str) -> bool:
     return False
 
 def _line_is_gildan_tee(ln: LineAttrs) -> bool:
-    """B40: Brand Gildan T-Shirts, or style 5000/G5000 in SKU / Gender Apparel."""
+    """B40: Brand Gildan, Gender Apparel contains GILDAN, or style 5000/G5000."""
     if _fold(ln.category) != "t-shirts":
         return False
     if _fold(ln.brand) == "gildan":
+        return True
+    if "gildan" in _fold(ln.gender_apparel):
         return True
     return _has_gildan_5000_token(ln.sku) or _has_gildan_5000_token(ln.gender_apparel)
 

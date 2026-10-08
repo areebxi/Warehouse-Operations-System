@@ -12,6 +12,7 @@ alwaysApply: true
 Standing terms (always-on):
 
 - **commit and push** (git) = supervisor asks in chat → agent commits the local delta (respect `.gitignore`; skip debug/temp/run junk) and pushes to `origin/main`. Not scheduled; not automatic. Author via one-shot `git -c user.name` / `user.email` (**Areeb Yaqub** / `46938981+areebxi@users.noreply.github.com`) — do not rewrite global git config. Locked 2026-09-29.
+- **run the group sorter** / **group my awaiting shipment** / **run the sorter** = straight `python "Order Grouping Sorter/scripts/run_sorter.py" --run` (no dry-run first; short report when done). Locked 2026-10-07. Detail: `.cursor/rules/order-grouping-sorter/approval.mdc`.
 
 Grouping vocabulary (batch, shift, fixed batch, today/ship-by, finish gates, B50/B100, …): `.cursor/rules/order-grouping-sorter/standing-terms.mdc` + `order-grouping-locks.md`. Load with sorter / locks work — not every chat.
 

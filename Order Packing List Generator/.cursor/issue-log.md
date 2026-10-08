@@ -2,6 +2,12 @@
 
 Issues discussed with the AI agent, newest first.
 
+## 2026-10-06 12:45
+
+**Issue:** Preflight failed at step 2/4 with `CL CSV must have a column named 'Custom_Label'` while the live CSV still used Areeb-era spaced headers.
+
+**Resolution:** `load_cl_database` renames legacy `Custom Label` → `Custom_Label` before the hard check (same legacy-fallback pattern as other enrich columns).
+
 ## 2026-10-05 18:43
 
 **Issue:** Batch PDF phase crashed after `Step 8/8: Done.` with `name 'lc' is not defined` when PDF copy directory was set.

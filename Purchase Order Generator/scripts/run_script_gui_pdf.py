@@ -21,6 +21,8 @@ class ShipStationGuiPdfMixin:
         in_stock_items,
         packs_map,
         pack_names_map,
+        plain_database_path: str | None = None,
+        packs_database_path: str | None = None,
     ) -> None:
         self.log_message("\n[PDF] Generating PDF packing slips (EDI / in-stock orders only)...")
         if not in_stock_items:
@@ -50,7 +52,13 @@ class ShipStationGuiPdfMixin:
                 ),
             )
             pdf_output_path = os.path.join(output_folder, pdf_filename_for_tag(tag_id, process_no))
-            if generate_packing_slips_for_tag(pdf_source_filename, tag_id, pdf_output_path):
+            if generate_packing_slips_for_tag(
+                pdf_source_filename,
+                tag_id,
+                pdf_output_path,
+                plain_database_path=plain_database_path,
+                packs_database_path=packs_database_path,
+            ):
                 self.log_message(
                     f"[SUCCESS] PDF generation completed! Saved to: {os.path.abspath(pdf_output_path)}"
                 )

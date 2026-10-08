@@ -169,4 +169,4 @@ def process_missing_logo_file_for_folder(gui, df, order_column, sku_column, file
         content += f"\n{'='*80}\n"
         content += f"Full Traceback:\n{error_traceback}\n"
         save_error_to_file(content, "error")
-        return [], [], []
+        raise

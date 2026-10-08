@@ -50,6 +50,9 @@ def load_cl_size_table(cl_csv_path: Optional[Path] = None) -> pd.DataFrame:
     if not path.is_file():
         raise FileNotFoundError(f"CL CSV not found: {path}")
     df = pd.read_csv(path, dtype=str, keep_default_na=False, encoding="utf-8-sig")
+    rename = clc.rename_legacy_headers(list(df.columns))
+    if rename:
+        df = df.rename(columns=rename)
     if clc.CUSTOM_LABEL not in df.columns:
         raise ValueError(f"CL CSV missing Custom_Label: {path}")
     index: dict[str, int] = {}

@@ -31,6 +31,10 @@ def main() -> None:
     assert wh.shared_inbox_dtf_des_root().is_relative_to(root / "runtime" / "SharedInbox")
     assert wh.sorter_app_dir() == root / "Order Grouping Sorter"
     assert wh.sorter_data_dir() == db / "order-grouping-sorter"
+    assert wh.sorter_catalog_cache_dir() == db / "order-grouping-sorter" / "catalog_cache"
+    assert wh.sorter_catalog_cache_path("plain") == (
+        db / "order-grouping-sorter" / "catalog_cache" / "plain.pkl"
+    )
     assert wh.sorter_logs_dir() == root / "Order Grouping Sorter" / "Logs"
     assert wh.sorter_input_csv_path("11-09-2026", "1st Shift", "today-1st-plain") == (
         root / "Order Packing List Generator" / "Input" / "11-09-2026" / "1st Shift" / "today-1st-plain.csv"

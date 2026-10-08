@@ -1,0 +1,359 @@
+{
+  "year": 2025,
+  "keywords": [
+    "spotty",
+    "pudsey",
+    "children in need"
+  ],
+  "orders_scanned": 119591,
+  "orders_with_matching_item": 11004,
+  "orders_matching_no_logo": 0,
+  "unique_logo_ids": 69,
+  "ranked": [
+    {
+      "rank": 1,
+      "logo_id": "115881LG",
+      "orders": 6105
+    },
+    {
+      "rank": 2,
+      "logo_id": "115883LG",
+      "orders": 1510
+    },
+    {
+      "rank": 3,
+      "logo_id": "116168LG",
+      "orders": 924
+    },
+    {
+      "rank": 4,
+      "logo_id": "115882LG",
+      "orders": 604
+    },
+    {
+      "rank": 5,
+      "logo_id": "64623LG",
+      "orders": 533
+    },
+    {
+      "rank": 6,
+      "logo_id": "115884LG",
+      "orders": 208
+    },
+    {
+      "rank": 7,
+      "logo_id": "119805LG",
+      "orders": 193
+    },
+    {
+      "rank": 8,
+      "logo_id": "161730LG",
+      "orders": 138
+    },
+    {
+      "rank": 9,
+      "logo_id": "125320LG",
+      "orders": 131
+    },
+    {
+      "rank": 10,
+      "logo_id": "119807LG",
+      "orders": 123
+    },
+    {
+      "rank": 11,
+      "logo_id": "125326LG",
+      "orders": 73
+    },
+    {
+      "rank": 12,
+      "logo_id": "69762LG",
+      "orders": 65
+    },
+    {
+      "rank": 13,
+      "logo_id": "119806LG",
+      "orders": 53
+    },
+    {
+      "rank": 14,
+      "logo_id": "161731LG",
+      "orders": 41
+    },
+    {
+      "rank": 15,
+      "logo_id": "27353LG",
+      "orders": 36
+    },
+    {
+      "rank": 16,
+      "logo_id": "104859LG",
+      "orders": 30
+    },
+    {
+      "rank": 17,
+      "logo_id": "161933LG",
+      "orders": 23
+    },
+    {
+      "rank": 18,
+      "logo_id": "116598LG",
+      "orders": 22
+    },
+    {
+      "rank": 19,
+      "logo_id": "64772LG",
+      "orders": 21
+    },
+    {
+      "rank": 20,
+      "logo_id": "167102LG",
+      "orders": 20
+    },
+    {
+      "rank": 21,
+      "logo_id": "116485LG",
+      "orders": 18
+    },
+    {
+      "rank": 22,
+      "logo_id": "125323LG",
+      "orders": 17
+    },
+    {
+      "rank": 23,
+      "logo_id": "62023LG",
+      "orders": 16
+    },
+    {
+      "rank": 24,
+      "logo_id": "161930LG",
+      "orders": 15
+    },
+    {
+      "rank": 25,
+      "logo_id": "47954LG",
+      "orders": 14
+    },
+    {
+      "rank": 26,
+      "logo_id": "161681LG",
+      "orders": 13
+    },
+    {
+      "rank": 27,
+      "logo_id": "101689LG",
+      "orders": 12
+    },
+    {
+      "rank": 28,
+      "logo_id": "161727LG",
+      "orders": 12
+    },
+    {
+      "rank": 29,
+      "logo_id": "101990LG",
+      "orders": 11
+    },
+    {
+      "rank": 30,
+      "logo_id": "4198LG",
+      "orders": 11
+    },
+    {
+      "rank": 31,
+      "logo_id": "119808LG",
+      "orders": 10
+    },
+    {
+      "rank": 32,
+      "logo_id": "62046LG",
+      "orders": 10
+    },
+    {
+      "rank": 33,
+      "logo_id": "64777LG",
+      "orders": 10
+    },
+    {
+      "rank": 34,
+      "logo_id": "167052LG",
+      "orders": 8
+    },
+    {
+      "rank": 35,
+      "logo_id": "85677LG",
+      "orders": 8
+    },
+    {
+      "rank": 36,
+      "logo_id": "116249LG",
+      "orders": 6
+    },
+    {
+      "rank": 37,
+      "logo_id": "165844LG",
+      "orders": 6
+    },
+    {
+      "rank": 38,
+      "logo_id": "27344LG",
+      "orders": 6
+    },
+    {
+      "rank": 39,
+      "logo_id": "116409LG",
+      "orders": 5
+    },
+    {
+      "rank": 40,
+      "logo_id": "165842LG",
+      "orders": 5
+    },
+    {
+      "rank": 41,
+      "logo_id": "125321LG",
+      "orders": 4
+    },
+    {
+      "rank": 42,
+      "logo_id": "167045LG",
+      "orders": 4
+    },
+    {
+      "rank": 43,
+      "logo_id": "167068LG",
+      "orders": 4
+    },
+    {
+      "rank": 44,
+      "logo_id": "167075LG",
+      "orders": 4
+    },
+    {
+      "rank": 45,
+      "logo_id": "65056LG",
+      "orders": 4
+    },
+    {
+      "rank": 46,
+      "logo_id": "125322LG",
+      "orders": 3
+    },
+    {
+      "rank": 47,
+      "logo_id": "165837LG",
+      "orders": 3
+    },
+    {
+      "rank": 48,
+      "logo_id": "165840LG",
+      "orders": 3
+    },
+    {
+      "rank": 49,
+      "logo_id": "166086LG",
+      "orders": 3
+    },
+    {
+      "rank": 50,
+      "logo_id": "167055LG",
+      "orders": 3
+    },
+    {
+      "rank": 51,
+      "logo_id": "104860LG",
+      "orders": 2
+    },
+    {
+      "rank": 52,
+      "logo_id": "104862LG",
+      "orders": 2
+    },
+    {
+      "rank": 53,
+      "logo_id": "125269LG",
+      "orders": 2
+    },
+    {
+      "rank": 54,
+      "logo_id": "161931LG",
+      "orders": 2
+    },
+    {
+      "rank": 55,
+      "logo_id": "167082LG",
+      "orders": 2
+    },
+    {
+      "rank": 56,
+      "logo_id": "167083LG",
+      "orders": 2
+    },
+    {
+      "rank": 57,
+      "logo_id": "27374LG",
+      "orders": 2
+    },
+    {
+      "rank": 58,
+      "logo_id": "62050LG",
+      "orders": 2
+    },
+    {
+      "rank": 59,
+      "logo_id": "125325LG",
+      "orders": 1
+    },
+    {
+      "rank": 60,
+      "logo_id": "161677LG",
+      "orders": 1
+    },
+    {
+      "rank": 61,
+      "logo_id": "161680LG",
+      "orders": 1
+    },
+    {
+      "rank": 62,
+      "logo_id": "161926LG",
+      "orders": 1
+    },
+    {
+      "rank": 63,
+      "logo_id": "167028LG",
+      "orders": 1
+    },
+    {
+      "rank": 64,
+      "logo_id": "167031LG",
+      "orders": 1
+    },
+    {
+      "rank": 65,
+      "logo_id": "167035LG",
+      "orders": 1
+    },
+    {
+      "rank": 66,
+      "logo_id": "167161LG",
+      "orders": 1
+    },
+    {
+      "rank": 67,
+      "logo_id": "167163LG",
+      "orders": 1
+    },
+    {
+      "rank": 68,
+      "logo_id": "47962LG",
+      "orders": 1
+    },
+    {
+      "rank": 69,
+      "logo_id": "69723LG",
+      "orders": 1
+    }
+  ]
+}

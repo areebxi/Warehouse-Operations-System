@@ -92,11 +92,17 @@ def load_custom_label_stock_map(
         try:
             with open(csv_path, encoding=encoding, newline="") as handle:
                 reader = csv.DictReader(handle)
+                rename = clc.rename_legacy_headers(
+                    [name for name in (reader.fieldnames or []) if name]
+                )
                 mapping: dict[str, str] = {}
                 empty_ids: set[str] = set()
-                for row in reader:
+                for raw in reader:
+                    row = clc.normalize_cl_record(raw, rename)
                     label = (row.get(clc.CUSTOM_LABEL) or "").strip()
                     stock_id = (row.get(STOCK_ID_COLUMN) or "").strip()
+                    if not stock_id:
+                        stock_id = (row.get("BTC SKU") or "").strip()
                     key = _norm_label(label)
                     if not key:
                         continue

@@ -90,6 +90,16 @@ def test_b40_gildan_b1050_sticker_b3700_sweatshirt() -> None:
                     "Product Type (Areeb)": "Short Sleeve T-Shirt",
                 }
             ),
+            # Brand blank; Gender Apparel contains GILDAN → B40 (locked 2026-10-07)
+            "m-t-ga-gildan": _cl_row(
+                **{
+                    "Custom_Label": "M-T-GA-GILDAN",
+                    "Brand": "",
+                    "Gender_Apparel": "GILDAN Softstyle T",
+                    "Category (Areeb)": "T-Shirts",
+                    "Product Type (Areeb)": "Short Sleeve T-Shirt",
+                }
+            ),
         }
     )
     r = group_orders(
@@ -98,6 +108,7 @@ def test_b40_gildan_b1050_sticker_b3700_sweatshirt() -> None:
             _order("H5", "999LG-A3-5000-DHR-XL", catalogs=heavy),
             _order("G5", "999LG-M-T-GD05-BLK-M", catalogs=heavy),
             _order("F15", "999LG-M221-15000", catalogs=heavy),
+            _order("GA", "999LG-M-T-GA-GILDAN", catalogs=heavy),
             _order("ST", "190941LG-STICKER-A4", catalogs=sticker),
             _order("SW", "88892LG-M-SS-BLK-M", catalogs=_sweatshirt_cats()),
             _order("HO", "130618LG-M-H-BLK-M", catalogs=hoodie),
@@ -109,6 +120,7 @@ def test_b40_gildan_b1050_sticker_b3700_sweatshirt() -> None:
     assert by["G40"] == "B40"
     assert by["H5"] == "B40"
     assert by["G5"] == "B40"
+    assert by["GA"] == "B40"
     assert by["F15"] != "B40"  # 15000 is not style 5000
     assert by["ST"] == "B1050"
     assert by["SW"] == "B3700"

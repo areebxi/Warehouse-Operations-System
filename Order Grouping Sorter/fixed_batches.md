@@ -35,4 +35,6 @@ Loader / match: `scripts/fixed_batches.py` + `grouping.fixed_batch_matches`.
 
 Row order = priority: first match wins (locked 2026-09-28). Dry-run prints `fixed-batch overlaps` for orders that also met a lower row. Plain piles with no fixed batch take `B2000`, `B2100`, `B2200`, `B2500`, `B2600`, `B2700`, … in the order made. `gildan_tee` = Brand Gildan + T-Shirts **or** style token `5000` / `G5000` in Item SKU or Gender Apparel (not a substring of `15000`).
 
+`gildan_tee` (B40): Category T-Shirts + (Brand Gildan **or** Gender Apparel contains GILDAN **or** style token `5000` / `G5000` in Item SKU or Gender Apparel; not a substring of `15000`).
+
 To add or change a fixed batch, edit that CSV.

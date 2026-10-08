@@ -27,4 +27,5 @@ Owner glossary for sorter / locks chats. Persist new locks same turn into `order
 - Graph values are **examples**, not a closed list — **except** Hashim #038 pick-list (`taxonomy_picklists.csv` / `taxonomy-picklist.mdc`).
 - **In-house manufacturer** = iron-on or sticker in warehouse. **Plain cannot be in-house** → unmatched.
 - Finish / SKU keys / printed-wins / attribute source: `grouping.mdc` (sorter stricter keys than universal `resolve_label`).
-- **Order Grouping Sorter** = reads `awaiting_shipment` + three catalogs; writes one CSV per process into Packing Input. Default dry-run; `--run` writes. Testing: **`1st Shift`** every `--run`.
+- **Order Grouping Sorter** = reads `awaiting_shipment` + three catalogs; writes one CSV per process into Packing Input. CLI default dry-run; `--run` writes. Testing: **`1st Shift`** every `--run`.
+- **run the group sorter** / **group my awaiting shipment** / **run the sorter** = straight `--run` (no dry-run first). Locked 2026-10-07.
