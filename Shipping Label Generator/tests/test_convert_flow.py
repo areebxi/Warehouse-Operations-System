@@ -40,12 +40,11 @@ def test_canonicalize_dedupes_by_order_and_sorts_by_numeric_then_string() -> Non
     assert "Source Index" in out.columns
 
 def test_dtf_key_lists_every_file_number(tmp_path: Path) -> None:
-    files_2 = [tmp_path / "DTF 200.xlsx", tmp_path / "DTF 400.xlsx"]
-    files_3 = [tmp_path / "DTF 200.xlsx", tmp_path / "DTF 300.xlsx", tmp_path / "DTF 400.xlsx"]
-    files_5 = [tmp_path / f"DTF {n}.xlsx" for n in (3000, 3100, 3200, 3300, 3400)]
+    files_2 = [tmp_path / "DTF Des-P200.xlsx", tmp_path / "DTF Des-P400.xlsx"]
+    files_5 = [tmp_path / f"DTF Des-P{n}.xlsx" for n in (3000, 3100, 3200, 3300, 3400)]
 
     assert _dtf_key_for_manifest(files_2) == "200-400"
-    assert _dtf_key_for_manifest(files_3) == "200-300-400"
     assert _dtf_key_for_manifest(files_5) == "3000-3100-3200-3300-3400"
     assert _dtf_key_for_manifest([tmp_path / "only_500.xlsx"]) == "500"
+    assert _dtf_key_for_manifest([tmp_path / "DTF Des-PB1050-S3.xlsx"]) == "B1050-S3"
 

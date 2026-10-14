@@ -51,8 +51,8 @@ def sheet_catalog(wb: Workbook) -> None:
         ("Print Positions", "have; split later", "print position split (v2)", YELLOW, "off"),
         ("Amazon Prime (CL)", "leave — not grouping", "PO / inventory only", YELLOW, "not grouping"),
         ("customisation type", "CL column empty; v1 off", "name slot x in v1", YELLOW, "off"),
-        ("Plain Database.xlsx", "grouping run is READ", "till last dash → SKU", GREEN, "match"),
-        ("Packs Database.xlsx", "grouping run is READ", "whole SKU → Channel Child SKU", GREEN, "match"),
+        ("Plain Database.csv", "grouping run is READ", "till last dash → SKU", GREEN, "match"),
+        ("Packs Database.csv", "grouping run is READ", "whole SKU → Channel Child SKU", GREEN, "match"),
     ]
     for r, (col, do, used, bg, v1) in enumerate(rows, start=5):
         put(ws, r, 1, col, bold=True)

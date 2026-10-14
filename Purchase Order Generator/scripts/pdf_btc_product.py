@@ -72,51 +72,56 @@ def _lookup_product_details(
     return {}
 
 
-def _load_pack_names_map(excel_path: str) -> dict:
-    """Load {normalized_pack_sku -> Pack Name} using openpyxl (B=SKU, C=Pack Name)."""
+def _iter_pack_rows(path: str):
+    from pathlib import Path
+
+    p = Path(path)
+    if p.suffix.lower() == ".csv":
+        import csv
+
+        with p.open(encoding="cp1252", newline="") as f:
+            yield from csv.DictReader(f)
+        return
+    from openpyxl import load_workbook
+
+    wb = load_workbook(path, data_only=True, read_only=True)
     try:
-        from openpyxl import load_workbook
-    except Exception:
-        return {}
-    try:
-        wb = load_workbook(excel_path, data_only=True, read_only=True)
         ws = wb.active
-        pack_names = {}
-        for row in ws.iter_rows(min_row=2, max_col=3, values_only=True):
-            pack_sku = row[1]
-            pack_name = row[2] if len(row) > 2 else None
-            if not pack_sku:
-                continue
-            sku_str = str(pack_sku).strip()
-            if not sku_str:
-                continue
-            normalized = sku_str.split('-')[0] if '-' in sku_str else sku_str
-            pack_names[normalized] = str(pack_name).strip() if pack_name is not None else ''
-        return pack_names
+        it = ws.iter_rows(values_only=True)
+        headers = [str(h).strip() if h is not None else "" for h in next(it)]
+        for raw in it:
+            yield {
+                headers[i]: raw[i]
+                for i in range(min(len(headers), len(raw)))
+                if headers[i]
+            }
+    finally:
+        wb.close()
+
+
+def _pack_cell_map(path: str, column: str) -> dict:
+    out = {}
+    for row in _iter_pack_rows(path):
+        sku_str = str(row.get("Channel Child SKU") or "").strip()
+        if not sku_str:
+            continue
+        normalized = sku_str.split("-", 1)[0] if "-" in sku_str else sku_str
+        val = row.get(column)
+        out[normalized] = "" if val is None else str(val).strip()
+    return out
+
+
+def _load_pack_names_map(excel_path: str) -> dict:
+    """Load {normalized_pack_sku -> Pack Name}."""
+    try:
+        return _pack_cell_map(excel_path, "Pack Name")
     except Exception:
         return {}
 
+
 def _load_pack_titles_map(excel_path: str) -> dict:
-    """Load {normalized_pack_sku -> Title} using openpyxl (B=SKU, AI=Title)."""
+    """Load {normalized_pack_sku -> Supplier Name} (sheet column AI)."""
     try:
-        from openpyxl import load_workbook
-    except Exception:
-        return {}
-    try:
-        wb = load_workbook(excel_path, data_only=True, read_only=True)
-        ws = wb.active
-        pack_titles = {}
-        # Column AI = 35 (1-based), so index 34 (0-based)
-        for row in ws.iter_rows(min_row=2, max_col=35, values_only=True):
-            pack_sku = row[1]  # Column B
-            pack_title = row[34] if len(row) > 34 else None  # Column AI
-            if not pack_sku:
-                continue
-            sku_str = str(pack_sku).strip()
-            if not sku_str:
-                continue
-            normalized = sku_str.split('-')[0] if '-' in sku_str else sku_str
-            pack_titles[normalized] = str(pack_title).strip() if pack_title is not None else ''
-        return pack_titles
+        return _pack_cell_map(excel_path, "Supplier Name")
     except Exception:
         return {}

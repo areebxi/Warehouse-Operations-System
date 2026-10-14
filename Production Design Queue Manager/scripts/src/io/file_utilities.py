@@ -55,21 +55,18 @@ def remove_apparel_size_prefix(design_code: Union[str, None]) -> str:
 
 
 def extract_text_after_des(filename: Optional[str]) -> Optional[str]:
-    """Extract process number after 'Des-' from filename (DTF Des files)."""
+    """Canvas header stem — same as the saved PNG (`P100` → `100`)."""
     if not filename:
         return None
+    if "Des-" not in filename:
+        return None
+    import sys
+    from pathlib import Path
 
-    if 'Des-' in filename:
-        idx = filename.find('Des-')
-        if idx != -1:
-            # 4 is length of 'Des-'
-            text_after = filename[idx + 4:]
-            # Handle case where text_after is just extension (e.g., ".xlsx")
-            if text_after and text_after.startswith('.'):
-                return ""
+    warehouse = Path(__file__).resolve().parents[4]
+    if str(warehouse) not in sys.path:
+        sys.path.insert(0, str(warehouse))
+    from shared.skip_batches import output_stem_from_dtf_name
 
-            text_after = os.path.splitext(text_after)[0].strip()
-            return text_after if text_after else ""
-
-    return None
+    return output_stem_from_dtf_name(filename)
 

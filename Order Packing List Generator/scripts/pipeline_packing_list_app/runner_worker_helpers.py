@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import queue
+import threading
 from pathlib import Path
 
 from pipeline_runtime.pipeline_log import PipelineLog
+from pipeline_runtime.run_design_queues_step import run_design_queues_for_outputs
 from pipeline_runtime.runner import run_pipeline
 from pipeline_runtime.runner_utils import _sanitize_process_for_filename
 
@@ -78,3 +81,58 @@ def emit_batch_banner(app, message: str, logs: list[PipelineLog]) -> None:
         app._log_queue.put(message)
     for _pl in logs:
         _pl.detail(message)
+
+
+def handoff_design_queues(app, output_root, logs: list[PipelineLog]) -> None:
+    """Copy this file's DTF Des into SharedInbox and run Design Queues."""
+    if output_root is None:
+        return
+    run_design_queues_for_outputs(
+        [output_root],
+        make_design_queues=bool(app.make_design_queues_var.get()),
+        log=lambda msg: emit_batch_banner(app, msg, logs),
+        date_dd_mm_yyyy=app.date_var.get().strip(),
+        shift_label=app.shift_var.get().strip(),
+    )
+
+
+class DesignQueueHandoff:
+    """Run one Design Queues job at a time while the next packing file continues."""
+
+    def __init__(self, app) -> None:
+        self._app = app
+        self._jobs: queue.Queue = queue.Queue()
+        self._thread: threading.Thread | None = None
+
+    def submit(self, output_root, logs: list[PipelineLog]) -> None:
+        if output_root is None or not bool(self._app.make_design_queues_var.get()):
+            return
+        if self._thread is None:
+            self._thread = threading.Thread(
+                target=self._loop, name="design-queue-handoff", daemon=True
+            )
+            self._thread.start()
+        self._jobs.put((output_root, list(logs)))
+
+    def _loop(self) -> None:
+        while True:
+            item = self._jobs.get()
+            try:
+                if item is None:
+                    return
+                output_root, logs = item
+                run_design_queues_for_outputs(
+                    [output_root],
+                    make_design_queues=True,
+                    log=lambda msg, logs=logs: emit_batch_banner(self._app, msg, logs),
+                    date_dd_mm_yyyy=self._app.date_var.get().strip(),
+                    shift_label=self._app.shift_var.get().strip(),
+                )
+            finally:
+                self._jobs.task_done()
+
+    def finish(self) -> None:
+        if self._thread is None:
+            return
+        self._jobs.put(None)
+        self._thread.join()

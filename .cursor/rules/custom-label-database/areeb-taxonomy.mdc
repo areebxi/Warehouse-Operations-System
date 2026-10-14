@@ -65,7 +65,7 @@ Uneek `Department (Areeb)` is Gender; BTC `Department (Areeb)` is garment Descri
 ## Plain / Packs
 
 - Plain fill is **blank-only**. Lookup: `SKU` → BTC UID, else `SKU` → Uneek Short Code, else `Product Code` → BTC SPC, else leftover system `plain_leftover`.
-- Packs (`01-Database`): `Item 1 SKU` → BTC UID, else `Product Code` → BTC SPC, else Uneek Short Code / Product Code. Never copy Packs `Description` (eBay HTML) into `Department (Areeb)`. Blank-only.
+- Packs (`Packs Database.csv`): `Item 1 SKU` → BTC UID, else `Product Code` → BTC SPC, else Uneek Short Code / Product Code. Never copy Packs `Description` (eBay HTML) into `Department (Areeb)`. Blank-only.
 
 ## Plain leftover (`plain_leftover`)
 

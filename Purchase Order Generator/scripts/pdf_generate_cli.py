@@ -9,6 +9,7 @@ import pandas as pd
 from app_paths import tag_output_dir
 from pdf_btc_product import _load_btc_product_data_by_uid, _lookup_product_details
 from pdf_constants import COLUMN_NAMES, MARGIN, PLAIN_ITEMS_CSV, PRODUCT_DATABASE_FILE, SCRIPT_DIR
+from pdf_plain_load import read_plain_database
 from pdf_page import PDF
 
 def generate_packing_slips():
@@ -17,7 +18,7 @@ def generate_packing_slips():
 
     try:
         orders_df = pd.read_csv(PLAIN_ITEMS_CSV, dtype={COLUMN_NAMES['sku']: str, COLUMN_NAMES['process']: str})
-        products_df = pd.read_excel(PRODUCT_DATABASE_FILE, dtype={COLUMN_NAMES['db_sku']: str, COLUMN_NAMES['product_code']: str})
+        products_df = read_plain_database(PRODUCT_DATABASE_FILE)
         # Load Pack Names and Titles maps via openpyxl
         pack_names_map = _load_pack_names_map(PACKS_DATABASE_FILE)
         pack_titles_map = _load_pack_titles_map(PACKS_DATABASE_FILE)

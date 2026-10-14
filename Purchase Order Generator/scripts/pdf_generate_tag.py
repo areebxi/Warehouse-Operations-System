@@ -13,6 +13,7 @@ from pdf_btc_product import (
     _load_pack_titles_map,
 )
 from pdf_constants import COLUMN_NAMES, MARGIN, PACKS_DATABASE_FILE, PRODUCT_DATABASE_FILE
+from pdf_plain_load import read_plain_database
 from pdf_generate_item import render_slip_item
 from pdf_page import PDF
 
@@ -40,10 +41,7 @@ def generate_packing_slips_for_tag(
                 COLUMN_NAMES["component_colours"]: str,
             },
         )
-        products_df = pd.read_excel(
-            plain_path,
-            dtype={COLUMN_NAMES["db_sku"]: str, COLUMN_NAMES["product_code"]: str},
-        )
+        products_df = read_plain_database(plain_path)
         pack_names_map = _load_pack_names_map(str(packs_path))
         pack_titles_map = _load_pack_titles_map(str(packs_path))
         export_by_uid = _load_btc_product_data_by_uid()

@@ -105,8 +105,10 @@ def calculate_image_dimensions(
                 f"({target_width_mm:.1f}mm x {target_height_mm:.1f}mm)"
             )
 
-        # Choose constraint based on original image orientation
-        if img.width > img.height:
+        # Position-hint box is exact mm. Other sizes still fit inside the box.
+        if match_type == "filename_position_hint":
+            width_px, height_px = target_width_px, target_height_px
+        elif img.width > img.height:
             width_px = target_width_px
             height_px = int(target_width_px / original_aspect)
             log_lines.append(
@@ -122,7 +124,9 @@ def calculate_image_dimensions(
             )
 
         # Validate vs the other constraint and adjust if needed
-        if img.width > img.height:
+        if match_type == "filename_position_hint":
+            pass
+        elif img.width > img.height:
             if height_px > target_height_px:
                 log_lines.append(
                     f"  validation: height {height_px}px exceeds target_height_px "

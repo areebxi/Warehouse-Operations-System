@@ -126,5 +126,8 @@ backups/*
 
 # --- Local git hygiene (added on first PC link) ---
 **/.cursor/debug*.log
+# Agent debug dumps (repo root and any folder). Not app Logs/.
+/debug-*.log
+**/debug-*.log
 Order Grouping Sorter/Today's Manually Made Files/**
 Order Grouping Sorter/scripts/_tmp_*/

@@ -15,6 +15,7 @@ Supervisor 2026-09-22: On duplicate-order SKU files in the **single** folder onl
 - `-P-` JPEG → 80×100 (including kids). Sleeve tokens → 100×100. Not the legacy kids 65×80 path.
 - Legacy `{OrderNumber}-P.png` / `-S.png` / `-S1.png` / `-S2.png` / `-SL.png` / `-SR.png` stays (unique orders). Kids `-K-` → 65×80 on that PNG-suffix path.
 - Main search stays PNG-only (`IMAGE_EXTENSIONS = ['.png']`). Do not expand to JPEG.
-- Hint lookup only when `is_duplicate_order`, `position` is None, and a single-folder PNG was found.
+- Hint lookup when `position` is None and a single-folder PNG was found, including a one-row order.
+- Also match `{Order}-P.jpg` / `{Order}-S.jpg` / `-S1.jpg` / `-S2.jpg` / `-SL.jpg` / `-SR.jpg` (and the same with `-{index}-`) beside that PNG. SKU form `{Order}-{index}-P-{sku}.jpg` still wins when both exist.
 - Missing Logo inherits via `process_personalised_designs`. Do not duplicate in the GUI.
 - Token tables live in `scripts/src/core/sku_position_hints.py` (no I/O). Do not import I/O from `image_resizing`.

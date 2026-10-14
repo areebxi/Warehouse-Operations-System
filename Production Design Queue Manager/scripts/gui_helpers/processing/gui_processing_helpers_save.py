@@ -1,17 +1,22 @@
 """Save/output helpers for processing flows."""
 
 import os
-import re
+import sys
 from datetime import datetime
+from pathlib import Path
 from typing import List, Tuple, Dict, Optional
 from tkinter import messagebox
 
 
 def extract_input_file_name(gui) -> str:
-    input_file_name = "output"
+    warehouse = Path(__file__).resolve().parents[3].parent
+    if str(warehouse) not in sys.path:
+        sys.path.insert(0, str(warehouse))
+    from shared.skip_batches import output_stem_from_dtf_name
+
     if hasattr(gui, 'input_file_path') and gui.input_file_path:
-        input_file_name = os.path.splitext(os.path.basename(gui.input_file_path))[0]
-    return re.sub(r'^DTF\s*Des-', '', input_file_name, flags=re.IGNORECASE).strip()
+        return output_stem_from_dtf_name(gui.input_file_path) or "output"
+    return "output"
 
 
 def get_output_folder() -> str:

@@ -62,11 +62,11 @@ def run_excel_steps(
         dispatch_date=dispatch_date,
         use_fixed_process_number=use_fixed_process_number,
         date_dd_mm_yyyy=date_dd_mm_yyyy,
-        shift_label=shift_label,
         token=token,
         log=log,
         lc=lc,
         discover_step6_csvs=discover_step6_csvs,
+        shift_label=shift_label,
         make_design_queues=make_design_queues,
     )
     return step6_csvs, unmatched_path, missing_logo_path

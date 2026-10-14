@@ -13,6 +13,11 @@ def cl_csv_path(from_path: object | None = None) -> Path:
     return database_shared_dir(from_path) / "custom_label" / "Custom_Label_Database.csv"
 
 
+def cl_areeb_csv_path(from_path: object | None = None) -> Path:
+    """Areeb reference CSV. Grouping reads this until the live export matches (2026-10-09)."""
+    return database_shared_dir(from_path) / "custom_label" / "Custom_Label_Database (Areeb).csv"
+
+
 def backups_root(from_path: object | None = None) -> Path:
     """Repo-root folder for snapshots, old code copies, and doc archives."""
     return warehouse_root_from(from_path) / "backups"
@@ -43,7 +48,7 @@ def shipstation_tags_path(from_path: object | None = None) -> Path:
 
 def plain_database_path(from_path: object | None = None) -> Path:
     """Shared Plain Database (grouping + PO slips; not PO-app-owned)."""
-    return database_shared_dir(from_path) / "plain" / "Plain Database.xlsx"
+    return database_shared_dir(from_path) / "plain" / "Plain Database.csv"
 
 
 def plain_database_archive_dir(from_path: object | None = None) -> Path:
@@ -52,7 +57,7 @@ def plain_database_archive_dir(from_path: object | None = None) -> Path:
 
 def packs_database_path(from_path: object | None = None) -> Path:
     """Shared Packs Database (grouping + PO slips; not PO-app-owned)."""
-    return database_shared_dir(from_path) / "packs" / "Packs Database.xlsx"
+    return database_shared_dir(from_path) / "packs" / "Packs Database.csv"
 
 
 def packs_database_archive_dir(from_path: object | None = None) -> Path:
@@ -104,6 +109,7 @@ def database_transfer_config_workbook_path(from_path: object | None = None) -> P
 __all__ = [
     "cl_app_dir",
     "cl_csv_path",
+    "cl_areeb_csv_path",
     "backups_root",
     "cl_backups_dir",
     "btc_product_data_path",

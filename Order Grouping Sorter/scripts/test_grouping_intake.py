@@ -84,12 +84,41 @@ def test_skip_dtfocean_wp_store() -> None:
             "items": [{"sku": "DTF-Transfer-5M", "name": "Buy DTF Transfer", "quantity": 1}],
         }
     ]
-    out, post, empty, skipped = orders_from_ss(
+    out, post, oos, empty, skipped = orders_from_ss(
         raw, {}, {1: "DTFOcean.co.uk WP"}, cat
     )
+    assert oos == 0
     assert out == []
     assert skipped == 1
     assert post == 0 and empty == 0
     assert "dtfocean.co.uk wp" in EXCLUDE_STORES
+
+
+def test_skip_warehouse_oos_tag() -> None:
+    from grouping import WAREHOUSE_OOS_TAG, orders_from_ss
+
+    cat = _cats()
+    raw = [
+        {
+            "orderNumber": "OOS1",
+            "shipByDate": "2026-10-09",
+            "storeId": 2,
+            "tagIds": [7],
+            "items": [{"sku": "77989LG-M-T-BLK-M", "name": "Tee", "quantity": 1}],
+        },
+        {
+            "orderNumber": "KEEP",
+            "shipByDate": "2026-10-09",
+            "storeId": 2,
+            "tagIds": [],
+            "items": [{"sku": "77989LG-M-T-BLK-M", "name": "Tee", "quantity": 1}],
+        },
+    ]
+    out, post, oos, empty, skipped = orders_from_ss(
+        raw, {7: "00000-Warehouse OOS"}, {2: "Own"}, cat
+    )
+    assert [o.number for o in out] == ["KEEP"]
+    assert oos == 1 and post == 0 and empty == 0 and skipped == 0
+    assert WAREHOUSE_OOS_TAG == "00000-Warehouse OOS"
 
 

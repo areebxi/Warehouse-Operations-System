@@ -51,7 +51,7 @@ Use `--dry-run` to preview, `--sku 218408` for one stock id, or `--no-brands` fo
 
 ## Live databases (via `shared/paths.py`)
 
-- Shared: `database/shared/plain/Plain Database.xlsx`, `database/shared/packs/Packs Database.xlsx`, Tags, CL, BTC/Uneek/Absolute Product Data
+- Shared: `database/shared/plain/Plain Database.xlsx`, `database/shared/packs/Packs Database.csv`, Tags, CL, BTC/Uneek/Absolute Product Data
 - PO app DB: `database/purchase-order-generator/` — stock CSV (+ Movie Poster SKUs)
 - Archives: `backups/plain/`, `backups/packs/`
 

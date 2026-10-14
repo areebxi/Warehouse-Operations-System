@@ -13,6 +13,7 @@ from pipeline_cl_lookup.enrich_cl_lookup import (
     build_cl_lookup,
     load_cl_database,
 )
+from pipeline_cl_lookup.enrich_plain_packs import apply_plain_packs
 from pipeline_cl_lookup.fetch_input_csv import fetch_input_csv
 from pipeline_fill_prime_images.service import fill_packing_columns_df
 from pipeline_runtime.order_number_csv import coerce_order_number_columns
@@ -68,7 +69,7 @@ def _process_one_csv(
         return None
 
     df = coerce_order_number_columns(pd.DataFrame(rows))
-    enriched = apply_cl_enrichment(df, cache.cl_lookup, log=None)
+    enriched = apply_plain_packs(apply_cl_enrichment(df, cache.cl_lookup, log=None), log=None)
     if "Gender Apparel" not in enriched.columns:
         raise ValueError("Enriched data missing 'Gender Apparel' column.")
 

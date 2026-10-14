@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-import re
 import sys
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
 
 from shared import paths as wh
+from shared.skip_batches import output_stem_from_dtf_name
 from src.core.canvas_arranger import pack_designs
 from src.core.canvas_creation import create_canvas_image, save_canvas_image
 from src.core.design_folder_routing import find_designs_for_dtf_row
@@ -65,8 +65,8 @@ def _build_ctx(settings: dict) -> SimpleNamespace:
 
 
 def _output_stem(file_path: Path) -> str:
-    # Match GUI naming: P50.png / P50_Part 1.png (overwrite on re-run).
-    return re.sub(r"^DTF\s*Des-", "", file_path.stem, flags=re.IGNORECASE).strip()
+    # Match GUI naming: 50.png / 50_Part 1.png (overwrite on re-run).
+    return output_stem_from_dtf_name(file_path.name)
 
 
 def _save_batches(ctx: SimpleNamespace, batches: list, file_path: Path) -> list[Path]:

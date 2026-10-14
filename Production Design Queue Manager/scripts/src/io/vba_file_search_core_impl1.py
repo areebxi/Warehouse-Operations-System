@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 import os
 from typing import Dict, List, Optional, Tuple, Union
 from src.core.sku_position_hints import POSITION_HINT_EXTENSIONS, POSITION_HINT_TOKENS, flags_for_position_token
@@ -168,19 +168,23 @@ def find_sku_position_variant_files(
     folder_path: Optional[str],
     exclude_path: Optional[str] = None,
 ) -> List[Dict[str, str]]:
-    """Companion JPEGs next to a SKU-named PNG. First hit in POSITION_HINT_TOKENS wins."""
+    """Companion JPEGs next to the PNG. First hit in POSITION_HINT_TOKENS wins."""
     if not folder_path or not os.path.isdir(folder_path):
         return []
-    if item_sku is None or not str(item_sku).strip():
-        return []
-    sku_str = _normalize_sku_for_filename(item_sku)
+    sku_str = ""
+    if item_sku is not None and str(item_sku).strip():
+        sku_str = _normalize_sku_for_filename(item_sku)
     prefix = _sku_based_stem_prefix(str(order_number).strip(), duplicate_index)
     found: List[Dict[str, str]] = []
     for token in POSITION_HINT_TOKENS:
-        stem = f"{prefix}{token}-{sku_str}"
-        path = _search_exact_image_stem(folder_path, stem, exclude_path, POSITION_HINT_EXTENSIONS)
-        if path:
-            found.append({"path": path, "token": token})
+        stems = [f"{prefix}{token}"]
+        if sku_str:
+            stems.insert(0, f"{prefix}{token}-{sku_str}")
+        for stem in stems:
+            path = _search_exact_image_stem(folder_path, stem, exclude_path, POSITION_HINT_EXTENSIONS)
+            if path:
+                found.append({"path": path, "token": token})
+                break
     return found
 
 

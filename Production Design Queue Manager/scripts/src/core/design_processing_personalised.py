@@ -69,7 +69,7 @@ def process_personalised_designs(
 
         if single_path:
             filename_token = None
-            if is_duplicate_order and not position:
+            if not position:
                 filename_token, hinted_pocket, hinted_sleeve = resolve_sku_position_hint(
                     order_number,
                     duplicate_index,

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import re
 from pathlib import Path
 
 import pandas as pd
@@ -15,6 +14,7 @@ from scripts.app.flows.convert.parse_excel import parse_excel_file
 from scripts.app.logging.jsonl import JsonlLogger
 from scripts.app.logging.orders_audit import OrderAuditLogger
 from scripts.app.util.hashing import sha256_file
+from scripts.app.util.process_numbers import dtf_id_from_stem
 from scripts.app.util.time import local_date_ymd
 
 
@@ -28,52 +28,23 @@ def _orders_csv_path(cfg: AppConfig) -> Path:
     return date_dir / p
 
 
-_DTF_ID_RE = re.compile(r"(\d+)")
-
-
 def _dtf_id_from_source_files(source_files: list[Path]) -> str | None:
-    if not source_files:
-        return None
     if len(source_files) != 1:
         return None
-    stem = source_files[0].stem
-    matches = _DTF_ID_RE.findall(stem)
-    return matches[-1] if matches else None
-
-
-def _dtf_range_key(source_files: list[Path]) -> str | None:
-    """
-    If multiple input files are present, build a stable key from every numeric id
-    in their stems, e.g. "200-300-400" for three files (not just "200-400").
-    Returns None if any id can't be parsed.
-    """
-    ids: list[int] = []
-    for p in source_files:
-        stem = p.stem
-        matches = _DTF_ID_RE.findall(stem)
-        if not matches:
-            return None
-        try:
-            ids.append(int(matches[-1]))
-        except Exception:
-            return None
-    if not ids:
-        return None
-    ids = sorted(set(ids))
-    if len(ids) == 1:
-        return str(ids[0])
-    return "-".join(str(i) for i in ids)
+    return dtf_id_from_stem(source_files[0].stem)
 
 
 def _dtf_key_for_manifest(source_files: list[Path]) -> str | None:
     """
-    Key used by Print to name the combined PDF:
-    - single file: last numeric token in stem (e.g. "200")
-    - multiple files: all numeric ids joined (e.g. "200-300-400") when parseable
+    Combined-PDF name. DTF Des-PB1050-S3 -> B1050-S3 (not the trailing 3).
+    Several files join those tokens. Legacy DTF Des-P100 stays 100.
     """
-    if len(source_files) == 1:
-        return _dtf_id_from_source_files(source_files)
-    return _dtf_range_key(source_files)
+    ids = [dtf_id_from_stem(p.stem) for p in source_files]
+    if not ids or any(not i for i in ids):
+        return None
+    if len(ids) == 1:
+        return ids[0]
+    return "-".join(dict.fromkeys(ids))
 
 
 def run_convert(cfg: AppConfig, log: JsonlLogger) -> int:

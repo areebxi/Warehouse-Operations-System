@@ -30,7 +30,7 @@ flowchart LR
 
 1. **Catalog** — Custom Label fills and NocoDB against `database/shared/custom_label/Custom_Label_Database.csv`.
 2. **Sorter** — ShipStation `awaiting_shipment` → process CSVs into Packing `Input/{DD-MM-YYYY}/1st Shift/` (testing). Fixed batches `B80` / `B100` / …; leftover `B1` / `B2` / …; plus `RESEND` and `UNMATCHED`.
-3. **Packing** — Input CSVs → app `Output/` plus (when Make design queues on) `runtime/SharedInbox/DTF Des/{date}/{shift}/`; sync Queue `--files` before PDFs.
+3. **Packing** — Input CSVs → app `Output/` (Excel then PDFs). When Make design queues is on, that file’s DTF Des is copied to `runtime/SharedInbox/DTF Des/{date}/{shift}/` and Queue `--files` runs after the PDFs. The next input’s packing can overlap that queue job.
 4. **Queue** — SharedInbox Design Queues watcher / Packing `--files` (no approval); Skip Batches; optional DTF Queues PNG copy.
 5. **Shipping** — manual only from app `DTF Des Files/` (does not auto-read SharedInbox yet).
 6. **Purchase Order Generator** — parallel: tags → BTC stock → packing slips under `output/`.

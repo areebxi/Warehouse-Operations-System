@@ -1,42 +1,41 @@
-"""Fill Areeb columns on Packs Database."""
+"""Fill Areeb columns on Packs Database (blank-only)."""
 
 from __future__ import annotations
 
+import csv
 from collections import defaultdict
 
-from openpyxl import load_workbook
-
-from fill_areeb_util import (
-    PACKS_SHEET,
-    backup_file,
-    count_write,
-    header_index,
-    print_stats,
-)
+from fill_areeb_util import backup_file, count_write, print_stats
 from shared import paths as wh
 from shared.areeb_taxonomy import AREEB_COLS, AreebCatalogs, apply_areeb, cell
 
 
+def _read_csv(path):
+    last: Exception | None = None
+    for enc in ("utf-8-sig", "cp1252", "latin-1"):
+        try:
+            with path.open(encoding=enc, newline="") as f:
+                reader = csv.DictReader(f)
+                return enc, list(reader.fieldnames or []), list(reader)
+        except UnicodeDecodeError as exc:
+            last = exc
+    raise last or RuntimeError(f"Could not decode {path}")
+
+
 def fill_packs(cat: AreebCatalogs, *, dry_run: bool) -> dict[str, int]:
     path = wh.packs_database_path()
-    wb = load_workbook(path, read_only=False, data_only=False)
-    ws = wb[PACKS_SHEET]
-    headers = [cell(c.value) for c in next(ws.iter_rows(min_row=1, max_row=1))]
-    idx = header_index(headers)
+    enc, headers, rows = _read_csv(path)
     for col in AREEB_COLS:
-        if col not in idx:
+        if col not in headers:
             raise SystemExit(f"Packs Database missing column {col!r}")
     stats: dict[str, int] = defaultdict(int)
     samples: list[str] = []
-    for r in range(2, ws.max_row + 1):
-        item1 = cell(ws.cell(r, idx.get("Item 1 SKU", -1) + 1).value) if "Item 1 SKU" in idx else ""
-        pcode = cell(ws.cell(r, idx.get("Product Code", -1) + 1).value) if "Product Code" in idx else ""
-        child = (
-            cell(ws.cell(r, idx.get("Channel Child SKU", -1) + 1).value)
-            if "Channel Child SKU" in idx
-            else ""
-        )
-        current = {col: cell(ws.cell(r, idx[col] + 1).value) for col in AREEB_COLS}
+    changed = False
+    for row in rows:
+        item1 = cell(row.get("Item 1 SKU"))
+        pcode = cell(row.get("Product Code"))
+        child = cell(row.get("Channel Child SKU"))
+        current = {col: cell(row.get(col)) for col in AREEB_COLS}
         values = cat.classify_packs(item1_sku=item1, product_code=pcode, channel_child_sku=child)
         patch = apply_areeb(current, values)
         stats["rows"] += 1
@@ -47,19 +46,20 @@ def fill_packs(cat: AreebCatalogs, *, dry_run: bool) -> dict[str, int]:
                 stats["already_or_empty_incoming"] += 1
             continue
         count_write(stats, values.source, len(patch))
+        changed = True
         if len(samples) < 8:
             samples.append(f"child={child} item1={item1} src={values.source} {patch}")
         if not dry_run:
-            for col, val in patch.items():
-                ws.cell(r, idx[col] + 1).value = val
+            row.update(patch)
     print("Packs Database:", path)
     print_stats(stats, samples)
-    if dry_run:
-        wb.close()
+    if dry_run or not changed:
         return dict(stats)
     bak = backup_file(path, wh.packs_database_archive_dir())
     print(f"  backup {bak}")
-    wb.save(path)
-    wb.close()
+    with path.open("w", encoding=enc, newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=headers, lineterminator="\r\n", extrasaction="ignore")
+        writer.writeheader()
+        writer.writerows(rows)
     print("  wrote", path)
     return dict(stats)

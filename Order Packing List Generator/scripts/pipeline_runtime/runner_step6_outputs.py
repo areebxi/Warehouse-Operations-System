@@ -10,6 +10,7 @@ import pandas as pd
 from pipeline_generate_excel_outputs.config import REQUIRED as EXCEL_REQUIRED_COLUMNS
 from pipeline_generate_excel_outputs.service import run as run_generate_excel_outputs
 from pipeline_runtime.pipeline_log import PipelineLog, detail_callable
+from pipeline_runtime.run_design_queues_step import run_design_queues_for_outputs
 from pipeline_runtime.runner_step6_pdf import run_step6_pdf_phase
 from pipeline_runtime.runner_utils import (
     _FILENAME_UNSAFE,

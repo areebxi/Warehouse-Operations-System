@@ -3,10 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from scripts.app.util.process_numbers import process_number_sort_key
 
-# Share a summary only when a process has exactly this many orders/labels.
-# Processes with more than this get their own summary page.
-SHARE_SUMMARY_EXACT_LABELS = 1
+
+# Fallback when Configuration Workbook cell A2 is missing. Info page when the previous process has at least this many labels.
+SUMMARY_EVERY_LABELS = 10
 SHARED_SUMMARIES_ENABLED = True
 
 
@@ -30,10 +31,11 @@ class ProcessGroupResult:
 
 @dataclass(frozen=True)
 class SummaryBucket:
-    """One summary page covering one or more consecutive single-label processes."""
+    """Labels for one process. An info page is included only when include_summary is set."""
 
     summary_process_number: str
     members: tuple[ProcessGroupResult, ...]
+    include_summary: bool = True
 
     @property
     def process_numbers(self) -> list[str]:
@@ -69,80 +71,50 @@ class SummaryBucket:
         return max(counts.items(), key=lambda kv: kv[1])[0]
 
 
-def _sort_key(pn: str) -> tuple[int, str]:
-    s = str(pn).strip()
-    if s.isdigit():
-        return (0, f"{int(s):020d}")
-    return (1, s.lower())
-
-
-def _is_consecutive_process(prev: str, curr: str) -> bool:
-    """True only for numeric neighbors like 100 -> 101 (not 100 -> 200)."""
-    a = str(prev).strip()
-    b = str(curr).strip()
-    if not (a.isdigit() and b.isdigit()):
-        return False
-    return int(b) == int(a) + 1
-
-
-def _can_share(order_count: int, *, share_exact: int = SHARE_SUMMARY_EXACT_LABELS) -> bool:
-    """Share only when the process has exactly one label (by default)."""
-    return int(order_count) == int(share_exact)
-
-
 def bucket_process_groups_for_shared_summaries(
     results: list[ProcessGroupResult],
     *,
-    share_exact: int = SHARE_SUMMARY_EXACT_LABELS,
+    summary_every: int = SUMMARY_EVERY_LABELS,
 ) -> list[SummaryBucket]:
     """
-    Share summary pages only for processes with exactly one label.
+    Walk processes in order 1, 2, 3… (not 1, 10, 2). A process is never split.
 
-    - order_count == 1: share with consecutive single-label neighbors
-    - order_count >= 2: own summary page
-
-    Hard rule: never share across DTF/source files. When the source file changes,
-    always start a fresh summary page so the user can see the next file begin —
-    even if process numbers are consecutive (104 then 105).
+    Keep adding processes in the same DTF file. When their labels add up to
+    `summary_every` or more, one Batch Summary covers that run and sits in
+    front of those labels. A run left under the threshold has labels only.
     """
-    if share_exact < 0:
-        raise ValueError("share_exact must be >= 0")
+    if summary_every < 1:
+        raise ValueError("summary_every must be >= 1")
 
     ordered = sorted(
         results,
-        key=lambda r: (int(r.source_index), _sort_key(r.process_number)),
+        key=lambda r: (int(r.source_index), process_number_sort_key(r.process_number)),
     )
     buckets: list[SummaryBucket] = []
     pending: list[ProcessGroupResult] = []
+    pending_labels = 0
 
-    def _flush_pending() -> None:
-        nonlocal pending
+    def _flush() -> None:
+        nonlocal pending, pending_labels
         if not pending:
             return
         buckets.append(
             SummaryBucket(
                 summary_process_number=str(pending[0].process_number).strip(),
                 members=tuple(pending),
+                include_summary=pending_labels >= summary_every,
             )
         )
         pending = []
+        pending_labels = 0
 
     for r in ordered:
-        if _can_share(r.order_count, share_exact=share_exact):
-            if pending and (
-                pending[-1].source_key != r.source_key
-                or not _is_consecutive_process(pending[-1].process_number, r.process_number)
-            ):
-                _flush_pending()
-            pending.append(r)
-        else:
-            _flush_pending()
-            buckets.append(
-                SummaryBucket(
-                    summary_process_number=str(r.process_number).strip(),
-                    members=(r,),
-                )
-            )
-
-    _flush_pending()
+        n = len(r.label_paths)
+        if pending and pending[-1].source_key != r.source_key:
+            _flush()
+        pending.append(r)
+        pending_labels += n
+        if pending_labels >= summary_every:
+            _flush()
+    _flush()
     return buckets

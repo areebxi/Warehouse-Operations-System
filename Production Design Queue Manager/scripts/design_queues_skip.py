@@ -59,4 +59,9 @@ if __name__ == "__main__":
     assert batch_digits_from_name("DTF Des-P3570.xlsx") == "3570"
     assert should_skip_batch(Path("DTF Des-P3570.xlsx"), {"3570"})
     assert should_skip_batch(Path("DTF Des-P5570.xlsx"), {"5570"})
+    assert output_stem_from_dtf_name("DTF Des-P100.xlsx") == "100"
+    assert output_stem_from_dtf_name("DTF Des-PB100-S1.xlsx") == "B100-S1"
+    assert output_stem_from_dtf_name("DTF Des-PRESEND.xlsx") == "RESEND"
+    assert output_stem_from_dtf_name("B100-S1") == "B100-S1"
+    assert output_stem_from_dtf_name("P") == "P"
     print("design_queues_skip self-check OK")

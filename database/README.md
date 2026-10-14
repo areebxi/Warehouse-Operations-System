@@ -10,7 +10,7 @@ Live **database** files for the warehouse system. App folders hold code + run I/
 | `shared/shipstation_tags/ShipStation_Tags.xlsx` | ShipStation tags (Packing + PO) |
 | `shared/custom_label/Custom_Label_Database.csv` | Live CL catalog (snapshots: repo-root `backups/custom-label/`) |
 | `shared/plain/Plain Database.xlsx` | Shared plain catalog (grouping + PO; snapshots: `backups/plain/`) |
-| `shared/packs/Packs Database.xlsx` | Shared packs catalog (grouping + PO; snapshots: `backups/packs/`) |
+| `shared/packs/Packs Database.csv` | Shared packs catalog (grouping + PO; snapshots: `backups/packs/`) |
 | repo-root `backups/shared/` | Former local copies still read by a few scripts (`data_archive_dir()`) |
 | `custom-label-database/support/` | Size refs, mocks, shirts print sizes |
 | `custom-label-database/Apparel Images/` | CL apparel images |

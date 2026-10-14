@@ -131,6 +131,16 @@ def test_packs_item1_btc() -> None:
     )
 
 
+def test_absolute_stock_code_after_btc_uid() -> None:
+    cat = _Cat()
+    cat.absolute_by_code = {"AA22-36-L": {}, "aa22-36-l": {}}
+    assert (
+        classify_plain_row({"SKU": "AA22-36-L", "Product Code": "AA22"}, cat)
+        == ABSOLUTE_APPARELS
+    )
+    assert classify_plain_row({"SKU": "214332", "Product Code": "AA22"}, cat) == BTC_ACTIVEWEAR
+
+
 def test_bz10_body_suit_is_not_absolute() -> None:
     assert (
         classify_cl_row(
@@ -148,5 +158,6 @@ if __name__ == "__main__":
     test_cl_btc_and_uneek()
     test_plain_leftover_is_btc_not_absolute()
     test_packs_item1_btc()
+    test_absolute_stock_code_after_btc_uid()
     test_bz10_body_suit_is_not_absolute()
     print("ok")

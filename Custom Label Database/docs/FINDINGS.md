@@ -2,6 +2,10 @@
 
 Facts and locked lessons. Snapshot numbers that can drift are dated. Policy that must not be forgotten is also in `.cursor/rules/`.
 
+## W415 print size 2026-10-12
+
+Westford Mill Jute Stuff Bag `W415` is not a shirt. Given print size minus 20 mm on each side: XXS 8×12 cm → 60×100 mm, XS 12×16 → 100×140, S 18×22 → 160×200, M 25×28 → 230×260, L 34×40 → 320×380, XL 50×55 → 480×530. BTC product code `W415`, UIDs 144584–144589 (XXS through XL). Rule: `print-sizes.mdc`.
+
 ## CL warehouse stock colours 2026-09-23
 
 Warehouse in-house stock on Custom Label is no longer “every FOTL t-shirt”. `Supply Method` = `Warehouse Stock` only when:
@@ -235,7 +239,7 @@ On 24 Aug 2026: tens of thousands of rows named BTC Activewear still had **blank
 
 Canonical grouping cells: **`BTC Activewear`**, **`Uneek Clothing`**, **`Absolute Apparels`**. Uneek Product Data `Company` is 100% `Uneek Clothing`. Packs `BTC` was normalized to `BTC Activewear` on fill.
 
-**Absolute Product Data** added 9 Sep 2026 (`database/shared/absolute_product_data/Absolute_Product_Data.xlsx`, 27,015 rows / 629 styles). Warehouse **only buys babysuits** from Absolute: styles `C800T` / `C8020T` / `C8030T` (48 sheet rows). Do not treat the rest of that price list as warehouse suppliers. `BZ10-Body Suit` (7) is not Absolute.
+**Absolute Product Data** added 9 Sep 2026 (`database/shared/absolute_product_data/`, CSV when present else xlsx). From 13 Oct 2026 it loads beside BTC and Uneek: exact **Stock Code** → `Absolute Apparels`. A style merely listed on the sheet does not override a BTC UID or Uneek short code. Babysuit tokens `C800T` / `C8020T` / `C8030T` still match from the label. `BZ10-Body Suit` is not Absolute.
 
 **Filled 2026-09-09** (`python scripts/fill_supplier_name.py`):
 

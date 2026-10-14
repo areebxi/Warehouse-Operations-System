@@ -1,7 +1,8 @@
 from __future__ import annotations
 import os
-import re
+import sys
 import time
+from pathlib import Path
 import threading
 from tkinter import messagebox
 from src.core.canvas_creation import save_canvas_image as save_canvas_image_to_file
@@ -13,20 +14,17 @@ from gui_helpers.processing.gui_processing_helpers_save import (
 )
 from src.system.logging.run_logger import log_run_event
 
+_warehouse = Path(__file__).resolve().parents[3].parent
+if str(_warehouse) not in sys.path:
+    sys.path.insert(0, str(_warehouse))
+from shared.skip_batches import output_stem_from_dtf_name
+
 def save_canvas_for_file(gui, batches, file_path):
     """Save canvas for a specific file (used in folder processing)
     batches: list of batches, each batch is a list of arranged designs
     """
     try:
-        # Get DTF Des file name without extension
-        excel_file_name = os.path.splitext(os.path.basename(file_path))[0]
-        # Remove "DTF Des-" from filename (case-insensitive)
-        excel_file_name = re.sub(
-            r"^DTF\s*Des-",
-            "",
-            excel_file_name,
-            flags=re.IGNORECASE,
-        ).strip()
+        excel_file_name = output_stem_from_dtf_name(file_path)
 
         output_folder = get_output_folder()
 

@@ -15,4 +15,4 @@ Disagree (locked X, code Y) = flagged inconsistency (cite both). Grouping / matc
 
 **Verify before claiming:** locate before "exists"; search refs before "unused"; check consumers before editing `shared/`; run the app's existing test/self-check before "fixed".
 
-**Persist same turn:** new lock → owner in `docs/DECISIONS.md`. Built-state change → app HANDOFF (+ `PROJECT_STATE.md` if cross-app). Grouping locks: `supervisor-chat.mdc` hook → `order-grouping-locks.md` + progress xlsx; glossary → `order-grouping-sorter/standing-terms.mdc`. Behaviour/handoff edits also follow `docs-first.mdc` sync.
+**Persist same turn:** new lock → owner in `docs/DECISIONS.md`. Built-state change → app HANDOFF (+ `PROJECT_STATE.md` if cross-app). Grouping locks: `supervisor-chat.mdc` hook → `Order Grouping Sorter/order-grouping-locks.md` + progress xlsx; glossary → `order-grouping-sorter/standing-terms.mdc`. Behaviour/handoff edits also follow `docs-first.mdc` sync.

@@ -9,14 +9,15 @@ from PyPDF2 import PdfReader, PdfWriter
 def merge_process_pdf(
     *,
     out_path: Path,
-    summary_pdf_bytes: bytes,
+    summary_pdf_bytes: bytes | None,
     label_pdf_paths: list[Path],
     missed_pdf_bytes: bytes | None,
 ) -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     w = PdfWriter()
-    w.append(PdfReader(io.BytesIO(summary_pdf_bytes)))
+    if summary_pdf_bytes is not None:
+        w.append(PdfReader(io.BytesIO(summary_pdf_bytes)))
     for p in label_pdf_paths:
         w.append(PdfReader(p))
     if missed_pdf_bytes is not None:

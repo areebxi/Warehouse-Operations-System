@@ -18,6 +18,7 @@ def _create_arranged_design(design: Dict[str, Any], x: int, y: int) -> Dict[str,
         'width': design['width'],
         'height': design['height'],
         'size_code': design.get('size_code'),
+        'path': design.get('path'),
     }
 
 

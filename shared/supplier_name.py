@@ -3,13 +3,11 @@
 Supervisor lock 2026-09-09:
   BTC Activewear      = BTC Product Data UID or SPC, leftover numeric SKU, Packs BTC
   Uneek Clothing      = Uneek Short Code or Product Code
-  Absolute Apparels   = babysuits purchased from Absolute only
-                        (styles C800T / C8020T / C8030T)
+  Absolute Apparels   = babysuit style token, or Absolute Product Data Stock Code
   (blank)             = CL in-house iron-on / sticker — no supplier
 
-Absolute Product Data is a full wholesale price list. The warehouse only
-buys babysuits from them. Do not mark Gildan / bodywarmers / polos as Absolute
-just because they appear on that sheet.
+Absolute Product Data loads beside BTC and Uneek. Match the Stock Code.
+A style that only appears on the sheet does not take a BTC UID or Uneek code.
 """
 
 from __future__ import annotations
@@ -78,6 +76,10 @@ def join_supplier(
             return UNEEK_CLOTHING
         if _in_map(cat.uneek_by_short, key):
             return UNEEK_CLOTHING
+    absolute = getattr(cat, "absolute_by_code", None) or {}
+    for key in (sku, *extra_keys):
+        if _in_map(absolute, key):
+            return ABSOLUTE_APPARELS
     return BTC_ACTIVEWEAR
 
 

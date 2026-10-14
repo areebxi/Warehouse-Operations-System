@@ -13,12 +13,15 @@ def main() -> None:
     assert wh.packing_workbook_path() == db / "order-packing-list-generator" / "Workbook.xlsx"
     assert wh.queue_config_workbook_path() == db / "production-design-queue-manager" / "Configuration Workbook.xlsx"
     assert wh.po_data_dir() == db / "purchase-order-generator"
-    assert wh.plain_database_path() == db / "shared" / "plain" / "Plain Database.xlsx"
-    assert wh.packs_database_path() == db / "shared" / "packs" / "Packs Database.xlsx"
+    assert wh.plain_database_path() == db / "shared" / "plain" / "Plain Database.csv"
+    assert wh.packs_database_path() == db / "shared" / "packs" / "Packs Database.csv"
     assert wh.po_database_path() == wh.plain_database_path()
     assert wh.po_packs_database_path() == wh.packs_database_path()
     assert wh.po_gui_settings_path().is_relative_to(wh.po_app_dir() / "config")
     assert wh.cl_csv_path() == db / "shared" / "custom_label" / "Custom_Label_Database.csv"
+    assert wh.cl_areeb_csv_path() == (
+        db / "shared" / "custom_label" / "Custom_Label_Database (Areeb).csv"
+    )
     assert wh.custom_label_support_dir() == db / "custom-label-database" / "support"
     assert wh.images_apparel_dir() == db / "custom-label-database" / "Apparel Images"
     assert wh.btc_product_data_path() == db / "shared" / "btc_product_data" / "BTC_Product_Data.csv"

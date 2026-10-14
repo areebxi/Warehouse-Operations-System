@@ -2,6 +2,18 @@
 
 Issues discussed with the AI agent, newest first.
 
+## 2026-10-13 09:40
+
+**Issue:** After the app opened, the pipeline stopped with `run_excel_steps() got an unexpected keyword argument 'make_design_queues'`, then `name 'copy_dtf_des_to_shared_inbox' is not defined`.
+
+**Resolution:** `run_excel_steps` and steps 6–7 accept `make_design_queues` and pass `discover_step6_csvs` and `shift_label`. The Excel step imports `copy_dtf_des_to_shared_inbox` from `runner_utils_io`.
+
+## 2026-10-13 09:05
+
+**Issue:** `run_packing_list_app.bat` did not open the app; `pythonw` hid an `IndentationError` in `emit_batch_banner`.
+
+**Resolution:** Put `_pl.detail(message)` back inside the `for` loop and removed the same stray line from `DesignQueueHandoff.finish`. Import succeeds and the GUI stays open.
+
 ## 2026-10-06 12:45
 
 **Issue:** Preflight failed at step 2/4 with `CL CSV must have a column named 'Custom_Label'` while the live CSV still used Areeb-era spaced headers.

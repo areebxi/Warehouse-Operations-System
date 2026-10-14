@@ -17,7 +17,7 @@ Live paths via `shared/paths.py` / `load_config` (I/O + yaml in this app; ShipSt
 
 |------|--------|
 
-| `python -m scripts.app.main` (convert / print / void) | `bat_files/`, `tests/` |
+| `python -m scripts.app.main` (convert / print / sample-print / void) | `bat_files/`, `tests/` |
 
 | `DTF Des Files/` | `DTF Des Files - Processed/` |
 

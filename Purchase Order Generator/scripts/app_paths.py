@@ -49,9 +49,9 @@ ASSETS_DIR = wh.images_po_dir()
 OUTPUT_DIR = wh.po_output_dir()
 DONE_DIR = APP_ROOT / "00-Done"
 
-PRODUCT_DATABASE_FILENAME = "Plain Database.xlsx"
+PRODUCT_DATABASE_FILENAME = "Plain Database.csv"
 SHIPSTATION_TAGS_FILENAME = "ShipStation Tags.xlsx"
-PACKS_DATABASE_FILENAME = "Packs Database.xlsx"
+PACKS_DATABASE_FILENAME = "Packs Database.csv"
 
 
 def data_path(filename: str) -> Path:
@@ -60,9 +60,9 @@ def data_path(filename: str) -> Path:
         return wh.btc_product_data_path()
     if filename in ("ShipStation Tags.xlsx", "ShipStation_Tags.xlsx"):
         return wh.shipstation_tags_path()
-    if filename == PRODUCT_DATABASE_FILENAME:
+    if filename in (PRODUCT_DATABASE_FILENAME, "Plain Database.xlsx", "Plain Database.csv"):
         return wh.plain_database_path()
-    if filename == PACKS_DATABASE_FILENAME:
+    if filename in (PACKS_DATABASE_FILENAME, "Packs Database.xlsx"):
         return wh.packs_database_path()
     in_data = DATA_DIR / filename
     if in_data.exists():

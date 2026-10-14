@@ -10,8 +10,8 @@ App DB in `database/purchase-order-generator/` (stock only). Plain / Packs / BTC
 
 | Path | Role |
 |------|------|
-| `database/shared/plain/Plain Database.xlsx` | Shared plain catalog (slips + grouping). `Supplier Name` filled 2026-09-09. |
-| `database/shared/packs/Packs Database.xlsx` | Shared packs catalog |
+| `database/shared/plain/Plain Database.csv` | Shared plain catalog (slips + grouping + packing). |
+| `database/shared/packs/Packs Database.csv` | Shared packs catalog |
 | `database/purchase-order-generator/stock_levels_*.csv` | BTC free stock |
 | `database/shared/shipstation_tags/ShipStation_Tags.xlsx` | Shared tags |
 | `database/shared/btc_product_data/BTC_Product_Data.csv` | Shared BTC Product Data |

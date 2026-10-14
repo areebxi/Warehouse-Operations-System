@@ -2,10 +2,8 @@ from datetime import date
 from pathlib import Path
 from typing import Callable, Optional
 
-import pandas as pd
-
 from pipeline_runtime.order_number_csv import read_csv_with_order_numbers
-from pipeline_runtime.runner_utils import copy_dtf_des_to_shared_inbox
+from pipeline_runtime.runner_utils_io import copy_dtf_des_to_shared_inbox
 from pipeline_split_by_process_item.common import pin_batch_shift
 
 from .config import DTF_SKU_MAP_CSV, REQUIRED

@@ -9,6 +9,7 @@ from shared.areeb_taxonomy.consts import (
     SOURCE_BTC_SPC,
     SOURCE_BTC_UID,
     SOURCE_NONE,
+    SOURCE_PLAIN_LEFTOVER,
     SOURCE_UNEEK_CODE,
     SOURCE_UNEEK_SHORT,
     UNEEK_SRC,
@@ -24,6 +25,7 @@ class AreebCatalogs:
         self.btc_by_spc: dict[str, dict[str, str]] = {}
         self.uneek_by_short: dict[str, dict[str, str]] = {}
         self.uneek_by_code: dict[str, dict[str, str]] = {}
+        self.absolute_by_code: dict[str, dict[str, str]] = {}
 
     def btc_uid(self, sku: object) -> AreebValues:
         row = self.btc_by_uid.get(cell(sku)) or self.btc_by_uid.get(keyfold(sku))
@@ -43,6 +45,18 @@ class AreebCatalogs:
         if not row:
             return AreebValues()
         return from_src_row(row, UNEEK_SRC, SOURCE_UNEEK_SHORT)
+
+    def absolute_stock(self, sku: object) -> AreebValues:
+        row = self.absolute_by_code.get(cell(sku)) or self.absolute_by_code.get(keyfold(sku))
+        if not row:
+            return AreebValues()
+        return AreebValues(
+            category=cell(row.get("Category (Areeb)")),
+            product_type=cell(row.get("Product Type (Areeb)")),
+            product_style=cell(row.get("Product Style (Areeb)")),
+            department=cell(row.get("Department (Areeb)")),
+            source=SOURCE_PLAIN_LEFTOVER,
+        )
 
     def uneek_product_code(self, code: object) -> AreebValues:
         k = cell(code)
@@ -65,6 +79,11 @@ class AreebCatalogs:
                 return hit
             return coalesce_areeb(hit, leftover)
         hit = self.uneek_short(sku)
+        if hit.any_filled():
+            if hit.all_filled():
+                return hit
+            return coalesce_areeb(hit, leftover)
+        hit = self.absolute_stock(sku)
         if hit.any_filled():
             if hit.all_filled():
                 return hit

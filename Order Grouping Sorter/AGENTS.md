@@ -1,6 +1,6 @@
 # Order Grouping Sorter — handbook
 
-Domain handbook for the **Warehouse Automation System Engineer**. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/order-grouping-sorter/`. Locks: `../order-grouping-locks.md`. Details: `docs/`.
+Domain handbook for the **Warehouse Automation System Engineer**. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/order-grouping-sorter/`. Locks: `order-grouping-locks.md`. Details: `docs/`.
 Current state: `docs/HANDOFF.md`, kept as present-tense state, not a log.
 
 Live paths via `shared/paths.py`. A grouping **run** only **reads** CL + Plain Database + Packs. Sorter DB: `database/order-grouping-sorter/` — `taxonomy_picklists.csv` (Hashim #038), `fixed_batches.csv` (B80/B100/… criteria), `leftover_batches/{YYYY-MM-DD}.csv` (written each run for leftover B1/B2…), and `catalog_cache/` (Plain/Packs pickles). Chat “run the group sorter” → straight `--run`.
@@ -14,18 +14,21 @@ Live paths via `shared/paths.py`. A grouping **run** only **reads** CL + Plain D
 | `database/order-grouping-sorter/fixed_batches.csv` | Fixed batch codes + match criteria (`B80` / `B100` / …) |
 | `database/order-grouping-sorter/leftover_batches/{YYYY-MM-DD}.csv` | Leftover `B1`/`B2`… criteria for that run date (same columns as fixed; overwritten each sorter run) |
 | `database/order-grouping-sorter/catalog_cache/` | Plain/Packs index pickles (auto; gitignored) |
-| `database/shared/custom_label/Custom_Label_Database.csv` | Finish + printed attributes |
-| `database/shared/plain/Plain Database.xlsx` | Plain catalog |
-| `database/shared/packs/Packs Database.xlsx` | Packs catalog |
+| `database/shared/custom_label/Custom_Label_Database (Areeb).csv` | Finish + printed attributes (temporary; four Areeb columns filled). Other apps still use the live NocoDB CSV. |
+| `database/shared/plain/Plain Database.csv` | Plain catalog |
+| `database/shared/packs/Packs Database.csv` | Packs catalog |
 | `config/ShipStation/.env` | Shared ShipStation |
 | `Logs/` | Dry-run reports |
 | Packing `Input/{DD-MM-YYYY}/1st Shift/` | Write on `--run` while testing (replaces 1st Shift CSVs). `RESEND` / `UNMATCHED` land there. Production later: nth run = nth shift |
+| `order-grouping-locks.md` | Grouping lock log |
+| `order-grouping-criteria.csv` | CEO review table |
+| `order-grouping-progress.xlsx` | Progress workbook. Regenerate with `scripts/write_order_grouping_progress.py` |
 | `fixed_batches.md` | Pointer to the live fixed-batches CSV |
 | `leftover_batches.md` | Pointer to dated leftover-batches CSVs |
 
 ## How work is done
 
-Fetch ShipStation `awaiting_shipment` (`shared.shipstation`, including `list_stores` for MAS Clothing → `fawad`) → skip `post-order-designs` → skip store `DTFOcean.co.uk WP` → `1014-ALL-RESEND` → blank ship-by → **today** → customised only with `1004- Personalised Design-Ready-` (else held) → write all eligible into **`1st Shift`** (testing; production later uses nth run = nth shift) → **fixed batches first** (`B80-{6 fields}.csv` / `B100-{6 fields}.csv` / …) → leftover `B1-{6 fields}.csv` / `B2-…` (skip reserved). Mix today+later in one process only when eligible **orders** ≤ 300; above 300 split by date.
+Fetch ShipStation `awaiting_shipment` (`shared.shipstation`, including `list_stores` for MAS Clothing → `fawad`) → skip `post-order-designs` → skip tag `00000-Warehouse OOS` → skip store `DTFOcean.co.uk WP` → `1014-ALL-RESEND` → blank ship-by → **today** → customised only with `1004- Personalised Design-Ready-` (else held) → write all eligible into **`1st Shift`** (testing; production later uses nth run = nth shift) → **fixed batches first** (`B80-{6 fields}.csv` / `B100-{6 fields}.csv` / …) → leftover `B1-{6 fields}.csv` / `B2-…` (skip reserved). Leftover mixes today+later only when eligible **orders** ≤ 300; above 300 leftover splits by date. Fixed batches are always one CSV per code in that shift.
 
 SKU keys are **stricter** than `shared.cl_sku_match.resolve_label`: CL after first dash, or **whole SKU when there is no dash**; Plain till last dash or whole; Packs whole SKU. Do not import Packing internals. CSV columns (when writing) copy Packing current-view `CSV_FIELDNAMES`.
 

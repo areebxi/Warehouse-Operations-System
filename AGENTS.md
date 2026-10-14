@@ -26,7 +26,7 @@ Key live files:
 - `database/shared/shipstation_tags/ShipStation_Tags.xlsx` (shared tags)
 - Packing DB: `database/order-packing-list-generator/` (Workbook, New SKU DB)
 - Queue DB: `database/production-design-queue-manager/Configuration Workbook.xlsx`
-- Plain / Packs: `database/shared/plain/Plain Database.xlsx`, `database/shared/packs/Packs Database.xlsx`
+- Plain / Packs: `database/shared/plain/Plain Database.csv`, `database/shared/packs/Packs Database.csv`
 - PO DB: `database/purchase-order-generator/` (stock CSVs; Plain/Packs are shared)
 - CL helpers: `database/custom-label-database/support/`, `Apparel Images/`
 - Run I/O: each app’s `{Input,Output,Logs,…}/`
@@ -37,7 +37,7 @@ Key live files:
 
 1. **Catalog** — fills/NocoDB against `database/shared/custom_label/Custom_Label_Database.csv`.
 2. **Orders in** — ShipStation → Packing (CSV/API) and Purchase Order Generator.
-3. **Pack** — Packing enriches from CL CSV, writes Excel/PDFs to app `Output/`; when Make design queues is on, dual-writes DTF Des to `runtime/SharedInbox/DTF Des/{date}/{shift}/` and syncs Queue before PDFs.
+3. **Pack** — Packing enriches from Custom Label, then Plain, then Packs, writes Excel then PDFs to app `Output/`; when Make design queues is on, copies that file’s DTF Des to `runtime/SharedInbox/DTF Des/{date}/{shift}/` and runs Queue after the PDFs. The next input can pack while that queue job runs.
 4. **Print designs** — Queue Design Queues (Packing `--files` sync and/or continuous watcher); print sizes from CL CSV; Pocket overrides + Skip Batches in Queue Configuration Workbook (`database/production-design-queue-manager/`).
 5. **Ship** — Shipping Label Generator from app `DTF Des Files/` (manual; SharedInbox auto-ship later).
 
@@ -52,7 +52,7 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 - **Talks to:** NocoDB; BTC / Uneek Product Data / Size helpers. Not ShipStation.
 
 ### Order Packing List Generator
-- **Purpose:** ShipStation orders → process CSVs, packing PDFs, Picking / Orders Details / DTF Des Excel. **Later (not built):** every packing list PDF, including slips PO still prints; enrich also Plain + Packs.
+- **Purpose:** ShipStation orders → process CSVs, packing PDFs, Picking / Orders Details / DTF Des Excel. **Later (not built):** every packing list PDF, including slips PO still prints. Enrich already uses Custom Label, then Plain, then Packs.
 - **Live data:** DB in `database/order-packing-list-generator/`; app `config/`, Input/Output/Logs; shared tags; optional SharedInbox dual-write + sync Design Queues.
 - **Talks to:** ShipStation; CL CSV; SharedInbox / Queue CLI. Later: shared Plain / Packs (read).
 
@@ -68,7 +68,7 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 
 ### Order Grouping Sorter
 - **Purpose:** ShipStation `awaiting_shipment` → process piles (fixed batches first: `B100-S1-PRINTED-2-WAREHOUSE STOCK-R-1.csv` / …; leftover `B1-S1-…` / `B2-…` skipping reserved). One CSV per process into Packing Input. Default CLI is dry-run; `--run` writes after supervisor **run**. Testing: **`1st Shift`** every `--run`.
-- **Live data:** DB in `database/order-grouping-sorter/` (taxonomy pick-lists + fixed batches); reads shared CL / Plain / Packs; secrets via `config/ShipStation/.env`; Logs in the app folder. Write target: Packing `Input/{DD-MM-YYYY}/1st Shift/` while testing. `RESEND` / `UNMATCHED` land there.
+- **Live data:** DB in `database/order-grouping-sorter/` (taxonomy pick-lists + fixed batches); reads Areeb CL CSV (`Custom_Label_Database (Areeb).csv`, temporary 2026-10-09) / Plain / Packs; secrets via `config/ShipStation/.env`; Logs in the app folder. Write target: Packing `Input/{DD-MM-YYYY}/1st Shift/` while testing. `RESEND` / `UNMATCHED` land there.
 - **Talks to:** ShipStation (shared client, including `list_stores`); the three grouping catalogs (read-only on a run). Does not import Packing internals. CSV columns copy Packing current-view (`Order #`, `Ship By`, …).
 
 ### Purchase Order Generator
@@ -85,8 +85,8 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 | BTC Product Data | `database/shared/btc_product_data/BTC_Product_Data.csv` (single) |
 | Uneek Product Data | `database/shared/uneek_product_data/Uneek_Product_Data.xlsx` (single) |
 | Absolute Product Data | `database/shared/absolute_product_data/Absolute_Product_Data.xlsx` (single). Warehouse buys **babysuits only** (styles C800T / C8020T / C8030T) |
-| Plain Database | `database/shared/plain/Plain Database.xlsx` (single; grouping + PO) |
-| Packs Database | `database/shared/packs/Packs Database.xlsx` (single; grouping + PO) |
+| Plain Database | `database/shared/plain/Plain Database.csv` (single; grouping + PO + packing plain) |
+| Packs Database | `database/shared/packs/Packs Database.csv` (single; grouping + PO) |
 | ShipStation Tags | `database/shared/shipstation_tags/ShipStation_Tags.xlsx` (single) |
 | Taxonomy pick-lists | `database/order-grouping-sorter/taxonomy_picklists.csv` (Hashim #038 closed Areeb category / product type / product style / department + PE subcategory). Title Case; type has no gender; style is a named product, never a code. Source `shared/taxonomy_catalog.py`. CL filled 2026-09-16; Plain / Packs stay supplier copy. |
 | Fixed batches | `database/order-grouping-sorter/fixed_batches.csv` — `B80`/`B100`/… codes + match criteria. Sorter loads via `Order Grouping Sorter/scripts/fixed_batches.py`. Leftover `B1`/`B2`/… skip these numbers. |
@@ -98,7 +98,7 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 | ShipStation | Packing, PO, Shipping, Sorter via `shared/shipstation` (create/void local to Shipping) |
 | Order Grouping Sorter → Packing Input | One CSV per process into Packing `Input/{DD-MM-YYYY}/1st Shift/` while testing (`shared.paths.sorter_input_csv_path`). Fixed-batch files are `B100-{6 fields}.csv` / `B80-{6 fields}.csv` / … ; leftover `B1-{6 fields}.csv` / `B2-…` (skip reserved). Default CLI is dry-run; `--run` writes. Production later: nth `--run` of the day = nth shift. `RESEND` / `UNMATCHED` land in that run’s folder. |
 
-**Later (not built):** Shipping auto-ingest from SharedInbox. Packing owns **all** packing list PDFs (including today’s PO slips); Packing enrich/preflight also hits Plain + Packs (do not clone those SKUs into CL). PO is EDI/stock only.
+**Later (not built):** Shipping auto-ingest from SharedInbox. Packing owns **all** packing list PDFs (including today’s PO slips). Packing enrich/preflight uses Custom Label, then Plain, then Packs (do not clone those SKUs into CL). PO is EDI/stock only.
 
 ## System do-nots
 

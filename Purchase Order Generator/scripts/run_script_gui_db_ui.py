@@ -145,7 +145,7 @@ class ShipStationGuiDbUiMixin:
     def browse_packs_database(self) -> None:
         self._browse_db_file(
             title="Select Packs Database",
-            filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")],
+            filetypes=[("CSV files", "*.csv"), ("Excel files", "*.xlsx"), ("All files", "*.*")],
             var=self.packs_db_var,
             settings_key=KEY_PACKS_DB,
             log_label="Packs Database",

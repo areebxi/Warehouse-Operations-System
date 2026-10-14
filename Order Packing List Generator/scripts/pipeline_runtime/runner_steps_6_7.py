@@ -21,11 +21,11 @@ def run_steps_6_to_7(
     dispatch_date,
     use_fixed_process_number: bool,
     date_dd_mm_yyyy: str,
-    shift_label: str,
     token: str,
     log: Optional[PipelineLog],
     lc,
     discover_step6_csvs,
+    shift_label: str,
     make_design_queues: bool = True,
 ) -> list[Path]:
     if log:

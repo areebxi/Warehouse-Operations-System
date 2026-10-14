@@ -74,7 +74,8 @@ def test_fixed_batch_codes_first_then_graph_leftover() -> None:
     assert by_name[leftover[0]] == {"OTH"}
 
 
-def test_named_floor_splits_today_future_when_over_mix() -> None:
+def test_named_floor_one_file_when_over_mix() -> None:
+    """Fixed batch stays one CSV when the run is over 300 (locked 2026-10-08)."""
     cat = _fotl_cats()
     today = [_order(f"A{i:03d}", "77989LG-M-T-BLK-M", catalogs=_cats()) for i in range(300)]
     first = _order("N1", "1-M-T-WHT-M", catalogs=cat)
@@ -82,13 +83,9 @@ def test_named_floor_splits_today_future_when_over_mix() -> None:
     r = group_orders(today + [first, future], RUN)
     assert r.mix_today_future is False
     batch = [b for b in r.bins if b.floor_code == "B100"]
-    assert len(batch) == 2
-    by = {o.number: b for b in batch for o in b.orders}
-    assert by["N1"].process_name != by["N2"].process_name
-    assert all(b.shift_slot == "1st" for b in batch)
-    assert int(by["N1"].process_name.rsplit("-", 1)[-1]) < int(
-        by["N2"].process_name.rsplit("-", 1)[-1]
-    )
+    assert len(batch) == 1
+    assert {o.number for o in batch[0].orders} == {"N1", "N2"}
+    assert batch[0].shift_slot == "1st"
 
 
 

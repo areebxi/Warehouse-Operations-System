@@ -81,7 +81,8 @@ def group_orders(
     today_orders, eligible_orders = _eligible_stats(eligible, run)
     mix = _should_mix_today_future(eligible_orders)
     bins: list[ProcessBin] = []
-    named_groups: dict[tuple[str, str], list[Order]] = defaultdict(list)
+    # Fixed batches: one pile per code per shift (today and later ship-by together).
+    named_groups: dict[str, list[Order]] = defaultdict(list)
     by_key: dict[tuple[str, tuple[str, ...]], list[Order]] = defaultdict(list)
     overlaps: Counter[str] = Counter()
     for order in eligible:
@@ -100,10 +101,10 @@ def group_orders(
         for lost in hits[1:]:
             overlaps[f"{code} over {lost}"] += 1
         if code:
-            named_groups[(code, dslot)].append(order)
+            named_groups[code].append(order)
             continue
         by_key[(dslot, tuple(order.left))].append(order)
-    for (code, _dslot), group in named_groups.items():
+    for code, group in named_groups.items():
         inside = assign_inside_file(group)
         flat = [o for p in inside for o in p.orders]
         bins.append(
@@ -164,7 +165,7 @@ def sort_raw_orders(
     shift_folder: str = "1st Shift",
     exclude_order_numbers: Optional[set[str]] = None,
 ) -> SortResult:
-    parsed, skipped_post, empty_skipped, skipped_store = orders_from_ss(
+    parsed, skipped_post, skipped_oos, empty_skipped, skipped_store = orders_from_ss(
         raw_orders, tag_id_to_name, store_id_to_name, catalogs
     )
     already = exclude_order_numbers or set()
@@ -179,11 +180,12 @@ def sort_raw_orders(
         kept, run_date, shift_slot=shift_slot, shift_folder=shift_folder
     )
     result.skipped_post = skipped_post
+    result.skipped_oos = skipped_oos
     result.empty_skipped = empty_skipped
     result.skipped_excluded_store = skipped_store
     result.skipped_already_written = skipped_written
     result.pool_orders = (
-        len(parsed) + skipped_post + empty_skipped + skipped_store
+        len(parsed) + skipped_post + skipped_oos + empty_skipped + skipped_store
     )
     return result
 

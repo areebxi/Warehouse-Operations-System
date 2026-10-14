@@ -1,4 +1,4 @@
-"""Invoke Queue Design Queues CLI after Packing Excel, before PDFs."""
+"""Copy DTF Des into SharedInbox and run Design Queues after packing PDFs."""
 
 from __future__ import annotations
 

@@ -7,6 +7,7 @@ from scripts.app.config.load import load_config
 from scripts.app.flows.convert.run import run_convert
 from scripts.app.flows.label_report.run import run_label_report
 from scripts.app.flows.print_labels.run import run_manual_print, run_print
+from scripts.app.flows.print_labels.run_sample import run_sample_print
 from scripts.app.flows.void_labels.run import run_void
 from scripts.app.logging.jsonl import JsonlLogger
 from scripts.app.util.win_console import configure_windows_console
@@ -22,6 +23,7 @@ def _build_parser() -> argparse.ArgumentParser:
     sub = p.add_subparsers(dest="command", required=True)
     sub.add_parser("convert", help="Convert Excel/CSV inputs to canonical orders CSV")
     sub.add_parser("print", help="Generate labels + PDFs from canonical orders CSV")
+    sub.add_parser("sample-print", help="Local SAMPLE PDFs from the order list. Does not call ShipStation.")
     manual = sub.add_parser("manual-print", help="Generate labels from Manual Print Input/Order Numbers.csv")
     manual_mode = manual.add_mutually_exclusive_group()
     manual_mode.add_argument("--new", action="store_true", help="New manual job (name from process numbers in CSV)")
@@ -51,6 +53,8 @@ def main(argv: list[str] | None = None) -> int:
             rc = run_convert(cfg, log)
         elif args.command == "print":
             rc = run_print(cfg, log)
+        elif args.command == "sample-print":
+            rc = run_sample_print(cfg, log)
         elif args.command == "manual-print":
             replace_job_id = args.replace
             if not args.new and not args.replace:

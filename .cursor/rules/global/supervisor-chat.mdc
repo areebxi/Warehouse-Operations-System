@@ -7,13 +7,13 @@ alwaysApply: true
 
 - If the supervisor’s wording, spelling, or grammar would change the meaning, **restate the intended meaning in one sentence** and use that meaning. Persist the mapping if it is a standing term.
 - **More than one open question:** ask **one** question, wait for the answer, then the next. Do not batch questions.
-- Same turn, write every grouping lock into `order-grouping-locks.md` and regenerate `order-grouping-progress.xlsx` via `scripts/write_order_grouping_progress.py`.
+- Same turn, write every grouping lock into `Order Grouping Sorter/order-grouping-locks.md` and regenerate `Order Grouping Sorter/order-grouping-progress.xlsx` via `python "Order Grouping Sorter/scripts/write_order_grouping_progress.py"`.
 
 Standing terms (always-on):
 
 - **commit and push** (git) = supervisor asks in chat → agent commits the local delta (respect `.gitignore`; skip debug/temp/run junk) and pushes to `origin/main`. Not scheduled; not automatic. Author via one-shot `git -c user.name` / `user.email` (**Areeb Yaqub** / `46938981+areebxi@users.noreply.github.com`) — do not rewrite global git config. Locked 2026-09-29.
 - **run the group sorter** / **group my awaiting shipment** / **run the sorter** = straight `python "Order Grouping Sorter/scripts/run_sorter.py" --run` (no dry-run first; short report when done). Locked 2026-10-07. Detail: `.cursor/rules/order-grouping-sorter/approval.mdc`.
 
-Grouping vocabulary (batch, shift, fixed batch, today/ship-by, finish gates, B50/B100, …): `.cursor/rules/order-grouping-sorter/standing-terms.mdc` + `order-grouping-locks.md`. Load with sorter / locks work — not every chat.
+Grouping vocabulary (batch, shift, fixed batch, today/ship-by, finish gates, B50/B100, …): `.cursor/rules/order-grouping-sorter/standing-terms.mdc` + `Order Grouping Sorter/order-grouping-locks.md`. Load with sorter / locks work — not every chat.
 
 Catalog fill terms (Supply Method, Printing Type, Supplier Name, Areeb, BTC/Uneek/Absolute paths): `.cursor/rules/custom-label-database/` (+ `global/cl-sku-match.mdc`). Packing later / missing-logo reprint: `.cursor/rules/order-packing-list-generator/`.

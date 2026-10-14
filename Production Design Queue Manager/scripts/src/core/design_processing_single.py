@@ -12,6 +12,8 @@ from src.core.design_processing_helpers import (
 from src.core.multi_position_logic import build_positioned_stems
 from src.core.cl_print_sizes import get_cl_position_size_entries
 from src.core.size_code_extractor import PrintSizeOverrides
+from src.core.sku_position_hints import POSITION_HINT_MM
+from src.io.design_index_files import find_design_index_pngs
 from src.io.file_handlers import find_design_file
 from src.io.file_search import find_design_file_by_code
 from src.io.file_utilities import extract_design_code, remove_apparel_size_prefix
@@ -54,6 +56,41 @@ def process_single_designs(
     sku_str = str(sku).strip()
     results: List[Dict[str, Any]] = []
 
+    if entries and all(not entry.get("position") for entry in entries):
+        index_hits = find_design_index_pngs(base_stems, designs_folder)
+        if index_hits:
+            size_info = entries[0].get("size_info")
+            for design_path, token in index_hits:
+                hint = token if token in POSITION_HINT_MM else None
+                resized = load_and_resize_design(
+                    design_path,
+                    size_info,
+                    mm_to_pixel_factor,
+                    canvas_width_mm,
+                    canvas_height_mm,
+                    design_padding,
+                    item_sku=sku,
+                    filename_position_token=hint,
+                )
+                if not resized:
+                    continue
+                resized_img, width_px, height_px, width_mm, height_mm, effective_size_info = resized
+                results.append(
+                    {
+                        "sku": f"{sku_str}-{token}",
+                        "image": resized_img,
+                        "path": design_path,
+                        "width": width_px,
+                        "height": height_px,
+                        "width_mm": width_mm,
+                        "height_mm": height_mm,
+                        "size_code": size_code,
+                        "size_info": effective_size_info,
+                        "position": token,
+                    }
+                )
+            return results
+
     for entry in entries:
         position = entry.get("position")
         size_info = entry.get("size_info")
@@ -77,6 +114,7 @@ def process_single_designs(
         if not design_path:
             continue
 
+        hint = position if position in POSITION_HINT_MM else None
         resized = load_and_resize_design(
             design_path,
             size_info,
@@ -85,6 +123,7 @@ def process_single_designs(
             canvas_height_mm,
             design_padding,
             item_sku=sku,
+            filename_position_token=hint,
         )
         if not resized:
             continue

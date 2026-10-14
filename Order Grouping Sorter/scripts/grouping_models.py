@@ -9,6 +9,7 @@ from typing import Optional
 from shared.areeb_taxonomy import cell
 
 EXCLUDE_TAG = "post-order-designs"
+WAREHOUSE_OOS_TAG = "00000-Warehouse OOS"
 RESEND_TAG = "1014-ALL-RESEND"
 RESEND_FILE = "RESEND"
 UNMATCHED_FILE = "UNMATCHED"
@@ -176,7 +177,6 @@ class ProcessBin:
     group_slots: list[str] = field(default_factory=list)
     ship_by_slot: str = ""  # today | future | x (mixed / don't care)
 
-
 @dataclass
 class SortResult:
     run_date: date
@@ -194,7 +194,7 @@ class SortResult:
     eligible_orders: int = 0
     skipped_already_written: int = 0
     skipped_excluded_store: int = 0
-    # "B5500 over B10" → orders that also satisfied a lower fixed batch.
-    overlaps: Counter = field(default_factory=Counter)
+    skipped_oos: int = 0
+    overlaps: Counter = field(default_factory=Counter)  # "B5500 over B10"
 
 

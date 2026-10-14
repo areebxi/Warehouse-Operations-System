@@ -33,14 +33,14 @@ from sku_position_hints_fixtures import (
     _png,
 )
 
-def test_unique_order_ignores_sku_jpeg_hint() -> None:
+def test_unique_order_p_jpg_is_80x100() -> None:
     with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         single = os.path.join(tmp, "1-SP")
         double = os.path.join(tmp, "2-DP")
         os.makedirs(single)
         os.makedirs(double)
         png = _png(single, "12345.png", (200, 300))
-        _jpg(single, f"12345-P-{SKU}.jpg")
+        _jpg(single, "12345-P.jpg")
         results = _personalised(
             single,
             double,
@@ -52,8 +52,9 @@ def test_unique_order_ignores_sku_jpeg_hint() -> None:
         )
         assert len(results) == 1
         assert results[0]["path"] == png
-        assert results[0]["sku"] == "12345 (Single)"
-        assert _near(results[0]["width_mm"], 200)
+        assert results[0]["sku"] == "12345 (Single-Pocket)"
+        assert _near(results[0]["width_mm"], 80)
+        assert _near(results[0]["height_mm"], 100)
 def test_apparel_size_s_in_sku_is_not_sleeve() -> None:
     with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         single = os.path.join(tmp, "1-SP")

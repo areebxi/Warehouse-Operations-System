@@ -19,7 +19,7 @@ Live paths via `shared/paths.py` (DB in `database/`; settings + I/O in this app;
 
 ## How work is done
 
-**Auto:** Design Queues watcher on SharedInbox (or Packing `--files` sync) → settings folders → PNG under app Output (same names as GUI, e.g. `P50.png`) → optional DTF Queues folder copy → move inbox source to `Processed/` (or `Failed/`). **Skip Batches** sheet skips PNG for listed batch digits. No approval.
+**Auto:** Design Queues watcher on SharedInbox (or Packing `--files` sync) → settings folders → PNG under app Output (same names as GUI, e.g. `50.png` from `DTF Des-P50`, `B100-S1.png` from `DTF Des-PB100-S1`) → optional DTF Queues folder copy → move inbox source to `Processed/` (or `Failed/`). **Skip Batches** sheet skips PNG for listed batch digits. No approval.
 
 **GUI:** Load DTF Des → **Run** (Customise column picks Normal vs Single/Double folders) → pack canvas → preview → Save PNG. GUI batches still need supervisor approval.
 

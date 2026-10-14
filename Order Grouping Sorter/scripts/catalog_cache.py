@@ -1,7 +1,8 @@
-"""Disk cache for Plain / Packs xlsx indexes (mtime + size invalidate)."""
+"""Disk cache for Plain / Packs catalog indexes (mtime + size invalidate)."""
 
 from __future__ import annotations
 
+import csv
 import pickle
 from pathlib import Path
 from typing import Any
@@ -38,7 +39,21 @@ def _index_rows(rows: list[dict[str, str]], key_col: str) -> dict[str, dict[str,
     return idx
 
 
+def _read_csv_index(path: Path, key_col: str) -> dict[str, dict[str, str]]:
+    last: Exception | None = None
+    for enc in ("utf-8-sig", "cp1252", "latin-1"):
+        try:
+            with path.open(encoding=enc, newline="") as f:
+                rows = [{k: cell(v) for k, v in row.items() if k} for row in csv.DictReader(f)]
+            return _index_rows(rows, key_col)
+        except UnicodeDecodeError as exc:
+            last = exc
+    raise last or RuntimeError(f"Could not decode {path}")
+
+
 def read_xlsx_index(path: Path, sheet: str, key_col: str) -> dict[str, dict[str, str]]:
+    if path.suffix.lower() == ".csv":
+        return _read_csv_index(path, key_col)
     wb = load_workbook(path, read_only=True, data_only=True)
     try:
         ws = wb[sheet]
@@ -64,7 +79,7 @@ def load_xlsx_index(
     *,
     cache_stem: str,
 ) -> dict[str, dict[str, str]]:
-    """Load keyed index; reuse pickle when source xlsx meta matches."""
+    """Load keyed index; reuse pickle when source file meta matches."""
     cache_path = wh.sorter_catalog_cache_path(cache_stem)
     meta = _source_meta(path, sheet, key_col)
     if cache_path.is_file():

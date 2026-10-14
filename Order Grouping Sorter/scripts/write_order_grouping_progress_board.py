@@ -69,7 +69,7 @@ def sheet_board(wb: Workbook) -> None:
     ws.merge_cells("A11:F11")
     intake = [
         "1. ShipStation\nawaiting_shipment only",
-        "2. Skip\npost-order-designs",
+        "2. Skip\npost-order-designs\nand 00000-Warehouse OOS",
         "3. Resend tag?\n→ file “RESEND”",
         "4. Blank ship-by\n→ today",
         "5. Today/overdue first\nthen future to fill cap",

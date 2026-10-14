@@ -10,6 +10,7 @@ from time import monotonic
 
 from PyPDF2 import PdfReader
 
+from scripts.app.config.label_page_threshold import read_label_page_threshold
 from scripts.app.config.load import AppConfig
 from scripts.app.flows.print_labels.failures import FailureRow, append_human_error_log, write_failures_csv
 from scripts.app.flows.print_labels.process_order import OrderResult, process_one_order
@@ -24,6 +25,7 @@ from scripts.app.pdf.merge_combined import merge_combined_by_process
 from scripts.app.pdf.merge_process import merge_process_pdf
 from scripts.app.pdf.report_pages import make_combined_missed_orders_page_pdf, make_missed_orders_page_pdf, make_summary_page_pdf
 from scripts.app.providers.select_provider import get_provider
+from scripts.app.util.process_numbers import process_number_sort_key as _process_number_sort_key
 from scripts.app.util.time import local_date_ymd, utc_compact_timestamp
 
 
@@ -93,16 +95,6 @@ def _process_number_key_from_pdf_path(p: Path) -> int:
         return int(m.group(1))
     except Exception:
         return 1_000_000_000
-
-
-def _process_number_sort_key(pn: str) -> tuple[int, str]:
-    """
-    Sort process numbers numerically when possible, else lexicographically.
-    """
-    s = str(pn).strip()
-    if s.isdigit():
-        return (0, f"{int(s):020d}")
-    return (1, s.lower())
 
 
 def _manual_output_root(cfg: AppConfig) -> Path:
@@ -397,14 +389,16 @@ def _write_summary_bucket_pdf(
     else:
         process_pdf_path = process_pdfs_dir / f"process_{bucket.summary_process_number}.pdf"
     ship_from = bucket.ship_from or str(cfg.raw.get("batch", {}).get("ship_from", ""))
-    summary = make_summary_page_pdf(
-        process_number=bucket.summary_process_number,
-        batch_number=batch_number,
-        batch_notes=str(cfg.raw.get("batch", {}).get("notes", "")),
-        processed_by=str(cfg.raw.get("batch", {}).get("processed_by", "")),
-        ship_from=ship_from,
-        label_count=int(bucket.label_count),
-    )
+    summary = None
+    if bucket.include_summary:
+        summary = make_summary_page_pdf(
+            process_number=bucket.summary_process_number,
+            batch_number=batch_number,
+            batch_notes=str(cfg.raw.get("batch", {}).get("notes", "")),
+            processed_by=str(cfg.raw.get("batch", {}).get("processed_by", "")),
+            ship_from=ship_from,
+            label_count=int(bucket.label_count),
+        )
     missed = None
     failures = list(bucket.failures)
     if failures:
@@ -426,7 +420,7 @@ def _write_summary_bucket_pdf(
             "label_count": int(bucket.label_count),
             "failure_count": int(len(failures)),
             "process_pdf_path": str(process_pdf_path),
-            "shared_summary": bool(len(bucket.members) > 1),
+            "shared_summary": bool(bucket.include_summary),
             "source_file": src_file,
             "source_index": src_idx,
         },
@@ -599,10 +593,11 @@ def run_print(
         log.info("run_end", extra={"command": command_name, "input_key": input_key, "exit_code": 2})
         return 2
 
-    # Share summary only for exactly-1-label consecutive processes within the same DTF file.
-    # Each new DTF/source file always starts a fresh summary page.
+    # One summary page per 10 labels. A new DTF file always starts a fresh summary page.
     ordered_results = list(process_results_by_key.values())
-    buckets = bucket_process_groups_for_shared_summaries(ordered_results)
+    buckets = bucket_process_groups_for_shared_summaries(
+        ordered_results, summary_every=read_label_page_threshold()
+    )
     process_pdfs_dir.mkdir(parents=True, exist_ok=True)
     bucket_pdfs: list[Path] = []
     for bucket in buckets:
@@ -615,14 +610,16 @@ def run_print(
         )
         bucket_pdfs.append(pdf_path)
 
-    summary_process_numbers: list[str] = [str(b.summary_process_number).strip() for b in buckets]
+    summary_process_numbers: list[str] = [
+        str(b.summary_process_number).strip() for b in buckets if b.include_summary
+    ]
     log.info(
         "print_summary_buckets_built",
         extra={
             "input_process_count": int(len(input_group_keys)),
             "summary_bucket_count": int(len(buckets)),
             "shared_summaries_enabled": True,
-            "share_rule": "exactly_1_label_consecutive_within_source_file",
+                "share_rule": "info_page_when_previous_process_reached_threshold",
             "buckets": [
                 {
                     "summary_process_number": b.summary_process_number,

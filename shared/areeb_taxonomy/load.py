@@ -72,16 +72,25 @@ def load_uneek_xlsx(path: Path) -> list[dict[str, str]]:
         wb.close()
 
 
+def load_absolute_into(cat: AreebCatalogs, rows: list[Mapping[str, Any]]) -> None:
+    from shared.absolute_catalog import index_stock_codes
+
+    cat.absolute_by_code = index_stock_codes([{str(k): cell(v) for k, v in row.items()} for row in rows])
+
+
 def load_catalogs(
     *,
     btc_path: Path | None = None,
     uneek_path: Path | None = None,
+    absolute_path: Path | None = None,
 ) -> AreebCatalogs:
     from shared import paths as wh
+    from shared.absolute_catalog import load_absolute_rows
 
     cat = AreebCatalogs()
     load_btc_into(cat, load_btc_csv(btc_path or wh.btc_product_data_path()))
     load_uneek_into(cat, load_uneek_xlsx(uneek_path or wh.uneek_product_data_path()))
+    load_absolute_into(cat, load_absolute_rows(absolute_path))
     return cat
 
 

@@ -65,8 +65,9 @@ def main() -> int:
         print("  3) Convert + Print (one run)")
         print("  4) Manual Print (Manual Print Input/Order Numbers.csv -> manual outputs)")
         print("  5) Void labels (void label input/void_labels.csv)")
-        print("  6) Exit")
-        choice = (input("\nEnter choice (1-6): ") or "").strip()
+    print("  6) Sample print (local PDFs only — does not call ShipStation)")
+    print("  7) Exit")
+    choice = (input("\nEnter choice (1-7): ") or "").strip()
 
         if choice == "1":
             rc = _run(_app_cmd("convert"))
@@ -93,8 +94,12 @@ def main() -> int:
             rc = _run(_app_cmd("void"))
             print(f"\nVoid finished with exit code {rc}.")
             _pause()
-        elif choice == "6":
-            return 0
+    elif choice == "6":
+        rc = _run(_app_cmd("sample-print"))
+        print(f"\nSample print finished with exit code {rc}.")
+        _pause()
+    elif choice == "7":
+        return 0
         else:
             print("\nInvalid choice.")
             _pause()

@@ -7,7 +7,16 @@ from shared.areeb_taxonomy import cell
 
 from catalogs import Catalogs
 from grouping_finish import attrs_for_sku
-from grouping_models import (EXCLUDE_STORES, EXCLUDE_TAG, LineAttrs, Order, _fold, parse_qty, parse_ship_by)
+from grouping_models import (
+    EXCLUDE_STORES,
+    EXCLUDE_TAG,
+    WAREHOUSE_OOS_TAG,
+    LineAttrs,
+    Order,
+    _fold,
+    parse_qty,
+    parse_ship_by,
+)
 
 def _item_is_skipped(item: dict[str, Any]) -> bool:
     if item.get("adjustment") is True:
@@ -103,16 +112,20 @@ def orders_from_ss(
     tag_id_to_name: dict[int, str],
     store_id_to_name: dict[int, str],
     catalogs: Catalogs,
-) -> tuple[list[Order], int, int, int]:
-    """Skip post-order-designs, excluded stores, and discount/adjustment lines."""
+) -> tuple[list[Order], int, int, int, int]:
+    """Skip exclude tags, excluded stores, and discount/adjustment lines."""
     out: list[Order] = []
     skipped_post = 0
+    skipped_oos = 0
     skipped_excluded_store = 0
     empty_skipped = 0
     for raw in raw_orders:
         names = _tag_names(raw.get("tagIds"), tag_id_to_name)
         if _has_tag(names, EXCLUDE_TAG):
             skipped_post += 1
+            continue
+        if _has_tag(names, WAREHOUSE_OOS_TAG):
+            skipped_oos += 1
             continue
         store_name = _store_name(raw, store_id_to_name)
         if _fold(store_name) in EXCLUDE_STORES:
@@ -148,6 +161,6 @@ def orders_from_ss(
                 ship_country=cell((raw.get("shipTo") or {}).get("country")),
             )
         )
-    return out, skipped_post, empty_skipped, skipped_excluded_store
+    return out, skipped_post, skipped_oos, empty_skipped, skipped_excluded_store
 
 

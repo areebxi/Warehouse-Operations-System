@@ -63,7 +63,15 @@ def should_skip_batch(file_path: Path, skip_batches: Set[str]) -> bool:
 
 
 def output_stem_from_dtf_name(name: str) -> str:
-    return re.sub(r"^DTF\s*Des-", "", Path(name).stem, flags=re.IGNORECASE).strip()
+    """PNG stem from a DTF Des name: drop ``DTF Des-`` and one packing ``P``.
+
+    ``DTF Des-P100`` → ``100``; ``DTF Des-PB100-S1`` → ``B100-S1``.
+    A lone ``P`` is kept so the stem is never empty.
+    """
+    stem = re.sub(r"^DTF\s*Des-", "", Path(name).stem, flags=re.IGNORECASE).strip()
+    if len(stem) > 1 and stem[0] in "Pp":
+        return stem[1:]
+    return stem
 
 
 def remove_queue_pngs_for_stem(
@@ -71,7 +79,7 @@ def remove_queue_pngs_for_stem(
     *,
     dtf_queues_folder: Optional[str] = None,
 ) -> list[Path]:
-    """Delete Output + DTF Queues PNGs for a skipped stem (P3570 / P3570_Part N)."""
+    """Delete Output + DTF Queues PNGs for a skipped stem (100 / 100_Part N)."""
     removed: list[Path] = []
     if not stem:
         return removed

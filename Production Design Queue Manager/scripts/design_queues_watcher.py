@@ -6,7 +6,7 @@ runs Design Queues using folders from queue_app_settings.json, auto-saves PNG
 (and copies to DTF Queues folder when configured), then moves inbox sources to
 Processed/ (or Failed/). Skip Batches sheet skips queue PNGs for listed codes.
 
-No Tk GUI. No approval gate. PNG names match GUI (P50.png); re-runs overwrite.
+No Tk GUI. No approval gate. PNG names match GUI (50.png); re-runs overwrite.
 """
 
 from __future__ import annotations

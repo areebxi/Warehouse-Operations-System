@@ -6,8 +6,8 @@ globs: "runtime/SharedInbox/**"
 
 # SharedInbox
 
-- Packing dual-writes `DTF Des-P*.xlsx` into `runtime/SharedInbox/DTF Des/{date}/{shift}/` when **Make design queues** is enabled.
-- Packing sync-invokes Queue `design_queues_watcher.py --files` after Excel and **before** PDFs (waits). Prefer SharedInbox copies so they move to `Processed/`.
+- Packing copies `DTF Des-P*.xlsx` into `runtime/SharedInbox/DTF Des/{date}/{shift}/` when **Make design queues** is enabled, after that input’s packing PDFs.
+- Packing invokes Queue `design_queues_watcher.py --files` on that copy (waits for that job). The next packing input may run at the same time; only one `--files` job runs. Prefer SharedInbox copies so they move to `Processed/`.
 - Continuous Design Queues watcher still runs for late/manual drops (Packing starts it on launch via `shared/design_queues_watcher.py`).
 - Skip Batches (Configuration Workbook sheet): matching batch digits skip queue PNGs; inbox file still moves to `Processed/`.
 - Headless save also copies PNGs to the configured DTF Queues folder when set.

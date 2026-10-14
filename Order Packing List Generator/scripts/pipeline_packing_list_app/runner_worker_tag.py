@@ -7,7 +7,7 @@ from pipeline_shipstation.sync_tags_xlsx import DEFAULT_XLSX_PATH
 from pipeline_shipstation.tags_process_lookup import resolve_tag_list_processes
 
 from .config import PROJECT_ROOT
-from .runner_worker_helpers import emit_batch_banner
+from .runner_worker_helpers import DesignQueueHandoff, handoff_design_queues
 
 
 def run_tag_mode_pipelines(app, *, run_with_log_file, run_one_pipeline) -> tuple:
@@ -43,85 +43,57 @@ def run_tag_mode_pipelines(app, *, run_with_log_file, run_one_pipeline) -> tuple
     if len(resolved) == 1 and not gui_value:
         app.root.after(0, app.fixed_process_number_var.set, resolved[0][2])
 
-    batch_phase = "excel" if multi_tags else "all"
-    pdf_jobs: list[dict] = []
+    handoff = DesignQueueHandoff(app) if multi_tags else None
+    try:
+        for tag_id, tag_name, process_name in resolved:
+            prefix = f"[{process_name}] " if multi_tags else ""
+            pl = run_with_log_file(process_name or tag_name or "shipstation", prefix)
 
-    for tag_id, tag_name, process_name in resolved:
-        prefix = f"[{process_name}] " if multi_tags else ""
-        pl = run_with_log_file(process_name or tag_name or "shipstation", prefix)
+            def _fetch_log(msg: str, _pl=pl) -> None:
+                _pl.detail(msg)
+                if app._log_queue is not None:
+                    app._log_queue.put(msg)
 
-        def _fetch_log(msg: str, _pl=pl) -> None:
-            _pl.detail(msg)
-            if app._log_queue is not None:
-                app._log_queue.put(msg)
-
-        if multi_tags or not gui_value:
-            pl.detail(
-                f"Using process {process_name} from {DEFAULT_XLSX_PATH.name} "
-                f"for tag '{tag_name}' / shift '{app.shift_var.get().strip()}'."
+            if multi_tags or not gui_value:
+                pl.detail(
+                    f"Using process {process_name} from {DEFAULT_XLSX_PATH.name} "
+                    f"for tag '{tag_name}' / shift '{app.shift_var.get().strip()}'."
+                )
+            csv_path = fetch_tag_orders_to_csv(
+                tag_id=tag_id,
+                tag_name=tag_name,
+                date_dd_mm_yyyy=app.date_var.get().strip(),
+                shift_label=app.shift_var.get().strip(),
+                process_number=process_name,
+                input_root=PROJECT_ROOT / "Input",
+                log=_fetch_log,
             )
-        csv_path = fetch_tag_orders_to_csv(
-            tag_id=tag_id,
-            tag_name=tag_name,
-            date_dd_mm_yyyy=app.date_var.get().strip(),
-            shift_label=app.shift_var.get().strip(),
-            process_number=process_name,
-            input_root=PROJECT_ROOT / "Input",
-            log=_fetch_log,
-        )
-        start_msg = (
-            "Starting Excel phase (batch)…"
-            if multi_tags
-            else "Starting pipeline…"
-        )
-        pl.detail(start_msg)
-        if app._log_queue is not None:
-            app._log_queue.put(f"{prefix}{start_msg}")
-        output_root, unmatched, missing_logo, missing_logos_report = run_one_pipeline(
-            csv_path,
-            pl=pl,
-            use_fixed=True,
-            fixed_process=process_name,
-            phases=batch_phase,
-        )
-        entry = {
-            "input": csv_path,
-            "output_root": output_root,
-            "unmatched": unmatched,
-            "missing_logo": missing_logo,
-            "process_name": output_root.name if output_root else process_name,
-            "missing_logos_report": missing_logos_report,
-        }
-        results.append(entry)
-        if multi_tags:
-            pdf_jobs.append(
+            start_msg = "Starting pipeline…"
+            pl.detail(start_msg)
+            if app._log_queue is not None:
+                app._log_queue.put(f"{prefix}{start_msg}")
+            output_root, unmatched, missing_logo, missing_logos_report = run_one_pipeline(
+                csv_path,
+                pl=pl,
+                use_fixed=True,
+                fixed_process=process_name,
+                phases="all",
+            )
+            results.append(
                 {
-                    "csv_path": csv_path,
-                    "pl": pl,
-                    "prefix": prefix,
-                    "process_name": process_name,
-                    "entry": entry,
+                    "input": csv_path,
+                    "output_root": output_root,
+                    "unmatched": unmatched,
+                    "missing_logo": missing_logo,
+                    "process_name": output_root.name if output_root else process_name,
+                    "missing_logos_report": missing_logos_report,
                 }
             )
-
-    if pdf_jobs:
-        banner = (
-            f"Batch: Excel complete for {len(pdf_jobs)} inputs — starting PDF phase…"
-        )
-        emit_batch_banner(app, banner, [j["pl"] for j in pdf_jobs])
-        for job in pdf_jobs:
-            job["pl"].detail(f"{job['prefix']}Starting PDF phase…")
-            if app._log_queue is not None:
-                app._log_queue.put(f"{job['prefix']}Starting PDF phase…")
-            _, _, _, missing_logos_report = run_one_pipeline(
-                job["csv_path"],
-                pl=job["pl"],
-                use_fixed=True,
-                fixed_process=job["process_name"],
-                phases="pdf",
-            )
-            job["entry"]["missing_logos_report"] = missing_logos_report
-            output_root = job["entry"]["output_root"]
-            unmatched = job["entry"]["unmatched"]
-            missing_logo = job["entry"]["missing_logo"]
+            if handoff is not None:
+                handoff.submit(output_root, [pl])
+            else:
+                handoff_design_queues(app, output_root, [pl])
+    finally:
+        if handoff is not None:
+            handoff.finish()
     return output_root, unmatched, missing_logo, results

@@ -7,7 +7,9 @@ Living:
 | [`../AGENTS.md`](../AGENTS.md) | Domain handbook |
 | [`HANDOFF.md`](HANDOFF.md) | Snapshot / continue |
 | [`FINDINGS.md`](FINDINGS.md) | Locked facts from dry-runs |
-| [`../../order-grouping-locks.md`](../../order-grouping-locks.md) | Warehouse grouping locks |
+| [`../order-grouping-locks.md`](../order-grouping-locks.md) | Grouping locks |
+| [`../order-grouping-criteria.csv`](../order-grouping-criteria.csv) | CEO review table |
+| [`../order-grouping-progress.xlsx`](../order-grouping-progress.xlsx) | Progress workbook |
 
 Policy: parent `.cursor/rules/order-grouping-sorter/`.
 

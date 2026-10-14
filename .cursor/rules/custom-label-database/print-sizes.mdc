@@ -19,6 +19,17 @@ Pocket = 80×100 (kids F8 `-K-` = 65×80). Front and Back share the same mm. Pos
 
 **Not shirts:** Size References only. **Never** use a generic mock prefix (`M96` without this UID) — that wrongly gave `M96-138334` 318×450 instead of 250×353.
 
+**W415 Jute Stuff Bag** (locked 2026-10-12): do not use the shirt table. Supervisor sizes are centimetres; store millimetres after subtracting 20 mm from each side. Applies to `W415-NAT-{size}-Yes` and the same garment (`BG-W415-NTRL-XXS`).
+
+| Size | Given | Stored |
+|------|-------|--------|
+| XXS | 8×12 cm | 60×100 mm |
+| XS | 12×16 cm | 100×140 mm |
+| S | 18×22 cm | 160×200 mm |
+| M | 25×28 cm | 230×260 mm |
+| L | 34×40 cm | 320×380 mm |
+| XL | 50×55 cm | 480×530 mm |
+
 Fill **blank** Width/Height only, unless asked to correct wrong mm.
 
 ```text

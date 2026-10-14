@@ -46,7 +46,7 @@ class ProductDetailsMixin:
             self.set_font(self.base_font, '', 12)
             self.multi_cell(w=0, h=8, txt=self._t(f": {value}"), border=0)
 
-        # Use pack_title from Packs Database.xlsx Column AI if available, otherwise fallback to Description
+        # Use pack_title from Packs Database Supplier Name when available, otherwise fallback to Description
         title_value = pack_title if pack_title and str(pack_title).strip() else str((product_data or {}).get(COLUMN_NAMES['description'], 'N/A'))
         write_detail('Title', title_value)
         write_detail('Colour', str((product_data or {}).get(COLUMN_NAMES['colour'], 'N/A')))

@@ -17,6 +17,8 @@ def finish_for_sku(sku: object, catalogs: Catalogs) -> Optional[str]:
         return "printed"
     if catalogs.lookup_plain(sku) is not None:
         return "plain"
+    if catalogs.lookup_absolute(sku) is not None:
+        return "plain"
     if catalogs.lookup_packs(sku) is not None:
         return "plain"
     return None

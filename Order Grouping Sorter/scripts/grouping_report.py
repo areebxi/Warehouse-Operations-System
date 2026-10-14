@@ -41,6 +41,7 @@ def format_report(result: SortResult, written: list[Path] | None = None) -> str:
     lines.append(
         f"awaiting_shipment fetched={result.pool_orders}  "
         f"skipped post-order-designs={result.skipped_post}  "
+        f"skipped 00000-Warehouse OOS={result.skipped_oos}  "
         f"skipped DTFOcean.co.uk WP={result.skipped_excluded_store}  "
         f"empty/discount-only={result.empty_skipped}"
     )
@@ -73,7 +74,8 @@ def format_report(result: SortResult, written: list[Path] | None = None) -> str:
     lines.append(
         f"today+future mix={mix_word}  today_orders={result.today_orders}  "
         f"eligible_orders={result.eligible_orders}  "
-        f"(mix when eligible orders<={SHIFT1_SPLIT_ORDERS}; else split today vs later dates)"
+        f"(leftover: mix when eligible orders<={SHIFT1_SPLIT_ORDERS}; "
+        f"else split today vs later. Fixed batches stay one file per code.)"
     )
     if result.skipped_already_written:
         lines.append(

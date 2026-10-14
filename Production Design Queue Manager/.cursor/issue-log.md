@@ -4,6 +4,30 @@ Newest entries first. Maintained automatically per `.cursor/rules/issue-resoluti
 
 ---
 
+### 2026-10-14 11:02 UTC+1
+**Issue:** Repo-root `debug-a28c4d.log` kept appearing (NDJSON “queued png” from personalised design runs).
+**Resolution:** No live `.py` writer. Deleted the log and 11 stale `.pyc` files that still contained `hypothesisId` / `debug-*.log` writes (Queue preview helpers, Packing app entry bytecode, and old working-copy / backup caches including `agent_dbg`). `.gitignore` now ignores `debug-*.log`. Real app logs stay under each app’s `Logs/`.
+
+### 2026-10-13 08:55 UTC+1
+**Issue:** Normal-folder designs `5968ALG-B.png` and `5968ALG-P.png` (order file `DTF Des-P600012`, SKU `5968ALG-M280-IronOn-A3`) were not both queued. Run picked only `5968ALG-P.png`.
+**Resolution:** When the CL row has no position suffix, exact letter-index PNGs (`-f/-b/-p/-s/-s1/-s2/-sl/-sr`) are each placed. Pocket index stays 80×100. Prefix search is not used for those files.
+
+---
+
+### 2026-10-12 16:33 UTC+1
+**Issue:** Design Queue GUI would not start.
+**Resolution:** `gui_save.py` and `gui_save_folder.py` had the save-loop appends outside the `try`, so import raised `SyntaxError: expected 'except' or 'finally' block`. Indents restored to match `gui_save_image.py`. GUI bootstrap then completed.
+
+---
+
+### 2026-10-12 14:50 UTC+1
+**Issue:** 12 Oct Output had both `200.png` and `P200.png` (same for 250, 280, 4200, 5200, 7000, 7200).
+**Resolution:** Watcher log only wrote the name without `P` (`200_Part 1.png` at 12:25). The `P200` files were written a few minutes earlier by a process still on the old naming. Current save paths use `output_stem_from_dtf_name` and do not create the `P` name. A later delete-on-save was removed: leftovers are not the generator’s job.
+
+### 2026-10-10 10:45 UTC+1
+**Issue:** Queue PNG names kept the packing `P` (`P100.png`, `PB100-S1.png`).
+**Resolution:** `output_stem_from_dtf_name` drops one leading `P` after `DTF Des-`. Headless and GUI save paths and the canvas header use that stem (`100.png`, `B100-S1.png`). Excel names unchanged.
+
 ### 2026-10-06 17:37 UTC+1
 **Issue:** Queue Run on `DTF Des-P300` showed “Processed … successfully” but loaded zero designs.
 **Resolution:** Live CL CSV still had Areeb-era spaced headers (`Custom Label`, `Width 1 (mm)`, …) while Queue expected NocoDB names; `ValueError` aborted load and empty result was counted as success. `shared/cl_columns.rename_legacy_headers` + Queue `load_cl_size_table` rename before the hard check; Run exceptions re-raise so failures surface.

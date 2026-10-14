@@ -11,13 +11,13 @@ CL app owns catalog **policy**; live files live under `database/`. Resolve via `
 | Path | Role |
 |---|---|
 | `database/shared/custom_label/Custom_Label_Database.csv` | **Live** working DB (NocoDB underscored headers; refresh via `scripts/cl_db_exporter.py`) |
-| `database/shared/custom_label/Custom_Label_Database (Areeb).csv` | Pre-NocoDB local reference (do not overwrite) |
+| `database/shared/custom_label/Custom_Label_Database (Areeb).csv` | Pre-NocoDB local reference (do not overwrite). Sorter grouping reads this until the live export has the four Areeb columns filled (locked 2026-10-09). |
 | `backups/custom-label/` | Pre-change catalog snapshots (`cl_backups_dir()`) |
 | `database/custom-label-database/support/` | Size refs, shirts print sizes, mocks, Workbook restore |
 | `database/custom-label-database/Apparel Images/` | Apparel image library |
 | `database/shared/btc_product_data/BTC_Product_Data.csv` | BTC Product Data (UID join) |
 | `database/shared/uneek_product_data/Uneek_Product_Data.xlsx` | Uneek Product Data |
-| `database/shared/absolute_product_data/Absolute_Product_Data.xlsx` | Absolute Product Data (babysuits only) |
+| `database/shared/absolute_product_data/` | Absolute Product Data (CSV if present, else xlsx). Stock Code join, with BTC / Uneek |
 | `Database Transfer/Workbook.xlsx` | Upload mirror of CL (sheet **CL Database**); sync on fill |
 | `Database Transfer/Configuration Workbook.xlsx` | Upload mirror of Size References; sync on fill |
 

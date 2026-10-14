@@ -12,8 +12,8 @@ Also known in older docs as **Plain Orders**. Live paths via `shared/paths.py` (
 | `Run_GUI.bat` → `scripts/run_script_gui.py` | Maintenance scripts under `scripts/` |
 | `database/purchase-order-generator/` | Stock CSVs (Plain / Packs are shared) |
 | `database/shared/custom_label/Custom_Label_Database.csv` | Custom Label → BTC SKU |
-| `database/shared/plain/Plain Database.xlsx` | Shared plain catalog |
-| `database/shared/packs/Packs Database.xlsx` | Shared packs catalog |
+| `database/shared/plain/Plain Database.csv` | Shared plain catalog |
+| `database/shared/packs/Packs Database.csv` | Shared packs catalog |
 | `database/shared/shipstation_tags/ShipStation_Tags.xlsx` | Shared |
 | `database/shared/btc_product_data/BTC_Product_Data.csv` | Shared BTC Product Data |
 | `database/shared/uneek_product_data/Uneek_Product_Data.xlsx` | Shared Uneek Product Data |
@@ -28,7 +28,7 @@ Fetch ShipStation awaiting-dispatch **by tag** (`shared.shipstation` / `orders/l
 
 **Later (not built, 2026-09-17):** packing list PDFs (including these slips) move to **Order Packing List Generator**. This app stays tag → stock / EDI. Do not grow packing-slip work as the long-term home.
 
-Grouping column **`Supplier Name`** filled 2026-09-09 on Plain Database (`BTC Activewear` / `Uneek Clothing`). Absolute babysuits are on Custom Label only.
+Grouping column **`Supplier Name`** on Plain Database (`BTC Activewear` / `Uneek Clothing` / `Absolute Apparels`). Absolute stock codes are appended to the plain CSV from Absolute Product Data.
 
 ## Hard do-nots
 

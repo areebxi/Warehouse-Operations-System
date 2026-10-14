@@ -19,7 +19,7 @@ Canonical cells:
 | `Absolute Apparels` | Babysuits purchased from Absolute only. |
 | (blank) | CL in-house iron-on / sticker. No supplier. |
 
-**Absolute Product Data** (`database/shared/absolute_product_data/Absolute_Product_Data.xlsx`) is a full wholesale price list (629 styles). The warehouse **only buys babysuits** from Absolute Apparels. Do not mark Gildan / bodywarmers / polos as Absolute because they appear on that sheet.
+**Absolute Product Data** (`database/shared/absolute_product_data/`, CSV when present else xlsx) loads beside BTC and Uneek. Match is the **Stock Code** (`AA22-36-L`), not the style. A style that only appears on the sheet does not take a BTC UID or Uneek short code. Babysuit tokens below still match even when the label is not the stock code.
 
 Absolute babysuit styles (sheet Description `Body Suit Baby` / `Romper Suit Baby`):
 
@@ -39,7 +39,8 @@ Decision order:
 4. Uneek **Short Code** → `Uneek Clothing`
 5. BTC Product Data **SPC** → `BTC Activewear`
 6. Uneek **Product Code** → `Uneek Clothing`
-7. Else → `BTC Activewear` (Plain leftover numeric SKU; Packs `BTC` normalizes here)
+7. Absolute Product Data **Stock Code** → `Absolute Apparels`
+8. Else → `BTC Activewear` (Plain leftover numeric SKU; Packs `BTC` normalizes here)
 
 ## Fill 2026-09-09
 

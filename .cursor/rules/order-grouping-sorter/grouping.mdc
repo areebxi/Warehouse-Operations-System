@@ -6,7 +6,7 @@ globs: Order Grouping Sorter/**
 
 # Grouping (v1)
 
-Source of truth: warehouse `order-grouping-locks.md`. Do not guess. No definite match → whole order `unmatched`.
+Source of truth: `Order Grouping Sorter/order-grouping-locks.md`. Do not guess. No definite match → whole order `unmatched`.
 
 ## SKU keys (not universal `resolve_label`)
 
@@ -14,15 +14,16 @@ Source of truth: warehouse `order-grouping-locks.md`. Do not guess. No definite 
 |---------|-----|
 | CL | **After first dash** → `Custom Label`. **No dash → whole SKU** (`A515`). |
 | Plain | **Till last dash** or whole SKU → `SKU` |
+| Absolute | **Till last dash** or whole SKU → Absolute Product Data **Stock Code** |
 | Packs | **Whole SKU** → `Channel Child SKU` |
 
-Finish gate: SKU contains `plain` / `plainlg` → plain; else CL → printed; else Plain → plain; else Packs → plain; else unmatched. Mixed plain+printed → printed-wins. Mixed printed P vs R → majority printed units; tie → readymade (not unmatched). Mixed supply-method → **Supplier On Demand** (on-demand item arrives later; not unmatched).
+Finish gate: SKU contains `plain` / `plainlg` → plain; else CL → printed; else Plain → plain; else Absolute stock code → plain; else Packs → plain; else unmatched. Mixed plain+printed → printed-wins. Mixed printed P vs R → majority printed units; tie → readymade (not unmatched). Mixed supply-method → **Supplier On Demand** (on-demand item arrives later; not unmatched).
 
-Attribute source (separate): Packs whole → else CL after-first (or whole when no dash) → else Plain.
+Attribute source (separate): Packs whole → else CL after-first (or whole when no dash) → else Plain → else Absolute stock code.
 
 ## Intake
 
-Skip `post-order-designs`. Tag `1014-ALL-RESEND` only → file `RESEND` (not 1015/1016/1017). Customised (P) piles only with tag **`1004- Personalised Design-Ready-`**; without it → held (not written). **Blank ship-by → today** (run date; locked 2026-09-24). Unparseable **non-blank** ship-by → `UNMATCHED`. **Hashim #037:** Shift 1 **order** volume **above 300** → split process CSVs today vs later dates; ≤300 may mix. Do **not** dump overflow into Shift 2/3. Today/overdue always get CSVs this run. **Testing:** every `--run` writes `1st Shift` / S1 (replaces CSVs). Production later: nth `--run` of the day = nth shift. Ignore SS shift tags. Whole order stays together.
+Skip `post-order-designs` and tag `00000-Warehouse OOS` (locked 2026-10-09). Tag `1014-ALL-RESEND` only → file `RESEND` (not 1015/1016/1017). Customised (P) piles only with tag **`1004- Personalised Design-Ready-`**; without it → held (not written). **Blank ship-by → today** (run date; locked 2026-09-24). Unparseable **non-blank** ship-by → `UNMATCHED`. **Hashim #037:** Shift 1 **order** volume **above 300** → leftover CSVs split today vs later dates; ≤300 leftover may mix. **Fixed batches stay one CSV per code per shift** (locked 2026-10-08). Do **not** dump overflow into Shift 2/3. Today/overdue always get CSVs this run. **Testing:** every `--run` writes `1st Shift` / S1 (replaces CSVs). Production later: nth `--run` of the day = nth shift. Ignore SS shift tags. Whole order stays together.
 
 ## Names
 

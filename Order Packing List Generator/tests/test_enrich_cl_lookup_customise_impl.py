@@ -35,7 +35,7 @@ def test_enrich_item_options_skipped_when_cl_already_customise_yes(tmp_path: Pat
     def log(msg: str) -> None:
         logs.append(msg)
 
-    df = enrich_packing_data(step1, cl_csv_path=cl_csv, log=log)
+    df = enrich_packing_data(step1, cl_csv_path=cl_csv, log=log, use_plain_packs=False)
     assert df.at[0, "Customise"] == "Yes"
     assert not any("from Item Options phrases" in line for line in logs)
 def test_enrich_sets_customise_from_back_print_option(tmp_path: Path):
@@ -58,7 +58,7 @@ def test_enrich_sets_customise_from_back_print_option(tmp_path: Path):
             }
         ],
     )
-    df = enrich_packing_data(step1, cl_csv_path=cl_csv)
+    df = enrich_packing_data(step1, cl_csv_path=cl_csv, use_plain_packs=False)
     assert df.at[0, "Customise"] == "Yes"
 def test_enrich_sets_customise_from_item_options(tmp_path: Path):
     cl_csv = tmp_path / "cl.csv"
@@ -80,7 +80,7 @@ def test_enrich_sets_customise_from_item_options(tmp_path: Path):
             }
         ],
     )
-    df = enrich_packing_data(step1, cl_csv_path=cl_csv)
+    df = enrich_packing_data(step1, cl_csv_path=cl_csv, use_plain_packs=False)
     assert df.at[0, "Customise"] == "Yes"
 def test_enrich_no_phrase_leaves_customise_empty(tmp_path: Path):
     cl_csv = tmp_path / "cl.csv"
@@ -102,7 +102,7 @@ def test_enrich_no_phrase_leaves_customise_empty(tmp_path: Path):
             }
         ],
     )
-    df = enrich_packing_data(step1, cl_csv_path=cl_csv)
+    df = enrich_packing_data(step1, cl_csv_path=cl_csv, use_plain_packs=False)
     assert df.at[0, "Customise"] == ""
 @pytest.mark.parametrize(
     "value,expected",

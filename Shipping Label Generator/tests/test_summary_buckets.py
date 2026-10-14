@@ -7,7 +7,7 @@ import pandas as pd
 from scripts.app.flows.convert.canonicalize import canonicalize_orders
 from scripts.app.flows.print_labels.read_group import read_and_group_orders
 from scripts.app.flows.print_labels.summary_buckets import (
-    SHARE_SUMMARY_EXACT_LABELS,
+    SUMMARY_EVERY_LABELS,
     SHARED_SUMMARIES_ENABLED,
     ProcessGroupResult,
     bucket_process_groups_for_shared_summaries,
@@ -26,21 +26,34 @@ def _r(pn: str, n: int, *, source_file: str = "", source_index: int = 0) -> Proc
     )
 
 
-def test_share_exact_is_one() -> None:
+def test_summary_every_is_ten() -> None:
     assert SHARED_SUMMARIES_ENABLED is True
-    assert SHARE_SUMMARY_EXACT_LABELS == 1
+    assert SUMMARY_EVERY_LABELS == 10
 
 
-def test_single_label_consecutive_processes_share() -> None:
-    buckets = bucket_process_groups_for_shared_summaries([_r("100", 1), _r("101", 1), _r("102", 1)])
-    assert len(buckets) == 1
-    assert buckets[0].summary_process_number == "100"
-    assert buckets[0].process_numbers == ["100", "101", "102"]
+def test_batch_process_numbers_sort_1_then_2_not_10() -> None:
+    buckets = bucket_process_groups_for_shared_summaries(
+        [_r(f"B100-S1-{n}", 1) for n in (1, 10, 11, 12, 13, 2, 3, 4, 5, 6, 7, 8, 9)]
+    )
+    assert [n for b in buckets for n in b.process_numbers] == [f"B100-S1-{n}" for n in range(1, 14)]
+    # 1 label each: first 10 share one summary, the last 3 are labels only.
+    assert [(b.process_numbers[0], b.include_summary, b.label_count) for b in buckets] == [
+        ("B100-S1-1", True, 10),
+        ("B100-S1-11", False, 3),
+    ]
 
 
-def test_two_or_more_labels_get_own_summary() -> None:
-    buckets = bucket_process_groups_for_shared_summaries([_r("100", 1), _r("101", 2), _r("102", 1)])
-    assert [b.summary_process_number for b in buckets] == ["100", "101", "102"]
+def test_summary_covers_a_run_once_labels_add_up() -> None:
+    # 9+6 reaches 10, so the first summary sits in front of processes 1 and 2.
+    counts = [9, 6, 4, 2, 11, 1, 1, 2, 4, 5, 7, 3, 2, 2]
+    buckets = bucket_process_groups_for_shared_summaries([_r(str(i + 1), n) for i, n in enumerate(counts)])
+    assert [(b.process_numbers, b.include_summary, b.label_count) for b in buckets] == [
+        (["1", "2"], True, 15),
+        (["3", "4", "5"], True, 17),
+        (["6", "7", "8", "9", "10"], True, 13),
+        (["11", "12"], True, 10),
+        (["13", "14"], False, 4),
+    ]
 
 
 def test_each_dtf_file_starts_fresh_even_if_process_numbers_consecutive() -> None:
@@ -59,9 +72,8 @@ def test_each_dtf_file_starts_fresh_even_if_process_numbers_consecutive() -> Non
             _r("106", 1, source_file="DTF-B.xlsx", source_index=1),
         ]
     )
-    assert [b.summary_process_number for b in buckets] == ["100", "105"]
-    assert buckets[0].process_numbers == ["100", "101", "102", "103", "104"]
-    assert buckets[1].process_numbers == ["105", "106"]
+    assert [tuple(b.process_numbers) for b in buckets] == [("100", "101", "102", "103", "104"), ("105", "106")]
+    assert [b.include_summary for b in buckets] == [False, False]
 
 
 def test_multi_dtf_gap_also_starts_fresh() -> None:
@@ -73,7 +85,8 @@ def test_multi_dtf_gap_also_starts_fresh() -> None:
             _r("201", 1, source_file="B.xlsx", source_index=1),
         ]
     )
-    assert [b.summary_process_number for b in buckets] == ["100", "200"]
+    assert [tuple(b.process_numbers) for b in buckets] == [("100", "101"), ("200", "201")]
+    assert [b.include_summary for b in buckets] == [False, False]
 
 
 def test_canonicalize_keeps_source_and_file_order() -> None:
@@ -102,6 +115,16 @@ def test_canonicalize_keeps_source_and_file_order() -> None:
         "Source Index",
     ]
     assert out["Process Number"].tolist() == ["100", "104", "105"]
+    batch = pd.DataFrame(
+        {
+            "Process Number": ["B100-S1-10", "B100-S1-2"],
+            "orders Numbers": ["C1", "C2"],
+            "Source File": ["DTF.xlsx", "DTF.xlsx"],
+            "Source Index": [0, 0],
+        }
+    )
+    ordered = canonicalize_orders([batch])
+    assert ordered["Process Number"].tolist() == ["B100-S1-2", "B100-S1-10"]
     assert out["Source Index"].tolist() == [0, 0, 1]
 
 

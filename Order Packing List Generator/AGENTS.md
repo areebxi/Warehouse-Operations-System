@@ -11,7 +11,9 @@ Live paths via `shared/paths.py` (DB in `database/`; run I/O + GUI config in thi
 |------|-----------------|
 | `packing_list_app.py` + `scripts/` pipeline | `preflight_issues_app.py`, `missing_run_app.py` |
 | `database/order-packing-list-generator/Workbook.xlsx` | `New SKU Database.csv`, `All Orders.csv` |
-| `database/shared/custom_label/Custom_Label_Database.csv` | Step 2 enrich |
+| `database/shared/custom_label/Custom_Label_Database.csv` | Step 2 enrich for printed |
+| `database/shared/plain/Plain Database.csv` | Step 2 plain (till last dash or whole SKU) |
+| `database/shared/packs/Packs Database.csv` | Step 2 packs (whole SKU) |
 | `database/shared/shipstation_tags/ShipStation_Tags.xlsx` | Shared tags |
 | `{Input,Output,Logs,…}/` | `config/` GUI JSON |
 | `config/ShipStation/.env` | ShipStation credentials |
@@ -19,15 +21,15 @@ Live paths via `shared/paths.py` (DB in `database/`; run I/O + GUI config in thi
 
 ## How work is done
 
-Eight-step pipeline: fetch ShipStation CSV → enrich from CL CSV → prime/images → position codes → process number → **drop missing logos** → split by process (names remaining, no PIN gaps) → Excel (Picking, Orders Details, **DTF Des**) → **optional Design Queues sync** → packing PDFs. GUI or `pipeline_runner`. Missing-logo strip is **before** Step 6 naming (locked 2026-09-17). Missing-logo CSV is a holding file only; reprint = this app **from Step 1**.
+Eight-step pipeline: fetch ShipStation CSV → enrich from Custom Label, then Plain, then Packs → prime/images → position codes → process number → **drop missing logos** → split by process (names remaining, no PIN gaps) → Excel (Picking, Orders Details, **DTF Des**) → packing PDFs → **optional Design Queues handoff**. GUI or `pipeline_runner`. Missing-logo strip is **before** Step 6 naming (locked 2026-09-17). Missing-logo CSV is a holding file only; reprint = this app **from Step 1**.
 
 Sorter input stems shorten to **`B#-S#`** for PIN / Excel / PDF / preflight / Output folder / missing-logo filenames (`pin_batch_shift`). Example: `B1-S1-PLAIN-2-SUPPLY ON DEMAND-R-9` → `B1-S1`, PIN `B1-S1-1 Item 1`.
 
-SKU match today: `shared/cl_sku_match.py` — whole → after-first-dash → till-last-dash on **Custom Label** only. Preflight Unmatched SKU = blank Gender Apparel.
+SKU match: Custom Label first (`shared/cl_sku_match.py` — whole → after-first-dash → till-last-dash). A row that still has blank Gender Apparel then matches Plain Database (till last dash or whole SKU) and then Packs (whole SKU → `Channel Child SKU`). A catalog hit is matched. Do not copy plain or pack SKUs into Custom Label.
 
-**Later (not built, 2026-09-17):** every packing list PDF is this app’s — including slips Purchase Order Generator still prints. Enrich/preflight also hit Plain Database + Packs (sorter keys). Catalog hit ≠ unmatched. Do not clone pack/plain SKUs into CL.
+**Later (not built, 2026-09-17):** every packing list PDF is this app’s — including slips Purchase Order Generator still prints. Plain and Packs enrich is in place (2026-10-13). Do not clone pack/plain SKUs into CL.
 
-When **Make design queues** is on (default): DTF Des also lands in SharedInbox; Packing waits on Queue `--files` before PDFs (Skip Batches + DTF Queues folder copy live in Queue).
+When **Make design queues** is on (default): after that input’s PDFs, DTF Des is copied to SharedInbox and Packing runs Queue `--files`. The next input’s packing starts while that queue job runs; only one queue job runs at a time. Checkbox off: Excel and PDFs only. Skip Batches + DTF Queues folder copy live in Queue.
 
 ## Hard do-nots
 

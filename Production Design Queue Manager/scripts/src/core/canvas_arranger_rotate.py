@@ -174,6 +174,7 @@ def _create_design_dict(
         'total_width': total_width_needed,
         'total_height': total_height_needed,
         'size_code': design.get('size_code'),
+        'path': design.get('path'),
         '_pack_pass1_rotated': bool(design.get('_pack_pass1_rotated')),
         '_orient_rotated': bool(design.get('_orient_rotated')),
     }

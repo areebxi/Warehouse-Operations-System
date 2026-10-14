@@ -1,8 +1,9 @@
 """Folder-processing save flow for canvas exports."""
 
 import os
-import re
+import sys
 import threading
+from pathlib import Path
 from tkinter import messagebox
 
 from gui_helpers.common.gui_progress import update_progress, reset_progress
@@ -11,6 +12,11 @@ from gui_helpers.processing.gui_processing_helpers_save import (
     get_output_folder,
     copy_pngs_to_queues,
 )
+
+_warehouse = Path(__file__).resolve().parents[3].parent
+if str(_warehouse) not in sys.path:
+    sys.path.insert(0, str(_warehouse))
+from shared.skip_batches import output_stem_from_dtf_name
 
 
 def save_folder_files_separately(gui):
@@ -33,8 +39,7 @@ def save_folder_files_separately(gui):
 
     all_files_to_save = []
     for file_path, batches in gui.folder_file_batches.items():
-        excel_file_name = os.path.splitext(os.path.basename(file_path))[0]
-        excel_file_name = re.sub(r"^DTF\s*Des-", "", excel_file_name, flags=re.IGNORECASE).strip()
+        excel_file_name = output_stem_from_dtf_name(file_path)
 
         for batch_num, batch in enumerate(batches, 1):
             if len(batches) > 1:

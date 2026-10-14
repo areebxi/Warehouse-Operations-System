@@ -1,5 +1,6 @@
 """Load the three grouping catalogs (read-only).
 
+CL file = Areeb reference (`cl_areeb_csv_path`), not the live NocoDB export.
 CL key = after first dash → Custom Label; if the SKU has no dash, whole SKU
 (not universal resolve_label).
 Plain key = till last dash or whole SKU → SKU.
@@ -26,6 +27,7 @@ PACKS_SHEET = "01-Database"
 SRC_CL = "cl"
 SRC_PLAIN = "plain"
 SRC_PACKS = "packs"
+SRC_ABSOLUTE = "absolute"
 
 
 def _fold(value: object) -> str:
@@ -42,7 +44,7 @@ def _index_rows(rows: list[dict[str, str]], key_col: str) -> dict[str, dict[str,
 
 
 def load_cl_index(path=None) -> dict[str, dict[str, str]]:
-    csv_path = path or wh.cl_csv_path()
+    csv_path = path or wh.cl_areeb_csv_path()
     with csv_path.open(encoding="utf-8-sig", newline="") as f:
         reader = csv.DictReader(f)
         rename = clc.rename_legacy_headers(
@@ -62,6 +64,7 @@ class Catalogs:
     cl: dict[str, dict[str, str]] = field(default_factory=dict)
     plain: dict[str, dict[str, str]] = field(default_factory=dict)
     packs: dict[str, dict[str, str]] = field(default_factory=dict)
+    absolute: dict[str, dict[str, str]] = field(default_factory=dict)
 
     def lookup_cl(self, sku: object) -> Optional[dict[str, str]]:
         after = _fold(key_after_first_dash(sku))
@@ -82,6 +85,16 @@ class Catalogs:
             return self.plain.get(whole)
         return None
 
+    def lookup_absolute(self, sku: object) -> Optional[dict[str, str]]:
+        """Stock Code on Absolute Product Data. Same keys as Plain."""
+        till = _fold(key_till_last_dash(sku))
+        if till and till in self.absolute:
+            return self.absolute[till]
+        whole = _fold(sku)
+        if whole:
+            return self.absolute.get(whole)
+        return None
+
     def lookup_packs(self, sku: object) -> Optional[dict[str, str]]:
         whole = _fold(sku)
         if whole:
@@ -89,7 +102,7 @@ class Catalogs:
         return None
 
     def attribute_row(self, sku: object) -> tuple[Optional[str], Optional[Mapping[str, str]]]:
-        """Packs whole → else CL after-first → else Plain. Separate from finish gate."""
+        """Packs whole → else CL after-first → else Plain → else Absolute stock code."""
         packs = self.lookup_packs(sku)
         if packs is not None:
             return SRC_PACKS, packs
@@ -99,6 +112,9 @@ class Catalogs:
         plain = self.lookup_plain(sku)
         if plain is not None:
             return SRC_PLAIN, plain
+        absolute = self.lookup_absolute(sku)
+        if absolute is not None:
+            return SRC_ABSOLUTE, absolute
         return None, None
 
 
@@ -114,4 +130,11 @@ def load_catalogs() -> Catalogs:
             "Channel Child SKU",
             cache_stem="packs",
         ),
+        absolute=_load_absolute_index(),
     )
+
+
+def _load_absolute_index() -> dict[str, dict[str, str]]:
+    from shared.absolute_catalog import index_stock_codes, load_absolute_rows
+
+    return index_stock_codes(load_absolute_rows())

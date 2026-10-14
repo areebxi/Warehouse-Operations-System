@@ -103,6 +103,21 @@ def test_no_dash_sku_matches_cl_whole() -> None:
     assert r.bins[0].process_name == "B1-S1-PRINTED-2-SUPPLY ON DEMAND-P-1"
 
 
+def test_absolute_stock_code_is_plain() -> None:
+    cat = Catalogs(
+        absolute={
+            "aa22-36-l": _plain_row(
+                **{"SKU": "AA22-36-L", "Supplier Name": "Absolute Apparels"}
+            )
+        }
+    )
+    assert finish_for_sku("AA22-36-L", cat) == "plain"
+    ln = attrs_for_sku("AA22-36-L", 2, cat)
+    assert ln.source == "absolute"
+    assert ln.supplier == "Absolute Apparels"
+    assert ln.finish == "plain"
+
+
 def test_slotify() -> None:
     assert slotify("BTC Activewear") == "btc_activewear"
     assert slotify("T-SHIRTS") == "t-shirts"

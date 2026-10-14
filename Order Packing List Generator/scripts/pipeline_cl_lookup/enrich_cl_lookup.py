@@ -12,6 +12,7 @@ import pandas as pd
 
 from pipeline_runtime.order_number_csv import read_csv_with_order_numbers
 
+from .enrich_plain_packs import apply_plain_packs
 from .enrich_cl_apply import (
     _customise_is_yes,
     _item_name_indicates_custom,
@@ -43,6 +44,7 @@ def enrich_packing_data(
     *,
     cl_lookup: Optional[dict] = None,
     cl_csv_path: Path | None = None,
+    use_plain_packs: bool = True,
 ) -> pd.DataFrame:
     """
     Enrich Step 1 CSV from live CL CSV.
@@ -65,7 +67,10 @@ def enrich_packing_data(
         lookup = cl_lookup
         if log:
             log(f"  Step 2 CL: using preloaded lookup ({len(lookup)} label(s)).")
-    return apply_cl_enrichment(df, lookup, log=log)
+    df = apply_cl_enrichment(df, lookup, log=log)
+    if use_plain_packs:
+        df = apply_plain_packs(df, log=log)
+    return df
 
 
 def main() -> None:
