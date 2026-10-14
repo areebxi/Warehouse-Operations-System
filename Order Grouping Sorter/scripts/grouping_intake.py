@@ -10,6 +10,7 @@ from grouping_finish import attrs_for_sku
 from grouping_models import (
     EXCLUDE_STORES,
     EXCLUDE_TAG,
+    LISTING_ERROR_TAG,
     WAREHOUSE_OOS_TAG,
     LineAttrs,
     Order,
@@ -112,11 +113,12 @@ def orders_from_ss(
     tag_id_to_name: dict[int, str],
     store_id_to_name: dict[int, str],
     catalogs: Catalogs,
-) -> tuple[list[Order], int, int, int, int]:
+) -> tuple[list[Order], int, int, int, int, int]:
     """Skip exclude tags, excluded stores, and discount/adjustment lines."""
     out: list[Order] = []
     skipped_post = 0
     skipped_oos = 0
+    skipped_listing = 0
     skipped_excluded_store = 0
     empty_skipped = 0
     for raw in raw_orders:
@@ -126,6 +128,9 @@ def orders_from_ss(
             continue
         if _has_tag(names, WAREHOUSE_OOS_TAG):
             skipped_oos += 1
+            continue
+        if _has_tag(names, LISTING_ERROR_TAG):
+            skipped_listing += 1
             continue
         store_name = _store_name(raw, store_id_to_name)
         if _fold(store_name) in EXCLUDE_STORES:
@@ -161,6 +166,13 @@ def orders_from_ss(
                 ship_country=cell((raw.get("shipTo") or {}).get("country")),
             )
         )
-    return out, skipped_post, skipped_oos, empty_skipped, skipped_excluded_store
+    return (
+        out,
+        skipped_post,
+        skipped_oos,
+        skipped_listing,
+        empty_skipped,
+        skipped_excluded_store,
+    )
 
 

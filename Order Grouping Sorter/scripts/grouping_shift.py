@@ -1,6 +1,8 @@
 """Shift tokens, leftover/plain B codes, six-field filename core."""
 from __future__ import annotations
 
+from datetime import date
+
 from fixed_batches import fixed_batch_codes, reserved_batch_nums
 from grouping_models import IN_HOUSE, ON_DEMAND, WAREHOUSE_STOCK, slotify
 
@@ -49,6 +51,13 @@ def six_field_core(left: list[str], shift_slot: str) -> str:
     cust = "P" if (len(left) > 5 and left[5] == "customised") else "R"
     shift = shift_file_token(shift_slot)
     return f"{shift}-{finish}-{prime}-{supply}-{cust}"
+
+def defer_future_ship_by(shift_slot: str, ship_by: date | None, run: date) -> bool:
+    """3rd shift and later leave a later ship-by in awaiting_shipment (2026-10-14)."""
+    if shift_number(shift_slot) < 3:
+        return False
+    return ship_by is not None and ship_by > run
+
 
 def shift_number(shift_slot: str) -> int:
     digits = "".join(c for c in shift_slot if c.isdigit())

@@ -104,14 +104,26 @@ def _norm_item_text(s: str) -> str:
     """Casefold; treat hyphens as spaces so Glow-in-the-Dark ≈ Glow In The Dark."""
     return " ".join(_fold(s).replace("-", " ").split())
 
-def _order_has_item_name_contains(order: Order, needle: str) -> bool:
+# Needle "custom" also counts these whole words (locked 2026-10-14).
+_CUSTOM_WORDS = re.compile(r"\b(?:custom|customisable|customised)\b")
+
+def item_text_has_needle(text: str, needle: str) -> bool:
+    """Substring match. Needle `custom` is a whole word, plus Customisable / Customised."""
     n = _norm_item_text(needle)
+    hay = _norm_item_text(text)
     if not n:
         return False
+    if n == "custom":
+        return _CUSTOM_WORDS.search(hay) is not None
+    return n in hay
+
+def _order_has_item_name_contains(order: Order, needle: str) -> bool:
+    if not _norm_item_text(needle):
+        return False
     for ln in order.lines:
-        if n in _norm_item_text(ln.item_name):
+        if item_text_has_needle(ln.item_name, needle):
             return True
     for row in order.csv_rows:
-        if n in _norm_item_text(row.get("Item Name", "")):
+        if item_text_has_needle(row.get("Item Name", ""), needle):
             return True
     return False

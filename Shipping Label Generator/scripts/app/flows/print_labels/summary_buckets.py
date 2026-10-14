@@ -79,9 +79,9 @@ def bucket_process_groups_for_shared_summaries(
     """
     Walk processes in order 1, 2, 3… (not 1, 10, 2). A process is never split.
 
-    Keep adding processes in the same DTF file. When their labels add up to
-    `summary_every` or more, one Batch Summary covers that run and sits in
-    front of those labels. A run left under the threshold has labels only.
+    The first page of each DTF file is always a Batch Summary. After that,
+    a summary is added only when the labels it covers reach `summary_every`.
+    A later run left under the threshold has labels only.
     """
     if summary_every < 1:
         raise ValueError("summary_every must be >= 1")
@@ -93,18 +93,22 @@ def bucket_process_groups_for_shared_summaries(
     buckets: list[SummaryBucket] = []
     pending: list[ProcessGroupResult] = []
     pending_labels = 0
+    opened = False
 
     def _flush() -> None:
-        nonlocal pending, pending_labels
+        nonlocal pending, pending_labels, opened
         if not pending:
             return
+        include = (not opened) or pending_labels >= summary_every
         buckets.append(
             SummaryBucket(
                 summary_process_number=str(pending[0].process_number).strip(),
                 members=tuple(pending),
-                include_summary=pending_labels >= summary_every,
+                include_summary=include,
             )
         )
+        if include:
+            opened = True
         pending = []
         pending_labels = 0
 
@@ -112,6 +116,7 @@ def bucket_process_groups_for_shared_summaries(
         n = len(r.label_paths)
         if pending and pending[-1].source_key != r.source_key:
             _flush()
+            opened = False
         pending.append(r)
         pending_labels += n
         if pending_labels >= summary_every:

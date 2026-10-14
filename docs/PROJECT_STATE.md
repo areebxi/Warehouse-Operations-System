@@ -15,14 +15,14 @@ Cross-app snapshot. Per-app detail: each app’s `docs/HANDOFF.md`. Architecture
 
 ## Live handoffs
 
-1. **Sorter → Packing Input** — on `--run`, CSVs to `Order Packing List Generator/Input/{DD-MM-YYYY}/1st Shift/` (`shared.paths` sorter helper). Testing: `SHIFT_PER_RUN = False` → every write is **1st Shift** (`Order Grouping Sorter/scripts/grouping_models.py`, `run_sorter.py`). Filename `{B}-S{n}-…` / `RESEND` / `UNMATCHED`; columns = sorter `CSV_FIELDNAMES` (same as Packing `orders_to_csv.py`).
+1. **Sorter → Packing Input** — on `--run`, CSVs to `Order Packing List Generator/Input/{DD-MM-YYYY}/{nth} Shift/` (`shared.paths` sorter helper). `SHIFT_PER_RUN = True`: nth `--run` of the day = nth shift (`grouping_models.py`, `run_sorter.py`). 3rd shift and later write due orders only. Filename `{B}-S{n}-…` / `RESEND` / `UNMATCHED`; columns = sorter `CSV_FIELDNAMES` (same as Packing `orders_to_csv.py`).
 2. **Packing → SharedInbox** — When Make design queues is on, Step 7 writes `DTF Des-P{base}.xlsx` to Output. After that input’s PDFs, Packing copies it to `runtime/SharedInbox/DTF Des/{date}/{shift}/` (`run_design_queues_step.py` + `copy_dtf_des_to_shared_inbox`).
 3. **SharedInbox → Queue** — Packing invokes `design_queues_watcher.py --files` after that file’s PDFs. The next packing input can run while one queue job is in progress. Continuous watcher also polls (`shared/design_queues_watcher.py`). Skip Batches skips listed batch digits. Headless PNG also copies to DTF Queues folder when set. Moves to `Processed/` or `Failed/`. No approval.
 4. **Shipping** — manual from app `DTF Des Files/` only. Does **not** read SharedInbox.
 
 ## Testing-mode facts
 
-- Sorter: every `--run` rewrites Packing `1st Shift` (`SHIFT_PER_RUN = False`). Production later: nth `--run` of the day = nth shift.
+- Sorter: nth `--run` of the day = nth shift (`SHIFT_PER_RUN = True`, locked 2026-10-14). 3rd shift and later write due orders only.
 - Queue Design Queues watcher is the standing approval exception (see parent `AGENTS.md` / `ARCHITECTURE.md`).
 
 ## Not built (do not implement until asked)
@@ -33,7 +33,6 @@ Cross-app snapshot. Per-app detail: each app’s `docs/HANDOFF.md`. Architecture
 | Packing enrich/preflight Plain + Packs | Enrich is CL-only (`pipeline_cl_lookup` / `enrich_cl_apply.py`) |
 | Packing owns all packing-list PDFs (incl. PO slips) | PO still calls `generate_packing_slips_for_tag` |
 | PO EDI/stock only | EDI exists **and** slips still run (`run_script_stock_phase.py`) |
-| Sorter `SHIFT_PER_RUN` production rotation | Flag false in `grouping_models.py` |
 
 ## Exceptions / size
 

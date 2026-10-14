@@ -87,6 +87,31 @@ def test_mixed_customised_majority_units_tie_readymade() -> None:
     assert r3.bins[0].process_name == "B1-S1-PRINTED-2-SUPPLY ON DEMAND-R-1"
 
 
+def test_custom_needle_is_whole_word() -> None:
+    cat = _fotl_cats()
+    cause = _order("CAUSE", "1-M-T-WHT-M", catalogs=cat, item_name="Great Cause Tee")
+    inside = _order("INSIDE", "1-M-T-WHT-M", catalogs=cat, item_name="Customer favourite tee")
+    word = _order(
+        "WORD", "1-M-T-WHT-M", catalogs=cat, item_name="Custom kids tee", tags=_ready()
+    )
+    able = _order(
+        "ABLE", "1-M-T-WHT-M", catalogs=cat, item_name="Customisable school tee", tags=_ready()
+    )
+    ised = _order(
+        "ISED", "1-M-T-WHT-M", catalogs=cat, item_name="Customised school tee", tags=_ready()
+    )
+    ation = _order("ATION", "1-M-T-WHT-M", catalogs=cat, item_name="Customisation chart tee")
+    r = group_orders([cause, inside, word, able, ised, ation], RUN)
+    names = {o.number: b.process_name for b in r.bins for o in b.orders}
+    assert names["CAUSE"].startswith("B100-")
+    assert names["INSIDE"].startswith("B100-")
+    assert names["ATION"].startswith("B100-")
+    assert names["WORD"].startswith("B4000-")
+    assert names["ABLE"].startswith("B4000-")
+    assert names["ISED"].startswith("B4000-")
+    assert r.held == []
+
+
 def test_personalised_without_ready_tag_is_held() -> None:
     cat = _fotl_cats(**{"Customise": "Yes"})
     ready = _order("OK", "1-M-T-WHT-M", catalogs=cat, tags=_ready())

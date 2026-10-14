@@ -19,7 +19,7 @@ Sorter configuration that grouping **reads** (it does not overwrite catalogs). P
 | `database/shared/packs/Packs Database.csv` | Plain finish (whole SKU → Channel Child SKU) |
 | `config/ShipStation/.env` | Shared ShipStation `REAL_API_*` |
 | `Order Grouping Sorter/Logs/` | Dry-run reports |
-| `Order Packing List Generator/Input/{DD-MM-YYYY}/1st Shift/` | Write target on `--run` while testing (`sorter_input_csv_path`). Replaces 1st Shift CSVs. Fixed-batch files are `B100-{6 fields}.csv` / `B80-{6 fields}.csv` / … ; leftover `B1-{6 fields}.csv` / `B2-…` (skip reserved). `RESEND` / `UNMATCHED` land there. Production later: nth run = nth shift |
+| `Order Packing List Generator/Input/{DD-MM-YYYY}/{nth} Shift/` | Write target on `--run` (`sorter_input_csv_path`). Nth `--run` of the day = nth shift (locked 2026-10-14). Replaces CSVs in that shift folder only. Fixed-batch files are `B100-{6 fields}.csv` / `B80-{6 fields}.csv` / … ; leftover `B1-{6 fields}.csv` / `B2-…` (skip reserved). `RESEND` / `UNMATCHED` land there. 3rd shift and later: due orders only. |
 | `Order Grouping Sorter/Manually Made Files/` | Historical floor exports + Packing output. **Analysis only** — not an intake source. |
 
 Do not import Packing internals. CSV columns copy `CSV_FIELDNAMES` in Packing `orders_to_csv.py`.

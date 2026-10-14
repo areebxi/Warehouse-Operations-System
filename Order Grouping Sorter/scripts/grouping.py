@@ -17,6 +17,7 @@ from grouping_models import (
     CSV_FIELDNAMES,
     EXCLUDE_STORES,
     EXCLUDE_TAG,
+    LISTING_ERROR_TAG,
     WAREHOUSE_OOS_TAG,
     IN_HOUSE,
     ON_DEMAND,

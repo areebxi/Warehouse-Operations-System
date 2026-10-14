@@ -44,7 +44,7 @@ def sheet_board(wb: Workbook) -> None:
         ("1 / 2", GREEN, "prime / non-prime"),
         ("WAREHOUSE STOCK", GREEN, "or SUPPLY ON DEMAND / IN HOUSE MANUFACTURE"),
         ("P / R", GREEN, "personalised / ready made"),
-        ("S1", GREEN, "testing: every --run is 1st Shift; production later S2 / S3"),
+        ("S1", GREEN, "nth --run of the day = nth shift (S1, S2, S3, …)"),
         ("1", GREEN, "priority — today first, then prime, then as made"),
     ]
     for i, (name, bg, meaning) in enumerate(slots):
@@ -69,7 +69,7 @@ def sheet_board(wb: Workbook) -> None:
     ws.merge_cells("A11:F11")
     intake = [
         "1. ShipStation\nawaiting_shipment only",
-        "2. Skip\npost-order-designs\nand 00000-Warehouse OOS",
+        "2. Skip\npost-order-designs,\n00000-Warehouse OOS,\n1006 listing error",
         "3. Resend tag?\n→ file “RESEND”",
         "4. Blank ship-by\n→ today",
         "5. Today/overdue first\nthen future to fill cap",
@@ -88,13 +88,13 @@ def sheet_board(wb: Workbook) -> None:
     for i, h in enumerate(headers):
         put(ws, 16, 1 + i, h, bg=NAVY, fg=WHITE, bold=True, align=C)
     splits = [
-        ("shift", "on", "on", "Testing: filename field 1 S1 (after optional B-batch prefix) and Input 1st Shift every --run. Hashim #037: order volume > 300 splits today vs later dates; do not dump into Shift 2/3. Blank ship-by → today (in awaiting_shipment → pull today; 2026-09-24). Production later: nth run = nth shift", "on"),
+        ("shift", "on", "on", "Nth --run of the day = nth shift (S1, S2, S3). 3rd shift and later write due orders only; later ship-by stays in awaiting_shipment. Hashim #037: order volume > 300 splits today vs later on 1st/2nd. Blank ship-by → today.", "on"),
         ("plain / printed", "on", "on", "Finish gate: SKU plain/plainlg → plain; else CL hit (after 1st dash, or whole SKU if no dash) → printed; else Plain Database till-last-dash or Packs whole → plain; else unmatched. Filename PLAIN or PRINTED", "on"),
         ("store / channel", "on", "on", "MAS Clothing → fawad match (not a filename slot); Amazon stays in own", "on"),
         ("design group", "off", "off", "per scenario, Design ID lists", "off"),
         ("prime", "on", "on", "tag Amazon Prime Order (not CL Amazon Prime)", "on"),
         ("printing method", "off", "on", "CL Printing Type — DTF default; Sublimation = mugs", "on"),
-        ("ready-made / customised", "off", "on", "CL Customise. Mixed P vs R in one order: majority printed units; tie → readymade (not unmatched)", "on"),
+        ("ready-made / customised", "off", "on", "CL Customise. Item Name Custom / Customisable / Customised are whole words (2026-10-14); Personali stays a substring. Mixed P vs R: majority printed units; tie → readymade", "on"),
         ("customisation type", "off", "off", "CL Customisation Type (column empty; v1 slot x)", "off"),
         ("print size", "off", "off", "CL Print Size 1", "off"),
         ("print position", "off", "off", "CL Print Positions", "off"),
@@ -118,7 +118,7 @@ def sheet_board(wb: Workbook) -> None:
         put(ws, r, 3, row[2], bg=flag_bg(row[2]), align=C)
         put(ws, r, 4, row[3], align=L)
         put(ws, r, 5, row[4], bg=flag_bg(row[4]), bold=True, align=C)
-    put(ws, 30, 1, "Fixed batches first (B10…B8050, row order = priority), then plain B2000/B2100/B2200/B2500/B2600/… and printed leftover B1/B2/… skipping reserved. Hashim #037: orders > 300 split today vs later. Testing: --run rewrites 1st Shift. Packing PIN: B100-S1-1 Item 1 (batch+shift only).", bg=GREEN, fg=GREEN_F, align=L)
+    put(ws, 30, 1, "Fixed batches first (B10…B8050, row order = priority), then plain B2000/B2100/B2200/B2500/B2600/… and printed leftover B1/B2/… skipping reserved. Hashim #037: orders > 300 split today vs later on 1st/2nd. Nth --run = nth shift. 3rd+ is due orders only. Packing PIN: B100-S1-1 Item 1 (batch+shift only).", bg=GREEN, fg=GREEN_F, align=L)
     ws.merge_cells("A30:E30")
 
     # 30 chain

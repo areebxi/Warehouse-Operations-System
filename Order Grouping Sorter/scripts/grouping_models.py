@@ -10,18 +10,18 @@ from shared.areeb_taxonomy import cell
 
 EXCLUDE_TAG = "post-order-designs"
 WAREHOUSE_OOS_TAG = "00000-Warehouse OOS"
+LISTING_ERROR_TAG = "1006- PERSONALISED ORDER Listing Error (DW)"
 RESEND_TAG = "1014-ALL-RESEND"
 RESEND_FILE = "RESEND"
 UNMATCHED_FILE = "UNMATCHED"
 PRIME_TAG = "amazon prime order"
-# Exact ShipStation tag (Tags.xlsx). Designs ready on the floor.
 PERSONALISED_READY_TAG = "1004- Personalised Design-Ready-"
 FAWAD_STORE = "mas clothing"
 EXCLUDE_STORES = frozenset({"dtfocean.co.uk wp"})
 PLAIN_MARKERS = ("plainlg", "plain")
 
 SHIFT1_SPLIT_ORDERS = 300
-SHIFT_PER_RUN = False
+SHIFT_PER_RUN = True
 
 COLOUR_GROUP_MIN = 3
 PART_CAP = 50
@@ -173,10 +173,8 @@ class ProcessBin:
     orders: list[Order]
     parts: list[ProcessPart] = field(default_factory=list)
     floor_code: str = ""
-    # Leftover Graph + 30-chain slots (fixed batches leave empty).
-    group_slots: list[str] = field(default_factory=list)
+    group_slots: list[str] = field(default_factory=list)  # leftover 30-chain; fixed empty
     ship_by_slot: str = ""  # today | future | x (mixed / don't care)
-
 @dataclass
 class SortResult:
     run_date: date
@@ -195,6 +193,8 @@ class SortResult:
     skipped_already_written: int = 0
     skipped_excluded_store: int = 0
     skipped_oos: int = 0
+    skipped_future: int = 0
+    skipped_listing: int = 0
     overlaps: Counter = field(default_factory=Counter)  # "B5500 over B10"
 
 

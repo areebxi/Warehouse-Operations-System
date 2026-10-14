@@ -68,7 +68,7 @@ def main(argv: list[str] | None = None) -> int:
         shift_slot, shift_folder = next_open_shift(input_root, run_date)
         already = order_numbers_in_date_folder(input_root, run_date)
     else:
-        # Testing: every --run rewrites 1st Shift. Production later turns SHIFT_PER_RUN on.
+        # SHIFT_PER_RUN is on (2026-10-14): nth --run of the day = nth shift.
         shift_slot, shift_folder = "1st", "1st Shift"
         already = set()
     result = sort_raw_orders(

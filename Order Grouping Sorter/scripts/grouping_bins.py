@@ -20,6 +20,7 @@ from grouping_models import (
 )
 from grouping_names import _apply_six_field_names
 from grouping_parts import assign_inside_file
+from grouping_shift import defer_future_ship_by
 from grouping_peel import _process_name, peel_chain
 from grouping_slots import _mark_unmatched, _order_finish, left_slots
 
@@ -62,7 +63,11 @@ def group_orders(
     unmatched: list[Order] = []
     held: list[Order] = []
     eligible: list[Order] = []
+    deferred = 0
     for order in orders:
+        if defer_future_ship_by(shift_slot, order.ship_by, run):
+            deferred += 1
+            continue
         if _has_tag(order.tag_names, RESEND_TAG):
             resend.append(order)
             continue
@@ -151,6 +156,7 @@ def group_orders(
         today_orders=today_orders,
         eligible_orders=eligible_orders,
         overlaps=overlaps,
+        skipped_future=deferred,
     )
 
 
@@ -165,7 +171,7 @@ def sort_raw_orders(
     shift_folder: str = "1st Shift",
     exclude_order_numbers: Optional[set[str]] = None,
 ) -> SortResult:
-    parsed, skipped_post, skipped_oos, empty_skipped, skipped_store = orders_from_ss(
+    parsed, skipped_post, skipped_oos, skipped_listing, empty_skipped, skipped_store = orders_from_ss(
         raw_orders, tag_id_to_name, store_id_to_name, catalogs
     )
     already = exclude_order_numbers or set()
@@ -181,11 +187,12 @@ def sort_raw_orders(
     )
     result.skipped_post = skipped_post
     result.skipped_oos = skipped_oos
+    result.skipped_listing = skipped_listing
     result.empty_skipped = empty_skipped
     result.skipped_excluded_store = skipped_store
     result.skipped_already_written = skipped_written
     result.pool_orders = (
-        len(parsed) + skipped_post + skipped_oos + empty_skipped + skipped_store
+        len(parsed) + skipped_post + skipped_oos + skipped_listing + empty_skipped + skipped_store
     )
     return result
 

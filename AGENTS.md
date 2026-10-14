@@ -67,8 +67,8 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 - **Talks to:** ShipStation API. Does not auto-read SharedInbox yet.
 
 ### Order Grouping Sorter
-- **Purpose:** ShipStation `awaiting_shipment` → process piles (fixed batches first: `B100-S1-PRINTED-2-WAREHOUSE STOCK-R-1.csv` / …; leftover `B1-S1-…` / `B2-…` skipping reserved). One CSV per process into Packing Input. Default CLI is dry-run; `--run` writes after supervisor **run**. Testing: **`1st Shift`** every `--run`.
-- **Live data:** DB in `database/order-grouping-sorter/` (taxonomy pick-lists + fixed batches); reads Areeb CL CSV (`Custom_Label_Database (Areeb).csv`, temporary 2026-10-09) / Plain / Packs; secrets via `config/ShipStation/.env`; Logs in the app folder. Write target: Packing `Input/{DD-MM-YYYY}/1st Shift/` while testing. `RESEND` / `UNMATCHED` land there.
+- **Purpose:** ShipStation `awaiting_shipment` → process piles (fixed batches first: `B100-S1-PRINTED-2-WAREHOUSE STOCK-R-1.csv` / …; leftover `B1-S1-…` / `B2-…` skipping reserved). One CSV per process into Packing Input. Default CLI is dry-run; `--run` writes after supervisor **run**. Nth `--run` of the day = nth shift. 3rd shift and later: due orders only.
+- **Live data:** DB in `database/order-grouping-sorter/` (taxonomy pick-lists + fixed batches); reads Areeb CL CSV (`Custom_Label_Database (Areeb).csv`, temporary 2026-10-09) / Plain / Packs; secrets via `config/ShipStation/.env`; Logs in the app folder. Write target: Packing `Input/{DD-MM-YYYY}/{nth} Shift/` (nth `--run` of the day). `RESEND` / `UNMATCHED` land there.
 - **Talks to:** ShipStation (shared client, including `list_stores`); the three grouping catalogs (read-only on a run). Does not import Packing internals. CSV columns copy Packing current-view (`Order #`, `Ship By`, …).
 
 ### Purchase Order Generator
@@ -96,7 +96,7 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 | New SKU Database | Packing DTF Des Item-SKU remap (`database/order-packing-list-generator/`) |
 | NocoDB | Custom Label Database scripts only |
 | ShipStation | Packing, PO, Shipping, Sorter via `shared/shipstation` (create/void local to Shipping) |
-| Order Grouping Sorter → Packing Input | One CSV per process into Packing `Input/{DD-MM-YYYY}/1st Shift/` while testing (`shared.paths.sorter_input_csv_path`). Fixed-batch files are `B100-{6 fields}.csv` / `B80-{6 fields}.csv` / … ; leftover `B1-{6 fields}.csv` / `B2-…` (skip reserved). Default CLI is dry-run; `--run` writes. Production later: nth `--run` of the day = nth shift. `RESEND` / `UNMATCHED` land in that run’s folder. |
+| Order Grouping Sorter → Packing Input | One CSV per process into Packing `Input/{DD-MM-YYYY}/{nth} Shift/` (`shared.paths.sorter_input_csv_path`). Fixed-batch files are `B100-{6 fields}.csv` / `B80-{6 fields}.csv` / … ; leftover `B1-{6 fields}.csv` / `B2-…` (skip reserved). Default CLI is dry-run; `--run` writes. Nth `--run` of the day = nth shift (locked 2026-10-14). 3rd shift and later write due orders only. `RESEND` / `UNMATCHED` land in that run’s folder. |
 
 **Later (not built):** Shipping auto-ingest from SharedInbox. Packing owns **all** packing list PDFs (including today’s PO slips). Packing enrich/preflight uses Custom Label, then Plain, then Packs (do not clone those SKUs into CL). PO is EDI/stock only.
 

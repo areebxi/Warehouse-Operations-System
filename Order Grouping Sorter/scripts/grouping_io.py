@@ -25,7 +25,7 @@ def input_date_folder(run: date) -> str:
 
 
 def next_open_shift(input_root: Path, run: date) -> tuple[str, str]:
-    """Nth --run this calendar day (production later when SHIFT_PER_RUN is True)."""
+    """Nth --run this calendar day: first empty shift folder (SHIFT_PER_RUN)."""
     day = Path(input_root) / input_date_folder(run)
     n = 1
     while n < 20:

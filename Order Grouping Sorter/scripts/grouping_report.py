@@ -42,7 +42,9 @@ def format_report(result: SortResult, written: list[Path] | None = None) -> str:
         f"awaiting_shipment fetched={result.pool_orders}  "
         f"skipped post-order-designs={result.skipped_post}  "
         f"skipped 00000-Warehouse OOS={result.skipped_oos}  "
+        f"skipped 1006 listing error={result.skipped_listing}  "
         f"skipped DTFOcean.co.uk WP={result.skipped_excluded_store}  "
+        f"skipped later ship-by (3rd+)={result.skipped_future}  "
         f"empty/discount-only={result.empty_skipped}"
     )
     ro, rl, ru = _counts(result.resend)

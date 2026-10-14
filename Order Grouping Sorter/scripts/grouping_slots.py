@@ -20,11 +20,13 @@ def prime_slot(tag_names: list[str]) -> str:
 PERSONALISED_NAME_NEEDLES = ("personali", "custom")
 
 def _line_is_personalised(ln: LineAttrs) -> bool:
-    """Supervisor 2026-09-28: CL Customise = Yes OR Item Name contains Personali / Custom."""
+    """CL Customise = Yes, Item Name has Personali, or whole-word Custom / Customisable / Customised."""
     if _fold(ln.customise) == "yes":
         return True
-    name = _fold(ln.item_name)
-    return any(n in name for n in PERSONALISED_NAME_NEEDLES)
+    # Local import: grouping_garments loads this module for _chain_lines.
+    from grouping_garments import item_text_has_needle
+
+    return any(item_text_has_needle(ln.item_name, n) for n in PERSONALISED_NAME_NEEDLES)
 
 
 def mixed_customised_slot(printed: list[LineAttrs]) -> str:

@@ -73,7 +73,8 @@ def test_each_dtf_file_starts_fresh_even_if_process_numbers_consecutive() -> Non
         ]
     )
     assert [tuple(b.process_numbers) for b in buckets] == [("100", "101", "102", "103", "104"), ("105", "106")]
-    assert [b.include_summary for b in buckets] == [False, False]
+    # Each file's first page is a summary, even under the threshold.
+    assert [b.include_summary for b in buckets] == [True, True]
 
 
 def test_multi_dtf_gap_also_starts_fresh() -> None:
@@ -86,7 +87,7 @@ def test_multi_dtf_gap_also_starts_fresh() -> None:
         ]
     )
     assert [tuple(b.process_numbers) for b in buckets] == [("100", "101"), ("200", "201")]
-    assert [b.include_summary for b in buckets] == [False, False]
+    assert [b.include_summary for b in buckets] == [True, True]
 
 
 def test_canonicalize_keeps_source_and_file_order() -> None:

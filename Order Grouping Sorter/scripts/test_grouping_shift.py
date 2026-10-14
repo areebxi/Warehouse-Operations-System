@@ -57,3 +57,22 @@ def test_next_open_shift_and_written_order_numbers() -> None:
         assert order_numbers_in_date_folder(root, RUN) == {"Z1"}
 
 
+def test_third_shift_leaves_future_ship_by() -> None:
+    cat = _cats()
+    due = _order("DUE", "77989LG-M-T-BLK-M", ship="2026-09-11", catalogs=cat)
+    late = _order("LATE", "77989LG-M-T-BLK-M", ship="2026-09-10", catalogs=cat)
+    blank = _order("BLANK", "77989LG-M-T-BLK-M", ship="", catalogs=cat)
+    future = _order("FUT", "77989LG-M-T-BLK-M", ship="2026-09-20", catalogs=cat)
+    orders = [due, late, blank, future]
+    third = group_orders(orders, RUN, shift_slot="3rd", shift_folder="3rd Shift")
+    got = {o.number for b in third.bins for o in b.orders}
+    assert got == {"DUE", "LATE", "BLANK"}
+    assert third.skipped_future == 1
+    fourth = group_orders(orders, RUN, shift_slot="4th", shift_folder="4th Shift")
+    assert fourth.skipped_future == 1
+    second = group_orders(orders, RUN, shift_slot="2nd", shift_folder="2nd Shift")
+    got2 = {o.number for b in second.bins for o in b.orders}
+    assert "FUT" in got2
+    assert second.skipped_future == 0
+
+
