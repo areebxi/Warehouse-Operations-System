@@ -270,78 +270,9 @@ class RealProvider(Provider):
         return None
 
     async def lookup_orders(self, order_number: str) -> list[Order]:
-        order_number = str(order_number).strip()
-        if not order_number:
-            return []
+        from scripts.app.providers.real.provider_lookup import lookup_orders as _lookup_orders
 
-        data = await self._request_json(
-            method="GET",
-            path="/orders",
-            params={"orderNumber": order_number, "pageSize": 100},
-        )
-
-        if not isinstance(data, dict):
-            raise ProviderParseError(
-                method="GET",
-                url=f"{self._base_url}/orders",
-                status=200,
-                message="Unexpected orders response shape: expected object with key 'orders'",
-                body_snippet=str(data)[:2000],
-                expected="object with 'orders' list",
-            )
-        items = data.get("orders")
-        if items is None:
-            items = []
-        if not isinstance(items, list):
-            raise ProviderParseError(
-                method="GET",
-                url=f"{self._base_url}/orders",
-                status=200,
-                message="Unexpected orders response shape: expected list at 'orders'",
-                body_snippet=json.dumps({k: type(v).__name__ for k, v in list(data.items())[:50]}, ensure_ascii=False)[:2000],
-                expected="orders: list",
-            )
-
-        out: list[Order] = []
-        for it in items:
-            if not isinstance(it, dict):
-                continue
-
-            oid = self._get(it, "orderId", "order_id", "id")
-            on = self._get(it, "orderNumber", "order_number", "number")
-            if oid is None or on is None:
-                continue
-
-            ship_to = it.get("shipTo") if isinstance(it.get("shipTo"), dict) else {}
-            customer_name = self._get(it, "customerName", "customer_name")
-            if not customer_name and isinstance(ship_to, dict):
-                customer_name = ship_to.get("name")
-
-            ship_from = it.get("shipFrom") if isinstance(it.get("shipFrom"), dict) else {}
-            ship_from_name = None
-            if isinstance(ship_from, dict):
-                ship_from_name = ship_from.get("name")
-
-            items_list = it.get("items")
-            out.append(
-                Order(
-                    orderId=self._as_int(oid, field="orderId"),
-                    orderNumber=self._as_str(on),
-                    carrierCode=self._get(it, "carrierCode", "carrier_code"),
-                    serviceCode=self._get(it, "serviceCode", "service_code"),
-                    packageCode=self._get(it, "packageCode", "package_code"),
-                    requestedShippingService=self._get(it, "requestedShippingService", "requested_shipping_service"),
-                    customerName=str(customer_name).strip() if customer_name else None,
-                    shipFromName=str(ship_from_name).strip() if ship_from_name else None,
-                    orderStatus=(
-                        str(self._get(it, "orderStatus", "order_status")).strip()
-                        if self._get(it, "orderStatus", "order_status") is not None
-                        else None
-                    ),
-                    items=list(items_list) if isinstance(items_list, list) else [],
-                )
-            )
-        return out
+        return await _lookup_orders(self, order_number)
 
     async def list_shipments(
         self,
@@ -408,37 +339,9 @@ class RealProvider(Provider):
         return out
 
     async def fetch_label(self, shipment_id: int) -> Label | None:
-        try:
-            data = await self._request_json(method="GET", path=f"/shipments/{int(shipment_id)}/label")
-        except ProviderHttpError as e:
-            if e.status == 404:
-                return None
-            raise
+        from scripts.app.providers.real.provider_label_fetch import fetch_label as _fetch_label
 
-        if not isinstance(data, dict):
-            raise ProviderParseError(
-                method="GET",
-                url=f"{self._base_url}/shipments/{int(shipment_id)}/label",
-                status=200,
-                message="Unexpected label response shape: expected object",
-                body_snippet=str(data)[:2000],
-                expected="object with labelData or labelDownload",
-            )
-
-        label_data = self._get(data, "labelData", "label_data")
-        if not label_data:
-            # URL-mode fallback: labelDownload.href
-            href = None
-            ld = data.get("labelDownload")
-            if isinstance(ld, dict):
-                href = ld.get("href") or ld.get("url")
-            if href and isinstance(href, str) and href.strip():
-                b64 = await self._download_label_as_base64(href.strip())
-                tracking = self._get(data, "trackingNumber", "tracking_number")
-                return Label(labelData=b64, trackingNumber=str(tracking) if tracking else None)
-            return None
-        tracking = self._get(data, "trackingNumber", "tracking_number")
-        return Label(labelData=str(label_data), trackingNumber=str(tracking) if tracking else None)
+        return await _fetch_label(self, shipment_id)
 
     async def _download_label_as_base64(self, href: str) -> str:
         url = href if href.lower().startswith("http") else f"{self._base_url}{href}"

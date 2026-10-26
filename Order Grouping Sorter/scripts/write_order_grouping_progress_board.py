@@ -55,14 +55,14 @@ def sheet_board(wb: Workbook) -> None:
     ws.row_dimensions[5].height = 36
 
     put(ws, 6, 1, "plain name", bg=GREY, size=9, align=C)
-    put(ws, 6, 2, "Fixed batches: B40/B80/B100/B1050/B3700/…. Leftover: B1/B2/… (skip reserved). Filename keeps full 6 fields. Packing PIN uses B100-S1-1 Item 1 only. Shift folder stays 1st/2nd/3rd. Amazon stays in own. MAS Clothing → fawad (match only).", bg=GREEN, fg=GREEN_F, size=9, align=L)
+    put(ws, 6, 2, "Fixed batches: B40/B80/B100/B1050/B6000/B3700/…. Leftover: B1/B2/… (skip reserved). Filename keeps full 6 fields. Packing PIN uses B100-S1-1 Item 1 only. Shift folder stays 1st/2nd/3rd. Amazon stays in own. MAS Clothing → fawad (match only).", bg=GREEN, fg=GREEN_F, size=9, align=L)
     ws.merge_cells("B6:J6")
 
     put(ws, 8, 1, "RESEND", bg=YELLOW, fg=YELLOW_F, bold=True, align=C)
-    put(ws, 8, 2, "filename is only:  RESEND     Exact tag 1014-ALL-RESEND only (not 1015 / 1016 / 1017). Wins even if ship-by is blank.", bg=YELLOW, align=L)
+    put(ws, 8, 2, "1014-ALL-RESEND → B9000 ready-made tees, B9050 personalised tees, B9040 Gildan, B9100 / B9150 iron-on, B9200 other. Catalog-miss stays RESEND. Not held for a missing 1004 tag (2026-10-18).", bg=YELLOW, align=L)
     ws.merge_cells("B8:J8")
     put(ws, 9, 1, "UNMATCHED", bg=ORANGE, fg=ORANGE_F, bold=True, align=C)
-    put(ws, 9, 2, "filename is only:  UNMATCHED     No definite match. Floor handles this run; then investigate and tighten so the next run matches. Same order stays together.", bg=ORANGE, align=L)
+    put(ws, 9, 2, "filename is only:  UNMATCHED     No definite match. Chat run does not seed the catalog (2026-10-20). add unmatched is a separate script. Same order stays together.", bg=ORANGE, align=L)
     ws.merge_cells("B9:J9")
 
     put(ws, 11, 1, "This shift", bg=NAVY, fg=WHITE, bold=True, align=C)
@@ -70,7 +70,7 @@ def sheet_board(wb: Workbook) -> None:
     intake = [
         "1. ShipStation\nawaiting_shipment only",
         "2. Skip\npost-order-designs,\n00000-Warehouse OOS,\n1006 listing error",
-        "3. Resend tag?\n→ file “RESEND”",
+        "3. Resend tag?\n→ B9040–B9200",
         "4. Blank ship-by\n→ today",
         "5. Today/overdue first\nthen future to fill cap",
         "6. Folders 1st/2nd/3rd\n300/100/100 LINES",
@@ -88,7 +88,7 @@ def sheet_board(wb: Workbook) -> None:
     for i, h in enumerate(headers):
         put(ws, 16, 1 + i, h, bg=NAVY, fg=WHITE, bold=True, align=C)
     splits = [
-        ("shift", "on", "on", "Nth --run of the day = nth shift (S1, S2, S3). 3rd shift and later write due orders only; later ship-by stays in awaiting_shipment. Hashim #037: order volume > 300 splits today vs later on 1st/2nd. Blank ship-by → today.", "on"),
+        ("shift", "on", "on", "Nth --run of the day = nth shift (S1, S2, S3). 3rd shift and later write overdue, blank, and the run-day ship-by, plus tag 1004- Personalised Design-Ready- when ship-by is later (locked 2026-10-22). A later ship-by without that tag stays out.  Hashim #037: order volume > 300 splits today vs later on 1st/2nd. Blank ship-by → today.", "on"),
         ("plain / printed", "on", "on", "Finish gate: SKU plain/plainlg → plain; else CL hit (after 1st dash, or whole SKU if no dash) → printed; else Plain Database till-last-dash or Packs whole → plain; else unmatched. Filename PLAIN or PRINTED", "on"),
         ("store / channel", "on", "on", "MAS Clothing → fawad match (not a filename slot); Amazon stays in own", "on"),
         ("design group", "off", "off", "per scenario, Design ID lists", "off"),
@@ -118,7 +118,7 @@ def sheet_board(wb: Workbook) -> None:
         put(ws, r, 3, row[2], bg=flag_bg(row[2]), align=C)
         put(ws, r, 4, row[3], align=L)
         put(ws, r, 5, row[4], bg=flag_bg(row[4]), bold=True, align=C)
-    put(ws, 30, 1, "Fixed batches first (B10…B8050, row order = priority), then plain B2000/B2100/B2200/B2500/B2600/… and printed leftover B1/B2/… skipping reserved. Hashim #037: orders > 300 split today vs later on 1st/2nd. Nth --run = nth shift. 3rd+ is due orders only. Packing PIN: B100-S1-1 Item 1 (batch+shift only).", bg=GREEN, fg=GREEN_F, align=L)
+    put(ws, 30, 1, "Fixed batches first (B10 international under resend, B700 UK UV, B6000/B6010 UK plain bags, B6020/B6030/B6050/B6060 UK printed bags, B40 any Gildan tee, B8000/B8050 prime FOTL, B7000/B3000 odd items last). Then plain B2000/… and printed leftover B1/B2/… skipping reserved. Nth --run = nth shift. 3rd+ writes overdue, blank, and the run-day ship-by, plus tag 1004- Personalised Design-Ready- when ship-by is later (locked 2026-10-22). A later ship-by without that tag stays out.  Packing PIN: B100-S1-1 Item 1.", bg=GREEN, fg=GREEN_F, align=L)
     ws.merge_cells("A30:E30")
 
     # 30 chain

@@ -26,3 +26,11 @@ def test_select_order_candidate_skips_cancelled() -> None:
     picked = select_order_candidate(candidates=[cancelled, active], has_active_shipments={1: False, 2: False})
     assert picked is not None
     assert picked.orderId == 2
+
+
+def test_select_order_candidate_uses_newest_shipped_when_all_have_labels() -> None:
+    older = Order(orderId=3, orderNumber="A", orderStatus="shipped")
+    newer = Order(orderId=8, orderNumber="A", orderStatus="shipped")
+    picked = select_order_candidate(candidates=[older, newer], has_active_shipments={3: True, 8: True})
+    assert picked is not None
+    assert picked.orderId == 8

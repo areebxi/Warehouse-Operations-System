@@ -22,6 +22,10 @@ from add_labels_peer_keys import _alias_shirt_colour_label, _peer_keys_for_label
 
 
 def run_selfchecks() -> None:
+    from add_labels_seeds import _uneek_short_code
+
+    assert _uneek_short_code("M258-X07PI5")
+    assert not _uneek_short_code("M260-P1-3171")
     assert uid_from_custom_label("M260-P3-3265") == "3265"
     assert uid_from_custom_label("M281-P5-C800T-30-18-24") == ""
     assert uid_from_custom_label("Transfer-1M-1") == ""

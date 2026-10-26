@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import date
 
 from fixed_batches import fixed_batch_codes, reserved_batch_nums
-from grouping_models import IN_HOUSE, ON_DEMAND, WAREHOUSE_STOCK, slotify
+from grouping_models import IN_HOUSE, ON_DEMAND, PERSONALISED_READY_TAG, WAREHOUSE_STOCK, slotify
 
 FILENAME_SUPPLY = {
     slotify(WAREHOUSE_STOCK): "WAREHOUSE STOCK",
@@ -52,11 +52,20 @@ def six_field_core(left: list[str], shift_slot: str) -> str:
     shift = shift_file_token(shift_slot)
     return f"{shift}-{finish}-{prime}-{supply}-{cust}"
 
-def defer_future_ship_by(shift_slot: str, ship_by: date | None, run: date) -> bool:
-    """3rd shift and later leave a later ship-by in awaiting_shipment (2026-10-14)."""
-    if shift_number(shift_slot) < 3:
+def defer_future_ship_by(
+    shift_slot: str,
+    ship_by: date | None,
+    run: date,
+    tag_names: list[str] | None = None,
+) -> bool:
+    """3rd+ leaves a later ship-by. Run day, blank, and overdue stay.
+
+    Ready tag 1004 still writes a later ship-by (locked 2026-10-22).
+    """
+    if shift_number(shift_slot) < 3 or ship_by is None or ship_by <= run:
         return False
-    return ship_by is not None and ship_by > run
+    ready = PERSONALISED_READY_TAG.casefold()
+    return not any(n.strip().casefold() == ready for n in (tag_names or []))
 
 
 def shift_number(shift_slot: str) -> int:

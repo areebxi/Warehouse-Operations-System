@@ -15,14 +15,14 @@ Cross-app snapshot. Per-app detail: each app’s `docs/HANDOFF.md`. Architecture
 
 ## Live handoffs
 
-1. **Sorter → Packing Input** — on `--run`, CSVs to `Order Packing List Generator/Input/{DD-MM-YYYY}/{nth} Shift/` (`shared.paths` sorter helper). `SHIFT_PER_RUN = True`: nth `--run` of the day = nth shift (`grouping_models.py`, `run_sorter.py`). 3rd shift and later write due orders only. Filename `{B}-S{n}-…` / `RESEND` / `UNMATCHED`; columns = sorter `CSV_FIELDNAMES` (same as Packing `orders_to_csv.py`).
+1. **Sorter → Packing Input** — on `--run`, CSVs to `Order Packing List Generator/Input/{DD-MM-YYYY}/{nth} Shift/` (`shared.paths` sorter helper). `SHIFT_PER_RUN = True`: nth `--run` of the day = nth shift (`grouping_models.py`, `run_sorter.py`). 3rd shift and later write overdue, blank, and the run-day ship-by, plus tag `1004- Personalised Design-Ready-` when ship-by is later (locked 2026-10-22). A later ship-by without that tag stays out. Chat **run the group sorter** is that `--run` on current `awaiting_shipment` only: no catalog seed, and still-awaiting orders are not skipped for an earlier shift CSV (`run_sorter.py`; locked 2026-10-14, catalog step removed 2026-10-20). **add unmatched** is `seed_catalog_misses.py` alone. Filename `{B}-S{n}-…` / `RESEND` / `UNMATCHED`; columns = sorter `CSV_FIELDNAMES` (same as Packing `orders_to_csv.py`).
 2. **Packing → SharedInbox** — When Make design queues is on, Step 7 writes `DTF Des-P{base}.xlsx` to Output. After that input’s PDFs, Packing copies it to `runtime/SharedInbox/DTF Des/{date}/{shift}/` (`run_design_queues_step.py` + `copy_dtf_des_to_shared_inbox`).
 3. **SharedInbox → Queue** — Packing invokes `design_queues_watcher.py --files` after that file’s PDFs. The next packing input can run while one queue job is in progress. Continuous watcher also polls (`shared/design_queues_watcher.py`). Skip Batches skips listed batch digits. Headless PNG also copies to DTF Queues folder when set. Moves to `Processed/` or `Failed/`. No approval.
 4. **Shipping** — manual from app `DTF Des Files/` only. Does **not** read SharedInbox.
 
 ## Testing-mode facts
 
-- Sorter: nth `--run` of the day = nth shift (`SHIFT_PER_RUN = True`, locked 2026-10-14). 3rd shift and later write due orders only.
+- Sorter: nth `--run` of the day = nth shift (`SHIFT_PER_RUN = True`, locked 2026-10-14). 3rd shift and later write overdue, blank, and the run-day ship-by, plus tag `1004- Personalised Design-Ready-` when ship-by is later (locked 2026-10-22). A later ship-by without that tag stays out. Chat **run the group sorter** does not seed the catalog and does not skip still-awaiting orders already written to an earlier shift CSV (2026-10-20).
 - Queue Design Queues watcher is the standing approval exception (see parent `AGENTS.md` / `ARCHITECTURE.md`).
 
 ## Not built (do not implement until asked)

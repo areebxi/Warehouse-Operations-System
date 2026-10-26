@@ -33,11 +33,13 @@ Live paths via `shared/paths.py` / `load_config` (I/O + yaml in this app; ShipSt
 
 
 
-1. **Convert** — DTF Des in app desfiles → canonical orders list.
+1. **Convert** — DTF Des in app desfiles → canonical orders list. A file already in the processed manifest is converted again.
 
-2. **Print** — ShipStation create/reuse labels; per-process + combined PDFs.
+2. **Print** — ShipStation create/reuse labels; per-process + combined PDFs. A shipped order reprints the PDF already under `Output/Labels` and does not buy a second label. The first page of each DTF file is a Batch Summary.
 
 3. **Void** — from void list CSV.
+
+Reprint lock (2026-10-20): `.cursor/rules/shipping-label-generator/reprint.mdc`.
 
 
 

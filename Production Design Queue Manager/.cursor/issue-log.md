@@ -4,6 +4,14 @@ Newest entries first. Maintained automatically per `.cursor/rules/issue-resoluti
 
 ---
 
+### 2026-10-15 18:46 UTC+1
+**Issue:** Multi-position designs needed the catalog suffix, not a guessed letter. `5968ALG-M262-17212` is pocket + back.
+**Resolution:** `Design Image Suffix 1`–`4` are filled on `Custom_Label_Database (Areeb).csv` (one position stays blank; two or more get `F`/`B`/`P`/`PL`/`PR`/`SR`/`SL`/`S`/`I`/`FBRC`/`FBLC`). Queue reads that letter and looks for `{design code}-{suffix}.png`. Verified pocket `5968ALG-P.png`, back `5968ALG-B.png`.
+
+### 2026-10-15 11:39 UTC+1
+**Issue:** Process 168 item 1 (15 Oct, SKU `5968ALG-M262-17212`, pocket + back) printed `5968ALG-P.png` on both positions. `5968ALG-B.png` was in the designs folder.
+**Resolution:** Catalog positions are named (`Front Left Pocket`, `Back Center`), so the letter-index path never ran. The fallback search is “starts with `5968ALG`” and Drive lists `-P` first, so both slots got the pocket file. Named positions now map to the letter file (`P` / `B` / `F` / sleeve) before that fallback. Verified: pocket → `5968ALG-P.png`, back → `5968ALG-B.png`.
+
 ### 2026-10-14 11:02 UTC+1
 **Issue:** Repo-root `debug-a28c4d.log` kept appearing (NDJSON “queued png” from personalised design runs).
 **Resolution:** No live `.py` writer. Deleted the log and 11 stale `.pyc` files that still contained `hypothesisId` / `debug-*.log` writes (Queue preview helpers, Packing app entry bytecode, and old working-copy / backup caches including `agent_dbg`). `.gitignore` now ignores `debug-*.log`. Real app logs stay under each app’s `Logs/`.

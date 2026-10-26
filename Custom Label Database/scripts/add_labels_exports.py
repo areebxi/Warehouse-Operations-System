@@ -24,7 +24,11 @@ from add_labels_parse import (
     label_from_input,
 )
 from add_labels_peer_keys import _alias_shirt_colour_label, _peer_keys_for_label
-from add_labels_peers import _collect_peers_for_labels, _scan_existing
+from add_labels_peers import (
+    _collect_peers_for_labels,
+    _scan_existing,
+    _scan_existing_and_peers,
+)
 from add_labels_peer_seed import _expand_all_spc
 from add_labels_seeds import build_seed_rows
 from add_labels_fill import fill_rows
@@ -50,6 +54,7 @@ __all__ = [
     "_expand_all_spc",
     "_peer_keys_for_label",
     "_scan_existing",
+    "_scan_existing_and_peers",
     "_sticker_mm",
     "_sticker_size",
     "build_seed_rows",

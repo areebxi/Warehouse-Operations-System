@@ -112,11 +112,15 @@ def bucket_process_groups_for_shared_summaries(
         pending = []
         pending_labels = 0
 
+    prev_source: str | None = None
     for r in ordered:
         n = len(r.label_paths)
-        if pending and pending[-1].source_key != r.source_key:
+        # Always reset on a new DTF file — even when the previous file ended
+        # exactly on a threshold flush (pending empty, opened still True).
+        if prev_source is not None and r.source_key != prev_source:
             _flush()
             opened = False
+        prev_source = r.source_key
         pending.append(r)
         pending_labels += n
         if pending_labels >= summary_every:

@@ -13,7 +13,11 @@ from grouping_garments import (
     _line_is_gildan_tee,
     _line_is_iron_on,
     _line_is_mug,
+    _line_is_odd_item,
     _line_is_ss_fotl,
+    _order_gildan_any,
+    _order_resend_other,
+    _order_tee_not_gildan,
     _needles,
     _order_name_any,
     _order_sku_any,
@@ -62,8 +66,13 @@ def _order_matches_fixed_row(
         return False
     if cares(row.printing_method) and printing != row.printing_method:
         return False
-    if cares(row.customised) and cust != row.customised:
-        return False
+    if cares(row.customised):
+        # not-customised = plain (slot x) or readymade. Personalised is excluded.
+        if row.customised == "not-customised":
+            if cust == "customised":
+                return False
+        elif cust != row.customised:
+            return False
     if cares(row.customisation_type) and _fold(cust_type) != row.customisation_type:
         return False
     if cares(row.print_size) and _fold(print_size) != row.print_size:
@@ -86,6 +95,18 @@ def _order_matches_fixed_row(
             return False
     elif row.product_type == "gildan_tee":
         if not _all_chain(order, _line_is_gildan_tee):
+            return False
+    elif row.product_type == "gildan_any":
+        if not _order_gildan_any(order):
+            return False
+    elif row.product_type == "tee_not_gildan":
+        if not _order_tee_not_gildan(order):
+            return False
+    elif row.product_type == "resend_other":
+        if not _order_resend_other(order):
+            return False
+    elif row.product_type == "odd_item":
+        if not _all_chain(order, _line_is_odd_item):
             return False
     elif row.product_type == "mug":
         if not _all_chain(order, _line_is_mug):
@@ -138,8 +159,15 @@ def named_process_code(
     return None
 
 
+_ODD_CODES = frozenset({"B3000", "B7000"})
+
+
 def fixed_batch_matches(order: Order, *, run: date | None = None) -> list[str]:
     """Every fixed batch this order satisfies, in priority order (first one wins)."""
-    return [r.batch_code for r in fixed_batch_table() if _order_matches_fixed_row(order, r, run=run)]
+    hits = [r.batch_code for r in fixed_batch_table() if _order_matches_fixed_row(order, r, run=run)]
+    # Odd rows are the remainder. Drop them when an earlier process already matched.
+    if any(code not in _ODD_CODES for code in hits):
+        hits = [code for code in hits if code not in _ODD_CODES]
+    return hits
 
 

@@ -44,7 +44,8 @@ def test_second_lookup_orders_not_delayed_after_bare_429() -> None:
                 await rp.aclose()
 
     asyncio.run(run())
-    assert calls["n"] == 2
+    # 429, then an empty default list, then the shipped-status lookup.
+    assert calls["n"] == 3
 
 def test_parse_retry_after_header_seconds() -> None:
     assert _parse_retry_after_header("0") == 0.0

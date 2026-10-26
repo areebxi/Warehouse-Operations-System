@@ -12,6 +12,7 @@ from PyPDF2 import PdfReader
 
 from scripts.app.config.label_page_threshold import read_label_page_threshold
 from scripts.app.config.load import AppConfig
+from scripts.app.flows.print_labels.batch_pdfs import process_pdf_dir, write_combined_and_batch_pdfs
 from scripts.app.flows.print_labels.failures import FailureRow, append_human_error_log, write_failures_csv
 from scripts.app.flows.print_labels.process_order import OrderResult, process_one_order
 from scripts.app.flows.print_labels.read_group import GroupedOrders, OrderInput, read_and_group_orders
@@ -21,7 +22,6 @@ from scripts.app.flows.print_labels.summary_buckets import (
 )
 from scripts.app.logging.jsonl import JsonlLogger
 from scripts.app.logging.orders_audit import OrderAuditLogger
-from scripts.app.pdf.merge_combined import merge_combined_by_process
 from scripts.app.pdf.merge_process import merge_process_pdf
 from scripts.app.pdf.report_pages import make_combined_missed_orders_page_pdf, make_missed_orders_page_pdf, make_summary_page_pdf
 from scripts.app.providers.select_provider import get_provider
@@ -465,7 +465,7 @@ def run_print(
     #   output/Process_PDFs/<date>/<input_key>/process_<n>.pdf
     # Keep the old base dir for backwards-compatible recovery.
     process_pdfs_base_dir = process_pdfs_base_dir_override or (out_dir / "Process_PDFs" / date_dir)
-    process_pdfs_dir = process_pdfs_base_dir / str(input_key)
+    process_pdfs_dir = process_pdf_dir(process_pdfs_base_dir, str(input_key))
     combined_pdf = combined_pdfs_dir / f"{combined_name}.pdf"
 
     if not allow_existing_outputs:
@@ -645,31 +645,21 @@ def run_print(
         write_failures_csv(failures_csv, all_failures)
         append_human_error_log(error_log, all_failures)
 
-    combined_pdfs_dir.mkdir(parents=True, exist_ok=True)
     combined_name = _combined_pdf_name_for_run(orders_csv=orders_csv, combined_name_override=combined_name_override)
-    combined_pdf = combined_pdfs_dir / f"{combined_name}.pdf"
-    # Combined: one summary per bucket (source-file order), then that bucket's labels.
-    per_process_pdfs_sorted = bucket_pdfs
-    log.info(
-        "merge_combined_start",
-        extra={
-            "combined_pdf": str(combined_pdf),
-            "process_pdf_count": int(len(per_process_pdfs_sorted)),
-            "process_pdfs": [str(p) for p in per_process_pdfs_sorted],
-            "missed_orders_page_appended": bool(all_failures),
-        },
-    )
     combined_missed = None
     if all_failures:
         combined_missed = make_combined_missed_orders_page_pdf(
             missed=[(f.process_number, f.order_number, f.reason) for f in all_failures]
         )
-    merge_combined_by_process(out_path=combined_pdf, per_process_pdfs=per_process_pdfs_sorted, missed_pdf_bytes=combined_missed)
-    try:
-        page_count = int(len(PdfReader(str(combined_pdf)).pages))
-    except Exception:
-        page_count = -1
-    log.info("merge_combined_done", extra={"combined_pdf": str(combined_pdf), "page_count": int(page_count)})
+    written = write_combined_and_batch_pdfs(
+        combined_pdfs_dir=combined_pdfs_dir,
+        combined_name=combined_name,
+        buckets=buckets,
+        bucket_pdfs=bucket_pdfs,
+        missed_pdf_bytes=combined_missed,
+        log=log,
+    )
+    combined_pdf = written.combined_pdf
 
     if not _sanity_check_combined_pdf(combined_pdf=combined_pdf, expected_process_numbers=summary_process_numbers, log=log):
         log.info("run_end", extra={"command": command_name, "input_key": input_key, "exit_code": 2})

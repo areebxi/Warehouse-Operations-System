@@ -1,5 +1,7 @@
 # Shipping Label App — Rebuild Plan (Parity-First)
 
+Historical build plan. Reprint, shipped-label reuse, and Batch Summary on each DTF file are locked in `.cursor/rules/shipping-label-generator/reprint.mdc` (2026-10-20). Where this plan disagrees with that rule, follow the rule.
+
 This plan converts `REQUIREMENTS.md` into a build sequence that preserves **logic + behavior parity** while keeping the codebase ready for a future **real provider**.
 
 ## Goals and constraints

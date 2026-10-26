@@ -408,7 +408,7 @@ def test_second_lookup_orders_not_delayed_after_bare_429() -> None:
                 await rp.aclose()
 
     asyncio.run(run())
-    assert calls["n"] == 2
+    assert calls["n"] == 3
 
 
 def test_parse_retry_after_header_seconds() -> None:

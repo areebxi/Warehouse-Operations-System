@@ -26,7 +26,13 @@ def _order_sku_any(order: Order, spec: str) -> bool:
     return any(_sku_hit(ln.sku, n) for ln in order.lines for n in needles)
 
 def _order_name_any(order: Order, spec: str) -> bool:
-    return any(_order_has_item_name_contains(order, n) for n in _needles(spec))
+    """`;` is OR. `+` inside one clause is AND (`Dancing Queen+Glitter`)."""
+    return any(_name_clause(order, n) for n in _needles(spec))
+
+
+def _name_clause(order: Order, clause: str) -> bool:
+    parts = [p.strip() for p in clause.split("+") if p.strip()]
+    return bool(parts) and all(_order_has_item_name_contains(order, p) for p in parts)
 
 def _destination_slot(order: Order) -> str:
     """Blank country is not guessed international."""
@@ -79,6 +85,55 @@ def _has_gildan_5000_token(text: str) -> bool:
         if p in {"5000", "g5000"}:
             return True
     return False
+
+def _line_is_tee_category(ln: LineAttrs) -> bool:
+    return _fold(ln.category) == "t-shirts"
+
+
+def _line_is_hoodie_type(ln: LineAttrs) -> bool:
+    return _fold(ln.product_type) in {"hoodie", "zip hoodie"}
+
+
+def _line_is_sweatshirt_type(ln: LineAttrs) -> bool:
+    return _fold(ln.product_type) == "sweatshirt"
+
+
+def _line_is_odd_item(ln: LineAttrs) -> bool:
+    """Printed remainder: not a tee, Gildan tee, babysuit, hoodie, or sweatshirt."""
+    if _line_is_tee_category(ln) or _line_is_gildan_tee(ln):
+        return False
+    if _line_is_babysuit(ln) or _line_is_hoodie_type(ln) or _line_is_sweatshirt_type(ln):
+        return False
+    return True
+
+
+def _order_gildan_any(order: Order) -> bool:
+    """B40: every line is a t-shirt and any line is a Gildan tee."""
+    lines = _chain_lines(order)
+    return (
+        bool(lines)
+        and all(_line_is_tee_category(ln) for ln in lines)
+        and any(_line_is_gildan_tee(ln) for ln in lines)
+    )
+
+
+def _order_tee_not_gildan(order: Order) -> bool:
+    lines = _chain_lines(order)
+    return (
+        bool(lines)
+        and all(_line_is_tee_category(ln) for ln in lines)
+        and not any(_line_is_gildan_tee(ln) for ln in lines)
+    )
+
+
+def _order_resend_other(order: Order) -> bool:
+    lines = _chain_lines(order)
+    if not lines:
+        return False
+    return not any(
+        _line_is_tee_category(ln) or _line_is_gildan_tee(ln) or _line_is_iron_on(ln) for ln in lines
+    )
+
 
 def _line_is_gildan_tee(ln: LineAttrs) -> bool:
     """B40: Brand Gildan, Gender Apparel contains GILDAN, or style 5000/G5000."""

@@ -78,7 +78,7 @@ def test_glow_and_sku_contain_fixed_batches() -> None:
                 catalogs=cat,
                 item_name="Adult Glow In The Dark Shirt",
             ),
-            _order("S1", "179975LG-M-T-BLK-M", catalogs=cat, item_name="Dancing Queen Tee"),
+            _order("S1", "179975LG-M-T-BLK-M", catalogs=cat, item_name="Dancing Queen Glitter Tee"),
             _order("S2", "179975LG-M-T-BLK-M", catalogs=cat),
             _order("N1", "77989LG-M-T-BLK-M", catalogs=cat, item_name="Plain Black Tee"),
         ],
@@ -94,6 +94,59 @@ def test_glow_and_sku_contain_fixed_batches() -> None:
 
 
 
+
+
+def test_b6000_china_bag_sku() -> None:
+    """Plain bags stay B6000/B6010. Printed bags are B6020/B6030/B6050/B6060."""
+    bag = Catalogs(
+        cl={},
+        plain={"plain-bg-chinabag-blk": _plain_row(**{"SKU": "Plain-BG-Chinabag-BLK"})},
+        packs={},
+    )
+    bg = Catalogs(cl={"bg125-lbl": _cl_row(**{"Custom_Label": "BG125-LBL"})})
+    bg_plain = Catalogs(cl={}, plain={"bg125-blk": _plain_row(**{"SKU": "BG125-BLK"})}, packs={})
+    china = Catalogs(cl={"bg-chinabag-lbl": _cl_row(**{"Custom_Label": "BG-Chinabag-LBL"})})
+    china_p = Catalogs(
+        cl={"bg-chinabag-yes": _cl_row(**{"Custom_Label": "BG-Chinabag-YES", "Customise": "Yes"})}
+    )
+    sticker = Catalogs(cl={"sticker-bg125": _cl_row(**{"Custom_Label": "STICKER-BG125"})})
+    queen = Catalogs(cl={"bg125-lbl": _cl_row(**{"Custom_Label": "BG125-LBL"})})
+    held = Catalogs(cl={"bg125-yes": _cl_row(**{"Custom_Label": "BG125-YES", "Customise": "Yes"})})
+
+    def intl(o: Order) -> Order:
+        o.ship_country = "IE"
+        return o
+
+    r = group_orders(
+        [
+            _order("BAG", "Plain-BG-Chinabag-BLK-O/S", catalogs=bag),
+            _order("CASE", "Plain-bg-chinabag-BLK-O/S", catalogs=bag),
+            _order("BG", "9LG-BG125-LBL", catalogs=bg),
+            _order("RM", "9LG-BG-Chinabag-LBL", catalogs=china),
+            _order("P5", "9LG-BG-Chinabag-YES", catalogs=china_p, tags=_ready()),
+            _order("P6", "9LG-BG125-YES", catalogs=held, tags=_ready()),
+            _order("BGP", "BG125-BLK-OS", catalogs=bg_plain),
+            intl(_order("IE", "Plain-BG-Chinabag-BLK-O/S", catalogs=bag)),
+            intl(_order("IEP", "9LG-BG125-LBL", catalogs=bg)),
+            _order("ST", "9LG-STICKER-BG125", catalogs=sticker),
+            _order("DQ", "179975LG-BG125-LBL", item_name="Dancing Queen Glitter Tee", catalogs=queen),
+            _order("HOLD", "9LG-BG125-YES", catalogs=held),
+            _order("N1", "77989LG-M-T-BLK-M", catalogs=_cats()),
+        ],
+        RUN,
+    )
+    by = {o.number: b.floor_code for b in r.bins for o in b.orders}
+    assert by["BAG"] == by["CASE"] == "B6000"
+    assert by["IE"] == by["IEP"] == "B10"
+    assert by["BG"] == "B6030"
+    assert by["RM"] == "B6020"
+    assert by["P5"] == "B6050"
+    assert by["P6"] == "B6060"
+    assert by["BGP"] == "B6010"
+    assert by["ST"] == "B1050"
+    assert by["DQ"] == "B5500"
+    assert by["N1"] != "B6000"
+    assert {o.number for o in r.held} == {"HOLD"}
 
 
 def test_plain_sequence_skips_reserved() -> None:

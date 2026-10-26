@@ -1,6 +1,6 @@
 # Production Design Queue Manager — snapshot
 
-**Updated:** 13 October 2026 (letter index PNGs)  
+**Updated:** 15 October 2026 (catalog suffix picks the design file)  
 **Handbook:** `AGENTS.md`
 
 ## Continue here
@@ -15,6 +15,7 @@
 - GUI action: one **Run** button — Customise=Yes uses Single/Double folders; otherwise Normal designs folder.
 - Personalised single-folder PNG: a companion JPEG `-P` / `-S` / `-S1` / `-S2` / `-SL` / `-SR` (before the SKU, or `{order}-P.jpg` beside `{order}.png`) sets the PNG to 80×100 or 100×100. The JPEG is not queued.
 - Designs capped at 300×500 mm (double-folder path exempt). Unique orders also try `{Order}-{SKU}.png` first.
+- A filled `Design Image Suffix` on the Areeb catalog picks `{design code}-{suffix}.png` (`P` → `5968ALG-P.png`, `B` → `5968ALG-B.png`). One print position stays blank and keeps the current search.
 - Slow Drive I/O runs with UI keepalive so the window stays responsive. Preview labels use filename stems.
 
 ## Watch

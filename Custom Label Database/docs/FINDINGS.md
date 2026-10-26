@@ -2,6 +2,31 @@
 
 Facts and locked lessons. Snapshot numbers that can drift are dated. Policy that must not be forgotten is also in `.cursor/rules/`.
 
+## F/P-F8 and B4 positions 2026-10-23
+
+`F/P` together with `F8` is Front Left Pocket only, 80×100. It is not Front Center plus a pocket. `B4` is Back Center. One Custom Label can carry both tails (`F/P-F8-M-T-BLK-5XL 161121LG-B4-M-T-BLK-5XL`). `F/P` without `F8` stays Front Center plus Front Left Pocket. Rule: `print-sizes.mdc`.
+
+## UID colour comes from the product file 2026-10-23
+
+`N220-P3-138131` was filled by cloning the red Hi-Vis baseball helmet (`N220-P3-55710`). BTC UID 138131 is Quartz Rotor Safety Helmet, White, SPC `QUARTZ4`. Colour, garment, Apparel Image, and Supplier Product Code follow the product file for that UID, not a nearby Custom Label that shares the mock. A peer clone is only a fallback when the product file has no row, and the report says so. Rule: `fill-pipeline.mdc`.
+
+## Sleeve print size 2026-10-23
+
+Every sleeve slot is **100×100** mm, whatever the garment. A slot counts when Position Name contains `sleeve` (`Sleeve`, `Right Sleeve`). Blank sleeve slots are filled too. Applied on `Custom_Label_Database (Areeb).csv`: 4,938 slots (4,271 were blank, 667 were another size). Owner: `.cursor/rules/custom-label-database/print-sizes.mdc`.
+
+## Hoodie print sizes 2026-10-22
+
+Every hoodie (kids, men, women) uses a square chart, not Shirts Print Sizes. Plain sweatshirts stay on the shirt table. Women use the men band. Front and Back share the same mm.
+
+| Band | XS | S | M | L | XL | 2XL | 3XL | 4XL | 5XL |
+|------|----|---|---|---|----|-----|-----|-----|-----|
+| Kids | 170×170 | 190×190 | 210×210 | 230×230 | 250×250 | — | — | — | — |
+| Men / Women | — | 250×250 | 270×270 | 290×290 | 310×310 | 330×330 | 350×350 | 370×370 | 390×390 |
+
+Warehouse presser: actual platen **400×600** mm; safe max used is **300×500** (W×H). Do not store a print wider than 300 or taller than 500. Adult XL and up are over that width — stored at the chart size, not shrunk. Owner: `.cursor/rules/custom-label-database/print-sizes.mdc`.
+
+Applied 2026-10-22 on `Custom_Label_Database (Areeb).csv`: Gender Apparel containing `Hoodie`. Front and back slots only; pocket, sleeve, and corner slots left. Kids includes `Youth` and age-only sizes. Nearest band: 3-4 Years / YXS → XS; 5-6 / YS → S; 7-8 / YM → M; 9-11 → L; 12-13, 12-14, 14-15 Years and Y2XL → XL. Adult Extra Small and `S (8-10)` → S; parenthetical sizes (`M (12-14)` … `5XL (34-36)`) use the word before the bracket. `6XL` (19 Uneek rows, width already blank) has no band and was left. 8,435 hoodie rows; 8,472 front/back slots rewritten. Live CSV not edited.
+
 ## W415 print size 2026-10-12
 
 Westford Mill Jute Stuff Bag `W415` is not a shirt. Given print size minus 20 mm on each side: XXS 8×12 cm → 60×100 mm, XS 12×16 → 100×140, S 18×22 → 160×200, M 25×28 → 230×260, L 34×40 → 320×380, XL 50×55 → 480×530. BTC product code `W415`, UIDs 144584–144589 (XXS through XL). Rule: `print-sizes.mdc`.
@@ -145,7 +170,9 @@ Tee, t-shirt, polo, hoodie, sweatshirt, tank — **and** any row whose `Size` ma
 1. **`support/Shirts Print Sizes.csv` first** — Standard **A4** for Front/Back (A3 column only if that paper is selected; missing → A4). Size = DB `Size`, else PE `Size` via UID.
 2. **Then `support/Size References.csv`** if the band does not map, or for extra positions / paper / an **exact** `M## (UID)` row.
 
-Pocket / left chest → **80×100**. Kids F8 (`-K-` in the label) → **65×80**. Front and Back use the **same** millimetres.
+Pocket / left chest → **80×100**. Front and Back use the **same** millimetres.
+
+**F8 / F8A** (locked 2026-10-20): own dash token `F8` or `F8A` = pocket. `F80` is not. One filled position → `Front Left Pocket` at **80×100**, including kids (the old kids F8 65×80 chart is retired). A second position already on the row stays. Applied on the Areeb catalog only.
 
 ### Not shirts
 
@@ -287,6 +314,7 @@ Packing Item SKUs like `189381LG-N220-P3-55709` / `189382LG-N220-P3-55712` are *
 | Size | `Standard Size` (PE `O/s`) |
 | Print Positions / Customise | `Front Center` / `Yes` (supervisor: token `P3` here ≠ garment mock Front+Back) |
 | Print mm | Cap-style **80×45** (no Size References `N220` row; not a shirt) |
+| Printing Type | `UV` (locked 2026-10-20). Any Gender Apparel containing `helmet`, or Product Type `Safety Helmet`. Not DTF. A later printing-type fill keeps UV. |
 | PE taxonomy | Headwear / Safety Headwear; Brand Delta Plus; BTC Product Code `DIAMOND` |
 
 Added **27 Aug 2026** (iloc 124138–124144). Backups: `Custom_Label_Database_preN220Diamond_20260827_091234.csv`, then `…_preFill_20260827_091247.csv`.

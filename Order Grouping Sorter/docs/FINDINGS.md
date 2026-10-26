@@ -22,7 +22,7 @@ Closed lists for category / subcategory / product type / product style in `datab
 
 ## Shift / today mix 2026-09-15
 
-**Hashim #037:** Shift 1 **order** volume above 300 → split process CSVs today vs later dates; ≤300 may mix. Do not dump overflow into Shift 2/3 (no 300/100/100 caps). Nth `--run` of the day = nth shift (locked 2026-10-14). 3rd shift and later write due orders only.
+**Hashim #037:** Shift 1 **order** volume above 300 → split process CSVs today vs later dates; ≤300 may mix. Do not dump overflow into Shift 2/3 (no 300/100/100 caps). Nth `--run` of the day = nth shift (locked 2026-10-14). 3rd shift and later write overdue, blank, and the run-day ship-by, plus tag `1004- Personalised Design-Ready-` when ship-by is later (locked 2026-10-22). A later ship-by without that tag stays out.
 
 ## Filename 2026-09-14
 

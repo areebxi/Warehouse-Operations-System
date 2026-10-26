@@ -37,7 +37,7 @@ from add_labels_exports import (  # noqa: E402
     SEED_COLS,
     _collect_peers_for_labels,
     _expand_all_spc,
-    _scan_existing,
+    _scan_existing_and_peers,
     build_seed_rows,
     fill_rows,
     label_from_input,
@@ -52,6 +52,14 @@ def append_rows(path: Path, fieldnames: list[str], rows: list[dict[str, str]]) -
             w.writerow({c: row.get(c, "") for c in fieldnames})
 
 
+def _skus_from_file(path: Path) -> list[str]:
+    return [
+        line.strip()
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.strip().startswith("#")
+    ]
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("labels", nargs="*", help="Custom Labels and/or packing SKUs")
@@ -61,6 +69,8 @@ def main(argv: list[str] | None = None) -> int:
         default=[],
         help="Packing Item SKUs (Custom Label = after first dash)",
     )
+    ap.add_argument("--skus-file", type=Path, help="One packing Item SKU per line")
+    ap.add_argument("--csv", type=Path, help="CL CSV path (default: live NocoDB export)")
     ap.add_argument(
         "--all-spc",
         action="store_true",
@@ -70,8 +80,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--no-backup", action="store_true")
     args = ap.parse_args(argv)
 
+    file_skus = _skus_from_file(args.skus_file) if args.skus_file else []
     raw_items: list[tuple[str, bool]] = [(x, False) for x in args.labels]
-    raw_items.extend((x, True) for x in args.skus)
+    raw_items.extend((x, True) for x in list(args.skus) + file_skus)
     if not raw_items:
         print("No labels/SKUs given.", file=sys.stderr)
         return 2
@@ -91,10 +102,10 @@ def main(argv: list[str] | None = None) -> int:
         uniq.append(lab)
     labels = uniq
 
-    cl_path = wh.cl_csv_path()
-    print(f"Scanning labels in {cl_path} ...", flush=True)
-    fieldnames, existing = _scan_existing(cl_path)
-    print(f"  existing labels={len(existing):,}", flush=True)
+    cl_path = Path(args.csv) if args.csv else wh.cl_csv_path()
+    print(f"Scanning labels + peers in {cl_path} ...", flush=True)
+    fieldnames, existing, peers = _scan_existing_and_peers(cl_path, labels)
+    print(f"  existing labels={len(existing):,}  peers={len(peers):,}", flush=True)
 
     print(f"Loading BTC Product Data: {DEFAULT_PE}", flush=True)
     pe_index = load_pe_index(DEFAULT_PE)
@@ -108,9 +119,6 @@ def main(argv: list[str] | None = None) -> int:
         prefix = raw.split("-", 1)[0].strip()
         if lab and prefix.isdigit() and prefix in pe_index.index:
             sku_uids[lab.casefold()] = prefix
-
-    print("Loading peer rows for named labels...", flush=True)
-    peers = _collect_peers_for_labels(cl_path, fieldnames, labels)
 
     if args.all_spc:
         expanded: list[str] = []

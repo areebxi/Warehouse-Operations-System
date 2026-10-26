@@ -18,7 +18,7 @@ Plain mock+UID (`M55-120852`, `M56-3257`) ⇒ leave blank — **not** `Yes`. `fi
 `scripts/fill_from_seeds.py` then, blank-only unless asked to correct:
 
 1. **Supplier SKU** = last numeric UID on Custom Label (`M260-214332` → `214332`). Whole-label digits (`208544`) are a UID. No UID → skip (iron-ons, C800T tokens including `…-18-24`, DTF `Transfer-1M-1`, `K-H-DHR-YXS`, `W-T-ATTHR-M`, `77123-BTC`, BG542, …). `C800T` or `Transfer` in the label is never a PE UID.
-2. **PE enrich** = `Supplier Name` + `Supplier Product Code` + `Brand` (**blank only**); `Category` / `Department` ← PE `Department`; `Sub-Category` / `Sub-Department` ← PE `Sub Department` (blank only on first fill). When PE Department / Sub Department is **corrected**, overwrite those four DB columns with `--overwrite-pe-taxonomy`.
+2. **PE enrich** = `Supplier Name` + `Supplier Product Code` + `Brand` (**blank only**). Custom Label with dash tokens `M-T`, `K-T`, or `W-T` and a blank Brand → `Fruit Of The Loom` (locked 2026-10-14). Do not overwrite a filled brand (Gildan, Colortone, and the rest stay). `Category` / `Department` ← PE `Department`; `Sub-Category` / `Sub-Department` ← PE `Sub Department` (blank only on first fill). When PE Department / Sub Department is **corrected**, overwrite those four DB columns with `--overwrite-pe-taxonomy`.
 3. **Dedicated cols** (BTC / Ralawise / Absolute) from **Supplier Name**, not SKU.
 4. **Apparel Image** slug from Gender Apparel + Colour — **blank cells only**.
 5. **Print sizes** — see print-sizes rule.
@@ -29,13 +29,13 @@ Plain mock+UID (`M55-120852`, `M56-3257`) ⇒ leave blank — **not** `Yes`. `fi
 
 Do **not** fill unless asked: `Tags`, `Size (Dimensions)`.
 
-**New PE styles from packing SKUs:** Custom Label is the tail after the design prefix (`189381LG-N220-P3-55709` → `N220-P3-55709`). Prefer `scripts/add_labels.py --skus …` (named-only, append-only, same fill steps). Add `--all-spc` only when the supervisor wants every PE UID for that BTC SPC as `{mock}-{UID}` (completeness, not required for integrity of existing rows). Clone Gender Apparel / Colour / Size / Apparel Image / Print Positions from a same-UID peer when available; set **Customise** from the `-P{digit}-` / `Yes`-token rule above. Optional: `fill_size_references_from_cl.py` for plain mock+UID keys.
+**New PE styles from packing SKUs:** Custom Label is the tail after the design prefix (`189381LG-N220-P3-55709` → `N220-P3-55709`). Prefer `scripts/add_labels.py --skus …` (named-only, append-only, same fill steps). Default CSV is the live NocoDB export. Chat **add unmatched** uses `--csv` on `Custom_Label_Database (Areeb).csv` via `Order Grouping Sorter/scripts/seed_catalog_misses.py`. A grouping run does not call that script. Add `--all-spc` only when the supervisor wants every PE UID for that BTC SPC as `{mock}-{UID}` (completeness, not required for integrity of existing rows). Clone Gender Apparel / Colour / Size / Apparel Image / Print Positions from a same-UID peer when available; set **Customise** from the `-P{digit}-` / `Yes`-token rule above. Optional: `fill_size_references_from_cl.py` for plain mock+UID keys.
 
 **After every supervisor fill** of CL and/or Size References: run `scripts/sync_database_transfer.py` so `Database Transfer/` Workbook + Configuration Workbook match the live CSVs. See `database-transfer-sync.mdc`.
 
 **Print Positions:** confirm from `support/Mocks Database.csv` (`Pasting Mocks ID` → `Printing Position`; Front Print → Front Center, Back Print → Back Center) before seeding a mock series. Do not guess from the packing SKU alone.
 
-**Old compound tokens:** one Custom Label can be two design tails in one cell (`F/P-F8-M-T-BLK-5XL 161121LG-B4-M-T-BLK-5XL`). `F/P` = Front Center + Front Left Pocket; `F8` = pocket size.
+**Old compound tokens:** one Custom Label can be two design tails in one cell (`F/P-F8-M-T-BLK-5XL 161121LG-B4-M-T-BLK-5XL`). `F/P` = Front Center + Front Left Pocket. Own dash token `F8` or `F8A` = pocket at 80×100 (`F80` is not). See `print-sizes.mdc`.
 
 ```text
 python scripts/fill_from_seeds.py --dry-run

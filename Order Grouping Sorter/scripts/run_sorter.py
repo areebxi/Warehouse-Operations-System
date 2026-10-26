@@ -24,7 +24,7 @@ from shared import paths as wh  # noqa: E402
 from shared.shipstation import ShipStationClient  # noqa: E402
 
 from catalogs import load_catalogs  # noqa: E402
-from grouping import SHIFT_PER_RUN, format_report, next_open_shift, order_numbers_in_date_folder, sort_raw_orders, write_process_csvs  # noqa: E402
+from grouping import SHIFT_PER_RUN, format_report, next_open_shift, sort_raw_orders, write_process_csvs  # noqa: E402
 from leftover_batches import write_leftover_batches_csv  # noqa: E402
 
 
@@ -66,11 +66,10 @@ def main(argv: list[str] | None = None) -> int:
     input_root = wh.packing_input_dir()
     if SHIFT_PER_RUN:
         shift_slot, shift_folder = next_open_shift(input_root, run_date)
-        already = order_numbers_in_date_folder(input_root, run_date)
     else:
         # SHIFT_PER_RUN is on (2026-10-14): nth --run of the day = nth shift.
         shift_slot, shift_folder = "1st", "1st Shift"
-        already = set()
+    # Do not exclude orders already in today's earlier shift CSVs (locked 2026-10-14).
     result = sort_raw_orders(
         orders,
         catalogs=catalogs,
@@ -79,7 +78,6 @@ def main(argv: list[str] | None = None) -> int:
         run_date=run_date,
         shift_slot=shift_slot,
         shift_folder=shift_folder,
-        exclude_order_numbers=already,
     )
     written = write_process_csvs(result) if args.run else None
     leftover_path = write_leftover_batches_csv(result)

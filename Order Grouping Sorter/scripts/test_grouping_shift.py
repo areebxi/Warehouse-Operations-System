@@ -57,22 +57,73 @@ def test_next_open_shift_and_written_order_numbers() -> None:
         assert order_numbers_in_date_folder(root, RUN) == {"Z1"}
 
 
-def test_third_shift_leaves_future_ship_by() -> None:
+def test_sort_does_not_skip_earlier_shift_by_default() -> None:
+    """CLI must not pass exclude_order_numbers (locked 2026-10-14)."""
+    from grouping_bins import sort_raw_orders
+
     cat = _cats()
-    due = _order("DUE", "77989LG-M-T-BLK-M", ship="2026-09-11", catalogs=cat)
-    late = _order("LATE", "77989LG-M-T-BLK-M", ship="2026-09-10", catalogs=cat)
-    blank = _order("BLANK", "77989LG-M-T-BLK-M", ship="", catalogs=cat)
-    future = _order("FUT", "77989LG-M-T-BLK-M", ship="2026-09-20", catalogs=cat)
-    orders = [due, late, blank, future]
-    third = group_orders(orders, RUN, shift_slot="3rd", shift_folder="3rd Shift")
+    raw = [
+        {
+            "orderNumber": "KEEP1",
+            "orderId": 1,
+            "orderStatus": "awaiting_shipment",
+            "shipByDate": "2026-09-11",
+            "advancedOptions": {"storeId": 1},
+            "tagIds": [],
+            "items": [{"sku": "77989LG-M-T-BLK-M", "quantity": 1, "name": "t"}],
+        }
+    ]
+    r = sort_raw_orders(
+        raw,
+        catalogs=cat,
+        tag_id_to_name={},
+        store_id_to_name={1: "Test"},
+        run_date=RUN,
+        shift_slot="3rd",
+        shift_folder="3rd Shift",
+        exclude_order_numbers={"KEEP1"},
+    )
+    assert r.skipped_already_written == 1
+    r2 = sort_raw_orders(
+        raw,
+        catalogs=cat,
+        tag_id_to_name={},
+        store_id_to_name={1: "Test"},
+        run_date=RUN,
+        shift_slot="3rd",
+        shift_folder="3rd Shift",
+    )
+    assert r2.skipped_already_written == 0
+    assert any(o.number == "KEEP1" for b in r2.bins for o in b.orders)
+
+
+def test_third_shift_leaves_future_ship_by() -> None:
+    def orders() -> list[Order]:
+        cat = _cats()
+        return [
+            _order("DUE", "77989LG-M-T-BLK-M", ship="2026-09-11", catalogs=cat),
+            _order(
+                "DUER", "77989LG-M-T-BLK-M", ship="2026-09-11",
+                tags=[PERSONALISED_READY_TAG], catalogs=cat,
+            ),
+            _order("LATE", "77989LG-M-T-BLK-M", ship="2026-09-10", catalogs=cat),
+            _order("BLANK", "77989LG-M-T-BLK-M", ship="", catalogs=cat),
+            _order("FUT", "77989LG-M-T-BLK-M", ship="2026-09-20", catalogs=cat),
+            _order(
+                "READY", "77989LG-M-T-BLK-M", ship="2026-09-20",
+                tags=[PERSONALISED_READY_TAG], catalogs=cat,
+            ),
+        ]
+
+    third = group_orders(orders(), RUN, shift_slot="3rd", shift_folder="3rd Shift")
     got = {o.number for b in third.bins for o in b.orders}
-    assert got == {"DUE", "LATE", "BLANK"}
+    assert got == {"DUE", "DUER", "LATE", "BLANK", "READY"}
     assert third.skipped_future == 1
-    fourth = group_orders(orders, RUN, shift_slot="4th", shift_folder="4th Shift")
+    fourth = group_orders(orders(), RUN, shift_slot="4th", shift_folder="4th Shift")
     assert fourth.skipped_future == 1
-    second = group_orders(orders, RUN, shift_slot="2nd", shift_folder="2nd Shift")
+    second = group_orders(orders(), RUN, shift_slot="2nd", shift_folder="2nd Shift")
     got2 = {o.number for b in second.bins for o in b.orders}
-    assert "FUT" in got2
+    assert {"DUE", "DUER", "FUT"} <= got2
     assert second.skipped_future == 0
 
 

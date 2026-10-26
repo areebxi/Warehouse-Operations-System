@@ -34,6 +34,45 @@ def _slim_peer(r: dict[str, str], fieldnames: list[str]) -> dict[str, str]:
     return {c: clean(r.get(c)) for c in keep}
 
 
+def _peer_filters(
+    labels: list[str],
+) -> tuple[set[str], list[str], list[str]]:
+    exact: set[str] = set()
+    prefixes: list[str] = []
+    suffixes: list[str] = []
+    for lab in labels:
+        for item in _peer_keys_for_label(lab):
+            if item.startswith("__prefix__:"):
+                prefixes.append(item.split(":", 1)[1])
+            elif item.startswith("__suffix__:"):
+                suffixes.append(item.split(":", 1)[1].casefold())
+            else:
+                exact.add(item)
+    return exact, prefixes, suffixes
+
+
+def _peer_hit(
+    key: str, exact: set[str], prefixes: list[str], suffixes: list[str]
+) -> bool:
+    return (
+        key in exact
+        or any(key.startswith(p) for p in prefixes)
+        or any(key.endswith(s) for s in suffixes)
+    )
+
+
+def _take_peer(
+    peers: dict[str, dict[str, str]], key: str, slim: dict[str, str]
+) -> None:
+    prev = peers.get(key)
+    if prev is None:
+        peers[key] = slim
+    elif slim.get("Gender Apparel", "").startswith("FOTL") and not prev.get(
+        "Gender Apparel", ""
+    ).startswith("FOTL"):
+        peers[key] = slim
+
+
 def _scan_existing(path: Path) -> tuple[list[str], set[str]]:
     """Fast pass: fieldnames + existing Custom Label set only."""
     with open(path, newline="", encoding="utf-8-sig") as f:
@@ -56,17 +95,7 @@ def _scan_existing(path: Path) -> tuple[list[str], set[str]]:
 def _collect_peers_for_labels(
     path: Path, fieldnames: list[str], labels: list[str]
 ) -> dict[str, dict[str, str]]:
-    exact: set[str] = set()
-    prefixes: list[str] = []
-    suffixes: list[str] = []
-    for lab in labels:
-        for item in _peer_keys_for_label(lab):
-            if item.startswith("__prefix__:"):
-                prefixes.append(item.split(":", 1)[1])
-            elif item.startswith("__suffix__:"):
-                suffixes.append(item.split(":", 1)[1].casefold())
-            else:
-                exact.add(item)
+    exact, prefixes, suffixes = _peer_filters(labels)
     if not exact and not prefixes and not suffixes:
         return {}
     peers: dict[str, dict[str, str]] = {}
@@ -77,18 +106,31 @@ def _collect_peers_for_labels(
             if not lab:
                 continue
             key = lab.casefold()
-            if (
-                key not in exact
-                and not any(key.startswith(p) for p in prefixes)
-                and not any(key.endswith(s) for s in suffixes)
-            ):
+            if not _peer_hit(key, exact, prefixes, suffixes):
                 continue
-            prev = peers.get(key)
-            slim = _slim_peer(r, fieldnames)
-            if prev is None:
-                peers[key] = slim
-            elif slim.get("Gender Apparel", "").startswith("FOTL") and not prev.get(
-                "Gender Apparel", ""
-            ).startswith("FOTL"):
-                peers[key] = slim
+            _take_peer(peers, key, _slim_peer(r, fieldnames))
     return peers
+
+
+def _scan_existing_and_peers(
+    path: Path, labels: list[str]
+) -> tuple[list[str], set[str], dict[str, dict[str, str]]]:
+    """One DictReader pass: existing labels + peer rows (same picks as two-pass)."""
+    exact, prefixes, suffixes = _peer_filters(labels)
+    want_peers = bool(exact or prefixes or suffixes)
+    with open(path, newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        fieldnames = list(reader.fieldnames or [])
+        if "Custom Label" not in fieldnames:
+            raise ValueError("CL CSV missing Custom Label column")
+        existing: set[str] = set()
+        peers: dict[str, dict[str, str]] = {}
+        for r in reader:
+            lab = clean(r.get("Custom Label"))
+            if not lab:
+                continue
+            key = lab.casefold()
+            existing.add(key)
+            if want_peers and _peer_hit(key, exact, prefixes, suffixes):
+                _take_peer(peers, key, _slim_peer(r, fieldnames))
+    return fieldnames, existing, peers

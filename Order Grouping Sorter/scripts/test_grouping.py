@@ -7,10 +7,12 @@ from test_grouping_fixed_a import *
 from test_grouping_fixed_b import *
 from test_grouping_fixed_c import *
 from test_grouping_fixed_d import *
+from test_grouping_fixed_e import *
 from test_grouping_intake import *
 from test_grouping_names import *
 from test_grouping_parts import *
 from test_grouping_peel import *
+from test_grouping_resend import *
 from test_grouping_shift import *
 from test_grouping_slots import *
 from test_grouping_volume import *
@@ -20,6 +22,7 @@ from test_grouping_write import *
 def main() -> None:
     test_finish_gate_and_attribute_source()
     test_resend_1014_only_and_blank_shipby()
+    test_resend_fixed_batches()
     test_skip_dtfocean_wp_store()
     test_skip_warehouse_oos_tag()
     test_skip_listing_error_tag()
@@ -61,6 +64,9 @@ def main() -> None:
     test_third_shift_leaves_future_ship_by()
     test_priority_today_then_prime_then_as_made()
     test_glow_and_sku_contain_fixed_batches()
+    test_b6000_china_bag_sku()
+    test_one_fixed_batch_each()
+    test_b700_uv_peels_before_specials()
     test_b40_gildan_b1050_sticker_b3700_sweatshirt()
     test_2026_09_28_batches_and_priority()
     test_plain_sequence_skips_reserved()

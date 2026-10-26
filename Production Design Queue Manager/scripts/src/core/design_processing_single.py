@@ -13,7 +13,7 @@ from src.core.multi_position_logic import build_positioned_stems
 from src.core.cl_print_sizes import get_cl_position_size_entries
 from src.core.size_code_extractor import PrintSizeOverrides
 from src.core.sku_position_hints import POSITION_HINT_MM
-from src.io.design_index_files import find_design_index_pngs
+from src.io.design_index_files import find_design_index_pngs, index_letter_for_position
 from src.io.file_handlers import find_design_file
 from src.io.file_search import find_design_file_by_code
 from src.io.file_utilities import extract_design_code, remove_apparel_size_prefix
@@ -93,6 +93,7 @@ def process_single_designs(
 
     for entry in entries:
         position = entry.get("position")
+        suffix = entry.get("suffix")
         size_info = entry.get("size_info")
         design_path = None
 
@@ -101,6 +102,20 @@ def process_single_designs(
                 design_path = find_design_file_by_code(stem, designs_folder)
                 if design_path:
                     break
+
+            if not design_path and suffix and base_stems:
+                for stem in build_positioned_stems(base_stems, suffix):
+                    design_path = find_design_file_by_code(stem, designs_folder)
+                    if design_path:
+                        break
+
+            if not design_path:
+                letter = index_letter_for_position(position)
+                if letter and base_stems:
+                    for stem in build_positioned_stems(base_stems, letter):
+                        design_path = find_design_file_by_code(stem, designs_folder)
+                        if design_path:
+                            break
 
         if not design_path:
             if position:

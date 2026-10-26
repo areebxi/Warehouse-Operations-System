@@ -53,14 +53,15 @@ def test_write_process_csvs() -> None:
         (stale / "old-always-split.csv").write_text("stale\n", encoding="utf-8")
         paths = write_process_csvs(r, input_root=root)
         names = {p.name for p in paths}
-        assert "RESEND.csv" in names
         assert "UNMATCHED.csv" in names
+        assert any(n.startswith("B9000-S1-") and n.endswith(".csv") for n in names)
         assert any(n.startswith("B1-S1-PRINTED-") and n.endswith(".csv") for n in names)
         assert not (stale / "old-always-split.csv").exists()
         assert (day / "1st Shift" / "UNMATCHED.csv").is_file()
         assert not (day / "2nd Shift").exists()
         assert not (day / "3rd Shift").exists()
-        text = (day / "1st Shift" / "RESEND.csv").read_text(encoding="utf-8")
+        resend_file = next(p for p in paths if p.name.startswith("B9000-S1-"))
+        text = resend_file.read_text(encoding="utf-8")
         assert text.startswith("Order #,Ship By,Quantity,")
         assert "R1" in text
         unmatched = (day / "1st Shift" / "UNMATCHED.csv").read_text(encoding="utf-8")

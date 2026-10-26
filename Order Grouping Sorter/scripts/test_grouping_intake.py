@@ -56,7 +56,9 @@ def test_resend_1014_only_and_blank_shipby() -> None:
         ],
         RUN,
     )
-    assert [o.number for o in r.resend] == ["R1"]
+    assert r.resend == []
+    by = {o.number: b.floor_code for b in r.bins for o in b.orders}
+    assert by["R1"] == "B9000"
     # Blank ship-by → today for every store (not unmatched).
     assert all(o.unmatched_reason != "blank ship-by" for o in r.unmatched)
     assert all(o.number != "B1" for o in r.unmatched)

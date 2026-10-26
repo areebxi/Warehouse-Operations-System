@@ -10,6 +10,17 @@ from typing import List, Optional, Sequence, Tuple
 
 # Longer sleeve tokens before plain S. Same order as packing FBPI slots. Cap 4.
 _INDEX_SUFFIXES = ("f", "b", "p", "s1", "s2", "sl", "sr", "s")
+# CL position names that print from a letter-index PNG (5968ALG-P.png / -B.png).
+_NAME_TO_INDEX = {
+    "front center": "F",
+    "back center": "B",
+    "front left pocket": "P",
+    "front right pocket": "P",
+    "pocket": "P",
+    "left sleeve": "SL",
+    "right sleeve": "SR",
+    "sleeve": "S",
+}
 _MAX_INDEXES = 4
 # ponytail: one listing per folder for this process. Files added later are missed until restart.
 _NAME_CACHE: dict = {}
@@ -24,6 +35,13 @@ def _names_by_lower(folder: str) -> dict:
         names.setdefault(name.lower(), name)
     _NAME_CACHE[folder] = names
     return names
+
+
+def index_letter_for_position(position: Optional[str]) -> Optional[str]:
+    """Map a Custom Label position name to its letter-index file suffix."""
+    if not position:
+        return None
+    return _NAME_TO_INDEX.get(str(position).strip().casefold())
 
 
 def find_design_index_pngs(

@@ -6,6 +6,7 @@ from PyPDF2 import PdfReader
 
 from scripts.app.config.label_page_threshold import read_label_page_threshold
 from scripts.app.config.load import AppConfig
+from scripts.app.flows.print_labels.batch_pdfs import process_pdf_dir, write_combined_and_batch_pdfs
 from scripts.app.flows.print_labels.failures import FailureRow, append_human_error_log, write_failures_csv
 from scripts.app.flows.print_labels.read_group import read_and_group_orders
 from scripts.app.flows.print_labels.run import (
@@ -22,7 +23,6 @@ from scripts.app.flows.print_labels.summary_buckets import (
 )
 from scripts.app.logging.jsonl import JsonlLogger
 from scripts.app.logging.orders_audit import OrderAuditLogger
-from scripts.app.pdf.merge_combined import merge_combined_by_process
 from scripts.app.pdf.report_pages import make_combined_missed_orders_page_pdf
 from scripts.app.util.time import local_date_ymd, utc_compact_timestamp
 
@@ -53,7 +53,7 @@ def run_sample_print(cfg: AppConfig, log: JsonlLogger) -> int:
         return 2
 
     labels_base = sample_root / "Labels"
-    process_pdfs_dir = sample_root / "Process_PDFs" / str(input_key)
+    process_pdfs_dir = process_pdf_dir(sample_root / "Process_PDFs", str(input_key))
     combined_pdfs_dir = sample_root / "Combined_PDFs"
     results: dict[str, ProcessGroupResult] = {}
     all_failures: list[FailureRow] = []
@@ -107,19 +107,28 @@ def run_sample_print(cfg: AppConfig, log: JsonlLogger) -> int:
         write_failures_csv(failures_dir / "failures.csv", all_failures)
         append_human_error_log(failures_dir / "error_log.txt", all_failures)
 
-    combined_pdfs_dir.mkdir(parents=True, exist_ok=True)
-    combined_pdf = combined_pdfs_dir / f"{combined_name}.pdf"
     missed = None
     if all_failures:
         missed = make_combined_missed_orders_page_pdf(
             missed=[(f.process_number, f.order_number, f.reason) for f in all_failures]
         )
-    merge_combined_by_process(out_path=combined_pdf, per_process_pdfs=bucket_pdfs, missed_pdf_bytes=missed)
+    written = write_combined_and_batch_pdfs(
+        combined_pdfs_dir=combined_pdfs_dir,
+        combined_name=combined_name,
+        buckets=buckets,
+        bucket_pdfs=bucket_pdfs,
+        missed_pdf_bytes=missed,
+        log=log,
+    )
+    combined_pdf = written.combined_pdf
     try:
         page_count = int(len(PdfReader(str(combined_pdf)).pages))
     except Exception:
         page_count = -1
-    log.info("merge_combined_done", extra={"combined_pdf": str(combined_pdf), "page_count": page_count, "sample": True})
+    log.info(
+        "merge_combined_done",
+        extra={"combined_pdf": str(combined_pdf), "page_count": page_count, "sample": True, "batch_pdfs": [str(p) for p in written.batch_pdfs]},
+    )
 
     if not _sanity_check_combined_pdf(combined_pdf=combined_pdf, expected_process_numbers=summary_numbers, log=log):
         log.info("run_end", extra={"command": "sample-print", "input_key": input_key, "exit_code": 2})
@@ -139,5 +148,7 @@ def run_sample_print(cfg: AppConfig, log: JsonlLogger) -> int:
     )
     log.info("run_end", extra={"command": "sample-print", "input_key": input_key, "exit_code": 0})
     print(f"Sample combined PDF: {combined_pdf}")
+    for batch_pdf in written.batch_pdfs:
+        print(f"Sample batch PDF: {batch_pdf}")
     print(f"Orders: {total}. Processes: {len(results)}. Failures: {len(all_failures)}.")
     return 0

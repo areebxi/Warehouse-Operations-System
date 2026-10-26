@@ -67,7 +67,7 @@ def step_supply(df: pd.DataFrame, counts: dict) -> None:
 
 
 def step_printing_type(df: pd.DataFrame, counts: dict) -> None:
-    """Printing Type: mock DTF/Sublimation, else mugs Sublimation, else DTF. Overwrites."""
+    """Printing Type: helmet UV, else mock DTF/Sublimation, else mugs, else DTF. Overwrites."""
     from shared.printing_type import COL, classify_cl_row, load_mock_printing_types
 
     if COL not in df.columns:

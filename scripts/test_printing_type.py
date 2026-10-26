@@ -1,4 +1,4 @@
-"""ponytail: Printing Type lock — fails if DTF / mug-sublimation routing drifts."""
+"""ponytail: Printing Type lock — fails if DTF / mug / helmet routing drifts."""
 
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ if str(ROOT) not in sys.path:
 from shared.printing_type import (
     DTF,
     SUBLIMATION,
+    UV,
     classify_cl_row,
     mock_id_from_label,
 )
@@ -69,6 +70,15 @@ def test_everything_else_is_dtf() -> None:
         assert classify_cl_row(row, mock_types=MOCKS) == DTF, row
 
 
+def test_safety_helmet_is_uv() -> None:
+    for row in (
+        {"Custom_Label": "N220-P3-55708", "Gender Apparel": "DELTA Hi-Vis Baseball Safety Helmet", "Product Type (Areeb)": "Safety Helmet"},
+        {"Custom_Label": "P3-55708", "Gender Apparel": "DIAMOND-SafetyHelmet"},
+        {"Custom_Label": "N220-P3-138130", "Gender Apparel": "Quartz Rotor Safety Helmet"},
+    ):
+        assert classify_cl_row(row, mock_types=MOCKS) == UV, row
+
+
 def test_junk_mock_type_falls_through() -> None:
     assert (
         classify_cl_row(
@@ -84,5 +94,6 @@ if __name__ == "__main__":
     test_mock_printing_type_wins()
     test_mugs_without_mock_are_sublimation()
     test_everything_else_is_dtf()
+    test_safety_helmet_is_uv()
     test_junk_mock_type_falls_through()
     print("ok")

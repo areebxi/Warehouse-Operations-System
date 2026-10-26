@@ -12,7 +12,7 @@ Where locked decisions live. **Do not copy** locks here; link to the owner. Chat
 | Custom Label policy / fills | `.cursor/rules/custom-label-database/` |
 | Packing policy | `.cursor/rules/order-packing-list-generator/` |
 | Queue policy | `.cursor/rules/production-design-queue-manager/` |
-| Shipping policy | `.cursor/rules/shipping-label-generator/` |
+| Shipping policy | `.cursor/rules/shipping-label-generator/` (reprint + Batch Summary locked 2026-10-20 in `reprint.mdc`) |
 | Purchase Order policy | `.cursor/rules/purchase-order-generator/` |
 | Proven joins + approval + pipeline map | Parent [`AGENTS.md`](../AGENTS.md) |
 | Architecture (200-line, layers, boundaries) | `.cursor/rules/global/architecture.mdc`; [`ARCHITECTURE.md`](ARCHITECTURE.md) |
@@ -22,7 +22,9 @@ Where locked decisions live. **Do not copy** locks here; link to the owner. Chat
 | Live CL CSV column names (NocoDB) | `shared/cl_columns.py`; `.cursor/rules/custom-label-database/nocodb.mdc` + `live-files.mdc` (locked 2026-10-04: underscored headers; `BTC SKU`→`Supplier_SKU`; `Supply Method`→`Stock_Type`) |
 | Supply Method | `.cursor/rules/custom-label-database/supply-method.mdc`; `shared/supply_method.py` |
 | Printing Type | `.cursor/rules/custom-label-database/printing-type.mdc`; `shared/printing_type.py` |
+| Print sizes (hoodies, sleeve, F/P-F8, B4) | `.cursor/rules/custom-label-database/print-sizes.mdc` (hoodies 2026-10-22; sleeve 100×100, `F/P`+`F8` = Front Left Pocket, `B4` = Back Center, all written to the Areeb CSV 2026-10-23) |
 | Supplier Name | `.cursor/rules/custom-label-database/supplier-name.mdc`; `shared/supplier_name.py` |
+| UID vs product file | `.cursor/rules/custom-label-database/fill-pipeline.mdc` (locked 2026-10-23: colour, garment, image, and product code come from the product file for that UID, not a peer clone) |
 | Taxonomy pick-list | `.cursor/rules/order-grouping-sorter/taxonomy-picklist.mdc`; `shared/taxonomy_*.py`; `database/order-grouping-sorter/taxonomy_picklists.csv` |
 | Fixed batches criteria | `database/order-grouping-sorter/fixed_batches.csv` (+ locks / sorter rules) |
 | Session truth / verify / persist | `.cursor/rules/global/session-independence.mdc` |

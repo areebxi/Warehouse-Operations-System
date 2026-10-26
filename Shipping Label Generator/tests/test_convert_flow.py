@@ -4,10 +4,14 @@ from pathlib import Path
 
 import pandas as pd
 
+from scripts.app.config.load import AppConfig
+from scripts.app.flows.convert.archive import Manifest
 from scripts.app.flows.convert.canonicalize import canonicalize_orders
 from scripts.app.flows.convert.discover import discover_input_files
 from scripts.app.flows.convert.parse_csv import parse_csv_file
-from scripts.app.flows.convert.run import _dtf_key_for_manifest
+from scripts.app.flows.convert.run import _dtf_key_for_manifest, run_convert
+from scripts.app.logging.jsonl import JsonlLogger
+from scripts.app.util.hashing import sha256_file
 
 
 def test_discover_prefers_csv_over_excel(tmp_path: Path) -> None:
@@ -43,8 +47,28 @@ def test_dtf_key_lists_every_file_number(tmp_path: Path) -> None:
     files_2 = [tmp_path / "DTF Des-P200.xlsx", tmp_path / "DTF Des-P400.xlsx"]
     files_5 = [tmp_path / f"DTF Des-P{n}.xlsx" for n in (3000, 3100, 3200, 3300, 3400)]
 
-    assert _dtf_key_for_manifest(files_2) == "200-400"
-    assert _dtf_key_for_manifest(files_5) == "3000-3100-3200-3300-3400"
+    assert _dtf_key_for_manifest(files_2) == "200, 400"
+    assert _dtf_key_for_manifest(files_5) == "3000, 3100, 3200, 3300, 3400"
     assert _dtf_key_for_manifest([tmp_path / "only_500.xlsx"]) == "500"
     assert _dtf_key_for_manifest([tmp_path / "DTF Des-PB1050-S3.xlsx"]) == "B1050-S3"
+
+
+def test_convert_reprints_file_already_in_manifest(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    des = tmp_path / "DTF Des Files"
+    des.mkdir()
+    src = des / "DTF Des-P70.csv"
+    src.write_text("Order Number,Process\nA70,70\n", encoding="utf-8")
+    Manifest(hashes={sha256_file(src)}).save(tmp_path / "DTF Des Files - Processed")
+    out = tmp_path / "output"
+    cfg = AppConfig(
+        raw={
+            "paths": {"desfiles_dir": str(des), "output_dir": str(out), "orders_csv": "orders.csv", "logs_dir": str(tmp_path / "logs")},
+            "logging": {"level": "INFO", "redact_keys": []},
+        },
+        provider_name="real",
+    )
+    assert run_convert(cfg, JsonlLogger.from_config(cfg)) == 0
+    written = list((out / "Order_Numbers").rglob("orders.csv"))
+    assert written and "A70" in written[0].read_text(encoding="utf-8")
 

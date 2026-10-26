@@ -1,0 +1,13 @@
+---
+description: Shipping reprint — convert again, reuse saved labels, Batch Summary on each DTF file
+globs: Shipping Label Generator/**
+alwaysApply: false
+---
+
+# Reprint (locked 2026-10-20)
+
+Present state: `Shipping Label Generator/docs/HANDOFF.md`. Do not revert these to the older spec in `docs/PLAN.md`.
+
+- **Convert.** A DTF Des file whose hash is already in `DTF Des Files - Processed/.processed_manifest.json` is still converted (`convert_reprint_existing` in `scripts/app/flows/convert/run.py`). Do not delete it as a duplicate. Do not fail the run with `convert_no_valid_inputs` only because the hash was seen before.
+- **Print a shipped order.** ShipStation Classic V1 does not return the old label (`labelData` is empty; there is no reprint route). If the order is already shipped, reuse the PDF this app saved under `Output/Labels` (`{order number}.pdf`, prefer `process_{process number}/`). Do not create a second label. If that file is missing, the order is missed (`shipped order has no downloadable label`). Cancelled orders still fail. Code: `local_saved_label` in `scripts/app/flows/print_labels/process_order_create.py`.
+- **Batch Summary.** The first page of each DTF file is always a Batch Summary. Reset that on every new source file, including when the previous file ended exactly on the Label Page Threshold (pending empty, summary already opened). After the first page, a summary is added only when the labels it covers reach the threshold (cell A2 on sheet `Label Page Threshold` in `Configuration Workbook.xlsx`; fallback 10). A later run left under the threshold has labels only. Code: `bucket_process_groups_for_shared_summaries` in `scripts/app/flows/print_labels/summary_buckets.py`.

@@ -24,6 +24,7 @@ from shared.cl_sku_match import (  # noqa: E402
     normalize_label,
     resolve_label,
 )
+from src.core.cl_design_suffix import design_image_suffix  # noqa: E402
 from src.core.size_reference import _build_size_result  # noqa: E402
 
 _CL_INDEX: Optional[dict[str, int]] = None
@@ -78,8 +79,8 @@ def _parse_mm(value: Any) -> Optional[float]:
         return None
 
 
-def _slots_from_row(row: pd.Series) -> List[tuple[Optional[str], float, float]]:
-    slots: List[tuple[Optional[str], float, float]] = []
+def _slots_from_row(row: pd.Series) -> List[tuple[Optional[str], float, float, Optional[str]]]:
+    slots: List[tuple[Optional[str], float, float, Optional[str]]] = []
     for n in range(1, 5):
         w = _parse_mm(row.get(clc.width_mm(n)))
         h = _parse_mm(row.get(clc.height_mm(n)))
@@ -87,9 +88,8 @@ def _slots_from_row(row: pd.Series) -> List[tuple[Optional[str], float, float]]:
             continue
         name = row.get(clc.position_name(n))
         name_s = str(name).strip() if name is not None and str(name).strip() not in ("", "nan") else None
-        slots.append((name_s, w, h))
+        slots.append((name_s, w, h, design_image_suffix(row, n)))
     return slots
-
 
 def resolve_cl_row(item_sku: Union[str, pd.Series], cl_csv_path: Optional[Path] = None) -> Optional[pd.Series]:
     load_cl_size_table(cl_csv_path)
@@ -141,29 +141,21 @@ def get_cl_position_size_entries(
     if not slots:
         return [{"position": None, "size_info": None}]
 
+    def _entry(name, w, h, suffix):
+        info = _build_size_result(
+            w, h, mm_to_pixel_factor, sku_str, name or sku_str, "cl-csv",
+            "Width (mm)", "Height (mm)",
+        )
+        return {"position": name, "size_info": info, "suffix": suffix}
+
     if position_hint:
         hint = position_hint.strip().casefold()
-        for name, w, h in slots:
+        for name, w, h, suffix in slots:
             if name and name.casefold() == hint:
-                info = _build_size_result(
-                    w, h, mm_to_pixel_factor, sku_str, name or sku_str, "cl-csv",
-                    f"Width (mm)", f"Height (mm)",
-                )
-                return [{"position": name, "size_info": info}]
+                return [_entry(name, w, h, suffix)]
 
     if force_single or len(slots) == 1:
-        name, w, h = slots[0]
-        info = _build_size_result(
-            w, h, mm_to_pixel_factor, sku_str, name or sku_str, "cl-csv",
-            "Width (mm)", "Height (mm)",
-        )
-        return [{"position": None, "size_info": info}]
+        name, w, h, suffix = slots[0]
+        return [_entry(None, w, h, suffix)]
 
-    entries: List[Dict[str, Any]] = []
-    for name, w, h in slots:
-        info = _build_size_result(
-            w, h, mm_to_pixel_factor, sku_str, name or sku_str, "cl-csv",
-            "Width (mm)", "Height (mm)",
-        )
-        entries.append({"position": name, "size_info": info})
-    return entries
+    return [_entry(name, w, h, suffix) for name, w, h, suffix in slots]

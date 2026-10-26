@@ -59,6 +59,10 @@ def print_size(n: int) -> str:
     return f"Print_Size_{n}"
 
 
+def design_image_suffix(n: int) -> str:
+    return f"Design_Image_Suffix_{n}"
+
+
 def legacy_header_aliases() -> dict[str, str]:
     """Areeb-era spaced CSV headers → NocoDB names in this module."""
     aliases = {
@@ -82,6 +86,7 @@ def legacy_header_aliases() -> dict[str, str]:
         aliases[f"Height {n} (mm)"] = height_mm(n)
         aliases[f"Position {n} Name"] = position_name(n)
         aliases[f"Print Size {n}"] = print_size(n)
+        aliases[f"Design Image Suffix {n}"] = design_image_suffix(n)
     return aliases
 
 

@@ -65,22 +65,17 @@ def group_orders(
     eligible: list[Order] = []
     deferred = 0
     for order in orders:
-        if defer_future_ship_by(shift_slot, order.ship_by, run):
+        if defer_future_ship_by(shift_slot, order.ship_by, run, order.tag_names):
             deferred += 1
             continue
-        if _has_tag(order.tag_names, RESEND_TAG):
-            resend.append(order)
-            continue
+        is_resend = _has_tag(order.tag_names, RESEND_TAG)
         if order.ship_by is None:
-            if order.ship_by_raw:
-                # Unparseable non-blank date — still unmatched (not inventing a day).
+            if order.ship_by_raw and not is_resend:
                 _mark_unmatched(order, "unparseable ship-by")
                 unmatched.append(order)
                 continue
-            # Blank ship-by: in awaiting_shipment → pull today (supervisor 2026-09-24).
+            # Blank ship-by, and a resend with a bad date: pull today.
             order.ship_by = run
-            eligible.append(order)
-            continue
         eligible.append(order)
 
     today_orders, eligible_orders = _eligible_stats(eligible, run)
@@ -92,9 +87,13 @@ def group_orders(
     overlaps: Counter[str] = Counter()
     for order in eligible:
         if not _classify_or_unmatch(order, unmatched):
+            # Catalog-miss resend stays RESEND.csv. A matched resend uses B9040–B9200.
+            if _has_tag(order.tag_names, RESEND_TAG) and unmatched[-1:] == [order]:
+                unmatched.pop()
+                resend.append(order)
             continue
-        # Personalised pile only when SS tag says design is ready on the floor.
-        if _order_is_customised(order) and not _has_tag(
+        # Personalised pile only when SS tag says design is ready. Resend is not held.
+        if not _has_tag(order.tag_names, RESEND_TAG) and _order_is_customised(order) and not _has_tag(
             order.tag_names, PERSONALISED_READY_TAG
         ):
             order.unmatched_reason = "personalised design not ready"

@@ -90,6 +90,22 @@ def test_multi_dtf_gap_also_starts_fresh() -> None:
     assert [b.include_summary for b in buckets] == [True, True]
 
 
+def test_next_dtf_gets_summary_when_previous_ended_exactly_on_threshold() -> None:
+    """Today's 70.pdf bug: prior file flushed at exactly 10 labels, pending empty."""
+    buckets = bucket_process_groups_for_shared_summaries(
+        [
+            _r("5500", 10, source_file="DTF Des-P5500.xlsx", source_index=12),
+            _r("70", 1, source_file="DTF Des-P70.xlsx", source_index=13),
+            _r("71", 1, source_file="DTF Des-P70.xlsx", source_index=13),
+            _r("72", 1, source_file="DTF Des-P70.xlsx", source_index=13),
+        ]
+    )
+    assert [(b.process_numbers, b.label_count, b.include_summary) for b in buckets] == [
+        (["5500"], 10, True),
+        (["70", "71", "72"], 3, True),
+    ]
+
+
 def test_canonicalize_keeps_source_and_file_order() -> None:
     df1 = pd.DataFrame(
         {

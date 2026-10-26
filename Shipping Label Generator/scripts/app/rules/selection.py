@@ -23,7 +23,18 @@ def select_order_candidate(*, candidates: list[Order], has_active_shipments: dic
     if awaiting:
         return sorted(awaiting, key=lambda o: o.orderId, reverse=True)[0]
 
+    # Every match already has a label. Newest order id, so print can download it.
+    shipped = [o for o in candidates if has_active_shipments.get(o.orderId, False) and not is_order_cancelled(o)]
+    if shipped:
+        return sorted(shipped, key=lambda o: o.orderId, reverse=True)[0]
+
     return None
+
+
+def may_create_label(order: Order) -> bool:
+    """Shipped orders already have a label. Do not buy another."""
+    status = (order.orderStatus or "").strip().lower().replace(" ", "_")
+    return status != "shipped"
 
 
 def select_shipments(shipments: list[Shipment]) -> SelectedShipments:

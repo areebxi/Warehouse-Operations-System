@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from datetime import date
 from pathlib import Path
 from time import monotonic
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, TypeVar
@@ -16,7 +15,6 @@ from scripts.app.providers.base import Provider
 from scripts.app.rules.service_map import carrier_key, map_service_code
 from scripts.app.rules.order_status import cancelled_order_reason, is_order_cancelled
 from scripts.app.rules.selection import select_order_candidate, select_shipments
-from scripts.app.rules.weights import normalize_weight
 from scripts.app.util.retries import call_with_retries
 
 if TYPE_CHECKING:
@@ -582,43 +580,38 @@ async def process_one_order(
         )
 
         if label is None:
-            weight_lb = _extract_total_weight_lb(selected)
-            weight_val: float | None = None
-            weight_unit: str | None = None
-            if weight_lb is not None:
-                weight_val, weight_unit = normalize_weight(cfg_raw=cfg.raw, carrier_code=carrier, weight=weight_lb)
+            from scripts.app.flows.print_labels.process_order_create import create_label_if_allowed
 
-            _audit_step(
-                audit,
-                outcome="print_label_creating",
-                order_number=order_number,
-                process_number=process_number,
-                customer_name=customer_name,
-                shipstation_order_id=str(selected.orderId),
-                carrier_code=carrier,
-                service_code=service,
-                package_code=package,
-                requested_shipping_service=selected.requestedShippingService or "",
-                weight=weight_val,
-                weight_unit=weight_unit,
-            )
-            label = await _timed_call_with_retries(
+            created = await create_label_if_allowed(
                 cfg=cfg,
                 log=log,
-                op="create_label",
-                op_kind="label",
-                fn=lambda: provider.create_label(
-                    order=selected,
-                    carrier_code=carrier,
-                    service_code=service,
-                    package_code=package,
-                    ship_date=date.today().isoformat(),
-                    weight=weight_val,
-                    weight_unit=weight_unit,
-                    customer_reference=None,
-                ),
-                extra={"order_number": order_number, "process_number": process_number, "orderId": selected.orderId},
+                provider=provider,
+                process_number=process_number,
+                order_number=order_number,
+                customer_name=customer_name,
+                selected=selected,
+                carrier=carrier,
+                service=service,
+                package=package,
+                audit=audit,
             )
+            if isinstance(created, str):
+                _audit_fail(
+                    audit,
+                    order_number=order_number,
+                    process_number=process_number,
+                    customer_name=customer_name,
+                    reason=created,
+                    shipstation_order_id=str(selected.orderId),
+                )
+                return OrderResult(
+                    order_number=order_number,
+                    process_number=process_number,
+                    label_pdf_path=_write_error_pdf(reason=created, customer=customer_name),
+                    failure=FailureRow(customer_name, process_number, order_number, str(selected.orderId), created),
+                    ship_from=None,
+                )
+            label = created
 
         from scripts.app.pdf.label_decode import write_label_pdf
 

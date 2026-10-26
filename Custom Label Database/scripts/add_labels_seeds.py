@@ -33,6 +33,18 @@ from add_labels_seed_special import (
     _extras_transfer,
 )
 
+_UNEEK_CAT = None
+
+
+def _uneek_short_code(lab: str) -> bool:
+    """True when the label tail is a Uneek Short Code (UX7 / X07PI5)."""
+    global _UNEEK_CAT
+    from shared.areeb_taxonomy import load_catalogs
+
+    if _UNEEK_CAT is None:
+        _UNEEK_CAT = load_catalogs()
+    return bool(_UNEEK_CAT.uneek_short(lab.rsplit("-", 1)[-1]).source)
+
 
 def _peer_and_extras(
     lab: str,
@@ -50,6 +62,9 @@ def _peer_and_extras(
     if RE_BAG_SIZE_YES.match(lab):
         return _extras_bag_size(lab, peers, fieldnames)
     if RE_MOCK_P_UID.match(lab):
+        # Uneek short codes are letters+digits (X07PI5). Not an acrylic stand-in.
+        if _uneek_short_code(lab):
+            return None, {}
         return _extras_mock(lab, peers)
     if RE_BAG_COLOUR.match(lab):
         return _extras_bag(lab, peers, fieldnames)

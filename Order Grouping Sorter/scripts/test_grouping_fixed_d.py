@@ -154,7 +154,7 @@ def test_2026_09_28_batches_and_priority() -> None:
 
     r = group_orders(
         [
-            intl(_order("DQI", "179975LG-M-T-BLK-M", item_name="Dancing Queen", catalogs=_cats())),
+            intl(_order("DQI", "179975LG-M-T-BLK-M", item_name="Dancing Queen Glitter", catalogs=_cats())),
             intl(_order("INT", "1-M-T-WHT-M", catalogs=fotl)),
             _order("MUG", "5LG-M61-MUG-11OZ", catalogs=mug),
             _order("BABY", "9LG-M281-P6-C800T-30-0>3", catalogs=baby),
@@ -168,7 +168,7 @@ def test_2026_09_28_batches_and_priority() -> None:
         RUN,
     )
     by = {o.number: b.floor_code for b in r.bins for o in b.orders}
-    assert by["DQI"] == "B5500"  # peel beats international
+    assert by["DQI"] == "B10"  # abroad order, including Dancing Queen
     assert by["INT"] == "B10"
     assert by["MUG"] == "B70"
     assert by["BABY"] == "B3100"
@@ -178,5 +178,5 @@ def test_2026_09_28_batches_and_priority() -> None:
     assert by["PK"] == "B2400"
     assert by["UN"] == "B2300"
     assert by["PL"] == "B2000"  # plain sequence, not B1
-    assert r.overlaps["B5500 over B10"] == 1
+    assert "B5500 over B10" not in r.overlaps
 

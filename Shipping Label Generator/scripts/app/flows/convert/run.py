@@ -37,14 +37,14 @@ def _dtf_id_from_source_files(source_files: list[Path]) -> str | None:
 def _dtf_key_for_manifest(source_files: list[Path]) -> str | None:
     """
     Combined-PDF name. DTF Des-PB1050-S3 -> B1050-S3 (not the trailing 3).
-    Several files join those tokens. Legacy DTF Des-P100 stays 100.
+    Several files join those tokens with comma-spaces. Legacy DTF Des-P100 stays 100.
     """
     ids = [dtf_id_from_stem(p.stem) for p in source_files]
     if not ids or any(not i for i in ids):
         return None
     if len(ids) == 1:
         return ids[0]
-    return "-".join(dict.fromkeys(ids))
+    return ", ".join(dict.fromkeys(ids))
 
 
 def run_convert(cfg: AppConfig, log: JsonlLogger) -> int:
@@ -65,7 +65,7 @@ def run_convert(cfg: AppConfig, log: JsonlLogger) -> int:
             if dtf:
                 input_key = dtf
         else:
-            rng = _dtf_range_key(discovery.files)
+            rng = _dtf_key_for_manifest(discovery.files)
             if rng:
                 input_key = rng
     except Exception:
@@ -88,13 +88,8 @@ def run_convert(cfg: AppConfig, log: JsonlLogger) -> int:
             log.warning("convert_hash_failed", extra={"file": str(f)})
 
         if file_hash and file_hash in manifest.hashes:
-            # Skip and attempt delete from desfiles/.
-            try:
-                f.unlink(missing_ok=True)  # py>=3.8 on windows supports missing_ok
-            except Exception:
-                pass
-            log.info("convert_skipped_duplicate", extra={"file": str(f), "hash": file_hash})
-            continue
+            # Already archived once. Still convert so print can reuse existing labels.
+            log.info("convert_reprint_existing", extra={"file": str(f), "hash": file_hash})
 
         if discovery.mode == "csv":
             r = parse_csv_file(f)
