@@ -31,7 +31,6 @@ from pdf_constants import (  # noqa: F401
     PAGE_WIDTH,
     PLAIN_ITEMS_CSV,
     PRODUCT_DATABASE_FILE,
-    PRODUCT_IMAGE_FOLDER,
     PRODUCT_IMG_H,
     PRODUCT_IMG_W,
     PRODUCT_IMG_X,
@@ -42,6 +41,7 @@ from pdf_generate_cli import generate_packing_slips  # noqa: F401
 from pdf_generate_helpers import _safe_add_single_page  # noqa: F401
 from pdf_generate_tag import generate_packing_slips_for_tag  # noqa: F401
 from pdf_page import PDF  # noqa: F401
+from run_script_gui_settings import required_product_images_dir  # noqa: F401
 
 __all__ = [
     "PDF",
@@ -50,7 +50,7 @@ __all__ = [
     "COLUMN_NAMES",
     "PLAIN_ITEMS_CSV",
     "PRODUCT_DATABASE_FILE",
-    "PRODUCT_IMAGE_FOLDER",
+    "required_product_images_dir",
     "BRAND_IMAGE_FOLDER",
 ]
 
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     print("Make sure you have:")
     print(f"1. {PLAIN_ITEMS_CSV} - Orders data")
     print(f"2. {PRODUCT_DATABASE_FILE} - Product database")
-    print(f"3. {PRODUCT_IMAGE_FOLDER} - Product images folder")
+    print(f"3. {required_product_images_dir()} - Product images folder (Browse in GUI)")
     print(f"4. {BRAND_IMAGE_FOLDER} - Brand logos folder")
     print()
     generate_packing_slips()

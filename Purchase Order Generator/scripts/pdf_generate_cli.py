@@ -8,9 +8,17 @@ import pandas as pd
 
 from app_paths import tag_output_dir
 from pdf_btc_product import _load_btc_product_data_by_uid, _lookup_product_details
-from pdf_constants import COLUMN_NAMES, MARGIN, PLAIN_ITEMS_CSV, PRODUCT_DATABASE_FILE, SCRIPT_DIR
+from pdf_constants import (
+    BRAND_IMAGE_FOLDER,
+    COLUMN_NAMES,
+    MARGIN,
+    PLAIN_ITEMS_CSV,
+    PRODUCT_DATABASE_FILE,
+    SCRIPT_DIR,
+)
 from pdf_plain_load import read_plain_database
 from pdf_page import PDF
+from run_script_gui_settings import required_product_images_dir
 
 def generate_packing_slips():
     """Main function to load data and generate PDFs based on Process Number."""
@@ -92,8 +100,8 @@ if __name__ == "__main__":
     print("Make sure you have:")
     print(f"1. {PLAIN_ITEMS_CSV} - Orders data")
     print(f"2. {PRODUCT_DATABASE_FILE} - Product database")
-    print(f"3. {PRODUCT_IMAGE_FOLDER} - Product images folder")
+    print(f"3. {required_product_images_dir()} - Product images folder (Browse in GUI)")
     print(f"4. {BRAND_IMAGE_FOLDER} - Brand logos folder")
     print()
-    
+
     generate_packing_slips()

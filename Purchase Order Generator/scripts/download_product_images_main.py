@@ -17,9 +17,9 @@ from download_product_images_jobs import (
 )
 
 
-def run_main(*, default_btc: Path, product_dir: Path, brand_dir: Path) -> int:
+def run_main(*, default_btc: Path, product_dir: Path | None, brand_dir: Path) -> int:
     parser = argparse.ArgumentParser(
-        description="Download product/brand images from BTC Product Data into assets."
+        description="Download product/brand images from BTC Product Data."
     )
     parser.add_argument("--btc-product-data", type=Path, default=default_btc)
     parser.add_argument("--database", type=Path, default=product_database_path())
@@ -30,7 +30,22 @@ def run_main(*, default_btc: Path, product_dir: Path, brand_dir: Path) -> int:
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--timeout", type=float, default=60.0)
     parser.add_argument("--delay", type=float, default=0.05)
+    parser.add_argument(
+        "--product-dir",
+        type=Path,
+        default=None,
+        help="Product images folder (overrides GUI Browse setting).",
+    )
     args = parser.parse_args()
+
+    dest_products = args.product_dir if args.product_dir is not None else product_dir
+    if dest_products is None or not Path(dest_products).is_dir():
+        print(
+            "Error: Product Images folder not set. "
+            "Browse in the PO GUI, or pass --product-dir."
+        )
+        return 1
+    product_dir = Path(dest_products)
 
     pe_path = args.btc_product_data
     if not pe_path.is_file():

@@ -17,6 +17,7 @@ from run_script_gui_settings import (
     effective_plain_database_path,
     load_gui_settings,
     load_tag_mapping,
+    product_images_dir_setting,
 )
 from run_script_gui_ui import ShipStationGuiUiMixin
 
@@ -36,6 +37,7 @@ class ShipStationGUI(
 
         self.tag_name_var = tk.StringVar()
         self.pdf_copy_folder_var = tk.StringVar()
+        self.product_images_dir_var = tk.StringVar()
         self.cl_csv_var = tk.StringVar()
         self.plain_db_var = tk.StringVar()
         self.packs_db_var = tk.StringVar()
@@ -46,6 +48,7 @@ class ShipStationGUI(
         remembered = str(self.gui_settings.get("pdf_copy_folder") or "").strip()
         if remembered:
             self.pdf_copy_folder_var.set(remembered)
+        self.product_images_dir_var.set(product_images_dir_setting(self.gui_settings))
         self.cl_csv_var.set(str(effective_cl_csv_path(self.gui_settings)))
         self.plain_db_var.set(str(effective_plain_database_path(self.gui_settings)))
         self.packs_db_var.set(str(effective_packs_database_path(self.gui_settings)))

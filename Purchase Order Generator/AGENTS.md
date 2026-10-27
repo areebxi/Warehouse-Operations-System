@@ -18,7 +18,8 @@ Also known in older docs as **Plain Orders**. Live paths via `shared/paths.py` (
 | `database/shared/btc_product_data/BTC_Product_Data.csv` | Shared BTC Product Data |
 | `database/shared/uneek_product_data/Uneek_Product_Data.xlsx` | Shared Uneek Product Data |
 | `database/shared/absolute_product_data/Absolute_Product_Data.xlsx` | Shared Absolute Product Data (babysuits only) |
-| `assets/` | brand_logos / product_images |
+| `assets/` | brand_logos / fonts |
+| GUI Browse → `gui_settings.json` `product_images_dir` | Required Product Images folder (no assets fallback) |
 | `output/` | `config.py` (FTP only) |
 | `config/ShipStation/.env` | Shared ShipStation `REAL_API_*` |
 

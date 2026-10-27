@@ -41,13 +41,13 @@ Options: `--dry-run` (counts only), `--no-backup`, `--output path\to\Plain Datab
 
 ### Download product images for PDFs
 
-`Plain Database.xlsx` stores image **filenames** only; packing slips load files from `assets/product_images/` and `assets/brand_logos/`. After syncing the database, download any missing images from ProductExport URLs:
+`Plain Database` stores image **filenames** only. Packing slips load product shots from the **required** Product Images folder (GUI Browse → `product_images_dir` in `gui_settings.json`) and brand logos from `assets/brand_logos/`. After syncing the database, download any missing images from BTC Product Data URLs (Browse must be set first, or pass `--product-dir`):
 
 ```bat
 .venv\Scripts\python.exe scripts\download_product_images.py --database-only
 ```
 
-Use `--dry-run` to preview, `--sku 218408` for one stock id, or `--no-brands` for product images only.
+Use `--dry-run` to preview, `--sku 218408` for one stock id, `--product-dir path` to override, or `--no-brands` for product images only.
 
 ## Live databases (via `shared/paths.py`)
 
@@ -80,7 +80,8 @@ Previous file: `free_stock.csv` (root of FTP). Current file: `WebData/stock_leve
 
 ## `assets/` — images & fonts
 
-- `product_images/`, `brand_logos/`, `fonts/`
+- `brand_logos/`, `fonts/`
+- Product shots: external folder chosen in the GUI (not under `assets/` after migrate)
 
 ## `output/` — new tag runs
 

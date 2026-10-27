@@ -16,6 +16,7 @@ GUI_SETTINGS_PATH = DATA_DIR / "gui_settings.json"
 KEY_CL_CSV = "custom_label_csv_path"
 KEY_PLAIN_DB = "plain_database_path"
 KEY_PACKS_DB = "packs_database_path"
+KEY_PRODUCT_IMAGES = "product_images_dir"
 
 
 def load_gui_settings() -> dict:
@@ -72,6 +73,21 @@ def effective_plain_database_path(settings: dict) -> Path:
 
 def effective_packs_database_path(settings: dict) -> Path:
     return _override_or_default(settings, KEY_PACKS_DB, default_packs_database_path())
+
+
+def product_images_dir_setting(settings: dict | None = None) -> str:
+    """Raw remembered Product Images path (may be empty). No assets fallback."""
+    data = settings if settings is not None else load_gui_settings()
+    return str(data.get(KEY_PRODUCT_IMAGES) or "").strip()
+
+
+def required_product_images_dir(settings: dict | None = None) -> Path | None:
+    """Configured Product Images directory, or None if unset / not a directory."""
+    raw = product_images_dir_setting(settings)
+    if not raw:
+        return None
+    path = Path(raw)
+    return path if path.is_dir() else None
 
 
 def load_tag_mapping():

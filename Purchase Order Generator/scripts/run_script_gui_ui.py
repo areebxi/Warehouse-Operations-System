@@ -7,7 +7,7 @@ import shutil
 import tkinter as tk
 from tkinter import filedialog, scrolledtext, ttk
 
-from run_script_gui_settings import save_gui_settings
+from run_script_gui_settings import KEY_PRODUCT_IMAGES, save_gui_settings
 
 
 class ShipStationGuiUiMixin:
@@ -52,7 +52,22 @@ class ShipStationGuiUiMixin:
         )
         self.clear_pdf_folder_button.pack(side=tk.LEFT, padx=(6, 0))
 
-        log_row = self.setup_db_path_rows(main_frame, start_row=3)
+        ttk.Label(main_frame, text="Product Images folder:").grid(
+            row=3, column=0, sticky=tk.W, pady=5
+        )
+        ttk.Entry(
+            main_frame, textvariable=self.product_images_dir_var, state="readonly"
+        ).grid(row=3, column=1, sticky=(tk.W, tk.E), pady=5, padx=(10, 0))
+        product_img_btns = ttk.Frame(main_frame)
+        product_img_btns.grid(row=3, column=2, sticky=(tk.W, tk.E), padx=(20, 0))
+        ttk.Button(
+            product_img_btns, text="Browse...", command=self.browse_product_images_folder
+        ).pack(side=tk.LEFT)
+        ttk.Button(
+            product_img_btns, text="Remove", command=self.clear_product_images_folder
+        ).pack(side=tk.LEFT, padx=(6, 0))
+
+        log_row = self.setup_db_path_rows(main_frame, start_row=4)
         main_frame.rowconfigure(log_row, weight=1)
 
         self.logs_text = scrolledtext.ScrolledText(
@@ -98,6 +113,37 @@ class ShipStationGuiUiMixin:
         self.gui_settings.pop("pdf_copy_folder", None)
         save_gui_settings(self.gui_settings)
         self.log_message("[SETTINGS] PDF copy folder removed.")
+
+    def browse_product_images_folder(self):
+        """Required Product Images directory (no assets fallback)."""
+        initial = self.product_images_dir_var.get().strip()
+        if not initial or not os.path.isdir(initial):
+            initial = None
+        chosen = filedialog.askdirectory(
+            title="Select Product Images folder",
+            initialdir=initial or None,
+            mustexist=True,
+        )
+        if not chosen:
+            return
+        self.product_images_dir_var.set(chosen)
+        self.gui_settings[KEY_PRODUCT_IMAGES] = chosen
+        save_gui_settings(self.gui_settings)
+        self.log_message(f"[SETTINGS] Product Images folder set to: {chosen}")
+
+    def clear_product_images_folder(self):
+        """Clear Product Images path only — does not restore assets/product_images."""
+        if not self.product_images_dir_var.get().strip() and not self.gui_settings.get(
+            KEY_PRODUCT_IMAGES
+        ):
+            self.log_message("[SETTINGS] No Product Images folder to remove.")
+            return
+        self.product_images_dir_var.set("")
+        self.gui_settings.pop(KEY_PRODUCT_IMAGES, None)
+        save_gui_settings(self.gui_settings)
+        self.log_message(
+            "[SETTINGS] Product Images folder removed — Browse required before PDF product shots."
+        )
 
     def log_message(self, message: str):
         self.logs_text.insert(tk.END, f"{message}\n")

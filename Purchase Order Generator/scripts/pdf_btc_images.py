@@ -5,10 +5,12 @@ from pathlib import Path
 
 import pandas as pd
 
-from pdf_constants import BTC_PRODUCT_DATA_FILE, PRODUCT_IMAGE_FOLDER
+from pdf_constants import BTC_PRODUCT_DATA_FILE
+from run_script_gui_settings import required_product_images_dir
+
 
 def _image_filename_from_url(url: object) -> str:
-    """Extract image filename from a BTC Product Data URL for assets/product_images lookup."""
+    """Extract image filename from a BTC Product Data URL for product_images lookup."""
     if url is None or (isinstance(url, float) and pd.isna(url)):
         return ""
     s = str(url).strip()
@@ -69,6 +71,9 @@ def _resolve_product_image_path(
     colour_img_by_uid: dict[str, str] | None = None,
 ) -> tuple[Path | None, str, str]:
     """Prefer colour-specific BTC Product Data shot, then Database product image, then SKU.ext."""
+    folder = required_product_images_dir()
+    if folder is None:
+        return None, "none", ""
     sku_str = str(sku_value or "").strip()
     colour_map = (
         colour_img_by_uid
@@ -77,16 +82,16 @@ def _resolve_product_image_path(
     )
     colour01 = colour_map.get(sku_str, "") if sku_str else ""
     if colour01:
-        colour_path = PRODUCT_IMAGE_FOLDER / colour01
+        colour_path = folder / colour01
         if colour_path.exists():
             return colour_path, "colour_image_01", colour01
     if product_filename:
-        pf = PRODUCT_IMAGE_FOLDER / str(product_filename)
+        pf = folder / str(product_filename)
         if pf.exists():
             return pf, "product_image", str(product_filename)
     if sku_str:
         for ext in (".jpg", ".png", ".jpeg", ".webp"):
-            candidate = PRODUCT_IMAGE_FOLDER / f"{sku_str}{ext}"
+            candidate = folder / f"{sku_str}{ext}"
             if candidate.exists():
                 return candidate, "sku_fallback", candidate.name
     return None, "none", ""

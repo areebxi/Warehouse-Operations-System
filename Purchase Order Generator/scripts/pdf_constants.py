@@ -44,5 +44,4 @@ BTC_PRODUCT_DATA_FILE = data_path("BTC_Product_Data.csv")
 PACKS_DATABASE_FILE = packs_database_path()
 
 SCRIPT_DIR = APP_ROOT
-PRODUCT_IMAGE_FOLDER = asset_path("product_images")
 BRAND_IMAGE_FOLDER = asset_path("brand_logos")

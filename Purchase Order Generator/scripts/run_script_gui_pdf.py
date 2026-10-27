@@ -7,6 +7,7 @@ import os
 from app_paths import asset_path
 from pdf_generator import generate_packing_slips_for_tag
 from run_script import pdf_filename_for_tag, rows_for_pdf_slips, write_packing_list_csv
+from run_script_gui_settings import required_product_images_dir
 
 
 class ShipStationGuiPdfMixin:
@@ -31,10 +32,15 @@ class ShipStationGuiPdfMixin:
             )
             return
         try:
-            product_images_dir = str(asset_path("product_images"))
+            product_images = required_product_images_dir(self.gui_settings)
+            if product_images is None:
+                self.log_message(
+                    "[WARNING] Product Images folder not set or missing — "
+                    "use Browse. Product shots will be blank."
+                )
+            else:
+                self.log_message(f"[PDF] Product Images folder: {product_images}")
             brand_logos_dir = str(asset_path("brand_logos"))
-            if not os.path.exists(product_images_dir):
-                self.log_message(f"[WARNING] Product images folder not found: {product_images_dir}")
             if not os.path.exists(brand_logos_dir):
                 self.log_message(f"[WARNING] Brand logos folder not found: {brand_logos_dir}")
 
