@@ -4,12 +4,12 @@ Living:
 
 | File | What it is |
 |------|------------|
-| [`../AGENTS.md`](../AGENTS.md) | Domain handbook |
+| [`../../Order Grouping Sorter/AGENTS.md`](../../Order%20Grouping%20Sorter/AGENTS.md) | Domain handbook |
 | [`HANDOFF.md`](HANDOFF.md) | Snapshot / continue |
 | [`FINDINGS.md`](FINDINGS.md) | Locked facts from dry-runs |
-| [`../order-grouping-locks.md`](../order-grouping-locks.md) | Grouping locks |
-| [`../order-grouping-criteria.csv`](../order-grouping-criteria.csv) | CEO review table |
-| [`../order-grouping-progress.xlsx`](../order-grouping-progress.xlsx) | Progress workbook |
+| [`../../Order Grouping Sorter/order-grouping-locks.md`](../../Order%20Grouping%20Sorter/order-grouping-locks.md) | Grouping locks |
+| [`../../Order Grouping Sorter/order-grouping-criteria.csv`](../../Order%20Grouping%20Sorter/order-grouping-criteria.csv) | CEO review table |
+| [`../../Order Grouping Sorter/order-grouping-progress.xlsx`](../../Order%20Grouping%20Sorter/order-grouping-progress.xlsx) | Progress workbook |
 
 Policy: parent `.cursor/rules/order-grouping-sorter/`.
 

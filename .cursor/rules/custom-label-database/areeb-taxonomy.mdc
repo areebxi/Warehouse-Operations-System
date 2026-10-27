@@ -92,6 +92,6 @@ Backups: `database/shared/plain/archive/`, `database/shared/packs/archive/`; CL 
 
 ## Last-year order study (2025-09-08 .. 2026-09-08)
 
-Cache: `Custom Label Database/docs/areeb-taxonomy-ss-skus.json` (complete). Statuses `shipped` + `awaiting_shipment`. **60,051** unique SKUs. **57,773** hit a CL row; **2,278** have no CL row (those SKUs are not in the catalog). Every CL row has Gender Apparel. CL classify source is `cl_standard` only.
+Cache: `docs/custom-label-database/areeb-taxonomy-ss-skus.json` (complete). Statuses `shipped` + `awaiting_shipment`. **60,051** unique SKUs. **57,773** hit a CL row; **2,278** have no CL row (those SKUs are not in the catalog). Every CL row has Gender Apparel. CL classify source is `cl_standard` only.
 
 Supply Method is a separate column (not Areeb). See `supply-method.mdc`.

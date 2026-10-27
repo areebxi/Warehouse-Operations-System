@@ -2,8 +2,8 @@
 
 
 
-Domain handbook for the **Warehouse Automation System Engineer**. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/shipping-label-generator/`. Behavior source: `docs/REQUIREMENTS.md`. Snapshot: `docs/HANDOFF.md`.
-Current state: `docs/HANDOFF.md`, kept as present-tense state, not a log.
+Domain handbook for the **Warehouse Automation System Engineer**. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/shipping-label-generator/`. Behavior source: `../docs/shipping-label-generator/REQUIREMENTS.md`. Snapshot: `../docs/shipping-label-generator/HANDOFF.md`.
+Current state: `../docs/shipping-label-generator/HANDOFF.md`, kept as present-tense state, not a log.
 
 Live paths via `shared/paths.py` / `load_config` (I/O + yaml in this app; ShipStation secrets shared).
 

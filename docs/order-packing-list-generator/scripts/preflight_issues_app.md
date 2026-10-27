@@ -2,7 +2,7 @@
 
 Helper GUI (and package) that audits ShipStation CSVs **before** a full packing run. It reports unmatched SKUs and dry-runs missing logo/apparel image lookups without writing packing PDFs or Excel.
 
-Implementation: [`scripts/pipeline_preflight_issues/`](../../scripts/pipeline_preflight_issues/). Launcher: [`preflight_issues_app.py`](../../preflight_issues_app.py). End-user fields: [USAGE.md](../../USAGE.md).
+Implementation: [`scripts/pipeline_preflight_issues/`](../../../Order%20Packing%20List%20Generator/scripts/pipeline_preflight_issues/). Launcher: [`preflight_issues_app.py`](../../../Order%20Packing%20List%20Generator/preflight_issues_app.py). End-user fields: [USAGE.md](../../../Order%20Packing%20List%20Generator/USAGE.md).
 
 ## Purpose
 

@@ -11,4 +11,4 @@ Domain handbook: `Custom Label Database/AGENTS.md`. App root = `Custom Label Dat
 - No production writes without `yes` / `do it` / `fill` / `run`.
 - Propose, `--dry-run`, then wait. One problem at a time.
 - Scope fills (`--iloc-from`, `--shirts-only`, `--w1-blank`) when only a slice changed. Do not whole-file rewrite “to be safe.”
-- Prefer CSV. Save decisions in docs + this rules tree; chat is not memory.
+- Prefer CSV. Save decisions in `docs/custom-label-database/` + this rules tree; chat is not memory.

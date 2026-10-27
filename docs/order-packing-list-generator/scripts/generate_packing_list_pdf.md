@@ -46,7 +46,7 @@ The layout is fixed in code from the reference picture (22 rows × 4 columns). F
 - **Recipient Name** (row 3, col 0): From CSV.
 - **1st Position**, **2nd Position** (row 3, cols 2–3): First and second token from **Position** (comma-separated). The black banner above the Apparel Image (row 3, col 1) is intentionally left blank.
 - **Apparel Image**, **Logo/Design Image (1st)**, **Logo/Design Image (2nd)** (row 4, cols 1–3): From CSV; image references rendered as text.
-- **Gender Apparel**, **Size**, **Colour**, **Item Quantity** (stacked in col 0 below Recipient; conceptually rows 8, 11, 14, 17 in the 22×4 grid): From CSV. **Heights are not equal:** the **Gender Apparel** cell is taller (`LEFT_GENDER_CELL_H_PT` in code, layout pt); **Size**, **Colour**, and **Item Quantity** share the remaining vertical band in **three equal** slices (`LEFT_OTHER_CELL_H_PT`). The stack is pinned between `LEFT_FOUR_TOP_PT` (below Recipient) and `LEFT_FOUR_BOTTOM_PT` (just above Picture Name), so the Picture Name row alignment is unchanged. To change only the Gender row height, edit `LEFT_GENDER_CELL_H_PT` in [`scripts/pipeline_generate_packing_list_pdf/pdf_page_layout.py`](../../scripts/pipeline_generate_packing_list_pdf/pdf_page_layout.py).
+- **Gender Apparel**, **Size**, **Colour**, **Item Quantity** (stacked in col 0 below Recipient; conceptually rows 8, 11, 14, 17 in the 22×4 grid): From CSV. **Heights are not equal:** the **Gender Apparel** cell is taller (`LEFT_GENDER_CELL_H_PT` in code, layout pt); **Size**, **Colour**, and **Item Quantity** share the remaining vertical band in **three equal** slices (`LEFT_OTHER_CELL_H_PT`). The stack is pinned between `LEFT_FOUR_TOP_PT` (below Recipient) and `LEFT_FOUR_BOTTOM_PT` (just above Picture Name), so the Picture Name row alignment is unchanged. To change only the Gender row height, edit `LEFT_GENDER_CELL_H_PT` in [`scripts/pipeline_generate_packing_list_pdf/pdf_page_layout.py`](../../../Order%20Packing%20List%20Generator/scripts/pipeline_generate_packing_list_pdf/pdf_page_layout.py).
 - **Picture Name** (row 20, col 0): From CSV.
 - **3rd/4th/5th Position** (row 20, cols 1–3): Third, fourth, and fifth token from **Position** (comma-separated). Row 21 has **Logo/Design Image (3rd/4th/5th)** — third, fourth, fifth token from **Logo/Design Image**, rendered as text.
 
@@ -92,7 +92,7 @@ The cell below **Item Quantity** (left column) can show a product image download
 1. **Item Image URL** — used first when non-empty.
 2. **Gift Message** — fallback when **Item Image URL** is empty or the download/draw fails. The value may be a bare URL or free text containing an `http://` or `https://` link (first match is used).
 
-Implemented in [`draw_page_left_bottom.py`](../../scripts/pipeline_generate_packing_list_pdf/draw_page_left_bottom.py). **Plain-order** rows (`plain` / `plainlg` in Item SKU) skip this entirely.
+Implemented in [`draw_page_left_bottom.py`](../../../Order%20Packing%20List%20Generator/scripts/pipeline_generate_packing_list_pdf/draw_page_left_bottom.py). **Plain-order** rows (`plain` / `plainlg` in Item SKU) skip this entirely.
 
 **Pipeline vs standalone:** When you run the full app or `scripts.pipeline_runner.run_pipeline`, step 8 receives **pre-built stem maps**. The runner builds those maps with **top level only** (no subfolders) for apparel, normal logos, **Customise Single Position**, and **Customise Double Position** (single is tried before double). When you run **`python scripts/generate_packing_list_pdf.py`** alone with `--logo-custom-dir`, this script builds its own maps: **`--logo-custom-dir` is indexed recursively**; `--apparel-dir` and `--logo-normal-dir` are **top level only**.
 
@@ -110,7 +110,7 @@ When the pipeline or CLI provides **Apparel Image folder**, **Normal Logo/Design
   When such stems exist for a row, the script:
 
   - Uses the base custom image (`OrderNumber` / `OrderNumber-N`) in the **first** logo box when present.
-  - Fills the remaining logo boxes from left to right with any `-f` / `-b` / `-p` / `-s`(+S1/S2/SL/SR) / `-LOCATION` images found (lookup via [`draw_page_custom_logo_context.py`](../../scripts/pipeline_generate_packing_list_pdf/draw_page_custom_logo_context.py); stems may use uppercase letters, e.g. `order-S-98765PER-….jpg`). The fbpi branch in `draw_position_banners` still draws **empty** text for those side/LOCATION labels in the mapped banner cells; see **Optional filename-suffix banner labels** below for a separate pass that may add those words from **resolved** file names.
+  - Fills the remaining logo boxes from left to right with any `-f` / `-b` / `-p` / `-s`(+S1/S2/SL/SR) / `-LOCATION` images found (lookup via [`draw_page_custom_logo_context.py`](../../../Order%20Packing%20List%20Generator/scripts/pipeline_generate_packing_list_pdf/draw_page_custom_logo_context.py); stems may use uppercase letters, e.g. `order-S-98765PER-….jpg`). The fbpi branch in `draw_position_banners` still draws **empty** text for those side/LOCATION labels in the mapped banner cells; see **Optional filename-suffix banner labels** below for a separate pass that may add those words from **resolved** file names.
 
   For these personalised side images, the file **stem** may include extra descriptive suffixes after the side token (example: `25-14291-20610-2-b-K-T-BLK-YM.png` is treated as the Back image for `25-14291-20610-2-b` in non-scoped lookup paths). For scoped rows (`Customise = Yes` and duplicated by `Order Number (Base)`), matching is exact-only with priority:
   - Side: `{LogoOrDesignToken}-{f|b}-{ItemSKU}` then `{LogoOrDesignToken}-{f|b}`
@@ -120,11 +120,11 @@ When the pipeline or CLI provides **Apparel Image folder**, **Normal Logo/Design
 
 ### Optional filename-suffix banner labels (`Customise = Yes`)
 
-Implemented in [`scripts/pipeline_generate_packing_list_pdf/draw_page_logo_suffix_labels_step.py`](../../scripts/pipeline_generate_packing_list_pdf/draw_page_logo_suffix_labels_step.py), invoked at the end of each PDF page draw in `draw_page_impl` (after logos). **Plain orders** and **Customise ≠ Yes** skip this pass entirely.
+Implemented in [`scripts/pipeline_generate_packing_list_pdf/draw_page_logo_suffix_labels_step.py`](../../../Order%20Packing%20List%20Generator/scripts/pipeline_generate_packing_list_pdf/draw_page_logo_suffix_labels_step.py), invoked at the end of each PDF page draw in `draw_page_impl` (after logos). **Plain orders** and **Customise ≠ Yes** skip this pass entirely.
 
 **What it reads:** the **resolved** filesystem paths already chosen for the page — the same apparel lookup as the apparel square (`Apparel Image`, then `Picture Name`), and each of the five logo slots via `logo_image_for_slot`. It does **not** change lookup rules.
 
-**How it maps:** on each path’s **filename stem** (case-insensitive), only **after** the Logo/Design Image anchor for that slot. Implemented in [`back_print_hint.py`](../../scripts/pipeline_generate_packing_list_pdf/back_print_hint.py) (`label_from_stem_after_anchor`, `label_for_logo_slot`):
+**How it maps:** on each path’s **filename stem** (case-insensitive), only **after** the Logo/Design Image anchor for that slot. Implemented in [`back_print_hint.py`](../../../Order%20Packing%20List%20Generator/scripts/pipeline_generate_packing_list_pdf/back_print_hint.py) (`label_from_stem_after_anchor`, `label_for_logo_slot`):
 
 - **fbpi rows** (separate front/back files): anchor = **base** token (first comma-separated Logo/Design Image value, any trailing `-f`/`-b`/… stripped). Example: base `202-3246136-6506730-13`, file `…-13-F-98765PER-…` → **Front**.
 - **Other rows:** anchor = the token for that slot (e.g. Step 4 `103671LG-f`, `103671LG-b`).
@@ -145,7 +145,7 @@ Examples: base `202-3246136-6506730-13`, stem `…-13-F-98765PER-…` → **Fron
 
 When a **resolved logo file** for a logo slot (1st–5th) has **Back** immediately after that slot’s Logo/Design Image anchor (same anchored rules as suffix **Back** above), step 8 also draws the bundled reference image **`assets/Back Print.jpg`** (“print in the back” mockup) beside that logo in the grey logo grid.
 
-**Trigger:** the reference is pasted when the resolved file stem has **Back** after the anchor (same rules as above), **or** the slot is the fbpi **Back** image (via `logo_filename_indicates_back` in [`back_print_hint.py`](../../scripts/pipeline_generate_packing_list_pdf/back_print_hint.py)), **or** the raw **Position** column has no `/` and that slot's position token (same source as position banners — raw Position or Position Code workbook lookup) contains **Back** case-insensitively. Slash positions (e.g. `Pocket / Back`) do not trigger from position text alone; filename/fbpi rules still apply.
+**Trigger:** the reference is pasted when the resolved file stem has **Back** after the anchor (same rules as above), **or** the slot is the fbpi **Back** image (via `logo_filename_indicates_back` in [`back_print_hint.py`](../../../Order%20Packing%20List%20Generator/scripts/pipeline_generate_packing_list_pdf/back_print_hint.py)), **or** the raw **Position** column has no `/` and that slot's position token (same source as position banners — raw Position or Position Code workbook lookup) contains **Back** case-insensitively. Slash positions (e.g. `Pocket / Back`) do not trigger from position text alone; filename/fbpi rules still apply.
 
 **Layout:**
 
@@ -161,7 +161,7 @@ When a **resolved logo file** for a logo slot (1st–5th) has **Back** immediate
 - A **red outline** is drawn around the back logo cell and around the reference cell (when the reference is drawn).
 - If `assets/Back Print.jpg` is missing, the back logo still draws with a red outline; a `pdf_asset_log` line notes the missing reference.
 
-**Code:** [`draw_page_apparel_and_logos.py`](../../scripts/pipeline_generate_packing_list_pdf/draw_page_apparel_and_logos.py) (`draw_logo_square_rows_impl`); asset path constant `BACK_PRINT_REFERENCE_IMAGE` in [`runtime_config.py`](../../scripts/pipeline_generate_packing_list_pdf/runtime_config.py). This pass is independent of the optional suffix **banner** labels (which still run for **Customise = Yes** on any `-f`/`-b`/… filename).
+**Code:** [`draw_page_apparel_and_logos.py`](../../../Order%20Packing%20List%20Generator/scripts/pipeline_generate_packing_list_pdf/draw_page_apparel_and_logos.py) (`draw_logo_square_rows_impl`); asset path constant `BACK_PRINT_REFERENCE_IMAGE` in [`runtime_config.py`](../../../Order%20Packing%20List%20Generator/scripts/pipeline_generate_packing_list_pdf/runtime_config.py). This pass is independent of the optional suffix **banner** labels (which still run for **Customise = Yes** on any `-f`/`-b`/… filename).
 
 If no image dirs are given, or a lookup fails, the slot shows text or a placeholder (e.g. red "A" or "L").
 

@@ -1,7 +1,7 @@
 # Production Design Queue Manager — handbook
 
-Domain handbook for the **Warehouse Automation System Engineer**. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/production-design-queue-manager/`. Details: `USAGE.md`, `docs/DOCUMENTATION.md`.
-Current state: `docs/HANDOFF.md`, kept as present-tense state, not a log.
+Domain handbook for the **Warehouse Automation System Engineer**. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/production-design-queue-manager/`. Details: `USAGE.md`, `../docs/production-design-queue-manager/DOCUMENTATION.md`.
+Current state: `../docs/production-design-queue-manager/HANDOFF.md`, kept as present-tense state, not a log.
 
 Live paths via `shared/paths.py` (DB in `database/`; settings + I/O in this app; SharedInbox + CL CSV shared).
 
@@ -9,7 +9,7 @@ Live paths via `shared/paths.py` (DB in `database/`; settings + I/O in this app;
 
 | Live | Other |
 |------|--------|
-| `queue_app.py` / `run_queue_app.bat` | docs |
+| `queue_app.py` / `run_queue_app.bat` | `../docs/production-design-queue-manager/` |
 | `run_design_queues_watcher.bat` | SharedInbox Design Queues watcher |
 | `config/queue_app_settings.json` | Design folder paths |
 | `database/production-design-queue-manager/Configuration Workbook.xlsx` | Pocket / Override Print Size; Skip Batches |

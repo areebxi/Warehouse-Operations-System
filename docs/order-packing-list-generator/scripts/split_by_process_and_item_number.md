@@ -23,7 +23,7 @@ The main packing pipeline **already removed missing-logo rows** from this CSV (a
 ## Behaviour
 
 1. Require columns **"Process and Item Number"**, **"Size"**, **"Order Number"**, and **"Colour"** in the step-5 CSV.
-2. **Expand by Item Quantity:** Each row with Item Quantity N is replaced by N rows with Item Quantity **`"1"`** (string, not int) via [`grouping_quantity._expand_df_by_quantity`](../../scripts/pipeline_split_by_process_item/grouping_quantity.py) (like DTF Des). So each unit gets its own row and later a distinct extended Process and Item Number. Using a string keeps compatibility with pandas **StringDtype** / `infer_string` (avoids `Invalid value '1' for dtype 'str'` on stricter installs). If the column is missing, no expansion is done.
+2. **Expand by Item Quantity:** Each row with Item Quantity N is replaced by N rows with Item Quantity **`"1"`** (string, not int) via [`grouping_quantity._expand_df_by_quantity`](../../../Order%20Packing%20List%20Generator/scripts/pipeline_split_by_process_item/grouping_quantity.py) (like DTF Des). So each unit gets its own row and later a distinct extended Process and Item Number. Using a string keeps compatibility with pandas **StringDtype** / `infer_string` (avoids `Invalid value '1' for dtype 'str'` on stricter installs). If the column is missing, no expansion is done.
 3. If a workbook path is given, load **"Process Info Sheet"** and build the size sequence from **"Sequence by Size"**. If the workbook is missing or the column is not found, no sorting is applied (original row order within each group).
 4. Group rows by **Process and Item Number** (blank/empty normalized to one group).
 5. Build per-group metadata for the **Process Number Tracker** using the step-5 data:

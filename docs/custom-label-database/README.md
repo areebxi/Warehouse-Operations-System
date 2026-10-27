@@ -4,7 +4,7 @@ Living (no phases):
 
 | File | What it is |
 |------|------------|
-| [`../AGENTS.md`](../AGENTS.md) | Domain handbook |
+| [`../../Custom Label Database/AGENTS.md`](../../Custom%20Label%20Database/AGENTS.md) | Domain handbook |
 | [`../../AGENTS.md`](../../AGENTS.md) | Parent system map (Warehouse Automation System Engineer) |
 | [`HANDOFF.md`](HANDOFF.md) | Current snapshot, pending work, how to continue |
 | [`FINDINGS.md`](FINDINGS.md) | Every key finding and locked lesson |

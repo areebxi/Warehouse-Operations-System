@@ -32,12 +32,12 @@ Do not nest rules under `AppName/.cursor/rules/`. Do not invent a parallel root 
 
 | Folder | Handbook / state |
 |--------|------------------|
-| `custom-label-database/` | `Custom Label Database/AGENTS.md` · `docs/HANDOFF.md` |
-| `order-grouping-sorter/` | `Order Grouping Sorter/AGENTS.md` · `docs/HANDOFF.md` |
-| `order-packing-list-generator/` | `Order Packing List Generator/AGENTS.md` · `docs/HANDOFF.md` |
-| `production-design-queue-manager/` | `Production Design Queue Manager/AGENTS.md` · `docs/HANDOFF.md` |
-| `shipping-label-generator/` | `Shipping Label Generator/AGENTS.md` · `docs/HANDOFF.md` · `reprint.mdc` (2026-10-20) |
-| `purchase-order-generator/` | `Purchase Order Generator/AGENTS.md` · `docs/HANDOFF.md` |
+| `custom-label-database/` | `Custom Label Database/AGENTS.md` · `docs/custom-label-database/HANDOFF.md` |
+| `order-grouping-sorter/` | `Order Grouping Sorter/AGENTS.md` · `docs/order-grouping-sorter/HANDOFF.md` |
+| `order-packing-list-generator/` | `Order Packing List Generator/AGENTS.md` · `docs/order-packing-list-generator/HANDOFF.md` |
+| `production-design-queue-manager/` | `Production Design Queue Manager/AGENTS.md` · `docs/production-design-queue-manager/HANDOFF.md` |
+| `shipping-label-generator/` | `Shipping Label Generator/AGENTS.md` · `docs/shipping-label-generator/HANDOFF.md` · `reprint.mdc` (2026-10-20) |
+| `purchase-order-generator/` | `Purchase Order Generator/AGENTS.md` · `docs/purchase-order-generator/HANDOFF.md` |
 
 Decision owners (locks): [`docs/DECISIONS.md`](../../docs/DECISIONS.md). Parent map: [`AGENTS.md`](../../AGENTS.md).
 

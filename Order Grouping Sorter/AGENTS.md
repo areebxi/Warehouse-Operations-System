@@ -1,7 +1,7 @@
 # Order Grouping Sorter — handbook
 
-Domain handbook for the **Warehouse Automation System Engineer**. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/order-grouping-sorter/`. Locks: `order-grouping-locks.md`. Details: `docs/`.
-Current state: `docs/HANDOFF.md`, kept as present-tense state, not a log.
+Domain handbook for the **Warehouse Automation System Engineer**. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/order-grouping-sorter/`. Locks: `order-grouping-locks.md`. Details: `../docs/order-grouping-sorter/`.
+Current state: `../docs/order-grouping-sorter/HANDOFF.md`, kept as present-tense state, not a log.
 
 Live paths via `shared/paths.py`. A grouping **run** only **reads** CL + Plain Database + Packs. Sorter DB: `database/order-grouping-sorter/` — `taxonomy_picklists.csv` (Hashim #038), `fixed_batches.csv` (B80/B100/… criteria), `leftover_batches/{YYYY-MM-DD}.csv` (written each run for leftover B1/B2…), and `catalog_cache/` (Plain/Packs pickles). Chat “run the group sorter” → `--run` on current `awaiting_shipment` only (no catalog seed; still-awaiting orders are not skipped for an earlier shift). Locked 2026-10-14; catalog step removed 2026-10-20. Chat “add unmatched” runs `scripts/seed_catalog_misses.py` alone. If the shift was not named, ask and do not run yet (every chat and every new session).
 

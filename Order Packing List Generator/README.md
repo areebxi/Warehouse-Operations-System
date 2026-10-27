@@ -3,7 +3,7 @@
 This folder contains your full packing list pipeline, the main GUI app, and the helper tools for missing runs and preflight issues.
 
 **Usage (GUI fields, options, outputs):** see **[USAGE.md](USAGE.md)**.  
-**Pipeline spec (steps 1–8, columns, script reference):** see **[docs/README.md](docs/README.md)**.
+**Pipeline spec (steps 1–8, columns, script reference):** see **[docs/order-packing-list-generator/README.md](../docs/order-packing-list-generator/README.md)**.
 
 ### Top‑level structure
 
@@ -60,7 +60,7 @@ This folder contains your full packing list pipeline, the main GUI app, and the 
 
 ## Packaging pipeline (summary)
 
-Takes a **ShipStation CSV (Current View)** and, through eight scripted steps, produces **per-process CSVs**, **Excel workbooks** (Picking, Orders Details, DTF Des), and **packing list PDFs**. See **[docs/README.md](docs/README.md)** for column reference, pipeline order, CLI examples, and script links.
+Takes a **ShipStation CSV (Current View)** and, through eight scripted steps, produces **per-process CSVs**, **Excel workbooks** (Picking, Orders Details, DTF Des), and **packing list PDFs**. See **[docs/order-packing-list-generator/README.md](../docs/order-packing-list-generator/README.md)** for column reference, pipeline order, CLI examples, and script links.
 
 ## Reference layout (abbreviated)
 
@@ -71,7 +71,7 @@ Takes a **ShipStation CSV (Current View)** and, through eight scripted steps, pr
 ├── scripts/                  ← Steps 1–8, pipeline_runner, gui_theme, helpers
 ├── config/                   ← gui_config.json, missing_run_config.json, preflight_issues_config.json
 ├── USAGE.md                  ← GUI usage (main, missing run, preflight issues)
-├── docs/                     ← README (full spec), CHANGELOG, per-script notes
+├── (living docs)             ← ../docs/order-packing-list-generator/ (README, per-script notes)
 ├── Input/                    ← ShipStation CSV exports
 ├── Output/                   ← Date / shift / process outputs
 ├── Data/                     ← Workbook.xlsx, design/process CSVs, etc.

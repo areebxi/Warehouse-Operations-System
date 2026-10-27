@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Reprint (locked 2026-10-20)
 
-Present state: `Shipping Label Generator/docs/HANDOFF.md`. Do not revert these to the older spec in `docs/PLAN.md`.
+Present state: `docs/shipping-label-generator/HANDOFF.md`. Do not revert these to the older spec in `docs/shipping-label-generator/PLAN.md`.
 
 - **Convert.** A DTF Des file whose hash is already in `DTF Des Files - Processed/.processed_manifest.json` is still converted (`convert_reprint_existing` in `scripts/app/flows/convert/run.py`). Do not delete it as a duplicate. Do not fail the run with `convert_no_valid_inputs` only because the hash was seen before.
 - **Print a shipped order.** ShipStation Classic V1 does not return the old label (`labelData` is empty; there is no reprint route). If the order is already shipped, reuse the PDF this app saved under `Output/Labels` (`{order number}.pdf`, prefer `process_{process number}/`). Do not create a second label. If that file is missing, the order is missed (`shipped order has no downloadable label`). Cancelled orders still fail. Code: `local_saved_label` in `scripts/app/flows/print_labels/process_order_create.py`.

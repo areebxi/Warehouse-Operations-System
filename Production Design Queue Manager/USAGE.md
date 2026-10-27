@@ -2,7 +2,7 @@
 
 A practical guide for day-to-day use of **Queue App**: arranging design images on a printable canvas from DTF Des order files.
 
-For technical architecture, API details, and change history, see [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md).
+For technical architecture, API details, and change history, see [docs/production-design-queue-manager/DOCUMENTATION.md](../docs/production-design-queue-manager/DOCUMENTATION.md).
 
 ---
 
@@ -529,6 +529,6 @@ Missing Size Reference/
 
 ---
 
-**See also:** [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md) — full feature list, technical details, and change log.
+**See also:** [docs/production-design-queue-manager/DOCUMENTATION.md](../docs/production-design-queue-manager/DOCUMENTATION.md) — full feature list, technical details, and change log.
 
 **Last updated:** July 23, 2026

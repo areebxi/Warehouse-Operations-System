@@ -4,10 +4,10 @@ Living:
 
 | File | What it is |
 |------|------------|
-| [`../AGENTS.md`](../AGENTS.md) | Domain handbook |
+| [`../../Production Design Queue Manager/AGENTS.md`](../../Production%20Design%20Queue%20Manager/AGENTS.md) | Domain handbook |
 | [`HANDOFF.md`](HANDOFF.md) | Snapshot / continue |
 | [`FINDINGS.md`](FINDINGS.md) | Locked facts |
 | [`DOCUMENTATION.md`](DOCUMENTATION.md) | Full reference |
-| [`../USAGE.md`](../USAGE.md) | Day-to-day usage |
+| [`../../Production Design Queue Manager/USAGE.md`](../../Production%20Design%20Queue%20Manager/USAGE.md) | Day-to-day usage |
 
 `backups/versions/production-design-queue-manager/` holds old app snapshots — not the living way of working. Policy: parent `.cursor/rules/production-design-queue-manager/`.

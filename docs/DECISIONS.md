@@ -24,14 +24,15 @@ Where locked decisions live. **Do not copy** locks here; link to the owner. Chat
 | Printing Type | `.cursor/rules/custom-label-database/printing-type.mdc`; `shared/printing_type.py` |
 | Print sizes (hoodies, sleeve, ISO A3–A6, F/P-F8, B4) | `.cursor/rules/custom-label-database/print-sizes.mdc` (hoodies 2026-10-22; sleeve 100×100 + F/P-F8/B4 on Areeb 2026-10-23; ISO paper A3–A6 Front/Back Center on Areeb 2026-10-27) |
 | Areeb Custom Label dedupe keep-rule | `.cursor/rules/custom-label-database/duplicates.mdc` (locked 2026-10-27: token match → long supplier GA → fill count → first; `scripts/dedupe_areeb_cl.py`) |
-| Database Transfer retired | Removed 2026-10-27: no `Database Transfer/` folder, no fill sync, no `sync_database_transfer.py`. Live = CSVs under `database/` only (`Custom Label Database/docs/HANDOFF.md`) |
+| Database Transfer retired | Removed 2026-10-27: no `Database Transfer/` folder, no fill sync, no `sync_database_transfer.py`. Live = CSVs under `database/` only ([`custom-label-database/HANDOFF.md`](custom-label-database/HANDOFF.md)) |
+| Living docs home | Locked 2026-10-27: all living app docs under root `docs/<app-slug>/`; `AGENTS.md` stays in each app folder; archives in `backups/docs/`; policy in `.cursor/rules/` ([`README.md`](README.md)) |
 | Supplier Name | `.cursor/rules/custom-label-database/supplier-name.mdc`; `shared/supplier_name.py` |
 | UID vs product file | `.cursor/rules/custom-label-database/fill-pipeline.mdc` (locked 2026-10-23: colour, garment, image, and product code come from the product file for that UID, not a peer clone) |
 | Taxonomy pick-list | `.cursor/rules/order-grouping-sorter/taxonomy-picklist.mdc`; `shared/taxonomy_*.py`; `database/order-grouping-sorter/taxonomy_picklists.csv` |
 | Fixed batches criteria | `database/order-grouping-sorter/fixed_batches.csv` (+ locks / sorter rules) |
 | Session truth / verify / persist | `.cursor/rules/global/session-independence.mdc` |
 | Docs-first read + same-turn doc sync | `.cursor/rules/global/docs-first.mdc` |
-| Built state (cross-app) | [`PROJECT_STATE.md`](PROJECT_STATE.md); per-app `docs/HANDOFF.md` |
+| Built state (cross-app) | [`PROJECT_STATE.md`](PROJECT_STATE.md); per-app `docs/<slug>/HANDOFF.md` |
 | Packing / Queue resolved bugs | `Order Packing List Generator/.cursor/issue-log.md`; `Production Design Queue Manager/.cursor/issue-log.md` |
 | Requirement gate before implement | `.cursor/rules/global/requirement-understanding.mdc` |
 | YAGNI / reuse ladder | `.cursor/rules/global/ponytail.mdc` |
@@ -44,7 +45,7 @@ Where locked decisions live. **Do not copy** locks here; link to the owner. Chat
 No `docs/contracts/` — shapes already owned elsewhere:
 
 - Sorter → Packing CSV: filename / path in `.cursor/rules/order-grouping-sorter/live-files.mdc` + standing terms; columns = `CSV_FIELDNAMES` in `Order Grouping Sorter/scripts/grouping_models.py` (matches Packing `orders_to_csv.py`).
-- Packing → SharedInbox `DTF Des-P*.xlsx`: `.cursor/rules/global/shared-inbox.mdc`; columns in `Order Packing List Generator/docs/scripts/generate_excel_outputs.md` + `writers_impl.py`.
+- Packing → SharedInbox `DTF Des-P*.xlsx`: `.cursor/rules/global/shared-inbox.mdc`; columns in [`order-packing-list-generator/scripts/generate_excel_outputs.md`](order-packing-list-generator/scripts/generate_excel_outputs.md) + `writers_impl.py`.
 
 ## Duplicate homes (report only — do not merge yet)
 
@@ -54,5 +55,6 @@ No `docs/contracts/` — shapes already owned elsewhere:
 
 ## Cross-app architecture locks with no other owner
 
-- **2026-10-04 — Live CL CSV is NocoDB underscored.** Readers use `shared/cl_columns.py`. No exporter header remap. Stand-ins: `BTC SKU`→`Supplier_SKU`, `Supply Method`→`Stock_Type` with `normalize_stock_type` (Order on Demand→Supplier On Demand; Seasonal/Non-Seasonal→Warehouse Stock; blank stays blank). Owner: `.cursor/rules/custom-label-database/nocodb.mdc` + `supply-method.mdc` + `Custom Label Database/docs/HANDOFF.md`.
+- **2026-10-04 — Live CL CSV is NocoDB underscored.** Readers use `shared/cl_columns.py`. No exporter header remap. Stand-ins: `BTC SKU`→`Supplier_SKU`, `Supply Method`→`Stock_Type` with `normalize_stock_type` (Order on Demand→Supplier On Demand; Seasonal/Non-Seasonal→Warehouse Stock; blank stays blank). Owner: `.cursor/rules/custom-label-database/nocodb.mdc` + `supply-method.mdc` + [`custom-label-database/HANDOFF.md`](custom-label-database/HANDOFF.md).
 - **2026-10-27 — CL SKU match is case-sensitive.** Entire-cell Custom Label join no longer casefolds. Owner: `.cursor/rules/global/cl-sku-match.mdc`; `shared/cl_sku_match.py`. Sorter CL finish keys use the same case rule (stricter key order unchanged).
+- **2026-10-27 — Living docs under root `docs/<app-slug>/`.** App `AGENTS.md` stays in the app folder. Archives stay in `backups/docs/`. Owner: [`README.md`](README.md).

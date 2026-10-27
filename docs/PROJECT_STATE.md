@@ -1,6 +1,6 @@
 # Project state (built today)
 
-Cross-app snapshot. Per-app detail: each app’s `docs/HANDOFF.md`. Architecture / line-limit façades: [`ARCHITECTURE.md`](ARCHITECTURE.md). Decision owners: [`DECISIONS.md`](DECISIONS.md). Proof pointers are code/docs that show the claim.
+Cross-app snapshot. Per-app detail: `docs/<slug>/HANDOFF.md` (index: [`README.md`](README.md)). Architecture / line-limit façades: [`ARCHITECTURE.md`](ARCHITECTURE.md). Decision owners: [`DECISIONS.md`](DECISIONS.md). Proof pointers are code/docs that show the claim.
 
 ## Apps
 
@@ -40,4 +40,4 @@ Legacy 200-line overs cleared; façade patterns: [`ARCHITECTURE.md`](ARCHITECTUR
 
 ## UNKNOWN
 
-- Sorter `docs/HANDOFF.md` says last Input write **2026-09-30**; Packing `Input/02-10-2026/1st Shift/` also exists on disk — which date is current “last write” is not settled in docs (do not guess).
+- Sorter [`order-grouping-sorter/HANDOFF.md`](order-grouping-sorter/HANDOFF.md) says last Input write **2026-09-30**; Packing `Input/02-10-2026/1st Shift/` also exists on disk — which date is current “last write” is not settled in docs (do not guess).

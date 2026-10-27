@@ -18,7 +18,7 @@ from shared.cl_sku_match import build_label_index, match_keys, normalize_label
 
 
 def load_ss_skus() -> list[str]:
-    cache = wh.cl_app_dir() / "docs" / "areeb-taxonomy-ss-skus.json"
+    cache = wh.cl_docs_dir() / "areeb-taxonomy-ss-skus.json"
     data = json.loads(cache.read_text(encoding="utf-8"))
     return list(data.get("skus") or [])
 

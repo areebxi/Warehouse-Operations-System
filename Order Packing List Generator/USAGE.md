@@ -1,6 +1,6 @@
 ## Packing List App – Usage
 
-End-user guide for the three GUIs. For pipeline steps, column specs, and CLI commands, see **[docs/README.md](docs/README.md)**.
+End-user guide for the three GUIs. For pipeline steps, column specs, and CLI commands, see **[docs/order-packing-list-generator/README.md](../docs/order-packing-list-generator/README.md)**.
 
 ### 1. Prerequisites
 - **Python**: Installed and available on your PATH (Python 3.10+ recommended).
@@ -223,7 +223,7 @@ The **Preflight Issues App** (launcher: `preflight_issues_app.py`) audits ShipSt
 2. **Missing Logo** — Logo/Design token present but no matching image file (dry-run)
 3. **Missing Apparel** — Apparel/Picture Name present but no matching apparel image (dry-run)
 
-Discount line items (**Item Name** contains `discount`) are skipped in Step 1, same as the main pipeline. Rows whose Item SKU contains `plain` or `plainlg` are not flagged for Missing Logo. Full behaviour: [docs/scripts/preflight_issues_app.md](docs/scripts/preflight_issues_app.md).
+Discount line items (**Item Name** contains `discount`) are skipped in Step 1, same as the main pipeline. Rows whose Item SKU contains `plain` or `plainlg` are not flagged for Missing Logo. Full behaviour: [docs/order-packing-list-generator/scripts/preflight_issues_app.md](../docs/order-packing-list-generator/scripts/preflight_issues_app.md).
 
 ### 1. Prerequisites
 - `database/order-packing-list-generator/Workbook.xlsx` – process/position sheets (Process Info, Multiple Positions, Logo IDs). Not the live Custom Label catalog.

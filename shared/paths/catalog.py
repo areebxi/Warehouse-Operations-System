@@ -5,8 +5,13 @@ from pathlib import Path
 from shared.paths.root import DB_SLUG_CL, database_app_dir, database_shared_dir, warehouse_root_from
 
 def cl_app_dir(from_path: object | None = None) -> Path:
-    """Custom Label Database app folder (scripts/docs only)."""
+    """Custom Label Database app folder (scripts only)."""
     return warehouse_root_from(from_path) / "Custom Label Database"
+
+
+def cl_docs_dir(from_path: object | None = None) -> Path:
+    """Living CL docs under root docs/custom-label-database/."""
+    return warehouse_root_from(from_path) / "docs" / "custom-label-database"
 
 
 def cl_csv_path(from_path: object | None = None) -> Path:
@@ -91,6 +96,7 @@ def mocks_database_csv_path(from_path: object | None = None) -> Path:
 
 __all__ = [
     "cl_app_dir",
+    "cl_docs_dir",
     "cl_csv_path",
     "cl_areeb_csv_path",
     "backups_root",

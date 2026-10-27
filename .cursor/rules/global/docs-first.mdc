@@ -10,7 +10,7 @@ alwaysApply: true
 **Open code only when needed:** implement/fix; verify exists/unused/`shared/` consumers; run the app’s existing test/self-check before “fixed”. Prefer the smallest file that proves the claim. Truth axes: `session-independence.mdc`. Layers/limits: `architecture.mdc`.
 
 **Same-turn sync (keep docs current):** if this turn changes behaviour, entrypoints, handoffs, dry-run/`--run`, or not-built status → update the owner doc **before** saying done:
-- app how-to-run / built state → that app’s `docs/HANDOFF.md` (`AGENTS.md` only if a handbook claim changed)
+- app how-to-run / built state → `docs/<slug>/HANDOFF.md` (`AGENTS.md` only if a handbook claim changed)
 - cross-app handoff / built vs not-built → `docs/PROJECT_STATE.md`
 - locks → owner in `docs/DECISIONS.md`
 

@@ -14,7 +14,7 @@ from shared.cl_sku_match import build_label_index, match_keys, normalize_label
 
 
 def ss_cache_path() -> Path:
-    return wh.cl_app_dir() / "docs" / "areeb-taxonomy-ss-skus.json"
+    return wh.cl_docs_dir() / "areeb-taxonomy-ss-skus.json"
 
 
 def extract_skus(orders: list[dict]) -> list[str]:
@@ -33,7 +33,7 @@ def extract_skus(orders: list[dict]) -> list[str]:
 
 
 def ss_page_cache_path() -> Path:
-    return wh.cl_app_dir() / "docs" / "areeb-taxonomy-ss-pages.jsonl"
+    return wh.cl_docs_dir() / "areeb-taxonomy-ss-pages.jsonl"
 
 
 def iter_page_cache(path: Path):

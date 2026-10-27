@@ -116,7 +116,7 @@ No live write without **yes / fill / run**. Propose + dry-run first. Typical pat
 
 - Apparel Image: blanks only. Duplicates: leave unless asked. NocoDB: no column-name normalization.
 - Do not put Packs/Plain SKUs into CL to “fix” unmatched.
-- Chat is not memory; do not copy transcripts into `docs/chats/`.
+- Chat is not memory; do not copy transcripts into `docs/custom-label-database/chats/`.
 
 ## Current leftovers (ask before acting)
 
