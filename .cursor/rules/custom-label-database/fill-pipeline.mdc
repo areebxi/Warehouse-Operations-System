@@ -31,8 +31,6 @@ Do **not** fill unless asked: `Tags`, `Size (Dimensions)`.
 
 **New PE styles from packing SKUs:** Custom Label is the tail after the design prefix (`189381LG-N220-P3-55709` → `N220-P3-55709`). Prefer `scripts/add_labels.py --skus …` (named-only, append-only, same fill steps). Default CSV is the live NocoDB export. Chat **add unmatched** uses `--csv` on `Custom_Label_Database (Areeb).csv` via `Order Grouping Sorter/scripts/seed_catalog_misses.py`. A grouping run does not call that script. Add `--all-spc` only when the supervisor wants every PE UID for that BTC SPC as `{mock}-{UID}` (completeness, not required for integrity of existing rows). Clone Gender Apparel / Colour / Size / Apparel Image / Print Positions from a same-UID peer when available; set **Customise** from the `-P{digit}-` / `Yes`-token rule above. Optional: `fill_size_references_from_cl.py` for plain mock+UID keys.
 
-**After every supervisor fill** of CL and/or Size References: run `scripts/sync_database_transfer.py` so `Database Transfer/` Workbook + Configuration Workbook match the live CSVs. See `database-transfer-sync.mdc`.
-
 **Print Positions:** confirm from `support/Mocks Database.csv` (`Pasting Mocks ID` → `Printing Position`; Front Print → Front Center, Back Print → Back Center) before seeding a mock series. Do not guess from the packing SKU alone.
 
 **Old compound tokens:** one Custom Label can be two design tails in one cell (`F/P-F8-M-T-BLK-5XL 161121LG-B4-M-T-BLK-5XL`). `F/P` = Front Center + Front Left Pocket. Own dash token `F8` or `F8A` = pocket at 80×100 (`F80` is not). See `print-sizes.mdc`.

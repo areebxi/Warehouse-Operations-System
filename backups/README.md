@@ -9,7 +9,6 @@ One folder for snapshots, old code copies, and doc archives. Live catalogs stay 
 | `packs/` | `database/shared/packs/archive/` | Packs Database snapshots |
 | `shared/` | `database/shared/archive/` | Former local copies some scripts still read (`data_archive_dir()`) |
 | `size-references/` | `database/custom-label-database/support/backups/` | Size References snapshots |
-| `database-transfer/` | `Database Transfer/backups/` | Transfer workbook snapshots |
 | `versions/order-packing-list-generator/` | `Order Packing List Generator/Versions/` | Old packing app copies |
 | `versions/production-design-queue-manager/` | `Production Design Queue Manager/Versions/` | Old queue app copies |
 | `working-copies/` | `Working Copies/` | Frozen working copies of packing, PO, and queue |

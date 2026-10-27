@@ -27,8 +27,6 @@ Tackle **one problem at a time**.
 
 **Unmatched packing SKUs (fast path):** `python scripts/add_labels.py --skus …` — named labels only, same fill rules, **append-only** (does not rewrite existing rows). Use `--all-spc` when you want every PE UID for that BTC SPC as `{mock}-{UID}` (catalog completeness; slower). Clone GA/Colour/Size/Image/Print Positions from a same-UID peer when possible; **Customise** = `Yes` when Custom Label has `-P{digit}-` **or** leading `P{digit}-` **or** a `Yes` token (e.g. `W101-SkyBe-O/S-Yes`). Then optional `fill_size_references_from_cl.py` for plain `M##-{UID}` keys.
 
-**Database Transfer (locked 2026-09-25):** after every supervisor **fill** of CL and/or Size References, also run `python scripts/sync_database_transfer.py` so `Database Transfer/Workbook.xlsx` (CL Database sheet) and `Database Transfer/Configuration Workbook.xlsx` (Size References sheet) perfectly mirror the live CSVs. Rule: parent `.cursor/rules/custom-label-database/database-transfer-sync.mdc`.
-
 ## Hard do-nots
 
 - Do not add or maintain **NocoDB column-name normalization**. Supervisor uploads and maps columns manually.
@@ -41,11 +39,11 @@ PE taxonomy: `Category` and `Department` ← PE `Department`; `Sub-Category` and
 
 ## After any CSV change
 
-Tell the supervisor exactly what changed: file, rows/labels, columns, before→after, count, backup path. On **fill**, also report the Database Transfer sync (row counts + backup paths).
+Tell the supervisor exactly what changed: file, rows/labels, columns, before→after, count, backup path.
 
 ## Structure & boundaries
 
-- **Orchestration:** `scripts/` entry CLIs (`fill_from_seeds.py`, `add_labels.py`, `sync_database_transfer.py`, `db_update.py`).
+- **Orchestration:** `scripts/` entry CLIs (`fill_from_seeds.py`, `add_labels.py`, `db_update.py`).
 - **Domain / shared fills:** `shared/areeb_taxonomy.py`, `supply_method.py`, `printing_type.py`, `supplier_name.py` (multi-app — do not fork in this folder). Seed fill helpers: `fill_seeds_*.py` beside `fill_from_seeds.py`.
 - **I/O:** live paths only via `shared.paths`; helpers under `database/custom-label-database/`.
 - **Split modules:** `size_code_logic.py` façade (`size_code_*.py`); `phase5_print_sizes.py` (`phase5_*.py`); `fill_size_references_from_cl.py` (`fill_sr_from_cl_*.py`); `fill_from_seeds.py` / `add_labels.py` (`fill_seeds_*` / `add_labels_*`).

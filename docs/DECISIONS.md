@@ -24,6 +24,7 @@ Where locked decisions live. **Do not copy** locks here; link to the owner. Chat
 | Printing Type | `.cursor/rules/custom-label-database/printing-type.mdc`; `shared/printing_type.py` |
 | Print sizes (hoodies, sleeve, ISO A3–A6, F/P-F8, B4) | `.cursor/rules/custom-label-database/print-sizes.mdc` (hoodies 2026-10-22; sleeve 100×100 + F/P-F8/B4 on Areeb 2026-10-23; ISO paper A3–A6 Front/Back Center on Areeb 2026-10-27) |
 | Areeb Custom Label dedupe keep-rule | `.cursor/rules/custom-label-database/duplicates.mdc` (locked 2026-10-27: token match → long supplier GA → fill count → first; `scripts/dedupe_areeb_cl.py`) |
+| Database Transfer retired | Removed 2026-10-27: no `Database Transfer/` folder, no fill sync, no `sync_database_transfer.py`. Live = CSVs under `database/` only (`Custom Label Database/docs/HANDOFF.md`) |
 | Supplier Name | `.cursor/rules/custom-label-database/supplier-name.mdc`; `shared/supplier_name.py` |
 | UID vs product file | `.cursor/rules/custom-label-database/fill-pipeline.mdc` (locked 2026-10-23: colour, garment, image, and product code come from the product file for that UID, not a peer clone) |
 | Taxonomy pick-list | `.cursor/rules/order-grouping-sorter/taxonomy-picklist.mdc`; `shared/taxonomy_*.py`; `database/order-grouping-sorter/taxonomy_picklists.csv` |

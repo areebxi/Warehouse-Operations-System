@@ -39,7 +39,7 @@ flowchart LR
 
 ### Custom Label Database
 
-- **Owns:** catalog policy; fill scripts; NocoDB sync; Database Transfer mirror sync after fill.
+- **Owns:** catalog policy; fill scripts; NocoDB sync.
 - **Reads/writes:** live CL CSV via `shared.paths`; helpers under `database/custom-label-database/`; BTC/Uneek/Absolute product data (read).
 - **Must not:** invent ShipStation joins; rewrite Apparel Image names; own Packing/Queue/Shipping run I/O.
 

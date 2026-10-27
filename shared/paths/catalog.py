@@ -72,10 +72,6 @@ def size_references_backups_dir(from_path: object | None = None) -> Path:
     return backups_root(from_path) / "size-references"
 
 
-def database_transfer_backups_dir(from_path: object | None = None) -> Path:
-    return backups_root(from_path) / "database-transfer"
-
-
 def custom_label_support_dir(from_path: object | None = None) -> Path:
     return database_app_dir(DB_SLUG_CL, from_path) / "support"
 
@@ -93,19 +89,6 @@ def mocks_database_csv_path(from_path: object | None = None) -> Path:
     """CL support Mocks Database (print positions / printing type by Pasting Mocks ID)."""
     return custom_label_support_dir(from_path) / "Mocks Database.csv"
 
-
-def database_transfer_dir(from_path: object | None = None) -> Path:
-    """Supervisor upload mirrors of CL Database + Size References (not live)."""
-    return warehouse_root_from(from_path) / "Database Transfer"
-
-
-def database_transfer_workbook_path(from_path: object | None = None) -> Path:
-    return database_transfer_dir(from_path) / "Workbook.xlsx"
-
-
-def database_transfer_config_workbook_path(from_path: object | None = None) -> Path:
-    return database_transfer_dir(from_path) / "Configuration Workbook.xlsx"
-
 __all__ = [
     "cl_app_dir",
     "cl_csv_path",
@@ -122,12 +105,8 @@ __all__ = [
     "packs_database_archive_dir",
     "data_archive_dir",
     "size_references_backups_dir",
-    "database_transfer_backups_dir",
     "custom_label_support_dir",
     "custom_label_database_dir",
     "size_references_csv_path",
     "mocks_database_csv_path",
-    "database_transfer_dir",
-    "database_transfer_workbook_path",
-    "database_transfer_config_workbook_path",
 ]

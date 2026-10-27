@@ -1,6 +1,8 @@
 # Custom Label Database — current state
 
-**Updated:** 27 October 2026 (Areeb dedupe + mistake fixes)
+**Updated:** 27 October 2026 (Database Transfer removed)
+
+**27 Oct 2026 — Database Transfer removed:** Folder `Database Transfer/` (Workbook + Configuration Workbook), `backups/database-transfer/`, `scripts/sync_database_transfer.py`, and path helpers are gone. Fill no longer syncs an Excel upload mirror. Live catalog remains the CSVs under `database/`. Locked 2026-10-27 (replaces the 2026-09-25 sync lock).
 
 **27 Oct 2026 — Areeb dedupe + mistake fixes:** `Custom_Label_Database (Areeb).csv`. One row per Custom Label (137,365 → 134,182; 3,138 groups; 3,183 rows dropped). Keep strongest: Custom Label token match first, then long supplier Gender Apparel over short canonical, then fill count, then first. Fixed 36 remaining `K-*` youth rows still Mens → Kids / youth size; 37 lone Back Center among Front-majority mock+colour siblings → Front Center (includes `M260-P3-36490`, code `B4`→`F4`). `K-T-RED-Y2XL-YES` kept Kids / 14-15 Years. Live CSV not edited. NocoDB not updated. Backup `backups/custom-label/Custom_Label_Database (Areeb)_preDedupe_20261027_153315.csv`. Script `scripts/dedupe_areeb_cl.py`. No Database Transfer sync.
 
