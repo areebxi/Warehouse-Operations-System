@@ -2,6 +2,14 @@
 
 Facts and locked lessons. Snapshot numbers that can drift are dated. Policy that must not be forgotten is also in `.cursor/rules/`.
 
+## Areeb Custom Label dedupe 2026-10-27
+
+Supervisor asked to collapse duplicates on `Custom_Label_Database (Areeb).csv` and keep the strongest correct row. Keep order: token match to Custom Label → long supplier Gender Apparel (`FOTL…`, `GILDAN…`) over short canonical (`Kids-T-Shirt`) → most filled key fields → first. Same pass corrected `K-*` youth Mens mistakes and Front-majority sibling Back Center slips. Script `scripts/dedupe_areeb_cl.py`. Live NocoDB CSV untouched. Second dry-run: 0 dups left.
+
+## ISO paper print sizes A3–A6 2026-10-27
+
+When Size, Custom Label, or Gender Apparel shows paper A3 / A4 / A5 / A6 (not shirt-table Standard A4), Front Center / Back Center are ISO mm: A6 105×148, A5 148×210, A4 210×297, A3 297×420. Pocket 80×100; sleeve 100×100. A leading Custom Label token `A3`/`A4`/… alone is not paper (`A3-F/B-…`, `A3-5000-…`) unless Size/GA or iron-on/sticker/acrylic/photo/transfer confirms it. Applied on `Custom_Label_Database (Areeb).csv`: 389 matched rows; 63 slots rewritten (61 body, 2 pocket). Owner: `.cursor/rules/custom-label-database/print-sizes.mdc`. Script: `scripts/rewrite_paper_sizes.py`.
+
 ## F/P-F8 and B4 positions 2026-10-23
 
 `F/P` together with `F8` is Front Left Pocket only, 80×100. It is not Front Center plus a pocket. `B4` is Back Center. One Custom Label can carry both tails (`F/P-F8-M-T-BLK-5XL 161121LG-B4-M-T-BLK-5XL`). `F/P` without `F8` stays Front Center plus Front Left Pocket. Rule: `print-sizes.mdc`.
@@ -38,7 +46,7 @@ Warehouse in-house stock on Custom Label is no longer “every FOTL t-shirt”. 
 - FOTL t-shirt (`Category (Areeb)` T-Shirts, not a vest) and `Colour` is on that department’s list (`Mens` / `Womens` / `Kids`). Ladies = Womens. Whole colour cell. Deep Navy is not Navy. Heliconia is Womens and Kids only. Yellow and Bottle Green are Mens (Yellow also not Kids). Sports Grey is Mens and Kids, not Womens.
 - Kids body styles `C800T` and `C8030T` in Black, Lemon Yellow, Light Blue, Light Pink, Red, Sports Grey, White. `C8030T` is Product Type Romper. `C8020T` is not stock.
 
-Plain Database and Packs still use “all FOTL t-shirts” with no colour list. CL filled 2026-09-23: 63,399 Warehouse Stock, 68,367 Supplier On Demand, 458 In House Manufacture. Backup `Custom_Label_Database.bak_20260923_103520.csv`.
+Plain Database and Packs still use “all FOTL t-shirts” with no colour list. CL filled 2026-09-23: 63,399 Warehouse Stock, 68,367 Supplier On Demand, 458 In House Manufacture. Backup `Custom_Label_Database.bak_20260923_103520.csv`. Areeb file rewritten 2026-10-26: 66,864 Warehouse Stock, 69,996 Supplier On Demand, 470 In House Manufacture, 31 blank. Blank Department uses the Gender Apparel prefix. Gildan-branded `C800T` is not warehouse stock.
 
 ## Size-only acrylic SKU 2026-09-22
 
@@ -112,13 +120,9 @@ PE sizes are often letters (`S`/`M`/`L`). DB sizes are often words (`Small`/`Med
 
 ## Duplicates
 
-Duplicate **Custom Labels are normal** in this file (same label, extra copies, sometimes richer vs seed-only). Exact full-row duplicates were stripped once from the original Excel (~8.4k, then ~168 more). **Same-label different-identity rows were not auto-merged** (supervisor declined that pass).
+**Areeb file (2026-10-27):** unique Custom Labels after supervisor dedupe — see `## Areeb Custom Label dedupe 2026-10-27` and `.cursor/rules/custom-label-database/duplicates.mdc`. Do not re-merge unless asked.
 
-On 24 Aug 2026, 29 rows were appended: 13 truly new labels, 16 copies of labels already in the file (`M51-37686` pasted twice in the tail). Supervisor: **leave duplicates in place** and fill other columns.
-
-Do not merge, delete, or “dedupe” unless asked.
-
-Colour-only “conflicts” are often abbreviation vs full name (`Dark Heather` vs `Dark Heather Grey`). Navy / Royal families were **left as distinct colours** on purpose.
+Live NocoDB CSV may still hold same-label copies; exact full-row duplicates were stripped once historically from the original Excel. Colour-only “conflicts” are often abbreviation vs full name (`Dark Heather` vs `Dark Heather Grey`). Navy / Royal families were **left as distinct colours** on purpose.
 
 ---
 

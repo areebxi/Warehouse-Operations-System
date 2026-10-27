@@ -1,8 +1,8 @@
 """Load the three grouping catalogs (read-only).
 
 CL file = Areeb reference (`cl_areeb_csv_path`), not the live NocoDB export.
-CL key = after first dash → Custom Label; if the SKU has no dash, whole SKU
-(not universal resolve_label).
+CL key = after first dash → Custom Label (case-sensitive); if the SKU has no
+dash, whole SKU (not universal resolve_label).
 Plain key = till last dash or whole SKU → SKU.
 Packs key = whole SKU → Channel Child SKU.
 Plain / Packs use disk cache (see catalog_cache.py).
@@ -17,7 +17,7 @@ from typing import Mapping, Optional
 from shared import cl_columns as clc
 from shared import paths as wh
 from shared.areeb_taxonomy import cell
-from shared.cl_sku_match import key_after_first_dash, key_till_last_dash
+from shared.cl_sku_match import key_after_first_dash, key_till_last_dash, normalize_label
 
 from catalog_cache import load_xlsx_index
 
@@ -43,6 +43,16 @@ def _index_rows(rows: list[dict[str, str]], key_col: str) -> dict[str, dict[str,
     return idx
 
 
+def _index_cl_rows(rows: list[dict[str, str]]) -> dict[str, dict[str, str]]:
+    """Custom Label index: exact strip (case-sensitive), first row wins."""
+    idx: dict[str, dict[str, str]] = {}
+    for row in rows:
+        key = normalize_label(row.get(clc.CUSTOM_LABEL))
+        if key and key not in idx:
+            idx[key] = row
+    return idx
+
+
 def load_cl_index(path=None) -> dict[str, dict[str, str]]:
     csv_path = path or wh.cl_areeb_csv_path()
     with csv_path.open(encoding="utf-8-sig", newline="") as f:
@@ -56,7 +66,7 @@ def load_cl_index(path=None) -> dict[str, dict[str, str]]:
             )
             for row in reader
         ]
-    return _index_rows(rows, clc.CUSTOM_LABEL)
+    return _index_cl_rows(rows)
 
 
 @dataclass
@@ -67,11 +77,11 @@ class Catalogs:
     absolute: dict[str, dict[str, str]] = field(default_factory=dict)
 
     def lookup_cl(self, sku: object) -> Optional[dict[str, str]]:
-        after = _fold(key_after_first_dash(sku))
+        after = normalize_label(key_after_first_dash(sku))
         if after:
             return self.cl.get(after)
         # Supervisor 2026-09-22: no-dash SKUs (A515, …) match Custom Label whole.
-        whole = _fold(sku)
+        whole = normalize_label(sku)
         if whole:
             return self.cl.get(whole)
         return None

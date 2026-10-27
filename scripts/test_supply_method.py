@@ -8,6 +8,7 @@ from scripts.test_supply_method_cl import (
     test_cl_colour_gate_and_body_suits,
     test_fotl_tees_are_warehouse,
     test_gildan_and_everything_else_on_demand,
+    test_blank_areeb_uses_gender_apparel,
     test_iron_on_and_sticker_in_house_on_cl_only,
     test_normalize_stock_type,
 )
@@ -16,6 +17,7 @@ from scripts.test_supply_method_plain import ROOT, test_fotl_vest_is_not_warehou
 __all__ = [
     "ROOT",
     "test_cl_colour_gate_and_body_suits",
+    "test_blank_areeb_uses_gender_apparel",
     "test_fotl_tees_are_warehouse",
     "test_fotl_vest_is_not_warehouse",
     "test_gildan_and_everything_else_on_demand",
@@ -33,6 +35,7 @@ if __name__ == "__main__":
     test_cl_colour_gate_and_body_suits()
     test_gildan_and_everything_else_on_demand()
     test_iron_on_and_sticker_in_house_on_cl_only()
+    test_blank_areeb_uses_gender_apparel()
     test_normalize_stock_type()
     test_fotl_vest_is_not_warehouse()
     test_harvest_pack_name_is_not_a_vest()

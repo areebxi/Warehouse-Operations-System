@@ -25,7 +25,7 @@ from stock_resolver import (  # noqa: E402
 
 
 class TestResolveStockLevel(unittest.TestCase):
-    def test_mixed_case_sku_suffix_matches_casefolded_map_key(self):
+    def test_exact_case_sku_suffix_matches_map_key(self):
         custom_label_map = {_norm_label("TPC001-NAT-O/S-Yes"): "7299"}
         stock_levels = {"7299": 5}
         sku = "46139LG-TPC001-NAT-O/S-Yes"
@@ -39,7 +39,7 @@ class TestResolveStockLevel(unittest.TestCase):
         self.assertEqual(marketplace, sku)
         self.assertTrue(used_fallback)
 
-    def test_lowercase_map_key_matches_uppercase_sku_suffix(self):
+    def test_case_mismatch_does_not_match(self):
         custom_label_map = {_norm_label("tpc001-nat-o/s-yes"): "7299"}
         stock_levels = {"7299": 0}
         sku = "46139LG-TPC001-NAT-O/S-YES"
@@ -48,13 +48,13 @@ class TestResolveStockLevel(unittest.TestCase):
             sku, stock_levels, custom_label_map
         )
 
-        self.assertEqual(level, 0)
-        self.assertEqual(effective, "7299")
-        self.assertTrue(used_fallback)
+        self.assertEqual(level, -1)
+        self.assertEqual(effective, "46139LG")
+        self.assertFalse(used_fallback)
 
 
 class TestLoadCustomLabelStockMap(unittest.TestCase):
-    def test_first_wins_for_case_only_duplicates(self):
+    def test_case_only_duplicates_are_separate_keys(self):
         with tempfile.TemporaryDirectory() as tmp:
             csv_path = Path(tmp) / "labels.csv"
             with open(csv_path, "w", encoding="utf-8", newline="") as handle:
@@ -73,7 +73,13 @@ class TestLoadCustomLabelStockMap(unittest.TestCase):
                 path=csv_path, log=lambda _msg: None
             )
 
-        self.assertEqual(mapping, {_norm_label("TPC001-NAT-O/S-Yes"): "1111"})
+        self.assertEqual(
+            mapping,
+            {
+                "TPC001-NAT-O/S-Yes": "1111",
+                "tpc001-nat-o/s-yes": "2222",
+            },
+        )
         self.assertEqual(empty_ids, set())
 
     def test_tracks_labels_with_blank_btc_sku(self):

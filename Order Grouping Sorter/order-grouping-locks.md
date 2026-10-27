@@ -48,7 +48,7 @@ Grouping **never guesses**. A field is used only when the value is definite. If 
 | **unmatched** | One process file named **`unmatched`**. Floor processes it **manually this run**. Then we **investigate why** it failed a definite match and **tighten the rule or catalog** so the next run can match it. Not mixed into `today-…` piles. |
 | Same order | If any line fails a required match, the **whole order** goes to `unmatched`. |
 
-**SKU match keys (entire-cell, casefold).** Each database uses **one** key rule — no numeric stripping, no cross-key guessing.
+**SKU match keys (entire-cell; CL case-sensitive locked 2026-10-27; Plain/Packs/Absolute still casefold).** Each database uses **one** key rule — no numeric stripping, no cross-key guessing.
 
 | Source | File | Key from Item SKU | Example Item SKU | Key matched in DB |
 |---|---|---|---|---|

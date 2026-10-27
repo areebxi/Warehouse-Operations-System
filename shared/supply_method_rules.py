@@ -64,6 +64,17 @@ _DEPT_KEY = {
 }
 _VEST_RE = re.compile(r"\b(?:vests?|tanks?|camisoles?)\b", re.I)
 _BODY_STYLE_RE = re.compile(r"\b(?:C800T|C8030T)\b", re.I)
+_GA_DEPT_PREFIX = (
+    ("mens", "mens"),
+    ("men", "mens"),
+    ("womens", "womens"),
+    ("women", "womens"),
+    ("ladies", "womens"),
+    ("lady", "womens"),
+    ("kids", "kids"),
+    ("kid", "kids"),
+    ("youth", "kids"),
+)
 def _fold(value: object) -> str:
     return cell(value).casefold()
 def _compact(value: object) -> str:
@@ -90,6 +101,22 @@ def is_vest_or_tank(
 ) -> bool:
     blob = " ".join((_fold(product_type), _fold(gender_apparel), _fold(description)))
     return bool(_VEST_RE.search(blob))
+def department_key(department: object = "", gender_apparel: object = "") -> str:
+    """Mens / Womens / Kids from Areeb department, else Gender Apparel prefix."""
+    key = _DEPT_KEY.get(_fold(department))
+    if key:
+        return key
+    ga = _fold(gender_apparel)
+    for prefix in ("fruit of the loom ", "fotl ", "folt "):
+        if ga.startswith(prefix):
+            ga = ga[len(prefix) :]
+            break
+    for token, mapped in _GA_DEPT_PREFIX:
+        if ga == token or ga.startswith(token + "-") or ga.startswith(token + " "):
+            return mapped
+    return ""
+
+
 def is_tshirt(
     *,
     category_areeb: object = "",
@@ -125,12 +152,18 @@ def is_fotl(
     if ga in WAREHOUSE_GA_TEES:
         return not cell(brand) or is_fotl_brand(brand)
     return False
-def is_cl_warehouse_tee_colour(department: object, colour: object) -> bool:
+def is_cl_warehouse_tee_colour(
+    department: object,
+    colour: object,
+    gender_apparel: object = "",
+) -> bool:
     """True when this department's locked FOTL tee colour list contains Colour."""
-    key = _DEPT_KEY.get(_fold(department))
+    key = department_key(department, gender_apparel)
     if not key:
         return False
     return _fold(colour) in WAREHOUSE_TEE_COLOURS[key]
+
+
 def is_cl_warehouse_body_suit(
     *,
     department: object = "",
@@ -138,9 +171,13 @@ def is_cl_warehouse_body_suit(
     custom_label: object = "",
     gender_apparel: object = "",
     product_code: object = "",
+    brand: object = "",
 ) -> bool:
-    """Kids C800T / C8030T in the locked body colours. C8020T is not stock."""
-    if _DEPT_KEY.get(_fold(department)) != "kids":
+    """Kids C800T / C8030T in the locked body colours. C8020T and Gildan are not stock."""
+    if is_gildan_brand(brand):
+        return False
+    key = _DEPT_KEY.get(_fold(department))
+    if key and key != "kids":
         return False
     if _fold(colour) not in WAREHOUSE_BODY_COLOURS:
         return False

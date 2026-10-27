@@ -41,7 +41,7 @@ Key live files:
 4. **Print designs** — Queue Design Queues (Packing `--files` sync and/or continuous watcher); print sizes from CL CSV; Pocket overrides + Skip Batches in Queue Configuration Workbook (`database/production-design-queue-manager/`).
 5. **Ship** — Shipping Label Generator from app `DTF Des Files/` (manual; SharedInbox auto-ship later).
 
-Shared matcher: `shared/cl_sku_match.py` — whole SKU → after first dash → till last dash; entire-cell match on Custom Label.
+Shared matcher: `shared/cl_sku_match.py` — whole SKU → after first dash → till last dash; entire-cell **case-sensitive** match on Custom Label (locked 2026-10-27).
 Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets only in `config/ShipStation/.env`. Label create/void stays in Shipping.
 
 ## Apps
@@ -80,7 +80,7 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 
 | Join | Fact |
 |------|------|
-| Item SKU ↔ Custom Label | `shared/cl_sku_match.py` on CL CSV `Custom Label` |
+| Item SKU ↔ Custom Label | `shared/cl_sku_match.py` on CL CSV `Custom Label` (case-sensitive; locked 2026-10-27) |
 | CL CSV | `database/shared/custom_label/Custom_Label_Database.csv` |
 | BTC Product Data | `database/shared/btc_product_data/BTC_Product_Data.csv` (single) |
 | Uneek Product Data | `database/shared/uneek_product_data/Uneek_Product_Data.xlsx` (single) |

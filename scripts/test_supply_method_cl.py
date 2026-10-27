@@ -164,6 +164,28 @@ def test_iron_on_and_sticker_in_house_on_cl_only() -> None:
     assert classify_cl_row(only_design) == SUPPLIER_ON_DEMAND
 
 
+def test_blank_areeb_uses_gender_apparel() -> None:
+    tee = {
+        "Brand": "Fruit Of The Loom",
+        "Gender_Apparel": "Mens-T-Shirt",
+        "Colour": "Azure Blue",
+    }
+    assert classify_cl_row(tee) == WAREHOUSE_STOCK
+    hoodie = {**tee, "Gender_Apparel": "Mens-Hoodie", "Colour": "Black"}
+    assert classify_cl_row(hoodie) == SUPPLIER_ON_DEMAND
+    bundle = {**tee, "Gender_Apparel": "Kids-T-Shirt-Hoodie", "Colour": "Black"}
+    assert classify_cl_row(bundle) == SUPPLIER_ON_DEMAND
+    gildan_body = {
+        "Brand": "GILDAN",
+        "Gender_Apparel": "C800T-BS",
+        "Custom_Label": "C800T-BLK-0-3",
+        "Colour": "Black",
+        "Supplier_Product_Code": "2000",
+        "Department (Areeb)": "Kids",
+    }
+    assert classify_cl_row(gildan_body) == SUPPLIER_ON_DEMAND
+
+
 def test_normalize_stock_type() -> None:
     assert normalize_stock_type("") == ""
     assert normalize_stock_type(None) == ""

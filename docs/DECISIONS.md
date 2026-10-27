@@ -18,11 +18,12 @@ Where locked decisions live. **Do not copy** locks here; link to the owner. Chat
 | Architecture (200-line, layers, boundaries) | `.cursor/rules/global/architecture.mdc`; [`ARCHITECTURE.md`](ARCHITECTURE.md) |
 | SharedInbox handoff | `.cursor/rules/global/shared-inbox.mdc` |
 | ShipStation shared client | `.cursor/rules/global/shipstation.mdc`; `shared/shipstation/`; secrets `config/ShipStation/` |
-| SKU match | `.cursor/rules/global/cl-sku-match.mdc`; `shared/cl_sku_match.py` |
+| SKU match | `.cursor/rules/global/cl-sku-match.mdc`; `shared/cl_sku_match.py` (case-sensitive entire-cell; locked 2026-10-27) |
 | Live CL CSV column names (NocoDB) | `shared/cl_columns.py`; `.cursor/rules/custom-label-database/nocodb.mdc` + `live-files.mdc` (locked 2026-10-04: underscored headers; `BTC SKU`→`Supplier_SKU`; `Supply Method`→`Stock_Type`) |
 | Supply Method | `.cursor/rules/custom-label-database/supply-method.mdc`; `shared/supply_method.py` |
 | Printing Type | `.cursor/rules/custom-label-database/printing-type.mdc`; `shared/printing_type.py` |
-| Print sizes (hoodies, sleeve, F/P-F8, B4) | `.cursor/rules/custom-label-database/print-sizes.mdc` (hoodies 2026-10-22; sleeve 100×100, `F/P`+`F8` = Front Left Pocket, `B4` = Back Center, all written to the Areeb CSV 2026-10-23) |
+| Print sizes (hoodies, sleeve, ISO A3–A6, F/P-F8, B4) | `.cursor/rules/custom-label-database/print-sizes.mdc` (hoodies 2026-10-22; sleeve 100×100 + F/P-F8/B4 on Areeb 2026-10-23; ISO paper A3–A6 Front/Back Center on Areeb 2026-10-27) |
+| Areeb Custom Label dedupe keep-rule | `.cursor/rules/custom-label-database/duplicates.mdc` (locked 2026-10-27: token match → long supplier GA → fill count → first; `scripts/dedupe_areeb_cl.py`) |
 | Supplier Name | `.cursor/rules/custom-label-database/supplier-name.mdc`; `shared/supplier_name.py` |
 | UID vs product file | `.cursor/rules/custom-label-database/fill-pipeline.mdc` (locked 2026-10-23: colour, garment, image, and product code come from the product file for that UID, not a peer clone) |
 | Taxonomy pick-list | `.cursor/rules/order-grouping-sorter/taxonomy-picklist.mdc`; `shared/taxonomy_*.py`; `database/order-grouping-sorter/taxonomy_picklists.csv` |
@@ -53,3 +54,4 @@ No `docs/contracts/` — shapes already owned elsewhere:
 ## Cross-app architecture locks with no other owner
 
 - **2026-10-04 — Live CL CSV is NocoDB underscored.** Readers use `shared/cl_columns.py`. No exporter header remap. Stand-ins: `BTC SKU`→`Supplier_SKU`, `Supply Method`→`Stock_Type` with `normalize_stock_type` (Order on Demand→Supplier On Demand; Seasonal/Non-Seasonal→Warehouse Stock; blank stays blank). Owner: `.cursor/rules/custom-label-database/nocodb.mdc` + `supply-method.mdc` + `Custom Label Database/docs/HANDOFF.md`.
+- **2026-10-27 — CL SKU match is case-sensitive.** Entire-cell Custom Label join no longer casefolds. Owner: `.cursor/rules/global/cl-sku-match.mdc`; `shared/cl_sku_match.py`. Sorter CL finish keys use the same case rule (stricter key order unchanged).

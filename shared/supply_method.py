@@ -5,6 +5,7 @@ Supervisor lock 2026-09-09, tightened for Custom Label on 2026-09-23.
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from shared import cl_columns as clc
@@ -77,11 +78,39 @@ def classify_supply_method(
     return SUPPLIER_ON_DEMAND
 
 
+_CL_NOT_TEE = re.compile(r"hoodie|sweat|vest|tank|camisole", re.I)
+
+
+def _cl_listed_tee(row: dict[str, Any]) -> bool:
+    """T-SHIRTS category, or a blank category whose Gender Apparel is a tee."""
+    ga = row.get(clc.GENDER_APPAREL)
+    ptype = row.get(clc.PRODUCT_TYPE_AREEB)
+    if is_tshirt(
+        category_areeb=row.get(clc.CATEGORY_AREEB),
+        product_type=ptype,
+        gender_apparel=ga,
+    ):
+        return True
+    if cell(row.get(clc.CATEGORY_AREEB)) or _CL_NOT_TEE.search(cell(ga)):
+        return False
+    if is_vest_or_tank(product_type=ptype, gender_apparel=ga):
+        return False
+    name = cell(ga)
+    if name in WAREHOUSE_GA_TEES:
+        return True
+    folded = name.casefold()
+    return "t-shirt" in folded or folded.endswith(" t") or folded.endswith("-t")
+
+
 def classify_cl_row(row: dict[str, Any]) -> str:
-    """CL colour gate. Plain / Packs stay on classify_plain_row / classify_packs_row."""
+    """CL colour gate. Plain / Packs stay on classify_plain_row / classify_packs_row.
+
+    Blank Department / Category (Areeb) still use Gender Apparel for FOTL tees.
+    """
     gender_apparel = row.get(clc.GENDER_APPAREL)
     custom_label = row.get(clc.CUSTOM_LABEL)
     sku = row.get(clc.WAREHOUSE_SKU) or row.get("SKU")
+    brand = row.get(clc.BRAND)
     if is_in_house_text(gender_apparel, custom_label, sku):
         return IN_HOUSE_MANUFACTURE
     if is_cl_warehouse_body_suit(
@@ -90,17 +119,16 @@ def classify_cl_row(row: dict[str, Any]) -> str:
         custom_label=custom_label,
         gender_apparel=gender_apparel,
         product_code=row.get(clc.SUPPLIER_PRODUCT_CODE),
+        brand=brand,
     ):
         return WAREHOUSE_STOCK
     if (
-        is_fotl(brand=row.get(clc.BRAND), gender_apparel=gender_apparel)
-        and is_tshirt(
-            category_areeb=row.get(clc.CATEGORY_AREEB),
-            product_type=row.get(clc.PRODUCT_TYPE_AREEB),
-            gender_apparel=gender_apparel,
-        )
+        is_fotl(brand=brand, gender_apparel=gender_apparel)
+        and _cl_listed_tee(row)
         and is_cl_warehouse_tee_colour(
-            row.get(clc.DEPARTMENT_AREEB), row.get(clc.COLOUR)
+            row.get(clc.DEPARTMENT_AREEB),
+            row.get(clc.COLOUR),
+            gender_apparel=gender_apparel,
         )
     ):
         return WAREHOUSE_STOCK

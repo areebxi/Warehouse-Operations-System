@@ -12,7 +12,7 @@ Source of truth: `Order Grouping Sorter/order-grouping-locks.md`. Do not guess. 
 
 | Catalog | Key |
 |---------|-----|
-| CL | **After first dash** → `Custom Label`. **No dash → whole SKU** (`A515`). |
+| CL | **After first dash** → `Custom Label` (**case-sensitive**). **No dash → whole SKU** (`A515`). |
 | Plain | **Till last dash** or whole SKU → `SKU` |
 | Absolute | **Till last dash** or whole SKU → Absolute Product Data **Stock Code** |
 | Packs | **Whole SKU** → `Channel Child SKU` |

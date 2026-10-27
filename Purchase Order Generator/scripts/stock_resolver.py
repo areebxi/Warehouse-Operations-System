@@ -80,7 +80,7 @@ def load_custom_label_stock_map(
     Load Custom_Label_Database.csv (or override path).
 
     Returns:
-        mapping: Custom Label (casefold) → BTC SKU
+        mapping: Custom Label (exact, stripped) → BTC SKU
         labels_missing_stock_id: labels present with blank BTC SKU
     """
     csv_path = Path(path) if path is not None else _default_cl_path()
@@ -155,8 +155,7 @@ def not_found_status(
     from shared.cl_sku_match import match_keys
 
     for candidate in match_keys(original):
-        key = candidate.casefold()
-        if key in labels_missing_stock_id:
+        if candidate in labels_missing_stock_id:
             return STATUS_CUSTOM_LABEL_MISSING_STOCK_ID
 
     if "-" not in original:

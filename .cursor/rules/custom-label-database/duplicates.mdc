@@ -1,12 +1,14 @@
 ---
-description: Keep duplicate Custom Labels unless asked to merge
+description: Duplicate Custom Labels — keep unless asked; Areeb keep-rule when merging
 alwaysApply: false
 globs: "Custom Label Database/**"
 ---
 
 # Duplicates and seed drift
 
-Duplicate Custom Labels are **normal**. Do not merge, collapse, or delete copies unless asked. Same-label rows may differ (full BTC row vs seed-only paste).
+Duplicate Custom Labels used to be **normal**. Do not merge, collapse, or delete copies unless asked. Same-label rows may differ (full BTC row vs seed-only paste).
+
+**Areeb dedupe** (locked 2026-10-27, supervisor asked): one row per Custom Label on `Custom_Label_Database (Areeb).csv` via `scripts/dedupe_areeb_cl.py`. Keep strongest: (1) Custom Label token match (`K-T` + `Y2XL` → Kids / 14-15 Years beats Mens); (2) long supplier Gender Apparel (`FOTL…`, `GILDAN…`) over short canonical (`Kids-T-Shirt`); (3) most filled key fields; (4) first row. Also fixes remaining `K-*` youth rows still tagged Mens, and sole Back Center among Front-majority same mock+colour siblings → Front Center (`B4`→`F4`). Live NocoDB CSV is not touched by that script. Do not re-run unless asked.
 
 Do not auto-fix seed drift without asking: apostrophes in Gender Apparel, `Dark Heather` vs `Dark Heather Grey`, Size `3-6 Months` vs `0-3` on a `0>3` label, Navy/Royal colour families.
 

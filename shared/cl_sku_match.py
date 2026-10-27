@@ -1,7 +1,7 @@
 """
 Universal Custom Label match keys.
 
-Against Custom Label (entire cell, casefold), try in order:
+Against Custom Label (entire cell, case-sensitive after strip), try in order:
   1. whole Item SKU
   2. after first dash
   3. till last dash (everything before the last dash)
@@ -11,7 +11,7 @@ No short-token skip. First entire-cell hit wins.
 
 from __future__ import annotations
 
-from typing import Hashable, Iterable, Mapping, MutableMapping, Optional, Sequence, TypeVar
+from typing import Hashable, Iterable, Mapping, Optional, TypeVar
 
 T = TypeVar("T")
 
@@ -46,30 +46,28 @@ def key_till_last_dash(item_sku: object) -> str:
 
 
 def match_keys(item_sku: object) -> list[str]:
-    """Ordered unique candidate keys (original casing preserved for display)."""
+    """Ordered unique candidate keys (original casing preserved)."""
     whole = _as_sku_str(item_sku)
     if not whole:
         return []
     keys: list[str] = []
     seen: set[str] = set()
     for candidate in (whole, key_after_first_dash(whole), key_till_last_dash(whole)):
-        if not candidate:
+        if not candidate or candidate in seen:
             continue
-        norm = candidate.casefold()
-        if norm in seen:
-            continue
-        seen.add(norm)
+        seen.add(candidate)
         keys.append(candidate)
     return keys
 
 
 def normalize_label(value: object) -> str:
+    """Strip only; casing preserved (case-sensitive CL index key)."""
     if value is None:
         return ""
     s = str(value).strip()
     if not s or s.lower() in ("nan", "none"):
         return ""
-    return s.casefold()
+    return s
 
 
 def build_label_index(
@@ -78,7 +76,7 @@ def build_label_index(
     ids: Optional[Iterable[Hashable]] = None,
 ) -> dict[str, Hashable]:
     """
-    Map casefolded Custom Label -> first associated id (or 0-based index).
+    Map Custom Label (exact, stripped) -> first associated id (or 0-based index).
 
     Entire-cell match only; first row wins on duplicate labels.
     """
@@ -104,14 +102,13 @@ def resolve_label(
     index: Mapping[str, T],
 ) -> Optional[str]:
     """
-    Return the casefolded Custom Label key that matched, or None.
+    Return the Custom Label key that matched (exact casing), or None.
 
     Tries match_keys in order against the index (entire-cell).
     """
     for candidate in match_keys(item_sku):
-        key = candidate.casefold()
-        if key in index:
-            return key
+        if candidate in index:
+            return candidate
     return None
 
 
@@ -119,7 +116,7 @@ def resolve_from_map(
     item_sku: object,
     mapping: Mapping[str, T],
 ) -> Optional[T]:
-    """Resolve Item SKU against a casefolded-key mapping; return mapped value."""
+    """Resolve Item SKU against an exact-key mapping; return mapped value."""
     key = resolve_label(item_sku, mapping)
     if key is None:
         return None

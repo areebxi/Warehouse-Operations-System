@@ -8,13 +8,13 @@ Second step in the pipeline: **enrich** packing data by matching Item SKU to the
 
 - Read step-1 output CSV (typically `Output/1_fetch_input_csv_{token}.csv`) and Data/Workbook.xlsx sheet **"CL Database"**.
 - For each row, derive a **lookup key** from the **Item SKU** cell (see rule below).
-- **Exact match** that key to the **Custom Label** column in "CL Database" (trimmed, **case-insensitive**).
+- **Exact match** that key to the **Custom Label** column in "CL Database" (trimmed, **case-sensitive**).
 - Append **ten columns** in this order: Process and Item Number, Gender Apparel, Size, Colour, Picture Name, Position, Customise, Prime, Apparel Image, Logo/Design Image. Fill from the matching CL Database row, or leave empty if no match.
 - Write result to `Output/2_enrich_cl_lookup_{token}.csv` by default (you can override the output path).
 
 ## Lookup key from Item SKU (two-step)
 
-Matching is **exact** and **case-insensitive**. Rows that match in an earlier step are filled and kept separate; only rows that did not match are tried in later steps.
+Matching is **exact** and **case-sensitive**. Rows that match in an earlier step are filled and kept separate; only rows that did not match are tried in later steps.
 
 **Step 1 — After first dash (CL Database):** For each row, take the substring **after the first dash** in Item SKU. Use this as the lookup key. Match against the "Custom Label" column in "CL Database". Rows that match are filled from the CL Database row.
 

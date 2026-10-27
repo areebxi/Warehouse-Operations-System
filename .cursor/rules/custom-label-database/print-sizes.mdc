@@ -28,6 +28,15 @@ Kids ages: 3-4 Years and YXS → XS; 5-6 Years and YS → S; 7-8 Years and YM �
 
 Pocket = 80×100. **Sleeve = 100×100** (locked 2026-10-23): any slot whose Position Name contains `sleeve` (`Sleeve`, `Right Sleeve`), blank slots included. Front and Back share the same mm. Position names come from DB `Print Positions`, not Size Ref suffixes. Applied on `Custom_Label_Database (Areeb).csv`.
 
+**ISO paper A3–A6** (locked 2026-10-27): when the row is paper size A3 / A4 / A5 / A6 — not the shirt-table “Standard A4” band — Front Center / Back Center use ISO mm. Pocket stays 80×100; sleeve stays 100×100. Other positions stay. Detect in order: `Size` exact (`A4`) or paper token (`A5 15mm`, `A5-Rectangle`); then a dash token on `Custom Label` that is exactly `A3`/`A4`/`A5`/`A6` (a **leading** token only counts when Size/GA already shows paper, or Custom Label / Gender Apparel has iron-on / sticker / acrylic / photo / transfer — so `A3-F/B-…` and `A3-5000-…` stay garments); then a paper token in Gender Apparel. Applied on `Custom_Label_Database (Areeb).csv` via `scripts/rewrite_paper_sizes.py`.
+
+| Paper | Front / Back Center |
+|-------|---------------------|
+| A6 | 105×148 |
+| A5 | 148×210 |
+| A4 | 210×297 |
+| A3 | 297×420 |
+
 **F8 / F8A** (locked 2026-10-20): a Custom Label with its own dash token `F8` or `F8A` is a pocket. `F80` is not. Single filled position → `Print Positions` and `Position 1 Name` = `Front Left Pocket`, **80×100**, kids included (the old kids 65×80 chart is retired).
 
 **F/P-F8 and B4** (locked 2026-10-23): `F/P` together with `F8` is **Front Left Pocket** only, 80×100 — not Front Center plus a pocket. `B4` is **Back Center**. One cell can hold both tails (`F/P-F8-M-T-BLK-5XL 161121LG-B4-M-T-BLK-5XL`). Applied on `Custom_Label_Database (Areeb).csv`. `F/P` without `F8` stays Front Center plus Front Left Pocket.

@@ -80,7 +80,7 @@ def build_cl_lookup(cl_df: pd.DataFrame) -> dict:
         label = row.get(CUSTOM_LABEL_COL)
         if pd.isna(label) or label == "" or str(label).lower() == "nan":
             continue
-        key = str(label).casefold()
+        key = str(label).strip()
         if key in lookup:
             continue
         entry = {}
@@ -123,7 +123,7 @@ def apply_cl_enrichment(
 
         strategy = "whole"
         for i, candidate in enumerate(keys):
-            if candidate.casefold() == matched_key:
+            if candidate == matched_key:
                 strategy = strategy_names[min(i, 2)]
                 break
         matched_by_strategy[strategy] = matched_by_strategy.get(strategy, 0) + 1
