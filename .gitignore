@@ -37,6 +37,9 @@ Shipping Label Generator/.env
 # Sorter Plain/Packs index cache (regenerated on load)
 database/order-grouping-sorter/catalog_cache/
 
+# Local ShipStation / script JSON caches (regenerated)
+scripts/_cache/
+
 # --- Python / tooling ---
 __pycache__/
 *.py[cod]
@@ -111,6 +114,7 @@ runtime/**
 
 # --- Old snapshot trees ---
 **/Versions/
+Old Workbooks/
 
 # --- Repo-root snapshots (data + old code). Keep the map and doc archives. ---
 backups/*
