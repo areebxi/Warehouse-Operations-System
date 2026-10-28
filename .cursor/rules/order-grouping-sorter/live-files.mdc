@@ -6,19 +6,20 @@ globs: Order Grouping Sorter/**
 
 # Sorter live files
 
-Sorter configuration that grouping **reads** (it does not overwrite catalogs). Paths via `shared.paths`. Sorter DB: `database/order-grouping-sorter/` — `taxonomy_picklists.csv` (Hashim #038) and `fixed_batches.csv` (B80/B100/… criteria).
+Sorter configuration that grouping **reads** (it does not overwrite catalogs). Paths via `shared.paths`. Sorter DB: `database/order-grouping-sorter/` — `taxonomy_picklists.csv` (Hashim #038), `areeb_column_dropdowns.csv` (dropdown values), and `fixed_batches.csv` (B80/B100/… criteria).
 
 | Path | Role |
 |---|---|
 | `database/order-grouping-sorter/taxonomy_picklists.csv` | Closed pick-lists. New products pick from these values. Do not invent. |
+| `database/order-grouping-sorter/areeb_column_dropdowns.csv` | Areeb column dropdown `Column,Value` lists (`sorter_areeb_column_dropdowns_path`). Not read on a grouping run. |
 | `database/order-grouping-sorter/fixed_batches.csv` | Fixed batch codes + match criteria. Source for sorter `B80`/`B100`/… naming. |
-| `database/order-grouping-sorter/leftover_batches/{YYYY-MM-DD}.csv` | Leftover `B1`/`B2`… criteria for that run date (same columns as fixed). Written each sorter run; overwritten that day. |
 | `database/order-grouping-sorter/catalog_cache/*.pkl` | Plain/Packs index cache (`sorter_catalog_cache_path`). Rebuild when source file mtime/size changes. Not committed. |
+| `Logs/Order Grouping Sorter/leftover_batches/{YYYY-MM-DD}.csv` | Leftover `B1`/`B2`… criteria for that run date (same columns as fixed). Written each sorter run; overwritten that day (`sorter_leftover_batches_path`). |
 | `database/shared/custom_label/Custom_Label_Database (Areeb).csv` | Printed finish for grouping (temporary, locked 2026-10-09). After first dash → Custom Label; no-dash SKU → whole Custom Label. Four Areeb columns are filled here. Live NocoDB export stays `Custom_Label_Database.csv` for other apps. |
 | `database/shared/plain/Plain Database.csv` | Plain finish (till last dash or whole SKU → SKU) |
 | `database/shared/packs/Packs Database.csv` | Plain finish (whole SKU → Channel Child SKU) |
 | `config/ShipStation/.env` | Shared ShipStation `REAL_API_*` |
-| `Logs/Order Grouping Sorter/` | Dry-run reports |
+| `Logs/Order Grouping Sorter/` | Dry-run reports (+ leftover_batches/) |
 | `Order Packing List Generator/Input/{DD-MM-YYYY}/{nth} Shift/` | Write target on `--run` (`sorter_input_csv_path`). Nth `--run` of the day = nth shift (locked 2026-10-14). Replaces CSVs in that shift folder only. Fixed-batch files are `B100-{6 fields}.csv` / `B80-{6 fields}.csv` / … ; leftover `B1-{6 fields}.csv` / `B2-…` (skip reserved). `RESEND` / `UNMATCHED` land there. 3rd shift and later: overdue, blank, and the run-day ship-by, plus tag `1004- Personalised Design-Ready-` when ship-by is later (locked 2026-10-22). A later ship-by without that tag stays out. |
 
 Removed from the sorter app folder (2026-10-28): `Manually Made Files/`, `Missed Orders/`, `Today's Manually Made Files/`. Neutral mock assets live at warehouse-root `Netural Database/` (moved out of the sorter folder; spelling as on disk).

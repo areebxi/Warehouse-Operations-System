@@ -7,9 +7,10 @@ Living:
 | [`../../Order Grouping Sorter/AGENTS.md`](../../Order%20Grouping%20Sorter/AGENTS.md) | Domain handbook |
 | [`HANDOFF.md`](HANDOFF.md) | Snapshot / continue |
 | [`FINDINGS.md`](FINDINGS.md) | Locked facts from dry-runs |
-| [`../../Order Grouping Sorter/order-grouping-locks.md`](../../Order%20Grouping%20Sorter/order-grouping-locks.md) | Grouping locks |
-| [`../../Order Grouping Sorter/order-grouping-criteria.csv`](../../Order%20Grouping%20Sorter/order-grouping-criteria.csv) | CEO review table |
-| [`../../Order Grouping Sorter/order-grouping-progress.xlsx`](../../Order%20Grouping%20Sorter/order-grouping-progress.xlsx) | Progress workbook |
+| [`order-grouping-locks.md`](order-grouping-locks.md) | Grouping locks |
+| [`fixed_batches.md`](fixed_batches.md) | Pointer to live fixed-batches CSV |
+| [`leftover_batches.md`](leftover_batches.md) | Pointer to dated leftover-batches CSVs under Logs |
+| [`../../Order Grouping Sorter/reference/order-grouping-criteria.csv`](../../Order%20Grouping%20Sorter/reference/order-grouping-criteria.csv) | CEO review table |
 
 Policy: parent `.cursor/rules/order-grouping-sorter/`.
 

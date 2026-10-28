@@ -11,7 +11,7 @@ A **grouping run** only **reads** the three catalogs (the sorter does not overwr
 
 **Chat run is sorter only (locked 2026-10-20).** “run the group sorter” / “group my awaiting shipment” / “run the sorter” is `--run` on the current `awaiting_shipment` pool. It does not run `seed_catalog_misses.py`. An order still awaiting is written again even if today’s earlier shift CSV already has it (same as 2026-10-14). If the shift was not named, ask and do not run. **add unmatched** is separate: `scripts/seed_catalog_misses.py` only (Areeb via `add_labels.py --csv`; backup first; peer or definite supplier; no guessing; no `--all-spc`; no Packing Input). The 2026-10-18 catalog-before-every-run step is retired.
 
-**CEO review table:** `order-grouping-criteria.csv` — one row per implemented rule, in run order. Columns: Stage, Criterion, Implemented logic, Plain/Printed split, Source type, Live file or API, CL / Plain / Packs column headers, ShipStation or config field, If blank or mixed, Filename / output.
+**CEO review table:** `Order Grouping Sorter/reference/order-grouping-criteria.csv` — one row per implemented rule, in run order. Columns: Stage, Criterion, Implemented logic, Plain/Printed split, Source type, Live file or API, CL / Plain / Packs column headers, ShipStation or config field, If blank or mixed, Filename / output.
 
 ## Dimensions vs example values
 
@@ -247,7 +247,7 @@ Fixed-batch CSVs live in the shift folder (`Input/{date}/{1st|2nd|3rd} Shift/B10
 
 **B40 Gender Apparel locked 2026-10-07:** `gildan_tee` also matches when Category is T-Shirts and Gender Apparel contains `GILDAN` (case-insensitive), even if Brand is blank/other. Still also Brand = Gildan, or style token `5000` / `G5000` in Item SKU / Gender Apparel.
 
-**Leftover batches CSV locked 2026-09-23:** each sorter run (dry-run and `--run`) writes `database/order-grouping-sorter/leftover_batches/{YYYY-MM-DD}.csv` with the same columns as `fixed_batches.csv`. One file per run date; overwritten on the next sorter run for that date. Rows = leftover `B1`/`B2`/… piles only (Graph + 30-chain slots). Fixed-batch codes are not listed. Path: `shared.paths.sorter_leftover_batches_path`. Writer: `Order Grouping Sorter/scripts/leftover_batches.py`.
+**Leftover batches CSV locked 2026-09-23 (path 2026-10-28):** each sorter run (dry-run and `--run`) writes `Logs/Order Grouping Sorter/leftover_batches/{YYYY-MM-DD}.csv` with the same columns as `fixed_batches.csv`. One file per run date; overwritten on the next sorter run for that date. Rows = leftover `B1`/`B2`/… piles only (Graph + 30-chain slots). Fixed-batch codes are not listed. Path: `shared.paths.sorter_leftover_batches_path`. Writer: `Order Grouping Sorter/scripts/leftover_batches.py`.
 
 **Shift tags locked 2026-10-14:** our ShipStation shift tags, exact names: `001-1st Shift` (1st), `002-2nd Shift` (2nd), `003-3rd Shift` (3rd), `004-4th Shift` (4th), `005-5th Shift` (5th). Use these when the supervisor asks to put a shift tag on orders. Sorter intake still ignores these tags when choosing the shift folder (see shift fill). Owner: `supervisor-chat.mdc` standing term + this file.
 

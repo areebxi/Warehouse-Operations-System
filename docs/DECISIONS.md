@@ -6,8 +6,8 @@ Where locked decisions live. **Do not copy** locks here; link to the owner. Chat
 
 | Area | Owner |
 |------|--------|
-| Grouping locks + standing terms | [`Order Grouping Sorter/order-grouping-locks.md`](../Order%20Grouping%20Sorter/order-grouping-locks.md); `.cursor/rules/order-grouping-sorter/standing-terms.mdc` |
-| Grouping lock persist hook (chat) | `.cursor/rules/global/supervisor-chat.mdc` (always-on: write locks + progress xlsx same turn) |
+| Grouping locks + standing terms | [`docs/order-grouping-sorter/order-grouping-locks.md`](order-grouping-sorter/order-grouping-locks.md); `.cursor/rules/order-grouping-sorter/standing-terms.mdc` |
+| Grouping lock persist hook (chat) | `.cursor/rules/global/supervisor-chat.mdc` (always-on: write locks same turn) |
 | Sorter app policy / live paths | `.cursor/rules/order-grouping-sorter/` (2026-10-28: no `Manually Made Files` / `Missed Orders` / `Today's Manually Made Files` under the sorter app; `Netural Database/` at warehouse root) |
 | Custom Label policy / fills | `.cursor/rules/custom-label-database/` |
 | Packing policy | `.cursor/rules/order-packing-list-generator/` |
@@ -53,7 +53,7 @@ No `docs/contracts/` — shapes already owned elsewhere:
 
 - Parent `AGENTS.md` ↔ `global/warehouse-system-map.mdc`: map is the **always-on router stub**; `AGENTS.md` holds layout / pipeline / joins / apps (slimmed 2026-10-02 — do not re-expand the map).
 - Parent `AGENTS.md` ↔ `docs/ARCHITECTURE.md` (pipeline, not-built, approval).
-- Grouping glossary / history: `standing-terms.mdc` ↔ `Order Grouping Sorter/order-grouping-locks.md` (glossary vs decision log — both intentional; do not merge).
+- Grouping glossary / history: `standing-terms.mdc` ↔ `docs/order-grouping-sorter/order-grouping-locks.md` (glossary vs decision log — both intentional; do not merge).
 
 ## Cross-app architecture locks with no other owner
 

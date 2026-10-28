@@ -24,14 +24,19 @@ def sorter_taxonomy_picklists_path(from_path: object | None = None) -> Path:
     return sorter_data_dir(from_path) / "taxonomy_picklists.csv"
 
 
+def sorter_areeb_column_dropdowns_path(from_path: object | None = None) -> Path:
+    """Column,Value rows for Areeb category / product type / style / department dropdowns."""
+    return sorter_data_dir(from_path) / "areeb_column_dropdowns.csv"
+
+
 def sorter_fixed_batches_path(from_path: object | None = None) -> Path:
     """Fixed batch codes + match criteria (B80 / B100 / …). Source for sorter naming."""
     return sorter_data_dir(from_path) / "fixed_batches.csv"
 
 
 def sorter_leftover_batches_dir(from_path: object | None = None) -> Path:
-    """Per-date leftover B1/B2… criteria CSVs (same columns as fixed_batches.csv)."""
-    return sorter_data_dir(from_path) / "leftover_batches"
+    """Per-date leftover B1/B2… criteria CSVs under sorter Logs (same columns as fixed)."""
+    return sorter_logs_dir(from_path) / "leftover_batches"
 
 
 def sorter_catalog_cache_dir(from_path: object | None = None) -> Path:
@@ -53,7 +58,7 @@ def sorter_leftover_batches_path(
     *,
     from_path: object | None = None,
 ) -> Path:
-    """One leftover-batches CSV per run date: leftover_batches/{YYYY-MM-DD}.csv."""
+    """One leftover-batches CSV per run date under Logs: leftover_batches/{YYYY-MM-DD}.csv."""
     if hasattr(run_date, "isoformat"):
         stamp = run_date.isoformat()  # date / datetime
     else:
@@ -79,6 +84,7 @@ __all__ = [
     "sorter_app_dir",
     "sorter_data_dir",
     "sorter_taxonomy_picklists_path",
+    "sorter_areeb_column_dropdowns_path",
     "sorter_fixed_batches_path",
     "sorter_leftover_batches_dir",
     "sorter_leftover_batches_path",

@@ -6,7 +6,7 @@ globs: Order Grouping Sorter/**
 
 # Grouping (v1)
 
-Source of truth: `Order Grouping Sorter/order-grouping-locks.md`. Do not guess. No definite match → whole order `unmatched`. Chat `--run` does not seed the catalog (catalog step removed 2026-10-20; `approval.mdc`). Still-awaiting orders are not skipped for an earlier shift CSV.
+Source of truth: `docs/order-grouping-sorter/order-grouping-locks.md`. Do not guess. No definite match → whole order `unmatched`. Chat `--run` does not seed the catalog (catalog step removed 2026-10-20; `approval.mdc`). Still-awaiting orders are not skipped for an earlier shift CSV.
 
 ## SKU keys (not universal `resolve_label`)
 

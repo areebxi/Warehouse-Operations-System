@@ -1,9 +1,9 @@
 # Order Grouping Sorter — handbook
 
-Domain handbook for the **Warehouse Automation System Engineer**. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/order-grouping-sorter/`. Locks: `order-grouping-locks.md`. Details: `../docs/order-grouping-sorter/`.
+Domain handbook for the **Warehouse Automation System Engineer**. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/order-grouping-sorter/`. Locks: `../docs/order-grouping-sorter/order-grouping-locks.md`. Details: `../docs/order-grouping-sorter/`.
 Current state: `../docs/order-grouping-sorter/HANDOFF.md`, kept as present-tense state, not a log.
 
-Live paths via `shared/paths.py`. A grouping **run** only **reads** CL + Plain Database + Packs. Sorter DB: `database/order-grouping-sorter/` — `taxonomy_picklists.csv` (Hashim #038), `fixed_batches.csv` (B80/B100/… criteria), `leftover_batches/{YYYY-MM-DD}.csv` (written each run for leftover B1/B2…), and `catalog_cache/` (Plain/Packs pickles). Chat “run the group sorter” → `--run` on current `awaiting_shipment` only (no catalog seed; still-awaiting orders are not skipped for an earlier shift). Locked 2026-10-14; catalog step removed 2026-10-20. Chat “add unmatched” runs `scripts/seed_catalog_misses.py` alone. If the shift was not named, ask and do not run yet (every chat and every new session).
+Live paths via `shared/paths.py`. A grouping **run** only **reads** CL + Plain Database + Packs. Sorter DB: `database/order-grouping-sorter/` — `taxonomy_picklists.csv` (Hashim #038), `areeb_column_dropdowns.csv` (Areeb column dropdown values; not read on a grouping run), `fixed_batches.csv` (B80/B100/… criteria), and `catalog_cache/` (Plain/Packs pickles). Leftover criteria: `Logs/Order Grouping Sorter/leftover_batches/{YYYY-MM-DD}.csv`. Chat “run the group sorter” → `--run` on current `awaiting_shipment` only (no catalog seed; still-awaiting orders are not skipped for an earlier shift). Locked 2026-10-14; catalog step removed 2026-10-20. Chat “add unmatched” runs `scripts/seed_catalog_misses.py` alone. If the shift was not named, ask and do not run yet (every chat and every new session).
 
 ## Live vs helpers
 
@@ -13,20 +13,22 @@ Live paths via `shared/paths.py`. A grouping **run** only **reads** CL + Plain D
 | `scripts/tag_shift_orders.py` | Put `001-1st Shift` … `005-5th Shift` on Order #s in named CSVs (parallel addtag) |
 | `scripts/seed_catalog_misses.py` | Chat **add unmatched** only. Not part of “run the group sorter” |
 | `database/order-grouping-sorter/taxonomy_picklists.csv` | Closed Areeb category / product type / product style / department + PE subcategory |
+| `database/order-grouping-sorter/areeb_column_dropdowns.csv` | Areeb column dropdown `Column,Value` lists (`sorter_areeb_column_dropdowns_path`) |
 | `database/order-grouping-sorter/fixed_batches.csv` | Fixed batch codes + match criteria (`B80` / `B100` / …) |
-| `database/order-grouping-sorter/leftover_batches/{YYYY-MM-DD}.csv` | Leftover `B1`/`B2`… criteria for that run date (same columns as fixed; overwritten each sorter run) |
 | `database/order-grouping-sorter/catalog_cache/` | Plain/Packs index pickles (auto; gitignored) |
 | `database/shared/custom_label/Custom_Label_Database (Areeb).csv` | Finish + printed attributes (temporary; four Areeb columns filled). Other apps still use the live NocoDB CSV. |
 | `database/shared/plain/Plain Database.csv` | Plain catalog |
 | `database/shared/packs/Packs Database.csv` | Packs catalog |
 | `config/ShipStation/.env` | Shared ShipStation |
 | `Logs/Order Grouping Sorter/` | Dry-run reports |
+| `Logs/Order Grouping Sorter/leftover_batches/{YYYY-MM-DD}.csv` | Leftover `B1`/`B2`… criteria for that run date (same columns as fixed; overwritten each sorter run) |
 | Packing `Input/{DD-MM-YYYY}/{nth} Shift/` | Write on `--run`. Nth run of the day = nth shift (locked 2026-10-14). Replaces that shift’s CSVs only. `RESEND` / `UNMATCHED` land there. 3rd shift and later: overdue, blank, and the run-day ship-by, plus tag `1004- Personalised Design-Ready-` when ship-by is later (locked 2026-10-22). A later ship-by without that tag stays out |
-| `order-grouping-locks.md` | Grouping lock log |
-| `order-grouping-criteria.csv` | CEO review table |
-| `order-grouping-progress.xlsx` | Progress workbook. Regenerate with `scripts/write_order_grouping_progress.py` |
-| `fixed_batches.md` | Pointer to the live fixed-batches CSV |
-| `leftover_batches.md` | Pointer to dated leftover-batches CSVs |
+| `../docs/order-grouping-sorter/order-grouping-locks.md` | Grouping lock log |
+| `reference/order-grouping-criteria.csv` | CEO review table |
+| `reference/fixed-batches.xlsx` | Warehouse reading sheet (plain language) |
+| `reference/Order Grouping for Packing List.xlsx` | Packing-list grouping reference workbook |
+| `../docs/order-grouping-sorter/fixed_batches.md` | Pointer to the live fixed-batches CSV |
+| `../docs/order-grouping-sorter/leftover_batches.md` | Pointer to dated leftover-batches CSVs under Logs |
 
 ## How work is done
 

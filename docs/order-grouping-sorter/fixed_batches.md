@@ -1,7 +1,7 @@
 # Fixed batches
 
 Live table (codes + Graph criteria):  
-[`database/order-grouping-sorter/fixed_batches.csv`](../database/order-grouping-sorter/fixed_batches.csv)
+[`database/order-grouping-sorter/fixed_batches.csv`](../../database/order-grouping-sorter/fixed_batches.csv)
 
 Meta columns: `batch_code`, `name`, `notes`.
 
@@ -31,7 +31,7 @@ Criteria columns (cell `any` / `x` / blank = do not care), Graph order:
 | sku-contains / sku-not-contains | `;` list; any line. `=M61` = whole dash-separated SKU part; else substring |
 
 Path helper: `shared.paths.sorter_fixed_batches_path`.  
-Loader / match: `scripts/fixed_batches.py` + `grouping.fixed_batch_matches`.
+Loader / match: `Order Grouping Sorter/scripts/fixed_batches.py` + `grouping.fixed_batch_matches`.
 
 Row order = priority: first match wins (locked 2026-09-28). **B10** is ship-to country not `GB`, under the resend rows and above every product batch (locked 2026-10-21). An abroad resend stays in the resend rows. A blank country stays with the UK batches. **B700** is UK Printing Type UV, under B10 and above Dancing Queen. **B6000** / **B6010** are UK plain orders whose Item SKU contains `BG-Chinabag` or `BG125`. **B6020** / **B6050** are UK printed ready-made / personalised `BG-Chinabag`. **B6030** / **B6060** are the same for `BG125` (locked 2026-10-21). `Dancing Queen+Glitter` in a name cell means both words. `gildan_any` is every line a t-shirt and any line a Gildan tee. Dry-run prints `fixed-batch overlaps` for orders that also met a lower row. Plain piles with no fixed batch take `B2000`, `B2100`, `B2200`, `B2500`, `B2600`, `B2700`, … in the order made. `gildan_tee` = Brand Gildan + T-Shirts **or** style token `5000` / `G5000` in Item SKU or Gender Apparel (not a substring of `15000`).
 

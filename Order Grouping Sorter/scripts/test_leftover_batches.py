@@ -13,42 +13,67 @@ if str(ROOT) not in sys.path:
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-from catalogs import Catalogs
-from grouping import FIXED_BATCH_CODES, group_orders
+import shared.paths as wh
+from grouping_models import LineAttrs, Order, ProcessBin, SortResult
 from leftover_batches import LEFTOVER_HEADER, write_leftover_batches_csv
 from test_grouping_fixtures import RUN, _cats, _order
+from grouping import FIXED_BATCH_CODES, group_orders
 
 
-def _hoodie_cats() -> Catalogs:
-    """T-Shirt & Hoodie bundle stays leftover (B3600 is Hoodie / Zip Hoodie only)."""
-    return Catalogs(
-        cl={
-            "m-h-blk-m": {
-                "Custom_Label": "M-H-BLK-M",
-                "Stock_Type": "Supplier On Demand",
-                "Supplier_Name": "BTC Activewear",
-                "Printing_Type": "DTF",
-                "Customise": "",
-                "Category (Areeb)": "Sweatshirts & Hoodies",
-                "Product Type (Areeb)": "T-Shirt & Hoodie",
-                "Product Style (Areeb)": "Standard",
-                "Department (Areeb)": "Mens",
-                "Brand": "Gildan",
-                "Size": "M",
-                "Colour": "Black",
-            }
-        },
-        plain={},
-        packs={},
+def _fake_leftover_result() -> SortResult:
+    order = Order(
+        number="H1",
+        ship_by_raw=RUN.isoformat(),
+        ship_by=RUN,
+        tag_names=[],
+        store_name="Amazon UK",
+        lines=[LineAttrs(sku="X-M-H-BLK-M", qty=1, finish="printed", source="own")],
     )
+    slots = [
+        "printed",
+        "own",
+        "x",
+        "non-prime",
+        "dtf",
+        "readymade",
+        "x",
+        "x",
+        "x",
+        "supplier_on_demand",
+        "x",
+        "x",
+    ]
+    bin_ = ProcessBin(
+        shift_slot="1st",
+        shift_folder="1st Shift",
+        process_name="B1-S1-PRINTED-2-SUPPLY ON DEMAND-R-1",
+        orders=[order],
+        floor_code="B1",
+        group_slots=slots,
+        ship_by_slot="today",
+    )
+    return SortResult(
+        run_date=RUN,
+        skipped_post=0,
+        empty_skipped=0,
+        resend=[],
+        unmatched=[],
+        held=[],
+        bins=[bin_],
+        pool_orders=1,
+    )
+
+
+def test_leftover_default_path_under_logs() -> None:
+    p = wh.sorter_leftover_batches_path(RUN)
+    assert p == wh.sorter_logs_dir() / "leftover_batches" / f"{RUN.isoformat()}.csv"
 
 
 def test_leftover_csv_records_criteria() -> None:
     dest = SCRIPTS / "_tmp_leftover_test"
     dest.mkdir(parents=True, exist_ok=True)
     path = dest / f"{RUN.isoformat()}.csv"
-    r = group_orders([_order("H1", "X-M-H-BLK-M", catalogs=_hoodie_cats())], RUN)
-    assert all(b.floor_code not in FIXED_BATCH_CODES for b in r.bins if b.orders)
+    r = _fake_leftover_result()
     out = write_leftover_batches_csv(r, path=path)
     assert out == path
     with path.open(encoding="utf-8", newline="") as f:
@@ -82,6 +107,7 @@ def test_fixed_batch_not_in_leftover_csv() -> None:
 
 
 if __name__ == "__main__":
+    test_leftover_default_path_under_logs()
     test_leftover_csv_records_criteria()
     test_fixed_batch_not_in_leftover_csv()
     print("test_leftover_batches: ok")

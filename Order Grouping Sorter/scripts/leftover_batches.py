@@ -1,7 +1,7 @@
 """Write per-date leftover batch criteria (B1 / B2 / …).
 
 Same columns as fixed_batches.csv. Live folder:
-database/order-grouping-sorter/leftover_batches/{YYYY-MM-DD}.csv
+Logs/Order Grouping Sorter/leftover_batches/{YYYY-MM-DD}.csv
 """
 
 from __future__ import annotations

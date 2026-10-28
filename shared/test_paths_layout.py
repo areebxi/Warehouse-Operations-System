@@ -34,13 +34,20 @@ def main() -> None:
     assert wh.shared_inbox_dtf_des_root().is_relative_to(root / "runtime" / "SharedInbox")
     assert wh.sorter_app_dir() == root / "Order Grouping Sorter"
     assert wh.sorter_data_dir() == db / "order-grouping-sorter"
+    assert wh.sorter_areeb_column_dropdowns_path() == (
+        db / "order-grouping-sorter" / "areeb_column_dropdowns.csv"
+    )
     assert wh.sorter_catalog_cache_dir() == db / "order-grouping-sorter" / "catalog_cache"
+    assert wh.sorter_areeb_column_dropdowns_path().is_file()
     assert wh.sorter_catalog_cache_path("plain") == (
         db / "order-grouping-sorter" / "catalog_cache" / "plain.pkl"
     )
     assert wh.logs_root() == root / "Logs"
     assert wh.output_root() == root / "Output"
     assert wh.sorter_logs_dir() == root / "Logs" / "Order Grouping Sorter"
+    assert wh.sorter_leftover_batches_dir() == (
+        root / "Logs" / "Order Grouping Sorter" / "leftover_batches"
+    )
     assert wh.packing_output_dir() == root / "Output" / "Order Packing List Generator"
     assert wh.packing_logs_dir() == root / "Logs" / "Order Packing List Generator"
     assert wh.queue_output_dir() == root / "Output" / "Production Design Queue Manager"
