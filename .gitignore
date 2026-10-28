@@ -93,8 +93,6 @@ Order Grouping Sorter/Logs/
 Purchase Order Generator/output/
 
 # --- Order Grouping Sorter live I/O (DB: database/order-grouping-sorter/) ---
-Order Grouping Sorter/Manually Made Files/
-Order Grouping Sorter/Today's Manually Made Files/
 Order Grouping Sorter/scripts/_tmp_*/
 
 # --- Packing app live I/O (DB in database/order-packing-list-generator/) ---

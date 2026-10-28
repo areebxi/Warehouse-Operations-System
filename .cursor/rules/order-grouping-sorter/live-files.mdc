@@ -20,6 +20,7 @@ Sorter configuration that grouping **reads** (it does not overwrite catalogs). P
 | `config/ShipStation/.env` | Shared ShipStation `REAL_API_*` |
 | `Logs/Order Grouping Sorter/` | Dry-run reports |
 | `Order Packing List Generator/Input/{DD-MM-YYYY}/{nth} Shift/` | Write target on `--run` (`sorter_input_csv_path`). Nth `--run` of the day = nth shift (locked 2026-10-14). Replaces CSVs in that shift folder only. Fixed-batch files are `B100-{6 fields}.csv` / `B80-{6 fields}.csv` / … ; leftover `B1-{6 fields}.csv` / `B2-…` (skip reserved). `RESEND` / `UNMATCHED` land there. 3rd shift and later: overdue, blank, and the run-day ship-by, plus tag `1004- Personalised Design-Ready-` when ship-by is later (locked 2026-10-22). A later ship-by without that tag stays out. |
-| `Order Grouping Sorter/Manually Made Files/` | Historical floor exports + Packing output. **Analysis only** — not an intake source. |
+
+Removed from the sorter app folder (2026-10-28): `Manually Made Files/`, `Missed Orders/`, `Today's Manually Made Files/`. Neutral mock assets live at warehouse-root `Netural Database/` (moved out of the sorter folder; spelling as on disk).
 
 Do not import Packing internals. CSV columns copy `CSV_FIELDNAMES` in Packing `orders_to_csv.py`.

@@ -8,7 +8,7 @@ Where locked decisions live. **Do not copy** locks here; link to the owner. Chat
 |------|--------|
 | Grouping locks + standing terms | [`Order Grouping Sorter/order-grouping-locks.md`](../Order%20Grouping%20Sorter/order-grouping-locks.md); `.cursor/rules/order-grouping-sorter/standing-terms.mdc` |
 | Grouping lock persist hook (chat) | `.cursor/rules/global/supervisor-chat.mdc` (always-on: write locks + progress xlsx same turn) |
-| Sorter app policy / live paths | `.cursor/rules/order-grouping-sorter/` |
+| Sorter app policy / live paths | `.cursor/rules/order-grouping-sorter/` (2026-10-28: no `Manually Made Files` / `Missed Orders` / `Today's Manually Made Files` under the sorter app; `Netural Database/` at warehouse root) |
 | Custom Label policy / fills | `.cursor/rules/custom-label-database/` |
 | Packing policy | `.cursor/rules/order-packing-list-generator/` |
 | Queue policy | `.cursor/rules/production-design-queue-manager/` |

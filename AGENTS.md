@@ -16,6 +16,7 @@ When a task names an app, follow that app’s `AGENTS.md` handbook and the paren
 | `Logs/` | All app logs (`Logs/<App Name>/`) |
 | `Output/` | All app outputs (`Output/<App Name>/`) |
 | `Custom Label Database/` | CL scripts/docs only (live CSV in `database/shared/custom_label/`) |
+| `Netural Database/` | Neutral mock / printing reference workbooks + image batch (warehouse-root; spelling as on disk) |
 
 All paths resolve through `shared/paths.py`.
 

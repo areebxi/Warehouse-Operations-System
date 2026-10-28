@@ -28,9 +28,9 @@ Closed lists for category / subcategory / product type / product style in `datab
 
 On-disk names are six fields (`S1-PRINTED-2-WAREHOUSE STOCK-P-1`). **Fixed batches** prefix `B{n}` before shift (`B100-S1-…` / `B100-S2-…`). Long Graph leftover names hit Windows MAX_PATH in Packing Output; this is the fix. 30-chain still peels leftover bins; those values are not in the filename. Priority (field 6, per shift): today first, then prime first, then as files are made. **Shift-first field order locked 2026-09-22**. **Cousin numbers retired 2026-09-23**. **Fixed batch `B` prefix + rename 2026-09-23**.
 
-## Manual floor files (analysed 2026-09-12)
+## Manual floor files (analysed 2026-09-12; folder removed 2026-10-28)
 
-Supervisor added `Order Grouping Sorter/Manually Made Files/` (Jul–Sep). Only the shift-folder `*.csv` are ShipStation exports (full current-view, **no tags**). The rest (`*-Picking.xlsx`, `DTF Des-P*.xlsx`, rare PDF/JPG) are Packing List Generator output from those CSVs.
+Supervisor had added `Order Grouping Sorter/Manually Made Files/` (Jul–Sep); that folder, plus `Missed Orders/` and `Today's Manually Made Files/`, were **removed** from the sorter app on 2026-10-28. The notes below are historical. Only the shift-folder `*.csv` were ShipStation exports (full current-view, **no tags**). The rest (`*-Picking.xlsx`, `DTF Des-P*.xlsx`, rare PDF/JPG) were Packing List Generator output from those CSVs.
 
 How the floor used to build a pile: ShipStation filter → export CSV → save as the process number in `{date}/{1st|2nd|3rd} Shift/`. Manual exports once used different numbers per shift (100 / 200 / 300). **Live sorter** uses **fixed batches** `B100` / `B80` / … — same code every shift; only `S{n}` changes (cousins retired; `B` prefix 2026-09-23). Date is the folder, not the filename.
 
