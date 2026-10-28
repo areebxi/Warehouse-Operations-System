@@ -1,6 +1,8 @@
 # Custom Label Database — current state
 
-**Updated:** 27 October 2026 (Database Transfer removed)
+**Updated:** 28 October 2026 (Areeb print position fix)
+
+**28 Oct 2026 — Areeb print positions:** `Custom_Label_Database (Areeb).csv`. Restored 78 drifted garment rows from live NocoDB Front Center (`M-T-WHI-S-Yes` class). All `A3-B-M-T-*` (123) → sole Back Center. Forced Front Center on `1-K-T-WHI-YL` / `YXL` / `YM`, `LG-W-T-WHI-XL` / `WHI-2XL` / `BLK-S`, `I-CRD-WHT-A5-Yes`, `BG747-201257-Yes`. Left alone: ASV, FP, X97/x97, XZ8, X94, xz7, mocks (Mocks Database). Live CSV not edited. Backup `backups/custom-label/Custom_Label_Database (Areeb)_prePosFix_20261028_103801.csv`. Script `scripts/fix_areeb_pos_from_live.py`.
 
 **27 Oct 2026 — Database Transfer removed:** Folder `Database Transfer/` (Workbook + Configuration Workbook), `backups/database-transfer/`, `scripts/sync_database_transfer.py`, and path helpers are gone. Fill no longer syncs an Excel upload mirror. Live catalog remains the CSVs under `database/`. Locked 2026-10-27 (replaces the 2026-09-25 sync lock).
 

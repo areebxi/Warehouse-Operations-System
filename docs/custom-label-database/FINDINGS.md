@@ -2,6 +2,10 @@
 
 Facts and locked lessons. Snapshot numbers that can drift are dated. Policy that must not be forgotten is also in `.cursor/rules/`.
 
+## Areeb print position drift 2026-10-28
+
+Areeb is a sorter fork; print positions can diverge from live NocoDB. Example: `M-T-WHI-S-Yes` was Pocket+Back on Areeb while live was Front Center. Locked default: no position token in Custom Label → Front Center. `A3-B-M-T-*` → Back Center. Leave ASV / FP / X97 / XZ8 / X94 / xz7; mocks from Mocks Database. Fix script: `scripts/fix_areeb_pos_from_live.py`.
+
 ## Areeb Custom Label dedupe 2026-10-27
 
 Supervisor asked to collapse duplicates on `Custom_Label_Database (Areeb).csv` and keep the strongest correct row. Keep order: token match to Custom Label → long supplier Gender Apparel (`FOTL…`, `GILDAN…`) over short canonical (`Kids-T-Shirt`) → most filled key fields → first. Same pass corrected `K-*` youth Mens mistakes and Front-majority sibling Back Center slips. Script `scripts/dedupe_areeb_cl.py`. Live NocoDB CSV untouched. Second dry-run: 0 dups left.
