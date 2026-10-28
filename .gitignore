@@ -20,7 +20,7 @@ Production Design Queue Manager/config/*.png
 # PO secrets + assets (DB lives in database/; output under root Output/)
 Purchase Order Generator/config.py
 Purchase Order Generator/config/gui_settings.json
-Purchase Order Generator/assets/**
+Purchase Order Generator/assets/
 
 # Shipping optional app .env (no API keys; ShipStation is shared)
 Shipping Label Generator/.env
@@ -78,40 +78,43 @@ Demo Images Database/**
 !Demo Images Database/**/*.png
 
 # --- Warehouse-root run Logs / Output (per-app subfolders) ---
-Logs/**
-Output/**
+# Use trailing slash so the folders themselves are ignored (not only contents).
+Logs/
+Output/
 
 # Legacy app-local Logs/Output (pre-2026-10-28 migrate leftovers)
-Order Packing List Generator/Logs/**
-Order Packing List Generator/Output/**
-Production Design Queue Manager/Logs/**
-Production Design Queue Manager/Output/**
-Shipping Label Generator/Logs/**
-Shipping Label Generator/Output/**
-Order Grouping Sorter/Logs/**
-Purchase Order Generator/output/**
+Order Packing List Generator/Logs/
+Order Packing List Generator/Output/
+Production Design Queue Manager/Logs/
+Production Design Queue Manager/Output/
+Shipping Label Generator/Logs/
+Shipping Label Generator/Output/
+Order Grouping Sorter/Logs/
+Purchase Order Generator/output/
 
 # --- Order Grouping Sorter live I/O (DB: database/order-grouping-sorter/) ---
-Order Grouping Sorter/Manually Made Files/**
+Order Grouping Sorter/Manually Made Files/
+Order Grouping Sorter/Today's Manually Made Files/
+Order Grouping Sorter/scripts/_tmp_*/
 
 # --- Packing app live I/O (DB in database/order-packing-list-generator/) ---
-Order Packing List Generator/Input/**
-Order Packing List Generator/Missing Input/**
-Order Packing List Generator/Missing Logo Files/**
-Order Packing List Generator/Preflight Issues/**
-Order Packing List Generator/Unmatched SKU Files/**
+Order Packing List Generator/Input/
+Order Packing List Generator/Missing Input/
+Order Packing List Generator/Missing Logo Files/
+Order Packing List Generator/Preflight Issues/
+Order Packing List Generator/Unmatched SKU Files/
 
 # --- Queue app live I/O ---
-Production Design Queue Manager/Input/**
-Production Design Queue Manager/Missing Size Reference/**
+Production Design Queue Manager/Input/
+Production Design Queue Manager/Missing Size Reference/
 
 # --- Shipping app live I/O ---
-Shipping Label Generator/DTF Des Files/**
-Shipping Label Generator/DTF Des Files - Processed/**
-Shipping Label Generator/Reports/**
-Shipping Label Generator/Manual Print Input/**
-Shipping Label Generator/Void Label Input/**
-Shipping Label Generator/Error and Failures/**
+Shipping Label Generator/DTF Des Files/
+Shipping Label Generator/DTF Des Files - Processed/
+Shipping Label Generator/Reports/
+Shipping Label Generator/Manual Print Input/
+Shipping Label Generator/Void Label Input/
+Shipping Label Generator/Error and Failures/
 
 # --- Shared runtime (SharedInbox) ---
 runtime/**
@@ -139,5 +142,3 @@ backups/*
 # Agent debug dumps (repo root and any folder). Not app Logs/.
 /debug-*.log
 **/debug-*.log
-Order Grouping Sorter/Today's Manually Made Files/**
-Order Grouping Sorter/scripts/_tmp_*/
