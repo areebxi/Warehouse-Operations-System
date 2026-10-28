@@ -26,7 +26,7 @@ def main() -> None:
                 process_name=args.process_name,
                 date_dd_mm_yyyy=args.date,
                 shift=args.shift,
-                output_dir=PROJECT_ROOT / "Output",
+                output_dir=None,
                 log=_log,
             )
         except Exception as exc:

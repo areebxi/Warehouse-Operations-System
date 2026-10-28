@@ -20,7 +20,7 @@ Live paths via `shared/paths.py`. A grouping **run** only **reads** CL + Plain D
 | `database/shared/plain/Plain Database.csv` | Plain catalog |
 | `database/shared/packs/Packs Database.csv` | Packs catalog |
 | `config/ShipStation/.env` | Shared ShipStation |
-| `Logs/` | Dry-run reports |
+| `Logs/Order Grouping Sorter/` | Dry-run reports |
 | Packing `Input/{DD-MM-YYYY}/{nth} Shift/` | Write on `--run`. Nth run of the day = nth shift (locked 2026-10-14). Replaces that shift’s CSVs only. `RESEND` / `UNMATCHED` land there. 3rd shift and later: overdue, blank, and the run-day ship-by, plus tag `1004- Personalised Design-Ready-` when ship-by is later (locked 2026-10-22). A later ship-by without that tag stays out |
 | `order-grouping-locks.md` | Grouping lock log |
 | `order-grouping-criteria.csv` | CEO review table |
@@ -53,7 +53,7 @@ Dry-run: run date, mix yes/no (Hashim 300-order gate), process names with orders
 
 - **Orchestration:** `scripts/run_sorter.py` (dry-run default; `--run` writes).
 - **Domain:** `scripts/grouping.py` (façade) plus `grouping_*.py` modules (`models`, `finish`, `intake`, `slots`, `peel`, `garments`, `fixed`, `shift`, `parts`, `names`, `bins`, `io`, `report`); also `fixed_batches.py`, `leftover_batches.py`, `catalogs.py`, `catalog_cache.py`.
-- **I/O:** Packing Input via `shared.paths.sorter_input_csv_path`; Logs; sorter DB under `database/order-grouping-sorter/`.
+- **I/O:** Packing Input via `shared.paths.sorter_input_csv_path`; `Logs/Order Grouping Sorter/`; sorter DB under `database/order-grouping-sorter/`.
 - **Legacy oversized:** none in production grouping path; `test_grouping.py` is a thin runner over `test_grouping_*.py` behaviour modules (see `../docs/ARCHITECTURE.md`).
 - **Must not:** import Packing internals (CSV columns are copied, not imported); overwrite catalogs on a run; use universal 3-key `resolve_label` for grouping finish keys.
 - Architecture: `.cursor/rules/global/architecture.mdc`.

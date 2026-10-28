@@ -41,6 +41,7 @@ rate_limit:
   warn_threshold_pct: 20
 
 paths:
+  # output_dir / logs_dir: load_config sets warehouse-root Output|Logs/Shipping Label Generator
   output_dir: output
   logs_dir: logs
   reports_dir: Reports

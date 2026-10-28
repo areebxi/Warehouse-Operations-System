@@ -3,10 +3,16 @@ from __future__ import annotations
 from pathlib import Path
 
 from shared.paths.packing import packing_input_dir
-from shared.paths.root import DB_SLUG_SORTER, database_app_dir, warehouse_root_from
+from shared.paths.root import (
+    APP_NAME_SORTER,
+    DB_SLUG_SORTER,
+    app_logs_dir,
+    database_app_dir,
+    warehouse_root_from,
+)
 
 def sorter_app_dir(from_path: object | None = None) -> Path:
-    return warehouse_root_from(from_path) / "Order Grouping Sorter"
+    return warehouse_root_from(from_path) / APP_NAME_SORTER
 
 
 def sorter_data_dir(from_path: object | None = None) -> Path:
@@ -56,7 +62,7 @@ def sorter_leftover_batches_path(
 
 
 def sorter_logs_dir(from_path: object | None = None) -> Path:
-    return sorter_app_dir(from_path) / "Logs"
+    return app_logs_dir(APP_NAME_SORTER, from_path)
 
 
 def sorter_input_csv_path(

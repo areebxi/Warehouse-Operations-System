@@ -23,7 +23,7 @@ def run_missing_run_from_all_orders(
     process_name: str = "missing_run",
     date_dd_mm_yyyy: str = "",
     shift: str | None = None,
-    output_dir: str | Path = PROJECT_ROOT / "Output",
+    output_dir: str | Path | None = None,
     apparel_dir: str | Path | None = None,
     logo_custom_single_dir: str | Path | None = None,
     logo_custom_double_dir: str | Path | None = None,
@@ -33,6 +33,8 @@ def run_missing_run_from_all_orders(
     log: Optional[Callable[[str], None]] = None,
     use_demo_images: bool = False,
 ) -> Path:
+    if output_dir is None:
+        output_dir = wh.packing_output_dir()
     if not date_dd_mm_yyyy:
         raise ValueError("date_dd_mm_yyyy is required (DD-MM-YYYY).")
     date_dd_mm_yyyy = date_dd_mm_yyyy.replace("/", "-")

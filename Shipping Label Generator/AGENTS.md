@@ -5,7 +5,7 @@
 Domain handbook for the **Warehouse Automation System Engineer**. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/shipping-label-generator/`. Behavior source: `../docs/shipping-label-generator/REQUIREMENTS.md`. Snapshot: `../docs/shipping-label-generator/HANDOFF.md`.
 Current state: `../docs/shipping-label-generator/HANDOFF.md`, kept as present-tense state, not a log.
 
-Live paths via `shared/paths.py` / `load_config` (I/O + yaml in this app; ShipStation secrets shared).
+Live paths via `shared/paths.py` / `load_config` (desfiles + yaml in this app; Output/Logs under warehouse-root; ShipStation secrets shared).
 
 
 
@@ -25,7 +25,7 @@ Live paths via `shared/paths.py` / `load_config` (I/O + yaml in this app; ShipSt
 
 | `config/ShipStation/.env` | ShipStation secrets |
 
-| `Output/` | Labels / batch PDFs |
+| `Output|Logs/Shipping Label Generator/` | Labels / batch PDFs and run logs |
 
 
 
@@ -35,7 +35,7 @@ Live paths via `shared/paths.py` / `load_config` (I/O + yaml in this app; ShipSt
 
 1. **Convert** — DTF Des in app desfiles → canonical orders list. A file already in the processed manifest is converted again.
 
-2. **Print** — ShipStation create/reuse labels; per-process + combined PDFs. A shipped order reprints the PDF already under `Output/Labels` and does not buy a second label. The first page of each DTF file is a Batch Summary.
+2. **Print** — ShipStation create/reuse labels; per-process + combined PDFs. A shipped order reprints the PDF already under `Output/Shipping Label Generator/Labels` and does not buy a second label. The first page of each DTF file is a Batch Summary.
 
 3. **Void** — from void list CSV.
 

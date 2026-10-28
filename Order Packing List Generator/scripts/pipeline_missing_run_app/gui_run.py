@@ -169,7 +169,7 @@ def on_run(app) -> None:
                 process_name=process_name,
                 date_dd_mm_yyyy=date_str,
                 shift=shift,
-                output_dir=PROJECT_ROOT / "Output",
+                output_dir=None,
                 apparel_dir=apparel_dir,
                 logo_custom_single_dir=logo_custom_single_dir,
                 logo_custom_double_dir=logo_custom_double_dir,

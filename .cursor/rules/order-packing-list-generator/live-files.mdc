@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Packing live files
 
-App DB in `database/order-packing-list-generator/`. Run I/O in app folder. Shared joins via `shared/paths.py`.
+App DB in `database/order-packing-list-generator/`. Input stays in the app folder; Logs/Output are warehouse-root. Shared joins via `shared/paths.py`.
 
 | Path | Role |
 |------|------|
@@ -15,7 +15,9 @@ App DB in `database/order-packing-list-generator/`. Run I/O in app folder. Share
 | `database/order-packing-list-generator/All Orders.csv` | Cumulative run log |
 | `database/shared/shipstation_tags/ShipStation_Tags.xlsx` | Tags → process# (shared) |
 | `database/shared/custom_label/Custom_Label_Database.csv` | Enrich |
-| `Order Packing List Generator/{Input,Output,Logs,…}` | Run I/O |
+| `Order Packing List Generator/Input/` (+ Missing Logo / Preflight / …) | App-local intake I/O |
+| `Output/Order Packing List Generator/` | Packing run outputs |
+| `Logs/Order Packing List Generator/` | Packing run logs |
 | `runtime/SharedInbox/DTF Des/{date}/{shift}/` | DTF Des dual-write |
 | `config/ShipStation/.env` | ShipStation credentials |
 | `Order Packing List Generator/config/` | gui_config.json |

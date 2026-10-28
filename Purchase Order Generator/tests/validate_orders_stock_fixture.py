@@ -10,9 +10,10 @@ class TestRealTagJsonFixture(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        from shared import paths as wh
+
         json_path = (
-            ROOT
-            / "output"
+            wh.po_output_dir()
             / "2026-06-29"
             / "Tag_013-P-04-Odd_Items-7000_Orders_20260629_072238"
             / "tag_013-P-04-Odd_Items-7000_awaiting_orders_20260629_072238.json"

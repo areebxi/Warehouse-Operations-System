@@ -3,7 +3,7 @@
 Shared databases: database/shared/ (CL, Tags, BTC/Uneek/Absolute Product Data,
 Plain Database, Packs Database).
 App databases: database/<app-slug>/.
-Secrets: config/ShipStation. Pipeline I/O: runtime/SharedInbox + app Input/Output/Logs.
+Secrets: config/ShipStation. Pipeline I/O: runtime/SharedInbox + root Logs/Output.
 """
 
 from __future__ import annotations
@@ -19,6 +19,13 @@ DB_SLUG_QUEUE = "production-design-queue-manager"
 DB_SLUG_PO = "purchase-order-generator"
 DB_SLUG_SHIPPING = "shipping-label-generator"
 DB_SLUG_SORTER = "order-grouping-sorter"
+
+# Official app folder names (also used under root Logs/ and Output/)
+APP_NAME_PACKING = "Order Packing List Generator"
+APP_NAME_QUEUE = "Production Design Queue Manager"
+APP_NAME_PO = "Purchase Order Generator"
+APP_NAME_SHIPPING = "Shipping Label Generator"
+APP_NAME_SORTER = "Order Grouping Sorter"
 
 def warehouse_root_from(path: object | None = None) -> Path:
     """
@@ -78,6 +85,24 @@ def config_root(from_path: object | None = None) -> Path:
     """Shared config only (ShipStation secrets)."""
     return warehouse_root_from(from_path) / "config"
 
+
+def logs_root(from_path: object | None = None) -> Path:
+    """Warehouse-root Logs/ (per-app subfolders)."""
+    return warehouse_root_from(from_path) / "Logs"
+
+
+def output_root(from_path: object | None = None) -> Path:
+    """Warehouse-root Output/ (per-app subfolders)."""
+    return warehouse_root_from(from_path) / "Output"
+
+
+def app_logs_dir(app_name: str, from_path: object | None = None) -> Path:
+    return logs_root(from_path) / app_name
+
+
+def app_output_dir(app_name: str, from_path: object | None = None) -> Path:
+    return output_root(from_path) / app_name
+
 __all__ = [
     "DB_SLUG_CL",
     "DB_SLUG_PACKING",
@@ -85,6 +110,11 @@ __all__ = [
     "DB_SLUG_PO",
     "DB_SLUG_SHIPPING",
     "DB_SLUG_SORTER",
+    "APP_NAME_PACKING",
+    "APP_NAME_QUEUE",
+    "APP_NAME_PO",
+    "APP_NAME_SHIPPING",
+    "APP_NAME_SORTER",
     "warehouse_root_from",
     "warehouse_root",
     "database_root",
@@ -93,4 +123,8 @@ __all__ = [
     "data_root",
     "runtime_root",
     "config_root",
+    "logs_root",
+    "output_root",
+    "app_logs_dir",
+    "app_output_dir",
 ]

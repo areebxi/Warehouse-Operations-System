@@ -2,10 +2,17 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from shared.paths.root import DB_SLUG_QUEUE, database_app_dir, warehouse_root_from
+from shared.paths.root import (
+    APP_NAME_QUEUE,
+    DB_SLUG_QUEUE,
+    app_logs_dir,
+    app_output_dir,
+    database_app_dir,
+    warehouse_root_from,
+)
 
 def queue_app_dir(from_path: object | None = None) -> Path:
-    return warehouse_root_from(from_path) / "Production Design Queue Manager"
+    return warehouse_root_from(from_path) / APP_NAME_QUEUE
 
 
 def queue_database_dir(from_path: object | None = None) -> Path:
@@ -30,11 +37,11 @@ def queue_input_dir(from_path: object | None = None) -> Path:
 
 
 def queue_output_dir(from_path: object | None = None) -> Path:
-    return queue_runtime_dir(from_path) / "Output"
+    return app_output_dir(APP_NAME_QUEUE, from_path)
 
 
 def queue_logs_dir(from_path: object | None = None) -> Path:
-    return queue_runtime_dir(from_path) / "Logs"
+    return app_logs_dir(APP_NAME_QUEUE, from_path)
 
 
 def queue_missing_size_dir(from_path: object | None = None) -> Path:

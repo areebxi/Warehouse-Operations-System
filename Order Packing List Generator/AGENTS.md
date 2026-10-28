@@ -3,7 +3,7 @@
 Domain handbook for the **Warehouse Automation System Engineer**. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/order-packing-list-generator/`. Details: `../docs/order-packing-list-generator/`, `USAGE.md`, `README.md`.
 Current state: `../docs/order-packing-list-generator/HANDOFF.md`, kept as present-tense state, not a log.
 
-Live paths via `shared/paths.py` (DB in `database/`; run I/O + GUI config in this app; Tags + SharedInbox + ShipStation shared).
+Live paths via `shared/paths.py` (DB in `database/`; Input + GUI config in this app; Logs/Output under warehouse-root; Tags + SharedInbox + ShipStation shared).
 
 ## Live vs helpers
 
@@ -15,7 +15,8 @@ Live paths via `shared/paths.py` (DB in `database/`; run I/O + GUI config in thi
 | `database/shared/plain/Plain Database.csv` | Step 2 plain (till last dash or whole SKU) |
 | `database/shared/packs/Packs Database.csv` | Step 2 packs (whole SKU) |
 | `database/shared/shipstation_tags/ShipStation_Tags.xlsx` | Shared tags |
-| `{Input,Output,Logs,…}/` | `config/` GUI JSON |
+| `Input/` (+ Missing Logo / Preflight / …) | `config/` GUI JSON |
+| `Output|Logs/Order Packing List Generator/` | Warehouse-root run I/O |
 | `config/ShipStation/.env` | ShipStation credentials |
 | `runtime/SharedInbox/DTF Des/{date}/{shift}/` | Dual-write DTF Des |
 
@@ -49,7 +50,7 @@ Say what ran (inputs, date, shift), what was written under Output and SharedInbo
 - **Orchestration:** `packing_list_app.py`, `pipeline_runtime/` (step façades + helpers), `pipeline_packing_list_app/`.
 - **Domain:** `pipeline_*` services (CL lookup, assign process, split, shipstation helpers).
 - **Generation:** `pipeline_generate_packing_list_pdf/` (`runtime_api.py` → `runtime_api_bind*`, draw/reporting modules), `pipeline_generate_excel_outputs/`.
-- **I/O:** app `{Input,Output,Logs}`; SharedInbox via `shared.paths`; DB under `database/order-packing-list-generator/`.
+- **I/O:** app `Input/`; `Output|Logs/Order Packing List Generator/` via `shared.paths`; SharedInbox via `shared.paths`; DB under `database/order-packing-list-generator/`.
 - **200-line:** live Packing scripts cleared; keep new/changed modules ≤200 (see `../docs/ARCHITECTURE.md`).
 - **Must not:** import Sorter/Queue/Shipping/PO internals; path resolution outside `shared.paths`; re-implement `cl_sku_match`.
 - Architecture: `.cursor/rules/global/architecture.mdc`.

@@ -4,7 +4,7 @@ import csv
 import json
 import re
 from pathlib import Path
-from app_paths import APP_ROOT, DATA_DIR, data_path
+from app_paths import APP_ROOT, DATA_DIR, OUTPUT_DIR, data_path
 from stock_resolver import NOT_FOUND_STATUSES, STATUS_NOT_FOUND
 NOT_FOUND_RE = re.compile(r"sku_not_found_tag_(.+)_(\d{8}_\d{6})\.csv$", re.I)
 STOCK_ISSUES_RE = re.compile(r"stock_issues_tag_(.+)_(\d{8}_\d{6})\.csv$", re.I)
@@ -89,7 +89,7 @@ def _pick_shipstation_sku(
         return order_skus[0]
     return None
 def _iter_not_found_source_files() -> list[Path]:
-    search_roots = [DATA_DIR, APP_ROOT / "Data", APP_ROOT / "output"]
+    search_roots = [DATA_DIR, APP_ROOT / "Data", OUTPUT_DIR]
     out_name = "sku_not_found_basic_and_custom_label.csv"
     found: list[Path] = []
     for base in search_roots:

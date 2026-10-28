@@ -1,7 +1,9 @@
 # Shipping Label Generator — snapshot
 
-**Updated:** 21 October 2026  
+**Updated:** 28 October 2026 (warehouse-root Logs/Output)  
 **Handbook:** `AGENTS.md` · **Behavior:** `REQUIREMENTS.md` · **Locked reprint:** `.cursor/rules/shipping-label-generator/reprint.mdc`
+
+Labels / batch PDFs: `Output/Shipping Label Generator/`. Run logs: `Logs/Shipping Label Generator/` (`load_config` sets these via `shared.paths`).
 
 ## Continue here
 

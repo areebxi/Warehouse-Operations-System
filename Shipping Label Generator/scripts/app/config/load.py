@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -9,6 +10,11 @@ import yaml
 from dotenv import load_dotenv
 
 from scripts.app.config.defaults import default_config_dict
+
+# Warehouse root (…/Shipping Label Generator/scripts/app/config → parents[4])
+_WAREHOUSE_ROOT = Path(__file__).resolve().parents[4]
+if str(_WAREHOUSE_ROOT) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE_ROOT))
 
 
 def _deep_merge(base: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:
@@ -83,5 +89,11 @@ def load_config(config_path: str | os.PathLike[str] = "shipping_config.yaml") ->
         raise ValueError("config missing 'logging' mapping")
     if "concurrency" not in cfg or not isinstance(cfg["concurrency"], dict):
         raise ValueError("config missing 'concurrency' mapping")
+
+    # Output/Logs live under warehouse-root Output|Logs/Shipping Label Generator.
+    from shared import paths as wh
+
+    cfg["paths"]["output_dir"] = str(wh.shipping_output_dir())
+    cfg["paths"]["logs_dir"] = str(wh.shipping_logs_dir())
 
     return AppConfig(raw=cfg, provider_name=provider)

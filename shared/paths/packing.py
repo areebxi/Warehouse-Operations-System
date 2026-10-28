@@ -2,10 +2,17 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from shared.paths.root import DB_SLUG_PACKING, database_app_dir, warehouse_root_from
+from shared.paths.root import (
+    APP_NAME_PACKING,
+    DB_SLUG_PACKING,
+    app_logs_dir,
+    app_output_dir,
+    database_app_dir,
+    warehouse_root_from,
+)
 
 def packing_app_dir(from_path: object | None = None) -> Path:
-    return warehouse_root_from(from_path) / "Order Packing List Generator"
+    return warehouse_root_from(from_path) / APP_NAME_PACKING
 
 
 def packing_data_dir(from_path: object | None = None) -> Path:
@@ -25,7 +32,7 @@ def packing_all_orders_path(from_path: object | None = None) -> Path:
 
 
 def packing_runtime_dir(from_path: object | None = None) -> Path:
-    """I/O lives at the packing app root (Input/, Output/, Logs/, …)."""
+    """App-local I/O root (Input/, Missing Logo, …). Output/Logs are warehouse-root."""
     return packing_app_dir(from_path)
 
 
@@ -34,11 +41,11 @@ def packing_input_dir(from_path: object | None = None) -> Path:
 
 
 def packing_output_dir(from_path: object | None = None) -> Path:
-    return packing_runtime_dir(from_path) / "Output"
+    return app_output_dir(APP_NAME_PACKING, from_path)
 
 
 def packing_logs_dir(from_path: object | None = None) -> Path:
-    return packing_runtime_dir(from_path) / "Logs"
+    return app_logs_dir(APP_NAME_PACKING, from_path)
 
 
 def packing_missing_input_dir(from_path: object | None = None) -> Path:

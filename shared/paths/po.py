@@ -3,10 +3,16 @@ from __future__ import annotations
 from pathlib import Path
 
 from shared.paths.catalog import packs_database_path, plain_database_path
-from shared.paths.root import DB_SLUG_PO, database_app_dir, warehouse_root_from
+from shared.paths.root import (
+    APP_NAME_PO,
+    DB_SLUG_PO,
+    app_output_dir,
+    database_app_dir,
+    warehouse_root_from,
+)
 
 def po_app_dir(from_path: object | None = None) -> Path:
-    return warehouse_root_from(from_path) / "Purchase Order Generator"
+    return warehouse_root_from(from_path) / APP_NAME_PO
 
 
 def po_data_dir(from_path: object | None = None) -> Path:
@@ -36,7 +42,7 @@ def po_runtime_dir(from_path: object | None = None) -> Path:
 
 
 def po_output_dir(from_path: object | None = None) -> Path:
-    return po_runtime_dir(from_path) / "output"
+    return app_output_dir(APP_NAME_PO, from_path)
 
 
 def po_config_dir(from_path: object | None = None) -> Path:

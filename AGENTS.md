@@ -12,7 +12,9 @@ When a task names an app, follow that app’s `AGENTS.md` handbook and the paren
 | `runtime/` | **Shared only:** SharedInbox (Packing → Queue) |
 | `config/` | **Shared only:** ShipStation `.env` |
 | `shared/` | Python helpers (`paths.py`, `cl_sku_match.py`, `shipstation/`) |
-| `<App>/` | Code + run I/O (Input/Output/Logs) + GUI settings; PO also `assets/` |
+| `<App>/` | Code + Input/config (+ PO `assets/`); run **Logs/** and **Output/** are warehouse-root |
+| `Logs/` | All app logs (`Logs/<App Name>/`) |
+| `Output/` | All app outputs (`Output/<App Name>/`) |
 | `Custom Label Database/` | CL scripts/docs only (live CSV in `database/shared/custom_label/`) |
 
 All paths resolve through `shared/paths.py`.
@@ -29,7 +31,7 @@ Key live files:
 - Plain / Packs: `database/shared/plain/Plain Database.csv`, `database/shared/packs/Packs Database.csv`
 - PO DB: `database/purchase-order-generator/` (stock CSVs; Plain/Packs are shared)
 - CL helpers: `database/custom-label-database/support/`, `Apparel Images/`
-- Run I/O: each app’s `{Input,Output,Logs,…}/`
+- Run I/O: each app’s `Input/` (and similar); **Logs** / **Output** under warehouse-root `Logs/<App>/`, `Output/<App>/`
 - `runtime/SharedInbox/DTF Des/{date}/{shift}/`
 - `config/ShipStation/.env`
 
@@ -37,7 +39,7 @@ Key live files:
 
 1. **Catalog** — fills/NocoDB against `database/shared/custom_label/Custom_Label_Database.csv`.
 2. **Orders in** — ShipStation → Packing (CSV/API) and Purchase Order Generator.
-3. **Pack** — Packing enriches from Custom Label, then Plain, then Packs, writes Excel then PDFs to app `Output/`; when Make design queues is on, copies that file’s DTF Des to `runtime/SharedInbox/DTF Des/{date}/{shift}/` and runs Queue after the PDFs. The next input can pack while that queue job runs.
+3. **Pack** — Packing enriches from Custom Label, then Plain, then Packs, writes Excel then PDFs to `Output/Order Packing List Generator/`; when Make design queues is on, copies that file’s DTF Des to `runtime/SharedInbox/DTF Des/{date}/{shift}/` and runs Queue after the PDFs. The next input can pack while that queue job runs.
 4. **Print designs** — Queue Design Queues (Packing `--files` sync and/or continuous watcher); print sizes from CL CSV; Pocket overrides + Skip Batches in Queue Configuration Workbook (`database/production-design-queue-manager/`).
 5. **Ship** — Shipping Label Generator from app `DTF Des Files/` (manual; SharedInbox auto-ship later).
 
@@ -53,27 +55,27 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 
 ### Order Packing List Generator
 - **Purpose:** ShipStation orders → process CSVs, packing PDFs, Picking / Orders Details / DTF Des Excel. **Later (not built):** every packing list PDF, including slips PO still prints. Enrich already uses Custom Label, then Plain, then Packs.
-- **Live data:** DB in `database/order-packing-list-generator/`; app `config/`, Input/Output/Logs; shared tags; optional SharedInbox dual-write + sync Design Queues.
+- **Live data:** DB in `database/order-packing-list-generator/`; app `config/`, Input/; `Output|Logs/Order Packing List Generator/`; shared tags; optional SharedInbox dual-write + sync Design Queues.
 - **Talks to:** ShipStation; CL CSV; SharedInbox / Queue CLI. Later: shared Plain / Packs (read).
 
 ### Production Design Queue Manager
 - **Purpose:** Arrange design images on a DTF print canvas from DTF Des inputs.
-- **Live data:** DB workbook in `database/production-design-queue-manager/`; app `config/` (settings), Input/Output/Logs; SharedInbox Design Queues watcher.
+- **Live data:** DB workbook in `database/production-design-queue-manager/`; app `config/` (settings), Input/; `Output|Logs/Production Design Queue Manager/`; SharedInbox Design Queues watcher.
 - **Talks to:** SharedInbox; CL CSV for print sizes.
 
 ### Shipping Label Generator
 - **Purpose:** Convert DTF Des → labels; create/void ShipStation labels.
-- **Live data:** app `DTF Des Files/`, `Output/`, `shipping_config.yaml`; secrets via `config/ShipStation/.env`.
+- **Live data:** app `DTF Des Files/`, `shipping_config.yaml`; `Output|Logs/Shipping Label Generator/`; secrets via `config/ShipStation/.env`.
 - **Talks to:** ShipStation API. Does not auto-read SharedInbox yet.
 
 ### Order Grouping Sorter
 - **Purpose:** ShipStation `awaiting_shipment` → process piles (fixed batches first: `B100-S1-PRINTED-2-WAREHOUSE STOCK-R-1.csv` / …; leftover `B1-S1-…` / `B2-…` skipping reserved). One CSV per process into Packing Input. Default CLI is dry-run; `--run` writes after supervisor **run**. Nth `--run` of the day = nth shift. 3rd shift and later: overdue, blank, and the run-day ship-by, plus tag `1004- Personalised Design-Ready-` when ship-by is later (locked 2026-10-22). A later ship-by without that tag stays out. Chat **run the group sorter** is `--run` on the current `awaiting_shipment` pool only: no catalog seed, and an order still awaiting is processed even if an earlier shift CSV already has it. If that message does not name the shift, ask which shift and do not run. **add unmatched** is a separate command. Locked 2026-10-14; catalog step removed 2026-10-20. Every chat and every new session (`supervisor-chat.mdc`).
-- **Live data:** DB in `database/order-grouping-sorter/` (taxonomy pick-lists + fixed batches); reads Areeb CL CSV (`Custom_Label_Database (Areeb).csv`, temporary 2026-10-09) / Plain / Packs; secrets via `config/ShipStation/.env`; Logs in the app folder. Write target: Packing `Input/{DD-MM-YYYY}/{nth} Shift/` (nth `--run` of the day). `RESEND` / `UNMATCHED` land there.
+- **Live data:** DB in `database/order-grouping-sorter/` (taxonomy pick-lists + fixed batches); reads Areeb CL CSV (`Custom_Label_Database (Areeb).csv`, temporary 2026-10-09) / Plain / Packs; secrets via `config/ShipStation/.env`; Logs under `Logs/Order Grouping Sorter/`. Write target: Packing `Input/{DD-MM-YYYY}/{nth} Shift/` (nth `--run` of the day). `RESEND` / `UNMATCHED` land there.
 - **Talks to:** ShipStation (shared client, including `list_stores`); the three grouping catalogs (read-only on a run). Does not import Packing internals. CSV columns copy Packing current-view (`Order #`, `Ship By`, …).
 
 ### Purchase Order Generator
 - **Purpose:** Awaiting-dispatch by tag → BTC stock → packing slips. **Later (not built, 2026-09-17):** EDI/stock only; **all** packing list PDFs from Order Packing List Generator.
-- **Live data:** stock in `database/purchase-order-generator/`; shared Plain / Packs / Tags / CL / supplier catalogs; app `assets/`, `output/`, `config.py`.
+- **Live data:** stock in `database/purchase-order-generator/`; shared Plain / Packs / Tags / CL / supplier catalogs; app `assets/`, `config.py`; outputs under `Output/Purchase Order Generator/`.
 - **Talks to:** ShipStation API; BTC FTP stock; CL CSV (`BTC SKU`); shared Plain / Packs.
 
 ## Join points (proven)
@@ -90,7 +92,7 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 | ShipStation Tags | `database/shared/shipstation_tags/ShipStation_Tags.xlsx` (single) |
 | Taxonomy pick-lists | `database/order-grouping-sorter/taxonomy_picklists.csv` (Hashim #038 closed Areeb category / product type / product style / department + PE subcategory). Title Case; type has no gender; style is a named product, never a code. Source `shared/taxonomy_catalog.py`. CL filled 2026-09-16; Plain / Packs stay supplier copy. |
 | Fixed batches | `database/order-grouping-sorter/fixed_batches.csv` — `B80`/`B100`/… codes + match criteria. Sorter loads via `Order Grouping Sorter/scripts/fixed_batches.py`. Leftover `B1`/`B2`/… skip these numbers. |
-| DTF Des-P\*.xlsx | Packing → app Output (+ SharedInbox when Make design queues on); Queue Design Queues |
+| DTF Des-P\*.xlsx | Packing → `Output/Order Packing List Generator/` (+ SharedInbox when Make design queues on); Queue Design Queues |
 | Skip Batches | Queue Configuration Workbook sheet — batch digits that skip Design Queues PNGs |
 | Print sizes (Queue) | CL CSV Width/Height mm; Pocket overrides in Queue Configuration Workbook |
 | New SKU Database | Packing DTF Des Item-SKU remap (`database/order-packing-list-generator/`) |

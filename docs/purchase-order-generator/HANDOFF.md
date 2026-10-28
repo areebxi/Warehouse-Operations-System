@@ -1,12 +1,12 @@
 # Purchase Order Generator — snapshot
 
-**Updated:** 27 October 2026 (required Product Images Browse path)  
+**Updated:** 28 October 2026 (warehouse-root Output)  
 **Handbook:** `AGENTS.md` · **Layout:** `FOLDER_LAYOUT.md`
 
 ## Continue here
 
 - Launch: `Run_GUI.bat` (creates `.venv`, runs GUI).
-- Live DB under `database/purchase-order-generator/` + shared catalogs; outputs under `output/`.
+- Live DB under `database/purchase-order-generator/` + shared catalogs; outputs under `Output/Purchase Order Generator/`.
 - Stock CL map: `database/shared/custom_label/Custom_Label_Database.csv` (`Supplier_SKU` via `shared/cl_columns.BTC_SKU` — no `BTC Stock ID`). Areeb spaced headers (`Custom Label`, `Supplier SKU`, blank `Supplier SKU` falling back to `BTC SKU`) are accepted through `rename_legacy_headers`. Live file remains the NocoDB export.
 - GUI can override Custom Label CSV, Plain Database, and Packs Database (Browse… / Remove); remembered in `database/purchase-order-generator/gui_settings.json` with PDF copy folder. Empty/Remove = shared defaults. Packs default is `database/shared/packs/Packs Database.csv`.
 - **Product Images folder** is required (Browse… / Remove). Remembered as `product_images_dir` in the same `gui_settings.json`. No fallback to `assets/product_images`. Remove clears the path only; PDF product shots stay blank and `download_product_images` refuses until Browse again (or `--product-dir`). Brand logos still under `assets/brand_logos/`.

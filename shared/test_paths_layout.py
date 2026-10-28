@@ -38,7 +38,16 @@ def main() -> None:
     assert wh.sorter_catalog_cache_path("plain") == (
         db / "order-grouping-sorter" / "catalog_cache" / "plain.pkl"
     )
-    assert wh.sorter_logs_dir() == root / "Order Grouping Sorter" / "Logs"
+    assert wh.logs_root() == root / "Logs"
+    assert wh.output_root() == root / "Output"
+    assert wh.sorter_logs_dir() == root / "Logs" / "Order Grouping Sorter"
+    assert wh.packing_output_dir() == root / "Output" / "Order Packing List Generator"
+    assert wh.packing_logs_dir() == root / "Logs" / "Order Packing List Generator"
+    assert wh.queue_output_dir() == root / "Output" / "Production Design Queue Manager"
+    assert wh.queue_logs_dir() == root / "Logs" / "Production Design Queue Manager"
+    assert wh.shipping_output_dir() == root / "Output" / "Shipping Label Generator"
+    assert wh.shipping_logs_dir() == root / "Logs" / "Shipping Label Generator"
+    assert wh.po_output_dir() == root / "Output" / "Purchase Order Generator"
     assert wh.sorter_input_csv_path("11-09-2026", "1st Shift", "today-1st-plain") == (
         root / "Order Packing List Generator" / "Input" / "11-09-2026" / "1st Shift" / "today-1st-plain.csv"
     )

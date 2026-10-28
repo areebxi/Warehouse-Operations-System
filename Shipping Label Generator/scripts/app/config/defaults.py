@@ -23,6 +23,7 @@ def default_config_dict() -> dict[str, Any]:
             # Optional: set requests_per_sec for fixed-spacing pacing; omit or 0 for none (429-driven throttle).
         },
         "paths": {
+            # load_config overwrites these with shared.paths absolute dirs.
             "output_dir": "output",
             "logs_dir": "logs",
             "reports_dir": "Reports",

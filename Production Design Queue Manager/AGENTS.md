@@ -3,7 +3,7 @@
 Domain handbook for the **Warehouse Automation System Engineer**. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/production-design-queue-manager/`. Details: `USAGE.md`, `../docs/production-design-queue-manager/DOCUMENTATION.md`.
 Current state: `../docs/production-design-queue-manager/HANDOFF.md`, kept as present-tense state, not a log.
 
-Live paths via `shared/paths.py` (DB in `database/`; settings + I/O in this app; SharedInbox + CL CSV shared).
+Live paths via `shared/paths.py` (DB in `database/`; settings + Input in this app; Logs/Output under warehouse-root; SharedInbox + CL CSV shared).
 
 ## Live vs helpers
 
@@ -15,11 +15,12 @@ Live paths via `shared/paths.py` (DB in `database/`; settings + I/O in this app;
 | `database/production-design-queue-manager/Configuration Workbook.xlsx` | Pocket / Override Print Size; Skip Batches |
 | `database/shared/custom_label/Custom_Label_Database.csv` | Print sizes via universal SKU match |
 | `runtime/SharedInbox/DTF Des/` | Auto input |
-| `{Output,Logs,Missing Size Reference}/` | App-local I/O |
+| `Input/` (+ Missing Size Reference) | App-local intake |
+| `Output|Logs/Production Design Queue Manager/` | Warehouse-root run I/O |
 
 ## How work is done
 
-**Auto:** Design Queues watcher on SharedInbox (or Packing `--files` sync) → settings folders → PNG under app Output (same names as GUI, e.g. `50.png` from `DTF Des-P50`, `B100-S1.png` from `DTF Des-PB100-S1`) → optional DTF Queues folder copy → move inbox source to `Processed/` (or `Failed/`). **Skip Batches** sheet skips PNG for listed batch digits. No approval.
+**Auto:** Design Queues watcher on SharedInbox (or Packing `--files` sync) → settings folders → PNG under `Output/Production Design Queue Manager/` (same names as GUI, e.g. `50.png` from `DTF Des-P50`, `B100-S1.png` from `DTF Des-PB100-S1`) → optional DTF Queues folder copy → move inbox source to `Processed/` (or `Failed/`). **Skip Batches** sheet skips PNG for listed batch digits. No approval.
 
 **GUI:** Load DTF Des → **Run** (Customise column picks Normal vs Single/Double folders) → pack canvas → preview → Save PNG. GUI batches still need supervisor approval.
 

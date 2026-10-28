@@ -18,7 +18,7 @@ Sorter configuration that grouping **reads** (it does not overwrite catalogs). P
 | `database/shared/plain/Plain Database.csv` | Plain finish (till last dash or whole SKU → SKU) |
 | `database/shared/packs/Packs Database.csv` | Plain finish (whole SKU → Channel Child SKU) |
 | `config/ShipStation/.env` | Shared ShipStation `REAL_API_*` |
-| `Order Grouping Sorter/Logs/` | Dry-run reports |
+| `Logs/Order Grouping Sorter/` | Dry-run reports |
 | `Order Packing List Generator/Input/{DD-MM-YYYY}/{nth} Shift/` | Write target on `--run` (`sorter_input_csv_path`). Nth `--run` of the day = nth shift (locked 2026-10-14). Replaces CSVs in that shift folder only. Fixed-batch files are `B100-{6 fields}.csv` / `B80-{6 fields}.csv` / … ; leftover `B1-{6 fields}.csv` / `B2-…` (skip reserved). `RESEND` / `UNMATCHED` land there. 3rd shift and later: overdue, blank, and the run-day ship-by, plus tag `1004- Personalised Design-Ready-` when ship-by is later (locked 2026-10-22). A later ship-by without that tag stays out. |
 | `Order Grouping Sorter/Manually Made Files/` | Historical floor exports + Packing output. **Analysis only** — not an intake source. |
 

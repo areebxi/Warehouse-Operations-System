@@ -18,7 +18,7 @@
 | `shipstation_orders.py` | ShipStation API |
 | `pdf_generator.py` | Packing slip PDFs |
 | `stock_resolver.py` | Custom label → stock ID |
-| `app_paths.py` | Path helpers for `data/`, `assets/`, `output/` |
+| `app_paths.py` | Path helpers (`shared.paths`; outputs under warehouse `Output/Purchase Order Generator/`) |
 | `validate_btc_product_codes.py`, `sync_database_from_btc_product_data.py`, `download_product_images.py`, etc. | Maintenance tools |
 
 Run any script from the app root, for example:
@@ -83,13 +83,13 @@ Previous file: `free_stock.csv` (root of FTP). Current file: `WebData/stock_leve
 - `brand_logos/`, `fonts/`
 - Product shots: external folder chosen in the GUI (not under `assets/` after migrate)
 
-## `output/` — new tag runs
+## Warehouse `Output/Purchase Order Generator/` — new tag runs
 
-Each run creates a folder like `Tag_007-N-03-Plain-2000_Orders_YYYYMMDD_HHMMSS/` with JSON, CSV, EDI, and PDF files.
+Each run creates a folder like `Tag_007-N-03-Plain-2000_Orders_YYYYMMDD_HHMMSS/` with JSON, CSV, EDI, and PDF files (`shared.paths.po_output_dir`).
 
 ## `00-Done/` — archived completed runs
 
-Move finished folders from `output/` here when done (manual step, same as before).
+Move finished folders from `Output/Purchase Order Generator/` here when done (manual step, same as before).
 
 ## Generated / do not edit
 

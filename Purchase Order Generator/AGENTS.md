@@ -3,7 +3,7 @@
 Domain handbook for the **Warehouse Automation System Engineer**. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/purchase-order-generator/`. Layout facts: `FOLDER_LAYOUT.md`, `../docs/purchase-order-generator/`.
 Current state: `../docs/purchase-order-generator/HANDOFF.md`, kept as present-tense state, not a log.
 
-Also known in older docs as **Plain Orders**. Live paths via `shared/paths.py` (DB in `database/`; assets/output/config in this app; PE + Tags + ShipStation shared).
+Also known in older docs as **Plain Orders**. Live paths via `shared/paths.py` (DB in `database/`; assets/config in this app; outputs under warehouse-root `Output/Purchase Order Generator/`; PE + Tags + ShipStation shared).
 
 ## Live vs helpers
 
@@ -20,12 +20,13 @@ Also known in older docs as **Plain Orders**. Live paths via `shared/paths.py` (
 | `database/shared/absolute_product_data/Absolute_Product_Data.xlsx` | Shared Absolute Product Data (babysuits only) |
 | `assets/` | brand_logos / fonts |
 | GUI Browse → `gui_settings.json` `product_images_dir` | Required Product Images folder (no assets fallback) |
-| `output/` | `config.py` (FTP only) |
+| `Output/Purchase Order Generator/` | Run outputs |
+| `config.py` | FTP only |
 | `config/ShipStation/.env` | Shared ShipStation `REAL_API_*` |
 
 ## How work is done
 
-Fetch ShipStation awaiting-dispatch **by tag** (`shared.shipstation` / `orders/listbytag`) → primary stock id (before first dash) → else universal CL match → `BTC SKU` → free_stock → packing-slip PDFs under `output/`.
+Fetch ShipStation awaiting-dispatch **by tag** (`shared.shipstation` / `orders/listbytag`) → primary stock id (before first dash) → else universal CL match → `BTC SKU` → free_stock → packing-slip PDFs under `Output/Purchase Order Generator/`.
 
 **Later (not built, 2026-09-17):** packing list PDFs (including these slips) move to **Order Packing List Generator**. This app stays tag → stock / EDI. Do not grow packing-slip work as the long-term home.
 

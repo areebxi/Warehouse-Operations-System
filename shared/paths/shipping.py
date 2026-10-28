@@ -2,10 +2,17 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from shared.paths.root import DB_SLUG_SHIPPING, database_app_dir, warehouse_root_from
+from shared.paths.root import (
+    APP_NAME_SHIPPING,
+    DB_SLUG_SHIPPING,
+    app_logs_dir,
+    app_output_dir,
+    database_app_dir,
+    warehouse_root_from,
+)
 
 def shipping_app_dir(from_path: object | None = None) -> Path:
-    return warehouse_root_from(from_path) / "Shipping Label Generator"
+    return warehouse_root_from(from_path) / APP_NAME_SHIPPING
 
 
 def shipping_database_dir(from_path: object | None = None) -> Path:
@@ -25,11 +32,11 @@ def shipping_desfiles_processed_dir(from_path: object | None = None) -> Path:
 
 
 def shipping_output_dir(from_path: object | None = None) -> Path:
-    return shipping_runtime_dir(from_path) / "Output"
+    return app_output_dir(APP_NAME_SHIPPING, from_path)
 
 
 def shipping_logs_dir(from_path: object | None = None) -> Path:
-    return shipping_runtime_dir(from_path) / "Logs"
+    return app_logs_dir(APP_NAME_SHIPPING, from_path)
 
 
 def shipping_reports_dir(from_path: object | None = None) -> Path:
