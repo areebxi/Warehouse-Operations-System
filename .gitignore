@@ -123,7 +123,6 @@ runtime/**
 
 # --- Old snapshot trees ---
 **/Versions/
-Old Workbooks/
 
 # --- Repo-root snapshots (data + old code). Keep the map and doc archives. ---
 backups/*
