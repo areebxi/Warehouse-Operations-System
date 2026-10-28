@@ -20,7 +20,7 @@ Live **database** files for the warehouse system. App folders hold code + run I/
 | `purchase-order-generator/` | Stock CSVs (+ Movie Poster SKUs); Plain/Packs live under `shared/` |
 | `shipping-label-generator/` | Reserved (no live DB today) |
 
-Testing-mode demo placeholders live at warehouse root: `Demo Images Database/` (see its README).
+Demo-mode image placeholders are no longer under this warehouse tree (removed 2026-10-28). Packing/Queue “use demo images” still resolves via `shared.demo_images` / `shared.paths` when those folders exist elsewhere or are recreated.
 
 Resolve via `shared/paths.py`. Do not commit live files (see root `.gitignore`).
 
