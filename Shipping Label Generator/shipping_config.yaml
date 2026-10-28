@@ -3,7 +3,7 @@
  #  All tuneable settings live here.
  #
  #  EDIT THIS FILE to customise behaviour.
- #  DO NOT put API keys here — use .env instead.
+ #  DO NOT put API keys here — use config/ShipStation/.env only.
  # =============================================================================
  
 concurrency:

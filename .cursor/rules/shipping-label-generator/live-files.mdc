@@ -13,7 +13,6 @@ App owns I/O + yaml. No live DB folder today (`database/shipping-label-generator
 | `Shipping Label Generator/DTF Des Files/` | Input desfiles |
 | `Shipping Label Generator/DTF Des Files - Processed/` | Archived inputs |
 | `Shipping Label Generator/shipping_config.yaml` | Tuneables |
-| `config/ShipStation/.env` | ShipStation secrets |
-| `Shipping Label Generator/.env` | Optional app overrides (no API keys) |
+| `config/ShipStation/.env` | Only ShipStation secrets file (warehouse-wide) |
 | `Output/Shipping Label Generator/` | Labels and batch PDFs |
 | `Logs/Shipping Label Generator/` | Shipping run logs |

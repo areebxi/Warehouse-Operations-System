@@ -5,10 +5,16 @@ import asyncio
 import base64
 import os
 import sys
+from pathlib import Path
 from typing import Any
 
 import aiohttp
-from dotenv import load_dotenv
+
+_WAREHOUSE_ROOT = Path(__file__).resolve().parents[5]
+if str(_WAREHOUSE_ROOT) not in sys.path:
+    sys.path.insert(0, str(_WAREHOUSE_ROOT))
+
+from shared.shipstation import ensure_shipstation_env
 
 
 def _basic_auth_header(key: str, secret: str) -> str:
@@ -60,14 +66,14 @@ async def _void_shipment(
 
 
 async def _run(*, tracking: str) -> int:
-    load_dotenv(override=False)
+    ensure_shipstation_env()
 
-    key = _env("SHIPSTATION_API_KEY")
-    secret = _env("SHIPSTATION_API_SECRET")
-    base_url = _env("SHIPSTATION_API_BASE_URL") or "https://ssapi.shipstation.com"
+    key = _env("REAL_API_KEY")
+    secret = _env("REAL_API_SECRET")
+    base_url = _env("REAL_API_BASE_URL") or "https://ssapi.shipstation.com"
 
     if not key or not secret:
-        print("ERROR: Missing SHIPSTATION_API_KEY / SHIPSTATION_API_SECRET in environment or .env", file=sys.stderr)
+        print("ERROR: Missing REAL_API_KEY / REAL_API_SECRET in config/ShipStation/.env", file=sys.stderr)
         return 2
 
     tracking = str(tracking).strip()

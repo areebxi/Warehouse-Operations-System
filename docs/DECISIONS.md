@@ -18,6 +18,7 @@ Where locked decisions live. **Do not copy** locks here; link to the owner. Chat
 | Architecture (200-line, layers, boundaries) | `.cursor/rules/global/architecture.mdc`; [`ARCHITECTURE.md`](ARCHITECTURE.md) |
 | SharedInbox handoff | `.cursor/rules/global/shared-inbox.mdc` |
 | ShipStation shared client | `.cursor/rules/global/shipstation.mdc`; `shared/shipstation/`; secrets `config/ShipStation/` |
+| Single warehouse `.env` | Locked 2026-10-28: only `config/ShipStation/.env` (template `config/ShipStation/.env.example`). No app-local `.env` / `.env.example` under Shipping or elsewhere. One root `.gitignore` only (no nested app `.gitignore`). |
 | SKU match | `.cursor/rules/global/cl-sku-match.mdc`; `shared/cl_sku_match.py` (case-sensitive entire-cell; locked 2026-10-27) |
 | Live CL CSV column names (NocoDB) | `shared/cl_columns.py`; `.cursor/rules/custom-label-database/nocodb.mdc` + `live-files.mdc` (locked 2026-10-04: underscored headers; `BTC SKU`→`Supplier_SKU`; `Supply Method`→`Stock_Type`) |
 | Supply Method | `.cursor/rules/custom-label-database/supply-method.mdc`; `shared/supply_method.py` |

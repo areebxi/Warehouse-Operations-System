@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from dotenv import load_dotenv
 
 from scripts.app.config.defaults import default_config_dict
 
@@ -15,6 +14,8 @@ from scripts.app.config.defaults import default_config_dict
 _WAREHOUSE_ROOT = Path(__file__).resolve().parents[4]
 if str(_WAREHOUSE_ROOT) not in sys.path:
     sys.path.insert(0, str(_WAREHOUSE_ROOT))
+
+from shared.shipstation import ensure_shipstation_env
 
 
 def _deep_merge(base: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:
@@ -59,7 +60,7 @@ def _resolve_config_path(config_path: str | os.PathLike[str]) -> Path:
 
 
 def load_config(config_path: str | os.PathLike[str] = "shipping_config.yaml") -> AppConfig:
-    load_dotenv(override=False)
+    ensure_shipstation_env()
 
     cfg: dict[str, Any] = default_config_dict()
 

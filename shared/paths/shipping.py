@@ -59,10 +59,6 @@ def shipping_config_dir(from_path: object | None = None) -> Path:
     return shipping_app_dir(from_path)
 
 
-def shipping_env_path(from_path: object | None = None) -> Path:
-    return shipping_config_dir(from_path) / ".env"
-
-
 def shipping_yaml_path(from_path: object | None = None) -> Path:
     return shipping_config_dir(from_path) / "shipping_config.yaml"
 
@@ -79,6 +75,5 @@ __all__ = [
     "shipping_void_input_dir",
     "shipping_errors_dir",
     "shipping_config_dir",
-    "shipping_env_path",
     "shipping_yaml_path",
 ]

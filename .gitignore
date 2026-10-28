@@ -22,16 +22,12 @@ Purchase Order Generator/config.py
 Purchase Order Generator/config/gui_settings.json
 Purchase Order Generator/assets/
 
-# Shipping optional app .env (no API keys; ShipStation is shared)
-Shipping Label Generator/.env
-
 # Keep tracked templates
 !config/**/.env.example
 !config/**/README.md
 !config/README.md
 !config/ShipStation/README.md
 !Purchase Order Generator/config_example.py
-!Shipping Label Generator/.env.example
 
 # Sorter Plain/Packs index cache (regenerated on load)
 database/order-grouping-sorter/catalog_cache/
@@ -109,10 +105,13 @@ Production Design Queue Manager/Missing Size Reference/
 # --- Shipping app live I/O ---
 Shipping Label Generator/DTF Des Files/
 Shipping Label Generator/DTF Des Files - Processed/
+Shipping Label Generator/DTF Des Files -Processed/
 Shipping Label Generator/Reports/
 Shipping Label Generator/Manual Print Input/
 Shipping Label Generator/Void Label Input/
 Shipping Label Generator/Error and Failures/
+Shipping Label Generator/**/*.log
+*.log
 
 # --- Shared runtime (SharedInbox) ---
 runtime/**

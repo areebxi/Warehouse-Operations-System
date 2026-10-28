@@ -1,6 +1,6 @@
 # Shipping Label Generator — key findings
 
-- Provider: ShipStation API (`SHIPPING_PROVIDER=real`). Secrets via env/`.env` only.
+- Provider: ShipStation API (`SHIPPING_PROVIDER=real`). Secrets via `config/ShipStation/.env` only.
 - Convert inputs from `DTF Des Files/`: Excel needs exact headers `Order - Number` and `Process Num` (matches packing DTF Des). Optional `Ship To - Name`.
 - Does not use packing **Orders Details** as input.
 - Flows: convert → canonical orders; print → labels + process/combined PDFs; void → void list.

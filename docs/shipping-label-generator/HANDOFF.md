@@ -19,7 +19,7 @@ Supervisor restored the previous working copy on 8 Oct 2026. Print, convert, and
 Batch files (`RUN.bat`, `SETUP.bat`, `bat_files\*.bat`) call `bat_files\resolve_python.bat`. That uses the `py` launcher when it exists, otherwise `python` on PATH.
 
 - Drop DTF Des files into `DTF Des Files/` (config `desfiles_dir`).
-- Secrets in `.env`; tuneables in `shipping_config.yaml`.
+- Secrets in `config/ShipStation/.env` only; tuneables in `shipping_config.yaml`.
 
 ## Watch
 
