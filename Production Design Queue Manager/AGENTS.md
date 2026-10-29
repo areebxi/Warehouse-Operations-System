@@ -10,7 +10,7 @@ Live paths via `shared/paths.py` (DB in `database/`; settings + Input in this ap
 | Live | Other |
 |------|--------|
 | `queue_app.py` / `run_queue_app.bat` | `../docs/production-design-queue-manager/` |
-| `run_design_queues_watcher.bat` | SharedInbox Design Queues watcher |
+| `scripts/design_queues_watcher.py` | SharedInbox Design Queues watcher (Packing auto-starts) |
 | `config/queue_app_settings.json` | Design folder paths |
 | `database/production-design-queue-manager/Configuration Workbook.xlsx` | Pocket / Override Print Size; Skip Batches |
 | `database/shared/custom_label/Custom_Label_Database.csv` | Print sizes via universal SKU match |
@@ -36,7 +36,7 @@ Report mode, input file(s), size hits/misses, output paths. Log resolved issues 
 
 ## Structure & boundaries
 
-- **Orchestration:** `queue_app.py`; Design Queues watcher `scripts/design_queues_watcher.py` → `design_queues_{process,loop,inbox}.py`.
+- **Orchestration:** `queue_app.py` (+ `scripts/queue_app_impl.py` / `queue_app_gui_setup.py` / `queue_app_gui_actions.py`); Design Queues watcher `scripts/design_queues_watcher.py` → `design_queues_{process,loop,inbox}.py` (Packing auto-starts).
 - **Domain:** `scripts/src/core/` (canvas, sizes, image rules; façades + `*_impl*` helpers).
 - **I/O:** `scripts/src/io/`; GUI helpers under `scripts/gui_helpers/` (missing-logo / personalised: `gui_processing_ui_*.py` + `*_load.py`).
 - **Logging:** `scripts/src/system/logging/console.py` → `console_setup` / `console_close` / `console_state`.

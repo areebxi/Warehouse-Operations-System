@@ -1,13 +1,13 @@
 # Production Design Queue Manager — snapshot
 
-**Updated:** 29 October 2026 (Missing Print Sizes rename)  
+**Updated:** 29 October 2026 (GUI shell under scripts/; watcher bat removed)  
 **Handbook:** `AGENTS.md`
 
 ## Continue here
 
 - GUI: `run_queue_app.bat` or `pythonw queue_app.py`.
 - Save PNG(s) writes to `Output/Production Design Queue Manager/YYYY-MM-DD/` and, if DTF Queues Folder is set, copies those PNGs there (no RAR). Logs under `Logs/Production Design Queue Manager/`.
-- Design Queues watcher: Packing List sync-invokes `--files` after Excel when Make design queues is on; continuous watch via Packing launch or `run_design_queues_watcher.bat`.
+- Design Queues watcher: Packing List sync-invokes `--files` after Excel when Make design queues is on; continuous watch starts when Packing launches (`shared.design_queues_watcher` → `scripts/design_queues_watcher.py`).
 - Headless save also copies PNGs to DTF Queues folder when configured (same as GUI Save).
 - **Skip Batches** sheet in Configuration Workbook: batch digits listed there skip queue PNGs (file still Processed; leftover Output/DTF Queues PNGs removed). Matches sorter `PB70-S1` and packing `P3570` stems. Packing also skips SharedInbox dual-write for those batches (avoids watcher race).
 - Auto Output PNGs use the same names as GUI (`50.png` from `DTF Des-P50`, `B100-S1.png` from `DTF Des-PB100-S1`, `50_Part 1.png`); re-runs overwrite. The packing `P` is not written.

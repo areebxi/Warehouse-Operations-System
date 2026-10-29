@@ -1,6 +1,6 @@
 """Ensure the Queue SharedInbox Design Queues watcher is running.
 
-Packing List starts this on launch so operators do not need run_design_queues_watcher.bat.
+Packing List starts this on launch (no separate watcher .bat).
 """
 
 from __future__ import annotations
