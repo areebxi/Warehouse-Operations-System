@@ -36,7 +36,7 @@ def run_pipeline(
     cl_csv_path: Optional[str | Path] = None,
     use_demo_images: bool = False,
     make_design_queues: bool = True,
-) -> Tuple[Path, Optional[Path], Optional[Path], Optional[str]]:
+) -> Tuple[Path, Optional[Path], Optional[Path], Optional[Path], Optional[str]]:
     """Run the packing pipeline for a single input CSV."""
     if phases not in ("all", "excel", "pdf"):
         raise ValueError(f"phases must be 'all', 'excel', or 'pdf', got {phases!r}")
@@ -81,7 +81,7 @@ def run_pipeline(
             discover_step6_csvs=discover_step6_csvs,
         )
 
-    step6_csvs, unmatched_path, missing_logo_path = run_excel_steps(
+    step6_csvs, unmatched_path, missing_logo_path, missing_apparel_path = run_excel_steps(
         input_csv_path=ctx["input_csv_path"],
         output_root=ctx["output_root"],
         token=ctx["token"],
@@ -98,6 +98,7 @@ def run_pipeline(
         logo_custom_single_dir=ctx["logo_custom_single_dir"],
         logo_custom_double_dir=ctx["logo_custom_double_dir"],
         logo_normal_dir=ctx["logo_normal_dir"],
+        apparel_dir=ctx["apparel_dir"],
         use_demo=ctx["use_demo"],
         log=log,
         lc=ctx["lc"],
@@ -110,6 +111,7 @@ def run_pipeline(
             output_root=ctx["output_root"],
             unmatched_path=unmatched_path,
             missing_logo_path=missing_logo_path,
+            missing_apparel_path=missing_apparel_path,
             excel_copy_dir=excel_copy_dir,
             shift_label=ctx["shift_label"],
             log=log,
@@ -120,6 +122,7 @@ def run_pipeline(
         output_root=ctx["output_root"],
         unmatched_path=unmatched_path,
         missing_logo_path=missing_logo_path,
+        missing_apparel_path=missing_apparel_path,
         step6_csvs=step6_csvs,
         workbook_path=ctx["workbook_path"],
         apparel_dir=ctx["apparel_dir"],

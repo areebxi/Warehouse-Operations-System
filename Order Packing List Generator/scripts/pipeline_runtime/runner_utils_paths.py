@@ -16,8 +16,9 @@ if str(_WAREHOUSE) not in sys.path:
     sys.path.insert(0, str(_WAREHOUSE))
 from shared import paths as wh  # noqa: E402
 
-UNMATCHED_ROOT_DIR = wh.packing_runtime_dir() / "Unmatched SKU Files"
+UNMATCHED_ROOT_DIR = wh.packing_unmatched_skus_dir()
 MISSING_LOGO_ROOT_DIR = wh.packing_missing_logo_dir()
+MISSING_APPARELS_ROOT_DIR = wh.packing_missing_apparels_dir()
 DATA_DIR = wh.packing_data_dir()
 ALL_ORDERS_PATH = wh.packing_all_orders_path()
 

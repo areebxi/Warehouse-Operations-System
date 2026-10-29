@@ -69,6 +69,7 @@ class PackingListApp(PackingListConfigMixin, PackingListFilesMixin, PackingListI
         self._sync_input_paths_from_var()
         self.unmatched_path: Path | None = None
         self.missing_logo_path: Path | None = None
+        self.missing_apparel_path: Path | None = None
         self.output_root: Path | None = None
         self._log_queue: queue.Queue[str | None] | None = None
         self._pipeline_results: list[dict[str, object]] | None = None

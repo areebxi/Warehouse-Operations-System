@@ -37,7 +37,7 @@ def run_pdf_only_phase(
     log: Optional[PipelineLog],
     lc,
     discover_step6_csvs,
-) -> tuple[Path, None, None, Optional[str]]:
+) -> tuple[Path, None, None, None, Optional[str]]:
     step6_csvs = discover_step6_csvs(output_root, token)
     if log:
         log.step(
@@ -88,4 +88,4 @@ def run_pdf_only_phase(
             for w in copy_warnings:
                 log.detail(f"  {w}")
         log.detail("----------")
-    return output_root, None, None, step8_missing_logos_report
+    return output_root, None, None, None, step8_missing_logos_report

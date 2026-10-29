@@ -18,7 +18,9 @@ This folder contains your full packing list pipeline, the main GUI app, and the 
 - **`Missing/`** – Files that power the missing‑run tool:
   - `All Orders.csv` – consolidated log of step‑6 split runs.
   - `Missing Input.csv` – queries for the missing‑run pipeline.
-- **`Unmatched SKU Files/`** – Per‑day, per‑shift CSVs of unmatched SKUs moved out of step 4; also default output for Preflight Issues CSVs.
+- **`Unmatched SKUs/`** – Per‑day, per‑shift CSVs of unmatched SKUs moved out of step 4.
+- **`Missing Logos/`** / **`Missing Apparels/`** – Holding CSVs stripped before Step 6 naming.
+- **`Preflight Issues/`** – Preflight Issues app CSV output.
 - **`backups/versions/order-packing-list-generator/`** – Older versions of the main GUI app kept for reference.
 
 ### Running the main app
@@ -76,6 +78,9 @@ Takes a **ShipStation CSV (Current View)** and, through eight scripted steps, pr
 ├── Output/                   ← Date / shift / process outputs
 ├── Data/                     ← Workbook.xlsx, design/process CSVs, etc.
 ├── Missing/                  ← All Orders.csv, Missing Input.csv (missing run)
-├── Unmatched SKU Files/      ← Step-4 unmatched + Preflight Issues CSVs
+├── Unmatched SKUs/           ← Step-4 unmatched CSVs
+├── Missing Logos/            ← missing-logo holding CSVs
+├── Missing Apparels/         ← missing-apparel holding CSVs
+├── Preflight Issues/         ← Preflight Issues CSVs
 └── logs/                     ← PDF / image diagnostic logs
 ```

@@ -107,6 +107,7 @@ def on_run_clicked(app) -> None:
     if app.run_missing_logo_pipeline_var.get():
         app.unmatched_path = None
         app.missing_logo_path = None
+        app.missing_apparel_path = None
         start_banner = "Starting missing pipeline..."
     elif tag_mode:
         start_banner = "Fetching ShipStation orders…"

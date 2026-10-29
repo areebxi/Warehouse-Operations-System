@@ -45,7 +45,7 @@ def test_filter_missing_logos_excludes_merge_group(tmp_path: Path):
             return_value=(missing_flags, apparel_flags),
         ),
     ):
-        kept, missing_path, n_excluded = filter_step6_csvs_for_missing_logos(
+        kept, missing_path, apparel_path, n_excluded = filter_step6_csvs_for_missing_logos(
             [csv_path],
             output_root=tmp_path,
             token="tok",
@@ -56,6 +56,7 @@ def test_filter_missing_logos_excludes_merge_group(tmp_path: Path):
 
     assert n_excluded == 2
     assert missing_path is not None and missing_path.exists()
+    assert apparel_path is None
     excluded = pd.read_csv(missing_path)
     assert len(excluded) == 2
     assert set(excluded["Order Number (Base)"].astype(str)) == {"M1"}
@@ -95,7 +96,7 @@ def test_filter_then_naming_has_no_process_item_gaps(tmp_path: Path):
             side_effect=fake_flag,
         ),
     ):
-        kept, _, n_excluded = filter_step6_csvs_for_missing_logos(
+        kept, _, apparel_path, n_excluded = filter_step6_csvs_for_missing_logos(
             [csv_path],
             output_root=tmp_path,
             token="tok",
@@ -105,6 +106,7 @@ def test_filter_then_naming_has_no_process_item_gaps(tmp_path: Path):
         )
 
     assert n_excluded == 1
+    assert apparel_path is None
     assert len(kept) == 1
     kept_df = pd.read_csv(kept[0])
     named = _sort_and_assign_merge_first(
@@ -148,7 +150,7 @@ def test_filter_excludes_customise_qty2_when_second_stem_missing(tmp_path: Path)
             side_effect=fake_flag,
         ),
     ):
-        kept, missing_path, n_excluded = filter_step6_csvs_for_missing_logos(
+        kept, missing_path, apparel_path, n_excluded = filter_step6_csvs_for_missing_logos(
             [csv_path],
             output_root=tmp_path,
             token="tok",
@@ -159,6 +161,7 @@ def test_filter_excludes_customise_qty2_when_second_stem_missing(tmp_path: Path)
 
     assert seen["stems"] == ["ORD", "ORD-1"]
     assert n_excluded == 2
+    assert apparel_path is None
     assert kept == []
     assert not csv_path.exists()
     excluded = pd.read_csv(missing_path)

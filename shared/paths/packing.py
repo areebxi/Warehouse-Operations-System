@@ -32,7 +32,7 @@ def packing_all_orders_path(from_path: object | None = None) -> Path:
 
 
 def packing_runtime_dir(from_path: object | None = None) -> Path:
-    """App-local I/O root (Input/, Missing Logo, …). Output/Logs are warehouse-root."""
+    """App-local I/O root (Input/, Missing Logos, …). Output/Logs are warehouse-root."""
     return packing_app_dir(from_path)
 
 
@@ -53,7 +53,15 @@ def packing_missing_input_dir(from_path: object | None = None) -> Path:
 
 
 def packing_missing_logo_dir(from_path: object | None = None) -> Path:
-    return packing_runtime_dir(from_path) / "Missing Logo Files"
+    return packing_runtime_dir(from_path) / "Missing Logos"
+
+
+def packing_missing_apparels_dir(from_path: object | None = None) -> Path:
+    return packing_runtime_dir(from_path) / "Missing Apparels"
+
+
+def packing_unmatched_skus_dir(from_path: object | None = None) -> Path:
+    return packing_runtime_dir(from_path) / "Unmatched SKUs"
 
 
 def packing_preflight_dir(from_path: object | None = None) -> Path:
@@ -79,6 +87,8 @@ __all__ = [
     "packing_logs_dir",
     "packing_missing_input_dir",
     "packing_missing_logo_dir",
+    "packing_missing_apparels_dir",
+    "packing_unmatched_skus_dir",
     "packing_preflight_dir",
     "packing_config_dir",
     "packing_gui_config_path",

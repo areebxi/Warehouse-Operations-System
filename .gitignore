@@ -96,11 +96,20 @@ Purchase Order Generator/output/
 Order Grouping Sorter/scripts/_tmp_*/
 
 # --- Packing app live I/O (DB in database/order-packing-list-generator/) ---
-Order Packing List Generator/Input/
+# Track README.md only; ignore all other contents (date/shift CSVs, etc.)
+Order Packing List Generator/Input/*
+!Order Packing List Generator/Input/README.md
 # Missing Input/ stays tracked (header-only Missing Input.csv template)
+Order Packing List Generator/Missing Logos/*
+!Order Packing List Generator/Missing Logos/README.md
+Order Packing List Generator/Missing Apparels/*
+!Order Packing List Generator/Missing Apparels/README.md
+Order Packing List Generator/Preflight Issues/*
+!Order Packing List Generator/Preflight Issues/README.md
+Order Packing List Generator/Unmatched SKUs/*
+!Order Packing List Generator/Unmatched SKUs/README.md
+# Legacy folder names (pre-2026-10-29 renames)
 Order Packing List Generator/Missing Logo Files/
-# Legacy (Preflight Issues CSVs → Output/Order Packing List Generator/Preflight Issues/)
-Order Packing List Generator/Preflight Issues/
 Order Packing List Generator/Unmatched SKU Files/
 
 # --- Queue app live I/O ---

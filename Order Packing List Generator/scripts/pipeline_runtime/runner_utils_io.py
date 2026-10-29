@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Callable, Optional
 
 from pipeline_runtime.runner_utils_paths import (
+    MISSING_APPARELS_ROOT_DIR,
     MISSING_LOGO_ROOT_DIR,
     PROJECT_ROOT,
     UNMATCHED_ROOT_DIR,
@@ -114,6 +115,16 @@ def _move_missing_logo_to_root(
 ) -> Optional[Path]:
     return _move_sideline_csv_to_root(
         missing_logo_csv_path, date_dd_mm_yyyy, shift_label, MISSING_LOGO_ROOT_DIR
+    )
+
+
+def _move_missing_apparel_to_root(
+    missing_apparel_csv_path: Path,
+    date_dd_mm_yyyy: str,
+    shift_label: str,
+) -> Optional[Path]:
+    return _move_sideline_csv_to_root(
+        missing_apparel_csv_path, date_dd_mm_yyyy, shift_label, MISSING_APPARELS_ROOT_DIR
     )
 
 

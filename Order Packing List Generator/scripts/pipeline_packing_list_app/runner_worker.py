@@ -35,25 +35,39 @@ def pipeline_worker(app, *, ml_name: str | None, use_tag: bool, start_banner: st
                 run_with_log_file=run_with_log_file,
             )
         elif use_tag:
-            output_root, unmatched, missing_logo, results = run_tag_mode_pipelines(
-                app, run_with_log_file=run_with_log_file, run_one_pipeline=run_one_pipeline
-            )
-            app.output_root, app.unmatched_path, app.missing_logo_path, app._pipeline_results = (
+            (
                 output_root,
                 unmatched,
                 missing_logo,
+                missing_apparel,
                 results,
+            ) = run_tag_mode_pipelines(
+                app, run_with_log_file=run_with_log_file, run_one_pipeline=run_one_pipeline
             )
+            (
+                app.output_root,
+                app.unmatched_path,
+                app.missing_logo_path,
+                app.missing_apparel_path,
+                app._pipeline_results,
+            ) = (output_root, unmatched, missing_logo, missing_apparel, results)
         else:
-            output_root, unmatched, missing_logo, results = run_file_mode_pipelines(
-                app, run_with_log_file=run_with_log_file, run_one_pipeline=run_one_pipeline
-            )
-            app.output_root, app.unmatched_path, app.missing_logo_path, app._pipeline_results = (
+            (
                 output_root,
                 unmatched,
                 missing_logo,
+                missing_apparel,
                 results,
+            ) = run_file_mode_pipelines(
+                app, run_with_log_file=run_with_log_file, run_one_pipeline=run_one_pipeline
             )
+            (
+                app.output_root,
+                app.unmatched_path,
+                app.missing_logo_path,
+                app.missing_apparel_path,
+                app._pipeline_results,
+            ) = (output_root, unmatched, missing_logo, missing_apparel, results)
         app._log_queue.put(None)
         app.root.after(0, app._on_pipeline_success)
     except Exception as exc:

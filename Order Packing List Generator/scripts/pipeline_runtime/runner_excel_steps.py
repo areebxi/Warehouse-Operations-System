@@ -26,13 +26,20 @@ def run_excel_steps(
     logo_custom_single_dir,
     logo_custom_double_dir,
     logo_normal_dir,
+    apparel_dir=None,
     use_demo: bool,
     log: Optional[PipelineLog],
     lc,
     discover_step6_csvs,
     make_design_queues: bool = True,
-) -> tuple[list[Path], Optional[Path], Optional[Path]]:
-    step5_path, unmatched_path, missing_logo_path, kept_step5 = run_steps_1_to_5(
+) -> tuple[list[Path], Optional[Path], Optional[Path], Optional[Path]]:
+    (
+        step5_path,
+        unmatched_path,
+        missing_logo_path,
+        missing_apparel_path,
+        kept_step5,
+    ) = run_steps_1_to_5(
         input_csv_path=input_csv_path,
         output_root=output_root,
         token=token,
@@ -49,6 +56,7 @@ def run_excel_steps(
         logo_custom_single_dir=logo_custom_single_dir,
         logo_custom_double_dir=logo_custom_double_dir,
         logo_normal_dir=logo_normal_dir,
+        apparel_dir=apparel_dir,
         use_demo=use_demo,
         log=log,
         lc=lc,
@@ -69,4 +77,4 @@ def run_excel_steps(
         shift_label=shift_label,
         make_design_queues=make_design_queues,
     )
-    return step6_csvs, unmatched_path, missing_logo_path
+    return step6_csvs, unmatched_path, missing_logo_path, missing_apparel_path

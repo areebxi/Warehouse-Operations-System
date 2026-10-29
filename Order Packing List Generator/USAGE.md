@@ -140,7 +140,7 @@ Settings are saved to `config/gui_config.json` on close / after a successful run
     - and so on.
   - The **Customise Logo/Design** image folder should therefore contain files named using these stems (e.g. `09-14343-68842.png`, `09-14343-68842-1.png`, `09-14343-68842-2.png`, …). The PDF generator will look up each personalised unit by its `Logo/Design Image` stem.
 - During Step 4, any rows that cannot be matched to CL lookup rules are written to an **unmatched_orders** CSV and moved under:
-  - `Unmatched SKU Files/{Date}/{Shift} Shift/`
+  - `Unmatched SKUs/{Date}/{Shift} Shift/`
 - These unmatched SKUs can then be investigated or processed via the **Preflight Issues App** (see below).
 
 ### 6. Running the missing pipeline from the Packing List App
@@ -268,7 +268,7 @@ This opens the **Preflight Issues App** window (maximized). Progress appears in 
 - **Custom Label Database (CSV)**:
   - Path to live `Custom_Label_Database.csv` used for SKU enrich / Unmatched SKU checks.
 - **Output directory**:
-  - Where the **Preflight Issues** CSV will be written (default `Unmatched SKU Files` at the project root; you can point this at e.g. `Preflight Issues/`).
+  - Where the **Preflight Issues** CSV will be written (default `Preflight Issues/` under the Packing app).
   - Tag mode nests under `{output}/{Date}/{Shift} Shift/`.
 - **Apparel Image / Normal Logo/Design / Customise Single / Customise Double** folders:
   - Optional. Used for missing logo/apparel dry-run (same rules as Step 8 PDF image lookup).
@@ -285,7 +285,7 @@ The app remembers Workbook, Custom Label Database CSV, output directory, image f
    - **CSV file(s):** click **Add files…** and select one or more ShipStation CSV files.
 3. Confirm **Workbook** path (process sheets) and **Custom Label Database (CSV)** path are correct.
 4. Optionally set the four image folders.
-5. Set **Output directory** (or use the default `Unmatched SKU Files`).
+5. Set **Output directory** (or use the default `Preflight Issues/`).
 6. Click **Run**.
 
 For each input CSV, the app:

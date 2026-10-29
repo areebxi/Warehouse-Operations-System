@@ -21,16 +21,26 @@ from pipeline_runtime.runner_utils import (
 from shared.demo_images import demo_image_lookup
 
 
+def _log_sideline(log: Optional[PipelineLog], label: str, path: Optional[Path]) -> None:
+    if not log or not path:
+        return
+    try:
+        log.detail(f"{label}: {path.resolve()}")
+    except OSError:
+        log.detail(f"{label}: {path}")
+
+
 def finish_excel_phase(
     *,
     output_root: Path,
     unmatched_path: Optional[Path],
     missing_logo_path: Optional[Path],
+    missing_apparel_path: Optional[Path] = None,
     excel_copy_dir,
     shift_label: str,
     log: Optional[PipelineLog],
     lc,
-) -> tuple[Path, Optional[Path], Optional[Path], Optional[str]]:
+) -> tuple[Path, Optional[Path], Optional[Path], Optional[Path], Optional[str]]:
     step8_missing_logos_report: Optional[str] = None
     if log:
         log.detail("Excel phase complete — skipping PDF (Step 8) for this pass.")
@@ -44,22 +54,21 @@ def finish_excel_phase(
     if log:
         log.detail("----------")
         log.detail(f"Excel phase finished. Primary output: {output_root.resolve()}")
-        if unmatched_path:
-            try:
-                log.detail(f"Unmatched orders file: {unmatched_path.resolve()}")
-            except OSError:
-                log.detail(f"Unmatched orders file: {unmatched_path}")
-        if missing_logo_path:
-            try:
-                log.detail(f"Missing logo orders file: {missing_logo_path.resolve()}")
-            except OSError:
-                log.detail(f"Missing logo orders file: {missing_logo_path}")
+        _log_sideline(log, "Unmatched orders file", unmatched_path)
+        _log_sideline(log, "Missing logo orders file", missing_logo_path)
+        _log_sideline(log, "Missing apparel orders file", missing_apparel_path)
         if copy_warnings:
             log.detail("Excel copy had failures (also included in Finished report):")
             for w in copy_warnings:
                 log.detail(f"  {w}")
         log.detail("----------")
-    return output_root, unmatched_path, missing_logo_path, step8_missing_logos_report
+    return (
+        output_root,
+        unmatched_path,
+        missing_logo_path,
+        missing_apparel_path,
+        step8_missing_logos_report,
+    )
 
 
 def finish_full_pipeline(
@@ -67,6 +76,7 @@ def finish_full_pipeline(
     output_root: Path,
     unmatched_path: Optional[Path],
     missing_logo_path: Optional[Path],
+    missing_apparel_path: Optional[Path] = None,
     step6_csvs: list[Path],
     workbook_path: Path,
     apparel_dir,
@@ -80,7 +90,7 @@ def finish_full_pipeline(
     use_demo: bool,
     log: Optional[PipelineLog],
     lc,
-) -> tuple[Path, Optional[Path], Optional[Path], Optional[str]]:
+) -> tuple[Path, Optional[Path], Optional[Path], Optional[Path], Optional[str]]:
     if log:
         log.step(
             "Step 8/8: starting PDF phase (Excel files are complete). "
@@ -123,16 +133,9 @@ def finish_full_pipeline(
     if log:
         log.detail("----------")
         log.detail(f"Pipeline finished. Primary output: {output_root.resolve()}")
-        if unmatched_path:
-            try:
-                log.detail(f"Unmatched orders file: {unmatched_path.resolve()}")
-            except OSError:
-                log.detail(f"Unmatched orders file: {unmatched_path}")
-        if missing_logo_path:
-            try:
-                log.detail(f"Missing logo orders file: {missing_logo_path.resolve()}")
-            except OSError:
-                log.detail(f"Missing logo orders file: {missing_logo_path}")
+        _log_sideline(log, "Unmatched orders file", unmatched_path)
+        _log_sideline(log, "Missing logo orders file", missing_logo_path)
+        _log_sideline(log, "Missing apparel orders file", missing_apparel_path)
         if step8_missing_logos_report and not (
             copy_warnings and step8_missing_logos_report == "\n".join(copy_warnings)
         ):
@@ -142,4 +145,10 @@ def finish_full_pipeline(
             for w in copy_warnings:
                 log.detail(f"  {w}")
         log.detail("----------")
-    return output_root, unmatched_path, missing_logo_path, step8_missing_logos_report
+    return (
+        output_root,
+        unmatched_path,
+        missing_logo_path,
+        missing_apparel_path,
+        step8_missing_logos_report,
+    )

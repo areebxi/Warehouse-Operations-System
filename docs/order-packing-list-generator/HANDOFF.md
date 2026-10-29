@@ -1,13 +1,13 @@
 # Order Packing List Generator — snapshot
 
-**Updated:** 29 October 2026 (warehouse-root Logs/Output; GUI configs retargeted)  
+**Updated:** 29 October 2026 (Missing Apparels sideline; folder READMEs tracked)  
 **Handbook:** `AGENTS.md` · **Policy:** parent `.cursor/rules/order-packing-list-generator/`
 
 ## Continue here
 
 - Live pipeline: `packing_list_app.py` or step scripts under `scripts/`.
-- Run outputs/logs: `Output/Order Packing List Generator/` and `Logs/Order Packing List Generator/` (via `shared.paths`). Input stays in the app folder. `Missing Input/Missing Input.csv` is a tracked header-only template (Date, Process, Item Number). Preflight Issues CSVs: `Output/Order Packing List Generator/Preflight Issues/` (`gui_config.json` / `preflight_issues_config.json` `output_dir`).
-- Missing logos are stripped **after Step 5, before Step 6 naming** so Process/Item numbers have no gaps. The missing-logo CSV is a holding file (no Item numbers). Logos ready → run it in the main packing app **from Step 1**.
+- Run outputs/logs: `Output/Order Packing List Generator/` and `Logs/Order Packing List Generator/` (via `shared.paths`). App-local operator I/O: `Input/`, `Missing Logos/`, `Missing Apparels/`, `Preflight Issues/`, `Unmatched SKUs/` — each tracks only `README.md`; runtime date/shift CSVs are gitignored. `Missing Input/Missing Input.csv` is a tracked header-only template (Date, Process, Item Number).
+- Missing logos **and** missing apparels are stripped **after Step 5, before Step 6 naming** so Process/Item numbers have no gaps. Holding CSVs (no Item numbers) land under `Missing Logos/` and `Missing Apparels/` (`{date}/{shift}/`). Images ready → run that file in the main packing app **from Step 1**.
 - Enrich: Custom Label first (**case-sensitive** entire-cell via `shared/cl_sku_match`, locked 2026-10-27), then `database/shared/plain/Plain Database.csv` (till last dash or whole SKU), then Packs (whole `Channel Child SKU`). Blank Gender Apparel after those three is unmatched.
 - **Make design queues** (GUI checkbox, default on): Step 7 writes DTF Des to `Output/Order Packing List Generator/`. After Step 8 PDFs, Packing copies it to SharedInbox and waits on Queue `--files` for that file. With several inputs, the next packing run starts while the previous queue job runs (one queue job at a time). When off: Excel and PDFs only. Skip Batches (Queue Configuration Workbook) skip the SharedInbox copy; Queue still skips those PNGs.
 - DTF Des: packing Output folder always; SharedInbox only when Make design queues is on, after that file’s PDFs.

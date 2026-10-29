@@ -15,15 +15,10 @@ from pipeline_cl_lookup.fetch_input_csv import (
 )
 from pipeline_fill_prime_images.service import fill_packing_columns
 from pipeline_packing_rules.service import apply_packing_rules_to_csv
-from pipeline_runtime.filter_missing_logos import filter_step6_csvs_for_missing_logos
 from pipeline_runtime.pipeline_log import PipelineLog
-from pipeline_runtime.runner_utils import (
-    _move_missing_logo_to_root,
-    _move_unmatched_to_root,
-    log_csv_preview,
-)
+from pipeline_runtime.runner_filter_missing import filter_and_move_missing_images
+from pipeline_runtime.runner_utils import _move_unmatched_to_root, log_csv_preview
 from pipeline_split_position.service import run as run_split_and_assign_position_codes
-from shared.demo_images import demo_image_lookup
 
 
 def run_steps_1_to_5(
@@ -44,11 +39,12 @@ def run_steps_1_to_5(
     logo_custom_single_dir,
     logo_custom_double_dir,
     logo_normal_dir,
+    apparel_dir=None,
     use_demo: bool,
     log: Optional[PipelineLog],
     lc,
     discover_step6_csvs=None,
-) -> tuple[Path, Optional[Path], Optional[Path], object]:
+) -> tuple[Path, Optional[Path], Optional[Path], Optional[Path], object]:
     if log:
         log.step("Step 1/8: Fetching input CSV...")
     t_step = time.perf_counter()
@@ -161,27 +157,18 @@ def run_steps_1_to_5(
         log.detail(f"Step 5/8: Done ({n5} rows) -> {step5_path.name}  [{time.perf_counter() - t_step:.2f}s]")
         log_csv_preview(lc, step5_path, "Step 5 CSV preview (process numbers)")
 
-    if log:
-        log.step("Filtering missing logos (before process/item naming)...")
-    t_miss = time.perf_counter()
-    with demo_image_lookup(use_demo):
-        kept_step5, missing_logo_path, missing_logo_count = filter_step6_csvs_for_missing_logos(
-            [step5_path],
-            output_root=output_root,
-            token=token,
-            logo_custom_single_dir=logo_custom_single_dir,
-            logo_custom_double_dir=logo_custom_double_dir,
-            logo_normal_dir=logo_normal_dir,
-            log=lc,
-        )
-    if missing_logo_path is not None:
-        moved_missing = _move_missing_logo_to_root(missing_logo_path, date_dd_mm_yyyy, shift_label)
-        if moved_missing is not None:
-            missing_logo_path = moved_missing
-    if log:
-        log.detail(
-            f"  Missing-logo filter done — excluded {missing_logo_count} row(s)"
-            + (f"; file: {missing_logo_path}" if missing_logo_path else "")
-            + f"  [{time.perf_counter() - t_miss:.2f}s]"
-        )
-    return step5_path, unmatched_path, missing_logo_path, kept_step5
+    kept_step5, missing_logo_path, missing_apparel_path = filter_and_move_missing_images(
+        step5_path=step5_path,
+        output_root=output_root,
+        token=token,
+        logo_custom_single_dir=logo_custom_single_dir,
+        logo_custom_double_dir=logo_custom_double_dir,
+        logo_normal_dir=logo_normal_dir,
+        apparel_dir=apparel_dir,
+        use_demo=use_demo,
+        date_dd_mm_yyyy=date_dd_mm_yyyy,
+        shift_label=shift_label,
+        log=log,
+        lc=lc,
+    )
+    return step5_path, unmatched_path, missing_logo_path, missing_apparel_path, kept_step5

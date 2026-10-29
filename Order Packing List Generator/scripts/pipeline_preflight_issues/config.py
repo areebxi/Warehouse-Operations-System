@@ -8,7 +8,7 @@ if str(_WAREHOUSE) not in sys.path:
 from shared import paths as wh  # noqa: E402
 DEFAULT_WORKBOOK = wh.packing_workbook_path()
 DEFAULT_CL_CSV = wh.cl_csv_path()
-DEFAULT_OUTPUT_DIR = wh.packing_output_dir() / "Preflight Issues"
+DEFAULT_OUTPUT_DIR = wh.packing_preflight_dir()
 CONFIG_DIR = wh.packing_config_dir()
 PREFLIGHT_CONFIG = CONFIG_DIR / "preflight_issues_config.json"
 # Legacy config path (read as fallback; writes go to PREFLIGHT_CONFIG only)

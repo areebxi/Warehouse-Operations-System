@@ -1,13 +1,20 @@
 ---
-description: Strip missing logos before Step 6 process/item naming
+description: Strip missing logos/apparels before Step 6 process/item naming
 globs: "Order Packing List Generator/**"
 alwaysApply: false
 ---
 
-# Missing logos before naming
+# Missing logos / apparels before naming
 
 Supervisor 2026-09-17: dropping missing logos **after** Step 6 naming leaves process/item gaps. The packing pipeline must strip them **after Step 5, before Step 6**.
 
+Supervisor 2026-10-29: **missing apparels** follow the same gate — detect with the same image dry-run as Preflight / Step 8, exclude the union of missing-logo and missing-apparel rows (and merge siblings), write holding CSVs, then name remaining rows.
+
 Lookup still expands Item Quantity and applies custom `base` / `base-1` stems (same as PDF). Kept Step 5 rows stay unexpanded so Step 6 names remaining rows with no holes. Do not move the filter back after naming.
 
-Supervisor 2026-09-17: the missing-logo CSV is a **holding file only**. Do **not** give it process/item numbers. When logos exist, run that file through the **main packing app from Step 1** (full pipeline). Fresh names happen on that run.
+Holding files (no process/item numbers):
+
+- `Missing Logos/{date}/{shift}/missing_logo_orders_{token}.csv`
+- `Missing Apparels/{date}/{shift}/missing_apparel_orders_{token}.csv`
+
+When images exist, run that file through the **main packing app from Step 1** (full pipeline). Fresh names happen on that run.

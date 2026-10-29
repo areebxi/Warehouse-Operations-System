@@ -70,7 +70,7 @@ class TestPipelinePhases(unittest.TestCase):
         ) as mock_s8, patch(
             "pipeline_runtime.runner_steps_1_5.fetch_input_csv"
         ) as mock_fetch:
-            output_root, unmatched, missing, report = run_pipeline(
+            output_root, unmatched, missing, missing_apparel, report = run_pipeline(
                 **self._common_kwargs(), phases="pdf"
             )
         mock_fetch.assert_not_called()
@@ -78,6 +78,7 @@ class TestPipelinePhases(unittest.TestCase):
         self.assertEqual(output_root, out_root)
         self.assertIsNone(unmatched)
         self.assertIsNone(missing)
+        self.assertIsNone(missing_apparel)
         self.assertEqual(report, "ok")
         self.assertEqual(mock_s8.call_args.kwargs["step6_csvs"], [proc])
 
@@ -118,7 +119,7 @@ class TestPipelinePhases(unittest.TestCase):
 
         def fake_filter(csvs, **kw):
             call_order.append("filter")
-            return (csvs, None, 0)
+            return (csvs, None, None, 0)
 
         def fake_excel(csv_path, output_root, dispatch_date, **kwargs):
             (Path(output_root) / f"{Path(csv_path).stem}.xlsx").write_bytes(b"PK")
@@ -145,7 +146,7 @@ class TestPipelinePhases(unittest.TestCase):
             "pipeline_runtime.runner_steps_6_7.run_split_by_process_and_item_number",
             side_effect=fake_split6,
         ), patch(
-            "pipeline_runtime.runner_steps_1_5.filter_step6_csvs_for_missing_logos",
+            "pipeline_runtime.runner_filter_missing.filter_step6_csvs_for_missing_logos",
             side_effect=fake_filter,
         ), patch(
             "pipeline_runtime.runner_steps_6_7._update_all_orders_log"
@@ -155,7 +156,7 @@ class TestPipelinePhases(unittest.TestCase):
         ), patch(
             "pipeline_runtime.runner_finish.run_step8_pdf_generation_impl"
         ) as mock_s8:
-            output_root, unmatched, missing, report = run_pipeline(
+            output_root, unmatched, missing, missing_apparel, report = run_pipeline(
                 **self._common_kwargs(), phases="excel"
             )
 

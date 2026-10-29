@@ -92,6 +92,9 @@ def on_pipeline_success(app) -> None:
         if app.missing_logo_path and app.missing_logo_path.exists():
             append_log(app, f"Missing logo orders file: {app.missing_logo_path}")
             msg_parts.append(f"\nMissing logo orders file: {app.missing_logo_path}")
+        if app.missing_apparel_path and app.missing_apparel_path.exists():
+            append_log(app, f"Missing apparel orders file: {app.missing_apparel_path}")
+            msg_parts.append(f"\nMissing apparel orders file: {app.missing_apparel_path}")
     elif len(completed) == 1:
         only = completed[0]
         out = only.get("output_root")

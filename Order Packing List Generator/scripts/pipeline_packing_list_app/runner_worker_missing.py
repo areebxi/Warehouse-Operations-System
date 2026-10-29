@@ -27,9 +27,10 @@ def run_missing_logo_worker(app, *, ml_name: str, start_banner: str, run_with_lo
         log=pl,
         use_demo_images=app.use_demo_images_var.get(),
     )
-    app.output_root, app.unmatched_path, app.missing_logo_path, app._pipeline_results = (
-        output_root,
-        None,
-        None,
-        None,
-    )
+    (
+        app.output_root,
+        app.unmatched_path,
+        app.missing_logo_path,
+        app.missing_apparel_path,
+        app._pipeline_results,
+    ) = (output_root, None, None, None, None)

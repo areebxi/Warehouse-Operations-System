@@ -22,7 +22,7 @@ For each selected ShipStation CSV:
 ## Output
 
 - Filename: `Preflight Issues_{DD-MM-YYYY}_{HH-MM-SS}.csv`
-- Default directory: `Unmatched SKU Files/` at the project root (GUI **Output directory** can override, e.g. `Preflight Issues/`).
+- Default directory: `Order Packing List Generator/Preflight Issues/` (GUI **Output directory** can override).
 - Columns: enriched packing columns plus `Unmatched SKU`, `Missing Logo`, `Missing Apparel` (`Yes` / `No`).
 
 If no rows have issues, the app reports success and does not write a CSV.

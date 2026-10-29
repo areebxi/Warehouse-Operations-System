@@ -11,6 +11,7 @@ Where locked decisions live. **Do not copy** locks here; link to the owner. Chat
 | Sorter app policy / live paths | `.cursor/rules/order-grouping-sorter/` (2026-10-28: no `Manually Made Files` / `Missed Orders` / `Today's Manually Made Files` under the sorter app; `Netural Database/` at warehouse root) |
 | Custom Label policy / fills | `.cursor/rules/custom-label-database/` |
 | Packing policy | `.cursor/rules/order-packing-list-generator/` |
+| Packing operator I/O folders | Locked 2026-10-29: `Input/`, `Missing Logos/`, `Missing Apparels/`, `Unmatched SKUs/`, `Preflight Issues/` under the Packing app (via `shared.paths.packing_*`). Not warehouse `Output/`. Each tracks only `README.md`; runtime CSVs gitignored. Owner: `live-files.mdc` + `missing-logo-before-naming.mdc` |
 | Queue policy | `.cursor/rules/production-design-queue-manager/` |
 | Shipping policy | `.cursor/rules/shipping-label-generator/` (reprint + Batch Summary locked 2026-10-20 in `reprint.mdc`) |
 | Shipping Configuration Workbook | Locked 2026-10-29: `database/shipping-label-generator/Configuration Workbook.xlsx` via `shared.paths.shipping_config_workbook_path` (Label Page Threshold only; not Queue’s workbook) |

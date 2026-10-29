@@ -15,7 +15,7 @@ Live paths via `shared/paths.py` (DB in `database/`; Input + GUI config in this 
 | `database/shared/plain/Plain Database.csv` | Step 2 plain (till last dash or whole SKU) |
 | `database/shared/packs/Packs Database.csv` | Step 2 packs (whole SKU) |
 | `database/shared/shipstation_tags/ShipStation_Tags.xlsx` | Shared tags |
-| `Input/` (+ Missing Logo / Preflight / …) | `config/` GUI JSON |
+| `Input/` (+ Missing Logos / Apparels / Unmatched SKUs / Preflight / …) | `config/` GUI JSON |
 | `Output|Logs/Order Packing List Generator/` | Warehouse-root run I/O |
 | `config/ShipStation/.env` | ShipStation credentials |
 | `runtime/SharedInbox/DTF Des/{date}/{shift}/` | Dual-write DTF Des |

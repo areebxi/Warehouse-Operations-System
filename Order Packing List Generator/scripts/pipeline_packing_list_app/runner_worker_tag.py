@@ -12,7 +12,7 @@ from .runner_worker_helpers import DesignQueueHandoff, handoff_design_queues
 
 def run_tag_mode_pipelines(app, *, run_with_log_file, run_one_pipeline) -> tuple:
     pl: PipelineLog | None = None
-    output_root = unmatched = missing_logo = None
+    output_root = unmatched = missing_logo = missing_apparel = None
     results: list[dict] = []
 
     tags = (
@@ -72,7 +72,13 @@ def run_tag_mode_pipelines(app, *, run_with_log_file, run_one_pipeline) -> tuple
             pl.detail(start_msg)
             if app._log_queue is not None:
                 app._log_queue.put(f"{prefix}{start_msg}")
-            output_root, unmatched, missing_logo, missing_logos_report = run_one_pipeline(
+            (
+                output_root,
+                unmatched,
+                missing_logo,
+                missing_apparel,
+                missing_logos_report,
+            ) = run_one_pipeline(
                 csv_path,
                 pl=pl,
                 use_fixed=True,
@@ -85,6 +91,7 @@ def run_tag_mode_pipelines(app, *, run_with_log_file, run_one_pipeline) -> tuple
                     "output_root": output_root,
                     "unmatched": unmatched,
                     "missing_logo": missing_logo,
+                    "missing_apparel": missing_apparel,
                     "process_name": output_root.name if output_root else process_name,
                     "missing_logos_report": missing_logos_report,
                 }
@@ -96,4 +103,4 @@ def run_tag_mode_pipelines(app, *, run_with_log_file, run_one_pipeline) -> tuple
     finally:
         if handoff is not None:
             handoff.finish()
-    return output_root, unmatched, missing_logo, results
+    return output_root, unmatched, missing_logo, missing_apparel, results

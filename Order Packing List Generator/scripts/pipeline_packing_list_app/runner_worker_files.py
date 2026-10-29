@@ -11,7 +11,7 @@ from .runner_worker_helpers import DesignQueueHandoff, handoff_design_queues
 
 def run_file_mode_pipelines(app, *, run_with_log_file, run_one_pipeline) -> tuple:
     pl: PipelineLog | None = None
-    output_root = unmatched = missing_logo = None
+    output_root = unmatched = missing_logo = missing_apparel = None
     results: list[dict] = []
 
     paths = get_input_paths(app)
@@ -40,6 +40,7 @@ def run_file_mode_pipelines(app, *, run_with_log_file, run_one_pipeline) -> tupl
                 "output_root": None,
                 "unmatched": None,
                 "missing_logo": None,
+                "missing_apparel": None,
                 "process_name": name,
                 "missing_logos_report": None,
                 "skipped": True,
@@ -70,14 +71,18 @@ def run_file_mode_pipelines(app, *, run_with_log_file, run_one_pipeline) -> tupl
                 continue
 
             try:
-                output_root, unmatched, missing_logo, missing_logos_report = (
-                    run_one_pipeline(
-                        csv_path,
-                        pl=pl,
-                        use_fixed=use_fixed,
-                        fixed_process=fixed_for_this,
-                        phases="all",
-                    )
+                (
+                    output_root,
+                    unmatched,
+                    missing_logo,
+                    missing_apparel,
+                    missing_logos_report,
+                ) = run_one_pipeline(
+                    csv_path,
+                    pl=pl,
+                    use_fixed=use_fixed,
+                    fixed_process=fixed_for_this,
+                    phases="all",
                 )
             except FileNotFoundError as exc:
                 if not multi:
@@ -94,6 +99,7 @@ def run_file_mode_pipelines(app, *, run_with_log_file, run_one_pipeline) -> tupl
                     "output_root": output_root,
                     "unmatched": unmatched,
                     "missing_logo": missing_logo,
+                    "missing_apparel": missing_apparel,
                     "process_name": output_root.name if output_root else csv_path.stem,
                     "missing_logos_report": missing_logos_report,
                 }
@@ -116,4 +122,4 @@ def run_file_mode_pipelines(app, *, run_with_log_file, run_one_pipeline) -> tupl
     finally:
         if handoff is not None:
             handoff.finish()
-    return output_root, unmatched, missing_logo, results
+    return output_root, unmatched, missing_logo, missing_apparel, results
