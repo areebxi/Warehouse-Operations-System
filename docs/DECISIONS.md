@@ -18,6 +18,7 @@ Where locked decisions live. **Do not copy** locks here; link to the owner. Chat
 | Shipping app tuneables YAML | Locked 2026-10-29: `Shipping Label Generator/config/shipping_config.yaml` via `shared.paths.shipping_yaml_path` (app config, not database) |
 | Shipping Reports / failures paths | Locked 2026-10-29: `Output/Shipping Label Generator/Reports/`; `Logs/Shipping Label Generator/Error and Failures/` — not under the Shipping app folder |
 | Purchase Order policy | `.cursor/rules/purchase-order-generator/` |
+| Shared brand logos | Locked 2026-10-29: `database/shared/brand_logos/` via `shared.paths.shared_brand_logos_dir` (PO packing slips now; Packing later when it owns all packing-list PDFs). App-local PO `assets/fonts` removed. Owner: `live-files.mdc` + `database/README.md` |
 | Proven joins + approval + pipeline map | Parent [`AGENTS.md`](../AGENTS.md) |
 | Architecture (200-line, layers, boundaries) | `.cursor/rules/global/architecture.mdc`; [`ARCHITECTURE.md`](ARCHITECTURE.md) |
 | SharedInbox handoff | `.cursor/rules/global/shared-inbox.mdc` |

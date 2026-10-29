@@ -3,8 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from shared.paths.catalog import custom_label_database_dir
-from shared.paths.po import po_app_dir
-from shared.paths.root import config_root, runtime_root, warehouse_root_from
+from shared.paths.root import config_root, database_shared_dir, runtime_root, warehouse_root_from
 
 def shipstation_config_dir(from_path: object | None = None) -> Path:
     return config_root(from_path) / "ShipStation"
@@ -47,8 +46,14 @@ def demo_custom_double_dir(from_path: object | None = None) -> Path:
     return demo_images_root(from_path) / "Personalized Designs" / "Double Position"
 
 
+def shared_brand_logos_dir(from_path: object | None = None) -> Path:
+    """Shared brand logo images (PO slips now; Packing later)."""
+    return database_shared_dir(from_path) / "brand_logos"
+
+
 def images_po_dir(from_path: object | None = None) -> Path:
-    return po_app_dir(from_path) / "assets"
+    """Alias for shared_brand_logos_dir (legacy PO assets name)."""
+    return shared_brand_logos_dir(from_path)
 
 
 def ensure_dir(path: Path) -> Path:
@@ -65,6 +70,7 @@ __all__ = [
     "demo_normal_design_dir",
     "demo_custom_single_dir",
     "demo_custom_double_dir",
+    "shared_brand_logos_dir",
     "images_po_dir",
     "ensure_dir",
 ]

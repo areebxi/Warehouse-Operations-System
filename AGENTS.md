@@ -12,7 +12,7 @@ When a task names an app, follow that app’s `AGENTS.md` handbook and the paren
 | `runtime/` | **Shared only:** SharedInbox (Packing → Queue) |
 | `config/` | **Shared only:** ShipStation `.env` |
 | `shared/` | Python helpers (`paths.py`, `cl_sku_match.py`, `shipstation/`) |
-| `<App>/` | Code + Input/config (+ PO `assets/`); run **Logs/** and **Output/** are warehouse-root |
+| `<App>/` | Code + Input/config; run **Logs/** and **Output/** are warehouse-root |
 | `Logs/` | All app logs (`Logs/<App Name>/`) |
 | `Output/` | All app outputs (`Output/<App Name>/`) |
 | `Custom Label Database/` | CL scripts/docs only (live CSV in `database/shared/custom_label/`) |
@@ -31,6 +31,7 @@ Key live files:
 - Queue DB: `database/production-design-queue-manager/Configuration Workbook.xlsx`
 - Shipping DB: `database/shipping-label-generator/` (Configuration Workbook / Label Page Threshold)
 - Plain / Packs: `database/shared/plain/Plain Database.csv`, `database/shared/packs/Packs Database.csv`
+- Brand logos: `database/shared/brand_logos/` (PO slips; Packing later)
 - PO DB: `database/purchase-order-generator/` (stock CSVs; Plain/Packs are shared)
 - CL helpers: `database/custom-label-database/support/`, `Apparel Images/`
 - Run I/O: each app’s `Input/` (and similar); **Logs** / **Output** under warehouse-root `Logs/<App>/`, `Output/<App>/`
@@ -77,7 +78,7 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 
 ### Purchase Order Generator
 - **Purpose:** Awaiting-dispatch by tag → BTC stock → packing slips. **Later (not built, 2026-09-17):** EDI/stock only; **all** packing list PDFs from Order Packing List Generator.
-- **Live data:** stock in `database/purchase-order-generator/`; shared Plain / Packs / Tags / CL / supplier catalogs; app `assets/`, `config.py`; outputs under `Output/Purchase Order Generator/`.
+- **Live data:** stock in `database/purchase-order-generator/`; shared Plain / Packs / Tags / CL / supplier catalogs / `brand_logos/`; `config.py`; outputs under `Output/Purchase Order Generator/`.
 - **Talks to:** ShipStation API; BTC FTP stock; CL CSV (`BTC SKU`); shared Plain / Packs.
 
 ## Join points (proven)
@@ -91,6 +92,7 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 | Absolute Product Data | `database/shared/absolute_product_data/Absolute_Product_Data.xlsx` (single). Warehouse buys **babysuits only** (styles C800T / C8020T / C8030T) |
 | Plain Database | `database/shared/plain/Plain Database.csv` (single; grouping + PO + packing plain) |
 | Packs Database | `database/shared/packs/Packs Database.csv` (single; grouping + PO) |
+| Brand logos | `database/shared/brand_logos/` via `shared.paths.shared_brand_logos_dir` (PO slips now; Packing later) |
 | ShipStation Tags | `database/shared/shipstation_tags/ShipStation_Tags.xlsx` (single) |
 | Taxonomy pick-lists | `database/order-grouping-sorter/taxonomy_picklists.csv` (Hashim #038 closed Areeb category / product type / product style / department + PE subcategory). Title Case; type has no gender; style is a named product, never a code. Source `shared/taxonomy_catalog.py`. CL filled 2026-09-16; Plain / Packs stay supplier copy. |
 | Areeb column dropdowns | `database/order-grouping-sorter/areeb_column_dropdowns.csv` — `Column,Value` lists for Areeb category / product type / product style / department. Path helper `shared.paths.sorter_areeb_column_dropdowns_path`. Not read on a grouping run. |

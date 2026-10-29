@@ -45,9 +45,10 @@ SCRIPTS_DIR = APP_ROOT / "scripts"
 _setup_import_paths()
 
 DATA_DIR = wh.po_data_dir()
-ASSETS_DIR = wh.images_po_dir()
+ASSETS_DIR = wh.shared_brand_logos_dir()
 OUTPUT_DIR = wh.po_output_dir()
 DONE_DIR = APP_ROOT / "00-Done"
+_LEGACY_BRAND_LOGOS = wh.po_app_dir() / "assets" / "brand_logos"
 
 PRODUCT_DATABASE_FILENAME = "Plain Database.csv"
 SHIPSTATION_TAGS_FILENAME = "ShipStation Tags.xlsx"
@@ -86,12 +87,28 @@ def product_database_archive_dir() -> Path:
     return wh.plain_database_archive_dir()
 
 
+def brand_logos_dir() -> Path:
+    """Shared brand logos; temporary fallback to legacy app assets/brand_logos."""
+    shared = wh.shared_brand_logos_dir()
+    try:
+        if shared.is_dir() and any(shared.iterdir()):
+            return shared
+    except OSError:
+        pass
+    if _LEGACY_BRAND_LOGOS.is_dir():
+        try:
+            if any(_LEGACY_BRAND_LOGOS.iterdir()):
+                return _LEGACY_BRAND_LOGOS
+        except OSError:
+            pass
+    return shared
+
+
 def asset_path(*parts: str) -> Path:
-    """Resolve under this app's assets/."""
-    in_assets = ASSETS_DIR.joinpath(*parts)
-    if in_assets.exists():
-        return in_assets
-    return in_assets
+    """Resolve brand logos (shared) or other paths under the logos root."""
+    if parts == ("brand_logos",) or (len(parts) == 1 and parts[0] == "brand_logos"):
+        return brand_logos_dir()
+    return brand_logos_dir().joinpath(*parts)
 
 
 def output_date_dir(*, date: str | None = None) -> Path:

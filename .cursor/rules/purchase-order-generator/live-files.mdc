@@ -18,7 +18,7 @@ App DB in `database/purchase-order-generator/` (stock only). Plain / Packs / BTC
 | `database/shared/uneek_product_data/Uneek_Product_Data.xlsx` | Shared Uneek Product Data |
 | `database/shared/absolute_product_data/Absolute_Product_Data.xlsx` | Shared Absolute Product Data (babysuits only) |
 | `database/shared/custom_label/Custom_Label_Database.csv` | BTC SKU |
-| `Purchase Order Generator/assets/` | brand_logos / fonts (product shots are external) |
+| `database/shared/brand_logos/` | Shared brand logos via `shared.paths.shared_brand_logos_dir` (PO now; Packing later). Product shots are external. |
 | GUI `product_images_dir` in `database/purchase-order-generator/gui_settings.json` | Required Product Images folder (Browse; no assets fallback) |
 | `Output/Purchase Order Generator/` | Run outputs |
 | `config/ShipStation/.env` | ShipStation `REAL_API_*` |

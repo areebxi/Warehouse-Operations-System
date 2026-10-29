@@ -41,7 +41,7 @@ Options: `--dry-run` (counts only), `--no-backup`, `--output path\to\Plain Datab
 
 ### Download product images for PDFs
 
-`Plain Database` stores image **filenames** only. Packing slips load product shots from the **required** Product Images folder (GUI Browse → `product_images_dir` in `gui_settings.json`) and brand logos from `assets/brand_logos/`. After syncing the database, download any missing images from BTC Product Data URLs (Browse must be set first, or pass `--product-dir`):
+`Plain Database` stores image **filenames** only. Packing slips load product shots from the **required** Product Images folder (GUI Browse → `product_images_dir` in `gui_settings.json`) and brand logos from `database/shared/brand_logos/` (`shared.paths.shared_brand_logos_dir`). After syncing the database, download any missing images from BTC Product Data URLs (Browse must be set first, or pass `--product-dir`):
 
 ```bat
 .venv\Scripts\python.exe scripts\download_product_images.py --database-only
@@ -78,10 +78,11 @@ Logs show the configured remote and local paths on download and load, e.g.
 
 Previous file: `free_stock.csv` (root of FTP). Current file: `WebData/stock_levels_stock_id_fully_quoted.csv`.
 
-## `assets/` — images & fonts
+## Brand logos (shared)
 
-- `brand_logos/`, `fonts/`
-- Product shots: external folder chosen in the GUI (not under `assets/` after migrate)
+- `database/shared/brand_logos/` — PO packing slips now; reserved for Packing when it owns all packing-list PDFs
+- Product shots: external folder chosen in the GUI (`product_images_dir`)
+- App-local `assets/` (including unused fonts) removed 2026-10-29
 
 ## Warehouse `Output/Purchase Order Generator/` — new tag runs
 
