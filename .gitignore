@@ -97,7 +97,7 @@ Order Grouping Sorter/scripts/_tmp_*/
 
 # --- Packing app live I/O (DB in database/order-packing-list-generator/) ---
 Order Packing List Generator/Input/
-Order Packing List Generator/Missing Input/
+# Missing Input/ stays tracked (header-only Missing Input.csv template)
 Order Packing List Generator/Missing Logo Files/
 # Legacy (Preflight Issues CSVs → Output/Order Packing List Generator/Preflight Issues/)
 Order Packing List Generator/Preflight Issues/
