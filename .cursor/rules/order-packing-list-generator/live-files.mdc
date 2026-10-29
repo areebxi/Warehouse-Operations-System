@@ -16,7 +16,7 @@ App DB in `database/order-packing-list-generator/`. Input stays in the app folde
 | `database/shared/shipstation_tags/ShipStation_Tags.xlsx` | Tags → process# (shared) |
 | `database/shared/custom_label/Custom_Label_Database.csv` | Enrich |
 | `Order Packing List Generator/Input/` (+ Missing Logo / Preflight / …) | App-local intake I/O |
-| `Output/Order Packing List Generator/` | Packing run outputs |
+| `Output/Order Packing List Generator/` | Packing run outputs (+ `Preflight Issues/`) |
 | `Logs/Order Packing List Generator/` | Packing run logs |
 | `runtime/SharedInbox/DTF Des/{date}/{shift}/` | DTF Des dual-write |
 | `config/ShipStation/.env` | ShipStation credentials |

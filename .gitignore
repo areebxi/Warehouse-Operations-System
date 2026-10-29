@@ -80,9 +80,13 @@ Output/
 
 # Legacy app-local Logs/Output (pre-2026-10-28 migrate leftovers)
 Order Packing List Generator/Logs/
+# Legacy leftovers (live Output/Logs are warehouse-root)
 Order Packing List Generator/Output/
+Order Packing List Generator/output/
 Production Design Queue Manager/Logs/
+Production Design Queue Manager/logs/
 Production Design Queue Manager/Output/
+Production Design Queue Manager/output/
 Shipping Label Generator/Logs/
 Shipping Label Generator/Output/
 Order Grouping Sorter/Logs/
@@ -95,6 +99,7 @@ Order Grouping Sorter/scripts/_tmp_*/
 Order Packing List Generator/Input/
 Order Packing List Generator/Missing Input/
 Order Packing List Generator/Missing Logo Files/
+# Legacy (Preflight Issues CSVs → Output/Order Packing List Generator/Preflight Issues/)
 Order Packing List Generator/Preflight Issues/
 Order Packing List Generator/Unmatched SKU Files/
 
