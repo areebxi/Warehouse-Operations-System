@@ -27,7 +27,7 @@ This document captures **how the app works** (its logic, rules, and runtime assu
 **Behavioral requirement**: the rebuild must respect the same config precedence:
 
 - `.env`/ENV overrides where supported (example: concurrency can be overridden)
-- otherwise use `shipping_config.yaml`
+- otherwise use `Shipping Label Generator/config/shipping_config.yaml`
 - otherwise use safe defaults
 
 ### Exact `shipping_config.yaml` schema + defaults (logic parity)
@@ -276,7 +276,7 @@ For each `order_number` in the group:
 #### Step B3: Build per-process PDF
 - Walk processes in numeric order. A process is never split. Bucket them in `summary_buckets.py` (locked 2026-10-20).
 - The first page of each DTF file is always a Batch Summary. Reset that on every new source file, including when the previous file ended exactly on the Label Page Threshold.
-- After that first page, include a summary only when the labels it covers reach the threshold (cell A2, sheet `Label Page Threshold`, `Configuration Workbook.xlsx`; fallback 10). A later run left under the threshold has labels only.
+- After that first page, include a summary only when the labels it covers reach the threshold (cell A2, sheet `Label Page Threshold`, `database/shipping-label-generator/Configuration Workbook.xlsx`; fallback 10). A later run left under the threshold has labels only.
 - Page order when a summary is included:
   1. **Summary page** (process/batch information)
   2. **All label pages** for that bucket (in order)

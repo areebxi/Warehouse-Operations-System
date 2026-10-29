@@ -11,14 +11,15 @@ from scripts.app.flows.print_labels.run_sample import run_sample_print
 from scripts.app.flows.void_labels.run import run_void
 from scripts.app.logging.jsonl import JsonlLogger
 from scripts.app.util.win_console import configure_windows_console
+from shared.paths import shipping_yaml_path
 
 
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="shipping-label-app")
     p.add_argument(
         "--config",
-        default="shipping_config.yaml",
-        help="Path to shipping_config.yaml (default: shipping_config.yaml)",
+        default=str(shipping_yaml_path()),
+        help="Path to shipping_config.yaml (default: Shipping Label Generator/config/shipping_config.yaml)",
     )
     sub = p.add_subparsers(dest="command", required=True)
     sub.add_parser("convert", help="Convert Excel/CSV inputs to canonical orders CSV")

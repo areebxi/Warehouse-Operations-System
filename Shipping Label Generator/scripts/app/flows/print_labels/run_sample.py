@@ -7,7 +7,12 @@ from PyPDF2 import PdfReader
 from scripts.app.config.label_page_threshold import read_label_page_threshold
 from scripts.app.config.load import AppConfig
 from scripts.app.flows.print_labels.batch_pdfs import process_pdf_dir, write_combined_and_batch_pdfs
-from scripts.app.flows.print_labels.failures import FailureRow, append_human_error_log, write_failures_csv
+from scripts.app.flows.print_labels.failures import (
+    FailureRow,
+    append_human_error_log,
+    default_failures_dir,
+    write_failures_csv,
+)
 from scripts.app.flows.print_labels.read_group import read_and_group_orders
 from scripts.app.flows.print_labels.run import (
     _combined_pdf_name_for_run,
@@ -102,7 +107,7 @@ def run_sample_print(cfg: AppConfig, log: JsonlLogger) -> int:
     summary_numbers = [str(b.summary_process_number).strip() for b in buckets if b.include_summary]
 
     if all_failures:
-        failures_dir = sample_root / "Error and Failures" / str(input_key)
+        failures_dir = default_failures_dir(date_dir, str(input_key), sample=True)
         failures_dir.mkdir(parents=True, exist_ok=True)
         write_failures_csv(failures_dir / "failures.csv", all_failures)
         append_human_error_log(failures_dir / "error_log.txt", all_failures)

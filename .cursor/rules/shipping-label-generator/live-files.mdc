@@ -6,13 +6,14 @@ alwaysApply: false
 
 # Shipping live files
 
-App owns I/O + yaml. No live DB folder today (`database/shipping-label-generator/` reserved). ShipStation secrets are warehouse-shared.
+App owns I/O + app `config/` tuneables. Label Page Threshold workbook lives under `database/shipping-label-generator/`. ShipStation secrets are warehouse-shared.
 
 | Path | Role |
 |------|------|
 | `Shipping Label Generator/DTF Des Files/` | Input desfiles |
 | `Shipping Label Generator/DTF Des Files - Processed/` | Archived inputs |
-| `Shipping Label Generator/shipping_config.yaml` | Tuneables |
+| `Shipping Label Generator/config/shipping_config.yaml` | Tuneables (`shared.paths.shipping_yaml_path`) |
+| `database/shipping-label-generator/Configuration Workbook.xlsx` | Label Page Threshold |
 | `config/ShipStation/.env` | Only ShipStation secrets file (warehouse-wide) |
-| `Output/Shipping Label Generator/` | Labels and batch PDFs |
-| `Logs/Shipping Label Generator/` | Shipping run logs |
+| `Output/Shipping Label Generator/` | Labels, batch PDFs, `Reports/` (label-report) |
+| `Logs/Shipping Label Generator/` | Run logs + `Error and Failures/` |

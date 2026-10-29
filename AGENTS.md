@@ -29,6 +29,7 @@ Key live files:
 - `database/shared/shipstation_tags/ShipStation_Tags.xlsx` (shared tags)
 - Packing DB: `database/order-packing-list-generator/` (Workbook, New SKU DB)
 - Queue DB: `database/production-design-queue-manager/Configuration Workbook.xlsx`
+- Shipping DB: `database/shipping-label-generator/` (Configuration Workbook / Label Page Threshold)
 - Plain / Packs: `database/shared/plain/Plain Database.csv`, `database/shared/packs/Packs Database.csv`
 - PO DB: `database/purchase-order-generator/` (stock CSVs; Plain/Packs are shared)
 - CL helpers: `database/custom-label-database/support/`, `Apparel Images/`
@@ -66,7 +67,7 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 
 ### Shipping Label Generator
 - **Purpose:** Convert DTF Des → labels; create/void ShipStation labels.
-- **Live data:** app `DTF Des Files/`, `shipping_config.yaml`; `Output|Logs/Shipping Label Generator/`; secrets via `config/ShipStation/.env`.
+- **Live data:** app `DTF Des Files/`, `config/shipping_config.yaml`; DB in `database/shipping-label-generator/` (Configuration Workbook / Label Page Threshold); `Output/Shipping Label Generator/` (labels + Reports); `Logs/Shipping Label Generator/` (run logs + Error and Failures); secrets via `config/ShipStation/.env`.
 - **Talks to:** ShipStation API. Does not auto-read SharedInbox yet.
 
 ### Order Grouping Sorter

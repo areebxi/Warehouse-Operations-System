@@ -21,11 +21,15 @@ Live paths via `shared/paths.py` / `load_config` (desfiles + yaml in this app; O
 
 | `DTF Des Files/` | `DTF Des Files - Processed/` |
 
-| `shipping_config.yaml` | Tuneables |
+| `config/shipping_config.yaml` | Tuneables |
+
+| `database/shipping-label-generator/Configuration Workbook.xlsx` | Label Page Threshold (A2) |
 
 | `config/ShipStation/.env` | Only ShipStation secrets file (warehouse-wide) |
 
-| `Output|Logs/Shipping Label Generator/` | Labels / batch PDFs and run logs |
+| `Output/Shipping Label Generator/` | Labels, batch PDFs, Reports |
+
+| `Logs/Shipping Label Generator/` | Run logs + Error and Failures |
 
 
 
@@ -68,7 +72,7 @@ Report convert counts, process groups, label successes/failures, void results, a
 - **Orchestration:** `scripts/app/main` and `scripts/app/flows/` (convert / print / void / report). Previous working copy restored 8 Oct 2026; print, convert, and label-report modules are the pre-split versions.
 - **Integrations:** `scripts/app/providers/` (`RealProvider` creates and voids labels).
 - **Generation:** `scripts/app/pdf/`.
-- **I/O:** `DTF Des Files/`, `shipping_config.yaml`; secrets via `config/ShipStation/.env` only.
+- **I/O:** `DTF Des Files/`, `config/shipping_config.yaml`; Label Page Threshold via `database/shipping-label-generator/Configuration Workbook.xlsx`; secrets via `config/ShipStation/.env` only.
 - **200-line:** several restored flow modules are over 200 lines. New edits still follow `../docs/ARCHITECTURE.md`.
 - **Must not:** import Packing/Queue/Sorter internals; hardcode secrets; auto-read SharedInbox until built.
 - Architecture: `.cursor/rules/global/architecture.mdc`.

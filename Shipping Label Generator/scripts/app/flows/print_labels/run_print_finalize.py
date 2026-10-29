@@ -1,14 +1,18 @@
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 from PyPDF2 import PdfReader
 
 from app.config.load import AppConfig
 from app.flows.print_labels.combined_sanity import _sanity_check_combined_pdf
-from app.flows.print_labels.failures import FailureRow, append_human_error_log, write_failures_csv
-from app.flows.print_labels.paths import _combined_pdf_name_for_run, _repo_root
+from app.flows.print_labels.failures import (
+    FailureRow,
+    append_human_error_log,
+    default_failures_dir,
+    write_failures_csv,
+)
+from app.flows.print_labels.paths import _combined_pdf_name_for_run
 from app.flows.print_labels.process_group import _write_summary_bucket_pdf
 from app.flows.print_labels.summary_buckets import (
     ProcessGroupResult,
@@ -105,12 +109,7 @@ def finalize_print_run(
             orders_csv=orders_csv, combined_name_override=combined_name_override
         )
         failures_key = combined_name if combined_name != "combined" else batch_number
-        _wh_root = _repo_root().parent
-        if str(_wh_root) not in sys.path:
-            sys.path.insert(0, str(_wh_root))
-        from shared import paths as wh
-
-        failures_dir = failures_dir_override or (wh.shipping_errors_dir() / date_dir / failures_key)
+        failures_dir = failures_dir_override or default_failures_dir(date_dir, failures_key)
         failures_dir.mkdir(parents=True, exist_ok=True)
         failures_csv = failures_dir / "failures.csv"
         error_log = failures_dir / "error_log.txt"

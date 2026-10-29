@@ -10,19 +10,15 @@ from scripts.app.flows.void_labels.read_void_list import read_void_order_numbers
 from scripts.app.flows.void_labels.void_shipments import VoidResult, void_for_order
 from scripts.app.logging.jsonl import JsonlLogger
 from scripts.app.providers.select_provider import get_provider
-
-
-def _repo_root() -> Path:
-    # scripts/app/launchers/ -> repo root
-    return Path(__file__).resolve().parents[3]
+from shared.paths import shipping_yaml_path
 
 
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="void-labels")
     p.add_argument(
         "--config",
-        default=str(_repo_root() / "shipping_config.yaml"),
-        help="Path to shipping_config.yaml (default: shipping_config.yaml)",
+        default=str(shipping_yaml_path()),
+        help="Path to shipping_config.yaml (default: Shipping Label Generator/config/shipping_config.yaml)",
     )
     p.add_argument(
         "--void-csv",

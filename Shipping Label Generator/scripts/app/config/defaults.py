@@ -26,6 +26,7 @@ def default_config_dict() -> dict[str, Any]:
             # load_config overwrites these with shared.paths absolute dirs.
             "output_dir": "output",
             "logs_dir": "logs",
+            # load_config overwrites with warehouse Output/.../Reports
             "reports_dir": "Reports",
             "desfiles_dir": "desfiles",
             "orders_csv": "Order Numbers.csv",

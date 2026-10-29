@@ -13,6 +13,9 @@ Where locked decisions live. **Do not copy** locks here; link to the owner. Chat
 | Packing policy | `.cursor/rules/order-packing-list-generator/` |
 | Queue policy | `.cursor/rules/production-design-queue-manager/` |
 | Shipping policy | `.cursor/rules/shipping-label-generator/` (reprint + Batch Summary locked 2026-10-20 in `reprint.mdc`) |
+| Shipping Configuration Workbook | Locked 2026-10-29: `database/shipping-label-generator/Configuration Workbook.xlsx` via `shared.paths.shipping_config_workbook_path` (Label Page Threshold only; not Queue’s workbook) |
+| Shipping app tuneables YAML | Locked 2026-10-29: `Shipping Label Generator/config/shipping_config.yaml` via `shared.paths.shipping_yaml_path` (app config, not database) |
+| Shipping Reports / failures paths | Locked 2026-10-29: `Output/Shipping Label Generator/Reports/`; `Logs/Shipping Label Generator/Error and Failures/` — not under the Shipping app folder |
 | Purchase Order policy | `.cursor/rules/purchase-order-generator/` |
 | Proven joins + approval + pipeline map | Parent [`AGENTS.md`](../AGENTS.md) |
 | Architecture (200-line, layers, boundaries) | `.cursor/rules/global/architecture.mdc`; [`ARCHITECTURE.md`](ARCHITECTURE.md) |

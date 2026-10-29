@@ -15,6 +15,7 @@ _WAREHOUSE_ROOT = Path(__file__).resolve().parents[4]
 if str(_WAREHOUSE_ROOT) not in sys.path:
     sys.path.insert(0, str(_WAREHOUSE_ROOT))
 
+from shared.paths import shipping_yaml_path
 from shared.shipstation import ensure_shipstation_env
 
 
@@ -59,12 +60,12 @@ def _resolve_config_path(config_path: str | os.PathLike[str]) -> Path:
     return cwd_candidate
 
 
-def load_config(config_path: str | os.PathLike[str] = "shipping_config.yaml") -> AppConfig:
+def load_config(config_path: str | os.PathLike[str] | None = None) -> AppConfig:
     ensure_shipstation_env()
 
     cfg: dict[str, Any] = default_config_dict()
 
-    path = _resolve_config_path(config_path)
+    path = shipping_yaml_path() if config_path is None else _resolve_config_path(config_path)
     if path.exists():
         data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
         if not isinstance(data, dict):
@@ -96,5 +97,6 @@ def load_config(config_path: str | os.PathLike[str] = "shipping_config.yaml") ->
 
     cfg["paths"]["output_dir"] = str(wh.shipping_output_dir())
     cfg["paths"]["logs_dir"] = str(wh.shipping_logs_dir())
+    cfg["paths"]["reports_dir"] = str(wh.shipping_reports_dir())
 
     return AppConfig(raw=cfg, provider_name=provider)

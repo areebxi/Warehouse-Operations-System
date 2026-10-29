@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from scripts.app.util.time import utc_iso_seconds
+from shared import paths as wh
 
 
 @dataclass(frozen=True)
@@ -17,6 +18,12 @@ class FailureRow:
 
 
 FAILURES_HEADER = ["Customer Name", "Process Number", "Order Number", "Order ID", "Error Reason"]
+
+
+def default_failures_dir(date_dir: str, failures_key: str, *, sample: bool = False) -> Path:
+    """Warehouse Logs/.../Error and Failures (Sample/ subfolder for sample-print)."""
+    root = wh.shipping_errors_dir()
+    return root / "Sample" / date_dir / failures_key if sample else root / date_dir / failures_key
 
 
 def write_failures_csv(path: Path, rows: list[FailureRow]) -> None:

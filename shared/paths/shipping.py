@@ -19,6 +19,11 @@ def shipping_database_dir(from_path: object | None = None) -> Path:
     return database_app_dir(DB_SLUG_SHIPPING, from_path)
 
 
+def shipping_config_workbook_path(from_path: object | None = None) -> Path:
+    """Label Page Threshold (sheet Label Page Threshold, cell A2)."""
+    return shipping_database_dir(from_path) / "Configuration Workbook.xlsx"
+
+
 def shipping_runtime_dir(from_path: object | None = None) -> Path:
     return shipping_app_dir(from_path)
 
@@ -40,7 +45,7 @@ def shipping_logs_dir(from_path: object | None = None) -> Path:
 
 
 def shipping_reports_dir(from_path: object | None = None) -> Path:
-    return shipping_runtime_dir(from_path) / "Reports"
+    return shipping_output_dir(from_path) / "Reports"
 
 
 def shipping_manual_print_dir(from_path: object | None = None) -> Path:
@@ -52,11 +57,11 @@ def shipping_void_input_dir(from_path: object | None = None) -> Path:
 
 
 def shipping_errors_dir(from_path: object | None = None) -> Path:
-    return shipping_runtime_dir(from_path) / "Error and Failures"
+    return shipping_logs_dir(from_path) / "Error and Failures"
 
 
 def shipping_config_dir(from_path: object | None = None) -> Path:
-    return shipping_app_dir(from_path)
+    return shipping_app_dir(from_path) / "config"
 
 
 def shipping_yaml_path(from_path: object | None = None) -> Path:
@@ -65,6 +70,7 @@ def shipping_yaml_path(from_path: object | None = None) -> Path:
 __all__ = [
     "shipping_app_dir",
     "shipping_database_dir",
+    "shipping_config_workbook_path",
     "shipping_runtime_dir",
     "shipping_desfiles_dir",
     "shipping_desfiles_processed_dir",

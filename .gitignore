@@ -106,10 +106,11 @@ Production Design Queue Manager/Missing Size Reference/
 Shipping Label Generator/DTF Des Files/
 Shipping Label Generator/DTF Des Files - Processed/
 Shipping Label Generator/DTF Des Files -Processed/
+# Legacy leftovers (live Reports → Output/; Error and Failures → Logs/)
 Shipping Label Generator/Reports/
-Shipping Label Generator/Manual Print Input/
-Shipping Label Generator/Void Label Input/
 Shipping Label Generator/Error and Failures/
+Shipping Label Generator/Logs/
+Shipping Label Generator/logs/
 Shipping Label Generator/**/*.log
 *.log
 

@@ -18,7 +18,7 @@ Live **database** files for the warehouse system. App folders hold code + run I/
 | `production-design-queue-manager/` | Configuration Workbook (pocket overrides) |
 | `order-grouping-sorter/` | Taxonomy pick-lists (category / subcategory / product type / product style) |
 | `purchase-order-generator/` | Stock CSVs (+ Movie Poster SKUs); Plain/Packs live under `shared/` |
-| `shipping-label-generator/` | Reserved (no live DB today) |
+| `shipping-label-generator/` | Configuration Workbook (Label Page Threshold) |
 
 Demo-mode image placeholders are no longer under this warehouse tree (removed 2026-10-28). Packing/Queue “use demo images” still resolves via `shared.demo_images` / `shared.paths` when those folders exist elsewhere or are recreated.
 

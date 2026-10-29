@@ -19,7 +19,8 @@ Supervisor restored the previous working copy on 8 Oct 2026. Print, convert, and
 Batch files (`RUN.bat`, `SETUP.bat`, `bat_files\*.bat`) call `bat_files\resolve_python.bat`. That uses the `py` launcher when it exists, otherwise `python` on PATH.
 
 - Drop DTF Des files into `DTF Des Files/` (config `desfiles_dir`).
-- Secrets in `config/ShipStation/.env` only; tuneables in `shipping_config.yaml`.
+- Secrets in `config/ShipStation/.env` only; tuneables in `Shipping Label Generator/config/shipping_config.yaml` (`shared.paths.shipping_yaml_path`).
+- Reports live under `Output/Shipping Label Generator/Reports/` (`shipping_reports_dir`). Print failure dumps under `Logs/Shipping Label Generator/Error and Failures/` (`shipping_errors_dir`). No app-local `Reports/` / `Error and Failures/` / `Logs/`.
 
 ## Watch
 
@@ -31,4 +32,4 @@ Batch files (`RUN.bat`, `SETUP.bat`, `bat_files\*.bat`) call `bat_files\resolve_
 - Windows rejects a file path longer than 260 characters. When the combined name would make a process PDF path longer than 250, those process PDFs go in a short hashed folder under `Output/Process_PDFs/{date}/`. The combined PDF and the per-batch PDFs keep the readable names. Code: `process_pdf_dir` in `scripts/app/flows/print_labels/batch_pdfs.py`.
 - Dropping a DTF Des file that was already converted still converts it again (`convert_reprint_existing`). It is not deleted as a duplicate.
 - A shipped order is looked up by order number. ShipStation's V1 API does not return the old label file (`labelData` is empty). Print reuses the label PDF already saved under `Output/Labels` and does not buy a second label. If that file is missing, the order is missed. Cancelled orders still fail.
-- The first page of each DTF file is always a Batch Summary. After that, a summary is printed only when the processes it covers add up to the Label Page Threshold or more. A later run left under the threshold has labels only. The number is cell A2 on sheet `Label Page Threshold` in `Configuration Workbook.xlsx` (10 today). A missing or bad cell falls back to 10.
+- The first page of each DTF file is always a Batch Summary. After that, a summary is printed only when the processes it covers add up to the Label Page Threshold or more. A later run left under the threshold has labels only. The number is cell A2 on sheet `Label Page Threshold` in `database/shipping-label-generator/Configuration Workbook.xlsx` (10 today; `shared.paths.shipping_config_workbook_path`). A missing or bad cell falls back to 10.

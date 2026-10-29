@@ -13,7 +13,7 @@ from PyPDF2 import PdfReader
 from scripts.app.config.label_page_threshold import read_label_page_threshold
 from scripts.app.config.load import AppConfig
 from scripts.app.flows.print_labels.batch_pdfs import process_pdf_dir, write_combined_and_batch_pdfs
-from scripts.app.flows.print_labels.failures import FailureRow, append_human_error_log, write_failures_csv
+from scripts.app.flows.print_labels.failures import FailureRow, append_human_error_log, default_failures_dir, write_failures_csv
 from scripts.app.flows.print_labels.process_order import OrderResult, process_one_order
 from scripts.app.flows.print_labels.read_group import GroupedOrders, OrderInput, read_and_group_orders
 from scripts.app.flows.print_labels.summary_buckets import (
@@ -638,7 +638,7 @@ def run_print(
     if all_failures:
         combined_name = _combined_pdf_name_for_run(orders_csv=orders_csv, combined_name_override=combined_name_override)
         failures_key = combined_name if combined_name != "combined" else batch_number
-        failures_dir = failures_dir_override or (_repo_root() / "Error and Failures" / date_dir / failures_key)
+        failures_dir = failures_dir_override or default_failures_dir(date_dir, failures_key)
         failures_dir.mkdir(parents=True, exist_ok=True)
         failures_csv = failures_dir / "failures.csv"
         error_log = failures_dir / "error_log.txt"

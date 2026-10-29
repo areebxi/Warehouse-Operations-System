@@ -54,6 +54,20 @@ def main() -> None:
     assert wh.queue_logs_dir() == root / "Logs" / "Production Design Queue Manager"
     assert wh.shipping_output_dir() == root / "Output" / "Shipping Label Generator"
     assert wh.shipping_logs_dir() == root / "Logs" / "Shipping Label Generator"
+    assert wh.shipping_database_dir() == db / "shipping-label-generator"
+    assert wh.shipping_config_workbook_path() == (
+        db / "shipping-label-generator" / "Configuration Workbook.xlsx"
+    )
+    assert wh.shipping_config_workbook_path().is_file()
+    assert wh.shipping_config_dir() == root / "Shipping Label Generator" / "config"
+    assert wh.shipping_yaml_path() == (
+        root / "Shipping Label Generator" / "config" / "shipping_config.yaml"
+    )
+    assert wh.shipping_yaml_path().is_file()
+    assert wh.shipping_reports_dir() == root / "Output" / "Shipping Label Generator" / "Reports"
+    assert wh.shipping_errors_dir() == (
+        root / "Logs" / "Shipping Label Generator" / "Error and Failures"
+    )
     assert wh.po_output_dir() == root / "Output" / "Purchase Order Generator"
     assert wh.sorter_input_csv_path("11-09-2026", "1st Shift", "today-1st-plain") == (
         root / "Order Packing List Generator" / "Input" / "11-09-2026" / "1st Shift" / "today-1st-plain.csv"
