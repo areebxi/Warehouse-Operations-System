@@ -15,7 +15,7 @@ Live paths via `shared/paths.py` (DB in `database/`; settings + Input in this ap
 | `database/production-design-queue-manager/Configuration Workbook.xlsx` | Pocket / Override Print Size; Skip Batches |
 | `database/shared/custom_label/Custom_Label_Database.csv` | Print sizes via universal SKU match |
 | `runtime/SharedInbox/DTF Des/` | Auto input |
-| `Input/` (+ Missing Size Reference) | App-local intake |
+| `Input/` (+ Missing Print Sizes) | App-local intake / missing CL print-size exports |
 | `Output|Logs/Production Design Queue Manager/` | Warehouse-root run I/O |
 
 ## How work is done

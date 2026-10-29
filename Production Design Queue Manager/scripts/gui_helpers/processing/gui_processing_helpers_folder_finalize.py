@@ -68,8 +68,8 @@ def finalize_folder_processing(
                 if len(saved_files) > 10:
                     files_list += f"\n... and {len(saved_files) - 10} more"
                 messagebox.showinfo(
-                    "Missing Size References",
-                    f"Found {total_missing_rows} rows with missing size references "
+                    "Missing Print Sizes",
+                    f"Found {total_missing_rows} rows with missing print sizes "
                     f"across {len(saved_files)} file(s).\n\nThese rows have been saved to:\n{files_list}",
                 )
         except Exception as e:

@@ -1,6 +1,6 @@
 # Production Design Queue Manager — snapshot
 
-**Updated:** 28 October 2026 (warehouse-root Logs/Output)  
+**Updated:** 29 October 2026 (Missing Print Sizes rename)  
 **Handbook:** `AGENTS.md`
 
 ## Continue here
@@ -20,6 +20,6 @@
 
 ## Watch
 
-- Missing size rows export under `Missing Size Reference/`.
+- Missing CL print-size rows still warn + export + continue; exports land under `Missing Print Sizes/` (only `README.md` tracked; runtime xlsx gitignored). Legacy folder name: `Missing Size Reference/`.
 - Canvas default width 570 mm (usable DTF on 600 mm film after hold plates).
 - Auto-run needs design folders configured in settings before it can succeed.

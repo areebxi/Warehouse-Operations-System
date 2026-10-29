@@ -41,14 +41,14 @@ def save_missing_size_reference_rows(
             sys.path.insert(0, str(warehouse))
         from shared import paths as wh
 
-        missing_folder = wh.queue_missing_size_dir()
+        missing_folder = wh.queue_missing_print_sizes_dir()
         missing_folder.mkdir(exist_ok=True)
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         if source_file_path:
             stem = Path(source_file_path).stem
         else:
-            stem = "DTF Des-Missing Size Reference"
+            stem = "DTF Des-Missing Print Sizes"
 
         base_name = f"{stem} ({timestamp})"
         file_path = missing_folder / f"{base_name}.xlsx"

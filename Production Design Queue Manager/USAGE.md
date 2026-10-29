@@ -396,20 +396,20 @@ After saving PNGs, if **DTF Queues Folder** is configured, the app copies those 
 
 Use **Remove DTF Queues Folder** to stop copying without changing other settings.
 
-### Missing size reference export
+### Missing print sizes export
 
-Rows without a matching size in Size Reference are exported automatically to:
+When a design’s print size is missing from the Custom Label DB, Queue warns, exports those rows, and continues (same flow as before). Exports land under:
 
 ```
-Missing Size Reference/{original_filename} (YYYY-MM-DD_HH-MM-SS).xlsx
+Missing Print Sizes/{original_filename} (YYYY-MM-DD_HH-MM-SS).xlsx
 ```
 
 Example: `DTF Des 100 (2026-07-14_18-07-00).xlsx`
 **Recommended workflow:**
 
 1. Process your file(s).
-2. Open the export in `Missing Size Reference/`.
-3. Add missing codes to Configuration Workbook → Size References → Merge column.
+2. Open the export in `Missing Print Sizes/`.
+3. Fix the missing print size in Custom Label (or the lookup source you use for that SKU).
 4. Reload the export in Queue App and process again.
 
 ---
@@ -427,7 +427,7 @@ Related (not run logs):
 
 | Folder | Contents |
 |--------|----------|
-| **`Missing Size Reference/`** | Exported rows with missing size codes (project root, next to `Output/` and `Logs/`) |
+| **`Missing Print Sizes/`** | Exported rows with missing CL print sizes (app folder; runtime xlsx gitignored) |
 | **`Output/YYYY-MM-DD/`** | PNG files (one subfolder per day) |
 
 When you start via **`run_queue_app.bat`** / **`pythonw`**, there is no live CMD mirror — open the latest `console_log_*.txt` in **`Logs/`** to see the same detail that used to appear in the console. If you start with **`python queue_app.py`**, output is written to both the console and the log file.
@@ -448,7 +448,7 @@ Ensure the DTF Des file has a column named **Item - SKU** or containing **SKU**.
 
 - Add or fix the size code in **Merge** (Column I) of Configuration Workbook.
 - For pocket designs: verify design ID is in Sheet 2 and SKU has `-M-`/`-W-`/`-K-` and `-T-`/`-H-`.
-- Re-process after updating; use the **Missing Size Reference** export to catch all bad rows.
+- Re-process after updating; use the **Missing Print Sizes** export to catch all bad rows.
 
 ### Design not found
 
@@ -524,7 +524,7 @@ Ensure the DTF Des file has a column named **Item - SKU** or containing **SKU**.
 Output/
   YYYY-MM-DD/            # PNG files for that day
 Logs/                    # console_log_*.txt and *size_determination_*.txt
-Missing Size Reference/
+Missing Print Sizes/
 ```
 
 ---

@@ -157,7 +157,7 @@ def load_queue_data_sources(
         print(f"Print sizes: Custom Label Database -> {cl_path} ({len(df):,} rows)")
     except FileNotFoundError:
         print(f"Print sizes: CL database not found -> {cl_path}")
-        print("  Unmatched SKUs will export to Missing Size Reference")
+        print("  Unmatched SKUs will export to Missing Print Sizes")
     except ValueError as exc:
         print(f"Print sizes: CL database error -> {exc}")
 

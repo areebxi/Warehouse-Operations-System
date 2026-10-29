@@ -44,8 +44,8 @@ def queue_logs_dir(from_path: object | None = None) -> Path:
     return app_logs_dir(APP_NAME_QUEUE, from_path)
 
 
-def queue_missing_size_dir(from_path: object | None = None) -> Path:
-    return queue_runtime_dir(from_path) / "Missing Size Reference"
+def queue_missing_print_sizes_dir(from_path: object | None = None) -> Path:
+    return queue_runtime_dir(from_path) / "Missing Print Sizes"
 
 
 def queue_config_dir(from_path: object | None = None) -> Path:
@@ -64,7 +64,7 @@ __all__ = [
     "queue_input_dir",
     "queue_output_dir",
     "queue_logs_dir",
-    "queue_missing_size_dir",
+    "queue_missing_print_sizes_dir",
     "queue_config_dir",
     "queue_settings_path",
 ]

@@ -265,9 +265,9 @@
   - Displays completion status
 - **Auto-Reset**: Progress bar automatically resets after operations complete
 
-### 8. Missing Size Reference Export
-- **Automatic Export**: When a design doesn't have a size reference in the reference sheet, the application automatically exports the entire row to a new DTF Des file
-- **Export Location**: Files are saved in the `Missing Size Reference` folder at the application (project) root — same level as `Output/` and `Logs/`
+### 8. Missing Print Sizes Export
+- **Automatic Export**: When a design’s print size is missing from the Custom Label DB, the application warns, exports the entire row to a new DTF Des file, and continues (same behavior as the former Missing Size Reference flow)
+- **Export Location**: Files are saved in the `Missing Print Sizes` folder under the Queue app (via `shared.paths.queue_missing_print_sizes_dir`)
 - **Filename Format**: `{original_filename} (YYYY-MM-DD_HH-MM-SS).xlsx`
   - Uses the source DTF Des stem (e.g., `DTF Des 100`)
   - Timestamp format: `YYYY-MM-DD_HH-MM-SS` (e.g., `2026-07-14_18-07-00`)
@@ -315,7 +315,7 @@ All run logs live in a single **`Logs/`** folder. There are **no** separate `Err
 - **Purpose**: Traceability for size decisions during debugging and QA
 
 #### Related export (not a log stream)
-- **Missing Size Reference/** — Excel export of rows missing a size code (separate from `Logs/`)
+- **Missing Print Sizes/** — Excel export of rows missing a CL print size (separate from `Logs/`)
 
 ### 10. RAR Archive Creation
 - **Automatic RAR Creation**: After saving PNG files, automatically creates RAR archive containing all generated PNG files
@@ -2041,7 +2041,7 @@ Queue App/
 │       ├── filename_Part 1.png
 │       └── ...
 │
-├── Missing Size Reference/         # Exported rows with missing size references (created automatically)
+├── Missing Print Sizes/            # Exported rows with missing CL print sizes (created automatically)
 │   ├── DTF Des 100 (YYYY-MM-DD_HH-MM-SS).xlsx
 │   ├── DTF Des 101 (YYYY-MM-DD_HH-MM-SS).xlsx
 │   └── ...
@@ -2094,8 +2094,8 @@ Queue App/
 - Check that size code exists in Merge column (Column I) of size reference file
 - Verify size code format matches (e.g., `M-T` vs `M-T`)
 - Check for typos in SKU or reference file
-- **Note**: Rows with missing size references are automatically exported to "Missing Size Reference" folder
-- After adding the missing size codes to your reference file, you can load the exported file and process it again
+- **Note**: Rows with missing CL print sizes are automatically exported to the "Missing Print Sizes" folder (same warn + export + continue flow)
+- After fixing the print size in Custom Label, you can load the exported file and process it again
 - **Pocket Designs**: If using Pocket Design IDs Database, ensure:
   - Design ID is in the database (column A of Configuration Workbook.xlsx, sheet "Pocket Design IDs Database" or Sheet 2)
   - SKU contains gender pattern (`-M-`, `-W-`, or `-K-`) and type pattern (`-T-` or `-H-`)
@@ -2144,19 +2144,19 @@ Queue App/
 - Each PNG file correctly extracts and displays the label from its own source file
 - Verify that each input file has a unique filename with "des-" prefix
 
-#### 9. Missing Size Reference Export
-**Problem**: How to handle rows with missing size references
+#### 9. Missing Print Sizes Export
+**Problem**: How to handle rows with missing CL print sizes
 **Solution**:
-- The application automatically exports all rows with missing size references to a file in "Missing Size Reference" folder
+- The application warns and automatically exports those rows to a file in the "Missing Print Sizes" folder, then continues
 - Filename format: `{original_filename} (YYYY-MM-DD_HH-MM-SS).xlsx` (one file per source DTF Des)
 - The exported file contains complete rows with all columns and headers
 - **Workflow**:
   1. Process your DTF Des file(s) - missing rows are automatically exported
-  2. Check the "Missing Size Reference" folder for the exported file
-  3. Add the missing size codes to your size reference file (Merge column, Column I)
+  2. Check the "Missing Print Sizes" folder for the exported file
+  3. Fix the missing print size in Custom Label for those SKUs
   4. Load the exported file in the application and process it again
-  5. All designs should now have proper size references
-- **Note**: When processing multiple files, all missing rows are combined into one export file
+  5. All designs should now have proper print sizes
+- **Note**: When processing multiple files, each source DTF Des with missing rows gets its own export file
 
 #### 10. RAR Creation Failed
 **Problem**: RAR archive is not being created
@@ -2226,7 +2226,7 @@ The application writes **two** log types into **`Logs/`** (no separate Errors an
 4. **Verify File Paths**: Ensure all paths in settings file are valid
 5. **Check File Formats**: Ensure design files are valid image formats
 6. **Size Reference**: Verify Merge column (Column I) has size codes
-7. **Logging per run**: Look in **`Logs/`** for `console_log_*.txt` (full run) and `*size_determination_*.txt` (per-design size choices). Missing-size row exports go to **`Missing Size Reference/`**.
+7. **Logging per run**: Look in **`Logs/`** for `console_log_*.txt` (full run) and `*size_determination_*.txt` (per-design size choices). Missing print-size row exports go to **`Missing Print Sizes/`**.
 
 ---
 

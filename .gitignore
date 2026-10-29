@@ -114,6 +114,10 @@ Order Packing List Generator/Unmatched SKU Files/
 
 # --- Queue app live I/O ---
 Production Design Queue Manager/Input/
+# Track README.md only; ignore runtime missing-print-size exports
+Production Design Queue Manager/Missing Print Sizes/*
+!Production Design Queue Manager/Missing Print Sizes/README.md
+# Legacy folder name (pre-2026-10-29 rename)
 Production Design Queue Manager/Missing Size Reference/
 
 # --- Shipping app live I/O ---
