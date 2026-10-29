@@ -41,15 +41,11 @@ def _extras_c800(
                 break
         if peer:
             break
-    if peer and not clean(peer.get("Print Positions")):
-        extras["Print Positions"] = "Front Center"
-    extras.setdefault("Print Positions", "Front Center")
+    # M## C800T Print Positions from Mocks Database in _seed_from_peer (not Front Center default).
     if peer:
         for col in ("Width 1 (mm)", "Height 1 (mm)", "Position 1 Name"):
             if col in fieldnames and clean(peer.get(col)):
                 extras[col] = clean(peer.get(col))
-        if not extras.get("Position 1 Name"):
-            extras["Position 1 Name"] = "Front Center"
     return peer, extras
 
 

@@ -28,8 +28,8 @@ RE_MOCK_P_UID = re.compile(r"^([A-Z]\d+)(?:-P\d+)?-([A-Z0-9]+)$", re.I)
 RE_MOCK_TOKEN = re.compile(r"^([A-Z]\d+)(?:-P\d+)?-", re.I)
 RE_C800T_AGE = re.compile(
     # Optional -P# — listing SKUs sometimes omit it (M281-C800T-30-3>6).
-    # ShipStation / HTML sometimes encodes > as &gt;.
-    r"^(M\d+(?:-P\d+)?-C800T-\d+-)(\d+(?:>|&gt;)\d+|\d+-\d+)$",
+    # ShipStation / HTML sometimes encodes > as &gt;; packing also uses 12to18.
+    r"^(M\d+(?:-P\d+)?-C800T-\d+-)(\d+(?:>|&gt;|to)\d+|\d+-\d+)$",
     re.I,
 )
 # A515-PHOTO = A5 15mm. A410 in P5-ACPPLQ-A410-PB = A4 10mm. A625 = A6 25mm. A715 = A7 15mm.
@@ -142,6 +142,7 @@ def label_from_input(raw: str, *, from_sku: bool) -> str:
 
 def _age_to_size(token: str) -> str:
     t = token.replace("&gt;", "-").replace(">", "-")
+    t = re.sub(r"(?i)^(\d+)to(\d+)$", r"\1-\2", t)
     if re.fullmatch(r"\d+-\d+", t):
         return f"{t} Months"
     return t

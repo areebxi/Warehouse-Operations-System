@@ -7,6 +7,7 @@ import pandas as pd
 
 from fill_from_seeds import clean, customise_for_label, hyphen_tshirt_in_slug
 
+from add_labels_mock_pos import apply_mock_print_positions, leading_mock_id
 from add_labels_parse import RE_MOCK_P_UID, RE_MOCK_TOKEN
 
 
@@ -65,24 +66,33 @@ def _seed_from_peer(
     row = {c: "" for c in fieldnames}
     row["Custom Label"] = label
     row["Customise"] = customise_for_label(label)
+    is_mock = leading_mock_id(label) is not None
     if peer:
         for col in ("Gender Apparel", "Colour", "Size", "Apparel Image", "Print Positions"):
             if col in row:
+                # Mock PP comes from Mocks Database only (never peer / Front Center).
+                if col == "Print Positions" and is_mock:
+                    continue
                 val = clean(peer.get(col))
                 if col == "Apparel Image":
                     val = hyphen_tshirt_in_slug(val)
                 row[col] = val
-        # Prefer Front Center from mocks when peer Print Positions blank
-        if not row.get("Print Positions"):
+        if not is_mock and not row.get("Print Positions"):
             row["Print Positions"] = "Front Center"
     if extras:
         for k, v in extras.items():
             if k in row and v:
+                if k == "Print Positions" and is_mock:
+                    continue
                 row[k] = v
-    if not row.get("Print Positions") and (
-        RE_MOCK_TOKEN.match(label) or re.search(r"(?:^|-)P\d+-", label, re.I)
+    if (
+        not is_mock
+        and not row.get("Print Positions")
+        and (RE_MOCK_TOKEN.match(label) or re.search(r"(?:^|-)P\d+-", label, re.I))
     ):
+        # N## / P# non-M mocks: Front Center only when still blank (not M##).
         row["Print Positions"] = "Front Center"
+    apply_mock_print_positions(label, row)
     return row
 
 

@@ -37,9 +37,11 @@ def run_selfchecks() -> None:
     assert customise_for_label("M55-120852") == ""
     assert _age_to_size("3&gt;6") == "3-6 Months"
     assert _age_to_size("6>12") == "6-12 Months"
+    assert _age_to_size("12to18") == "12-18 Months"
     assert RE_C800T_AGE.match("M281-P5-C800T-30-3&gt;6")
     assert RE_C800T_AGE.match("M281-C800T-30-3>6")
     assert RE_C800T_AGE.match("M281-P5-C800T-30-6>12")
+    assert RE_C800T_AGE.match("M281-P5-C800T-30-12to18")
     assert customise_for_label("P5-ACPPLQ-A410-PB") == "Yes"
     assert customise_for_label("A515") == "Yes"
     assert customise_for_label("A515-PHOTO") == ""
@@ -69,3 +71,12 @@ def run_selfchecks() -> None:
     assert hyphen_tshirt_in_slug("Gildan-Heavy-Cotton-Adult-TShirt-Natural") == (
         "Gildan-Heavy-Cotton-Adult-T-Shirt-Natural"
     )
+    from add_labels_mock_pos import apply_mock_print_positions, mock_print_positions_map
+
+    mmap = mock_print_positions_map()
+    assert mmap.get("M261") == "Back Center"
+    assert mmap.get("M264") == "Front Left Pocket"
+    assert mmap.get("M260") == "Front Center"
+    seed = {"Custom Label": "M264-P3-17136", "Print Positions": "", "Position 1 Name": ""}
+    apply_mock_print_positions("M264-P3-17136", seed)
+    assert seed["Print Positions"] == "Front Left Pocket"

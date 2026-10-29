@@ -30,8 +30,7 @@ def _extras_mock(
     # ponytail: Amazon acrylic blocks use M##-P#-1D### with no PE/CL peer — A515-PHOTO.
     if peer is None and any(ch.isalpha() for ch in uid):
         peer = peers.get("a515-photo")
-    if not p_tok:
-        extras["Print Positions"] = "Front Center"
+    # Print Positions for M## come from Mocks Database in _seed_from_peer.
     return peer, extras
 
 

@@ -43,7 +43,9 @@ def main() -> None:
     )
     assert RE_C800T_AGE.match("M281-P5-C800T-30-6>12")
     assert RE_C800T_AGE.match("M281-C800T-30-3>6")
+    assert RE_C800T_AGE.match("M281-P5-C800T-30-12to18")
     assert _age_to_size("6>12") == "6-12 Months"
+    assert _age_to_size("12to18") == "12-18 Months"
     keys = _peer_keys_for_label("M281-C800T-30-3>6")
     assert any(k.startswith("__prefix__:m281-p5-c800t-") for k in keys)
     m = RE_ACRYLIC_SIZE.search("P5-ACPPLQ-A410-PB")
@@ -105,6 +107,15 @@ def main() -> None:
     assert hyphen_tshirt_in_slug("Gildan-Heavy-Cotton-Adult-TShirt-Natural") == (
         "Gildan-Heavy-Cotton-Adult-T-Shirt-Natural"
     )
+    from add_labels_mock_pos import apply_mock_print_positions, mock_print_positions_map
+
+    mmap = mock_print_positions_map()
+    assert mmap.get("M261") == "Back Center"
+    assert mmap.get("M264") == "Front Left Pocket"
+    assert mmap.get("M260") == "Front Center"
+    seed = {"Custom Label": "x", "Print Positions": "Front Center", "Position 1 Name": "x"}
+    apply_mock_print_positions("M261-P6-17132", seed)
+    assert seed["Print Positions"] == "Back Center"
     print("ok")
 
 

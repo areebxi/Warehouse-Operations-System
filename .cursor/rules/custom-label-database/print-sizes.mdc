@@ -41,7 +41,7 @@ Pocket = 80×100. **Sleeve = 100×100** (locked 2026-10-23): any slot whose Posi
 
 **F/P-F8 and B4** (locked 2026-10-23): `F/P` together with `F8` is **Front Left Pocket** only, 80×100 — not Front Center plus a pocket. `B4` is **Back Center**. One cell can hold both tails (`F/P-F8-M-T-BLK-5XL 161121LG-B4-M-T-BLK-5XL`). Applied on `Custom_Label_Database (Areeb).csv`. `F/P` without `F8` stays Front Center plus Front Left Pocket.
 
-**Default position when Custom Label has no position token** (locked 2026-10-28): no `F/P`/`F/B`/`F8`/`F4`/`B4`/`FP-`/leading `B-`/`P-` style code → **Front Center** only. Do not invent pocket/back from peer or mock stubs on Areeb. Exceptions locked same day: all `A3-B-M-T-*` → **Back Center** only; leave `ASV-*`, `FP-*`, `X97`/`x97`, `XZ8`, `X94`, `xz7` as-is; mock stubs / mock+UID follow **Mocks Database**. Areeb drift vs live Front Center restored via `scripts/fix_areeb_pos_from_live.py` (Areeb only).
+**Default position when Custom Label has no position token** (locked 2026-10-28): no `F/P`/`F/B`/`F8`/`F4`/`B4`/`FP-`/leading `B-`/`P-` style code → **Front Center** only. Do not invent pocket/back from peer. Exceptions locked same day: all `A3-B-M-T-*` → **Back Center** only; leave `ASV-*`, `FP-*`, `X97`/`x97`, `XZ8`, `X94`, `xz7` as-is. **Mock stubs / mock+UID (`M{digits}…`) do not use this Front Center default** — Print Positions always from **Mocks Database** (locked 2026-10-29; see `fill-pipeline.mdc`). Areeb garment Front Center restore: `scripts/fix_areeb_pos_from_live.py`. Areeb mock PP repair: `scripts/fix_areeb_mock_pos_from_mocks.py`.
 
 **Not shirts:** Size References only. **Never** use a generic mock prefix (`M96` without this UID) — that wrongly gave `M96-138334` 318×450 instead of 250×353.
 
