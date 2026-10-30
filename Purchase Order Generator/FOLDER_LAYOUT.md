@@ -5,8 +5,7 @@
 | Item | Purpose |
 |------|---------|
 | `Run_GUI.bat` | Start the GUI (creates `.venv`, installs deps, runs app) |
-| `config.py` | API & FTP credentials |
-| `config_example.py` | Template for `config.py` |
+| `config_example.py` | Template → copy to `database/purchase-order-generator/config.py` |
 | `requirements.txt` | Python dependencies |
 
 ## `scripts/` — all Python code
@@ -52,14 +51,14 @@ Use `--dry-run` to preview, `--sku 218408` for one stock id, `--product-dir path
 ## Live databases (via `shared/paths.py`)
 
 - Shared: `database/shared/plain/Plain Database.xlsx`, `database/shared/packs/Packs Database.csv`, Tags, CL, BTC/Uneek/Absolute Product Data
-- PO app DB: `database/purchase-order-generator/` — stock CSV (+ Movie Poster SKUs)
+- PO app DB: `database/purchase-order-generator/` — stock CSV, `config.py` (FTP), `gui_settings.json`, Movie Poster SKUs
 - Archives: `backups/plain/`, `backups/packs/`
 
 FTP/SFTP downloads the configured stock CSV into `database/purchase-order-generator/` automatically (see below).
 
 ### Changing the BTC stock file
 
-If BTC changes the stock file name or folder, update **only** `config.py`:
+If BTC changes the stock file name or folder, update **only** `database/purchase-order-generator/config.py`:
 
 ```python
 FTP_REMOTE_FILE = "WebData/stock_levels_stock_id_fully_quoted.csv"  # path on BTC server

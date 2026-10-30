@@ -46,8 +46,8 @@ def po_output_dir(from_path: object | None = None) -> Path:
 
 
 def po_config_dir(from_path: object | None = None) -> Path:
-    """``config.py`` and GUI settings live at the PO app root config/."""
-    return po_app_dir(from_path)
+    """``config.py`` and GUI settings live under ``database/purchase-order-generator/``."""
+    return po_data_dir(from_path)
 
 
 def po_config_py_path(from_path: object | None = None) -> Path:
@@ -55,7 +55,7 @@ def po_config_py_path(from_path: object | None = None) -> Path:
 
 
 def po_gui_settings_path(from_path: object | None = None) -> Path:
-    return po_app_dir(from_path) / "config" / "gui_settings.json"
+    return po_data_dir(from_path) / "gui_settings.json"
 
 __all__ = [
     "po_app_dir",

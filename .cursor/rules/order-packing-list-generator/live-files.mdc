@@ -17,7 +17,7 @@ App DB in `database/order-packing-list-generator/`. Input stays in the app folde
 | `database/shared/custom_label/Custom_Label_Database.csv` | Enrich |
 | `Order Packing List Generator/Input/` | App-local intake; runtime CSVs gitignored; `README.md` tracked |
 | `Order Packing List Generator/Missing Logos/` | Holding CSVs for missing logos; runtime gitignored; `README.md` tracked |
-| `Order Packing List Generator/Missing Apparels/` | Holding CSVs for missing apparels; runtime gitignored; `README.md` tracked |
+| `Order Packing List Generator/Missing Apparels/` | Report CSVs for missing apparels (packing continues); runtime gitignored; `README.md` tracked |
 | `Order Packing List Generator/Unmatched SKUs/` | Step-4 unmatched CSVs; runtime gitignored; `README.md` tracked |
 | `Order Packing List Generator/Preflight Issues/` | Preflight Issues CSVs; runtime gitignored; `README.md` tracked |
 | `Order Packing List Generator/Missing Input/Missing Input.csv` | Tracked header-only template for missing-run queries |
@@ -25,4 +25,5 @@ App DB in `database/order-packing-list-generator/`. Input stays in the app folde
 | `Logs/Order Packing List Generator/` | Packing run logs |
 | `runtime/SharedInbox/DTF Des/{date}/{shift}/` | DTF Des dual-write |
 | `config/ShipStation/.env` | ShipStation credentials |
-| `Order Packing List Generator/config/` | gui_config.json |
+| `database/order-packing-list-generator/gui_config.json` (+ missing/preflight JSON) | GUI remember-last settings (gitignored) |
+| `database/order-packing-list-generator/Back Print.jpg` | Packing-list PDF back-print reference (tracked) |

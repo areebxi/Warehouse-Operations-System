@@ -1,6 +1,6 @@
 # Purchase Order Generator — snapshot
 
-**Updated:** 29 October 2026 (shared brand logos; fonts removed)  
+**Updated:** 29 October 2026 (config.py + gui_settings under database/)  
 **Handbook:** `AGENTS.md` · **Layout:** `FOLDER_LAYOUT.md`
 
 ## Continue here
@@ -17,5 +17,5 @@
 
 - **Later (not built, 2026-09-17):** packing list PDFs (including slips this app prints) move to Order Packing List Generator. This app stays tag → stock / EDI.
 - Former local CL copy is under `backups/shared/`.
-- FTP stock filename is configured in `config.py` only.
+- FTP stock filename is configured in `database/purchase-order-generator/config.py` only (copy from app `config_example.py`).
 - GUI/CLI entrypoints import helpers from cohesive `run_*` modules (`run_ftp_settings`, `run_ftp_download`, `run_packing_rows`, …). Legacy `run_script_impl*` files are thin re-exports only — do not add new logic there.

@@ -31,11 +31,12 @@ from shared import paths as wh  # noqa: E402
 
 
 def _setup_import_paths() -> None:
-    """Allow imports of config (Config/purchase_order) and app modules (scripts/)."""
+    """Allow imports of config (database/, legacy app-root fallback) and scripts/."""
     root = str(APP_ROOT)
     scripts = str(SCRIPTS_DIR)
     cfg = str(wh.po_config_dir())
-    for entry in (cfg, root, scripts):
+    # insert(0) reverses: DB config.py first, then legacy app-root, then scripts/
+    for entry in (scripts, root, cfg):
         if entry not in sys.path:
             sys.path.insert(0, entry)
 

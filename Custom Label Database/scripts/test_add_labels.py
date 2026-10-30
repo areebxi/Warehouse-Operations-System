@@ -116,6 +116,11 @@ def main() -> None:
     seed = {"Custom Label": "x", "Print Positions": "Front Center", "Position 1 Name": "x"}
     apply_mock_print_positions("M261-P6-17132", seed)
     assert seed["Print Positions"] == "Back Center"
+    from add_labels_seed_garment import _yes_shirt_candidates
+
+    cands = _yes_shirt_candidates("xz7-M-T-WHI-L")
+    assert "M-T-WHI-L" in cands
+    assert "T-DARCE-L" in _yes_shirt_candidates("M-T-DARCE-L")
     print("ok")
 
 

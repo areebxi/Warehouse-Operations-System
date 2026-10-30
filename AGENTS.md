@@ -58,12 +58,12 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 
 ### Order Packing List Generator
 - **Purpose:** ShipStation orders → process CSVs, packing PDFs, Picking / Orders Details / DTF Des Excel. **Later (not built):** every packing list PDF, including slips PO still prints. Enrich already uses Custom Label, then Plain, then Packs.
-- **Live data:** DB in `database/order-packing-list-generator/`; app `config/`, Input/; `Output|Logs/Order Packing List Generator/`; shared tags; optional SharedInbox dual-write + sync Design Queues.
+- **Live data:** DB in `database/order-packing-list-generator/` (Workbook + GUI JSON + Back Print); Input/; `Output|Logs/Order Packing List Generator/`; shared tags; optional SharedInbox dual-write + sync Design Queues.
 - **Talks to:** ShipStation; CL CSV; SharedInbox / Queue CLI. Later: shared Plain / Packs (read).
 
 ### Production Design Queue Manager
 - **Purpose:** Arrange design images on a DTF print canvas from DTF Des inputs.
-- **Live data:** DB workbook in `database/production-design-queue-manager/`; app `config/` (settings), Input/; `Output|Logs/Production Design Queue Manager/`; SharedInbox Design Queues watcher.
+- **Live data:** DB in `database/production-design-queue-manager/` (workbook + settings + Color Bar); Input/; `Output|Logs/Production Design Queue Manager/`; SharedInbox Design Queues watcher.
 - **Talks to:** SharedInbox; CL CSV for print sizes.
 
 ### Shipping Label Generator
@@ -78,7 +78,7 @@ Shared ShipStation V1: `shared/shipstation/` (credentials + sync reads); secrets
 
 ### Purchase Order Generator
 - **Purpose:** Awaiting-dispatch by tag → BTC stock → packing slips. **Later (not built, 2026-09-17):** EDI/stock only; **all** packing list PDFs from Order Packing List Generator.
-- **Live data:** stock in `database/purchase-order-generator/`; shared Plain / Packs / Tags / CL / supplier catalogs / `brand_logos/`; `config.py`; outputs under `Output/Purchase Order Generator/`.
+- **Live data:** stock + `config.py` + `gui_settings.json` in `database/purchase-order-generator/`; shared Plain / Packs / Tags / CL / supplier catalogs / `brand_logos/`; outputs under `Output/Purchase Order Generator/`.
 - **Talks to:** ShipStation API; BTC FTP stock; CL CSV (`BTC SKU`); shared Plain / Packs.
 
 ## Join points (proven)

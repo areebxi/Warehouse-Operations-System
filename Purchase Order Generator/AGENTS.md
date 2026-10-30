@@ -3,7 +3,7 @@
 Domain handbook for the **Warehouse Automation System Engineer**. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/purchase-order-generator/`. Layout facts: `FOLDER_LAYOUT.md`, `../docs/purchase-order-generator/`.
 Current state: `../docs/purchase-order-generator/HANDOFF.md`, kept as present-tense state, not a log.
 
-Also known in older docs as **Plain Orders**. Live paths via `shared/paths.py` (DB in `database/`; assets/config in this app; outputs under warehouse-root `Output/Purchase Order Generator/`; PE + Tags + ShipStation shared).
+Also known in older docs as **Plain Orders**. Live paths via `shared/paths.py` (DB + `config.py` + GUI settings in `database/`; outputs under warehouse-root `Output/Purchase Order Generator/`; PE + Tags + ShipStation shared).
 
 ## Live vs helpers
 
@@ -19,9 +19,9 @@ Also known in older docs as **Plain Orders**. Live paths via `shared/paths.py` (
 | `database/shared/uneek_product_data/Uneek_Product_Data.xlsx` | Shared Uneek Product Data |
 | `database/shared/absolute_product_data/Absolute_Product_Data.xlsx` | Shared Absolute Product Data (babysuits only) |
 | `database/shared/brand_logos/` | Shared brand logos (PO slips; Packing later) |
-| GUI Browse → `gui_settings.json` `product_images_dir` | Required Product Images folder (no assets fallback) |
+| GUI Browse → `database/.../gui_settings.json` `product_images_dir` | Required Product Images folder (no assets fallback) |
 | `Output/Purchase Order Generator/` | Run outputs |
-| `config.py` | FTP only |
+| `database/purchase-order-generator/config.py` | FTP only (template: app `config_example.py`) |
 | `config/ShipStation/.env` | Shared ShipStation `REAL_API_*` |
 
 ## How work is done
@@ -47,7 +47,7 @@ Report tags/orders processed, stock misses, output folder name, and any data fil
 - **Orchestration:** `scripts/run_script.py`, `scripts/run_script_gui.py` (GUI mixins under `run_script_gui_impl*`).
 - **Domain / stock:** `run_script_impl1.py` → `run_stock_validate.py` (+ pack/single/issue helpers); `stock_resolver.py`; fill/sync utilities.
 - **Generation:** `scripts/pdf_generator.py` → `pdf_generator_impl*` (packing slips today).
-- **Integrations:** `scripts/shipstation_orders.py` → export/impl mixins via `shared.shipstation`; BTC FTP settings in `config.py` (not secrets).
+- **Integrations:** `scripts/shipstation_orders.py` → export/impl mixins via `shared.shipstation`; BTC FTP settings in `database/purchase-order-generator/config.py`.
 - **200-line:** live PO scripts cleared; keep new/changed modules ≤200 (see `../docs/ARCHITECTURE.md`).
 - **Must not:** import Packing/Sorter internals; path resolution outside `shared.paths`; paste credentials into docs.
 - Architecture: `.cursor/rules/global/architecture.mdc`.

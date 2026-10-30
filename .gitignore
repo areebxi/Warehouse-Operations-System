@@ -9,19 +9,7 @@
 # Shared ShipStation secrets
 config/ShipStation/.env
 
-# Packing app-local GUI settings
-Order Packing List Generator/config/*.json
-
-# Queue app-local settings (workbook lives in database/)
-Production Design Queue Manager/config/queue_app_settings.json
-Production Design Queue Manager/config/*.txt
-Production Design Queue Manager/config/*.png
-
-# PO secrets + assets (DB lives in database/; output under root Output/)
-Purchase Order Generator/config.py
-Purchase Order Generator/config/gui_settings.json
-Purchase Order Generator/assets/
-
+# PO FTP config.py + GUI JSON live under database/ (ignored via database/**)
 # Keep tracked templates
 !config/**/.env.example
 !config/**/README.md
@@ -66,6 +54,9 @@ database/**
 !database/**/
 !database/**/README.md
 !database/order-grouping-sorter/taxonomy_picklists.csv
+# Shareable packing/queue assets (machine JSON + config.py stay ignored)
+!database/order-packing-list-generator/Back Print.jpg
+!database/production-design-queue-manager/Color Bar.png
 
 # --- Demo Images Database (offline test placeholders) ---
 Demo Images Database/**

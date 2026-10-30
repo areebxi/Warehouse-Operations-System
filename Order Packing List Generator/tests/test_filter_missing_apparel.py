@@ -56,10 +56,10 @@ def test_filter_missing_apparel_writes_sideline_and_keeps_ok(tmp_path: Path):
             apparel_dir=tmp_path,
         )
 
-    assert n_excluded == 1
+    assert n_excluded == 0
     assert logo_path is None
     assert apparel_path is not None and apparel_path.exists()
-    excluded = pd.read_csv(apparel_path)
-    assert excluded["Order Number"].tolist() == ["A1"]
+    reported = pd.read_csv(apparel_path)
+    assert reported["Order Number"].tolist() == ["A1"]
     assert len(kept) == 1
-    assert pd.read_csv(kept[0])["Order Number"].tolist() == ["B1"]
+    assert pd.read_csv(kept[0])["Order Number"].tolist() == ["A1", "B1"]

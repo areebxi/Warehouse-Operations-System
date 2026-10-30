@@ -3,7 +3,7 @@
 Domain handbook for the **Warehouse Automation System Engineer**. Parent map: `../AGENTS.md`. Policy: parent `.cursor/rules/production-design-queue-manager/`. Details: `USAGE.md`, `../docs/production-design-queue-manager/DOCUMENTATION.md`.
 Current state: `../docs/production-design-queue-manager/HANDOFF.md`, kept as present-tense state, not a log.
 
-Live paths via `shared/paths.py` (DB in `database/`; settings + Input in this app; Logs/Output under warehouse-root; SharedInbox + CL CSV shared).
+Live paths via `shared/paths.py` (DB + settings + Color Bar in `database/`; Input in this app; Logs/Output under warehouse-root; SharedInbox + CL CSV shared).
 
 ## Live vs helpers
 
@@ -11,7 +11,8 @@ Live paths via `shared/paths.py` (DB in `database/`; settings + Input in this ap
 |------|--------|
 | `queue_app.py` / `run_queue_app.bat` | `../docs/production-design-queue-manager/` |
 | `scripts/design_queues_watcher.py` | SharedInbox Design Queues watcher (Packing auto-starts) |
-| `config/queue_app_settings.json` | Design folder paths |
+| `database/production-design-queue-manager/queue_app_settings.json` | Design folder paths |
+| `database/production-design-queue-manager/Color Bar.png` | Canvas color bar |
 | `database/production-design-queue-manager/Configuration Workbook.xlsx` | Pocket / Override Print Size; Skip Batches |
 | `database/shared/custom_label/Custom_Label_Database.csv` | Print sizes via universal SKU match |
 | `runtime/SharedInbox/DTF Des/` | Auto input |

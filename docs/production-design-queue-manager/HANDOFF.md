@@ -1,6 +1,6 @@
 # Production Design Queue Manager — snapshot
 
-**Updated:** 29 October 2026 (GUI shell under scripts/; watcher bat removed)  
+**Updated:** 29 October 2026 (settings + Color Bar under database/)  
 **Handbook:** `AGENTS.md`
 
 ## Continue here
@@ -22,4 +22,4 @@
 
 - Missing CL print-size rows still warn + export + continue; exports land under `Missing Print Sizes/` (only `README.md` tracked; runtime xlsx gitignored). Legacy folder name: `Missing Size Reference/`.
 - Canvas default width 570 mm (usable DTF on 600 mm film after hold plates).
-- Auto-run needs design folders configured in settings before it can succeed.
+- Auto-run needs design folders configured in settings before it can succeed (`database/production-design-queue-manager/queue_app_settings.json`; Color Bar: `Color Bar.png` in the same folder).

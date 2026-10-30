@@ -49,7 +49,8 @@ def queue_missing_print_sizes_dir(from_path: object | None = None) -> Path:
 
 
 def queue_config_dir(from_path: object | None = None) -> Path:
-    return queue_app_dir(from_path) / "config"
+    """Settings JSON + Color Bar live with the workbook under database/."""
+    return queue_database_dir(from_path)
 
 
 def queue_settings_path(from_path: object | None = None) -> Path:

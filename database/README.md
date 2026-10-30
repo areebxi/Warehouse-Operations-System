@@ -15,10 +15,10 @@ Live **database** files for the warehouse system. App folders hold code + run I/
 | repo-root `backups/shared/` | Former local copies still read by a few scripts (`data_archive_dir()`) |
 | `custom-label-database/support/` | Size refs, mocks, shirts print sizes |
 | `custom-label-database/Apparel Images/` | CL apparel images |
-| `order-packing-list-generator/` | Packing Workbook, New SKU DB, All Orders log |
-| `production-design-queue-manager/` | Configuration Workbook (pocket overrides) |
+| `order-packing-list-generator/` | Packing Workbook, New SKU DB, All Orders log, GUI JSON, `Back Print.jpg` |
+| `production-design-queue-manager/` | Configuration Workbook, `queue_app_settings.json`, `Color Bar.png` |
 | `order-grouping-sorter/` | Taxonomy pick-lists (category / subcategory / product type / product style) |
-| `purchase-order-generator/` | Stock CSVs (+ Movie Poster SKUs); Plain/Packs live under `shared/` |
+| `purchase-order-generator/` | Stock CSVs, `config.py` (FTP), `gui_settings.json`; Plain/Packs under `shared/` |
 | `shipping-label-generator/` | Configuration Workbook (Label Page Threshold) |
 
 Demo-mode image placeholders are no longer under this warehouse tree (removed 2026-10-28). Packing/Queue “use demo images” still resolves via `shared.demo_images` / `shared.paths` when those folders exist elsewhere or are recreated.

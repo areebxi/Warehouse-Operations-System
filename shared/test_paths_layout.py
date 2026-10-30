@@ -17,7 +17,21 @@ def main() -> None:
     assert wh.packs_database_path() == db / "shared" / "packs" / "Packs Database.csv"
     assert wh.po_database_path() == wh.plain_database_path()
     assert wh.po_packs_database_path() == wh.packs_database_path()
-    assert wh.po_gui_settings_path().is_relative_to(wh.po_app_dir() / "config")
+    assert wh.po_gui_settings_path() == db / "purchase-order-generator" / "gui_settings.json"
+    assert wh.po_config_py_path() == db / "purchase-order-generator" / "config.py"
+    assert wh.po_config_dir() == db / "purchase-order-generator"
+    assert wh.packing_config_dir() == db / "order-packing-list-generator"
+    assert wh.packing_gui_config_path() == (
+        db / "order-packing-list-generator" / "gui_config.json"
+    )
+    assert wh.packing_back_print_path() == (
+        db / "order-packing-list-generator" / "Back Print.jpg"
+    )
+    assert wh.queue_config_dir() == db / "production-design-queue-manager"
+    assert wh.queue_settings_path() == (
+        db / "production-design-queue-manager" / "queue_app_settings.json"
+    )
+    assert wh.shared_brand_logos_dir() == db / "shared" / "brand_logos"
     assert wh.cl_csv_path() == db / "shared" / "custom_label" / "Custom_Label_Database.csv"
     assert wh.cl_areeb_csv_path() == (
         db / "shared" / "custom_label" / "Custom_Label_Database (Areeb).csv"

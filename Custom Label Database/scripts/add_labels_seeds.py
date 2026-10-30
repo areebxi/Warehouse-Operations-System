@@ -117,5 +117,8 @@ def build_seed_rows(
         peer, extras = _peer_and_extras(
             lab, fieldnames=fieldnames, peers=peers, sku_uids=sku_uids
         )
+        # Trailing period listing SKU (B445-ORN-O/S.) → same row without ".".
+        if peer is None and lab.endswith("."):
+            peer = peers.get(lab.rstrip(".").casefold())
         new_rows.append(_seed_from_peer(fieldnames, lab, peer, extras=extras))
     return new_rows, skipped

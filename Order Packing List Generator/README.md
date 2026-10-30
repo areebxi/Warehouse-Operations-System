@@ -11,7 +11,7 @@ This folder contains your full packing list pipeline, the main GUI app, and the 
 - **`missing_run_app.py`** – GUI/CLI tool to re‑run a single process/item using `Missing/All Orders.csv` + `Missing/Missing Input.csv`.
 - **`preflight_issues_app.py`** – **Preflight Issues App**: unmatched SKUs + dry-run missing logo/apparel review CSV.
 - **`scripts/`** – Pipeline step CLIs (`scripts/fetch_input_csv.py`, … `scripts/generate_packing_list_pdf.py`), modular implementations under `scripts/pipeline_*`, `scripts/pipeline_runner.py` (`run_pipeline`), and shared GUI theme `scripts/gui_theme.py`.
-- **`config/`** – JSON config files for the GUIs (`gui_config.json`, `missing_run_config.json`, `preflight_issues_config.json`).
+- **GUI JSON + Back Print** – under `database/order-packing-list-generator/` (`gui_config.json`, `missing_run_config.json`, `preflight_issues_config.json`, `Back Print.jpg`).
 - **`Data/`** – Input workbook(s) and reference data used by the pipeline.
 - **`Output/`** – All generated CSVs, Excels, and PDFs, organised as `Output/{date}/{shift} Shift/{process}/`.
 - **`logs/`** – Image lookup logs and diagnostic logs for PDF generation.
@@ -19,7 +19,8 @@ This folder contains your full packing list pipeline, the main GUI app, and the 
   - `All Orders.csv` – consolidated log of step‑6 split runs.
   - `Missing Input.csv` – queries for the missing‑run pipeline.
 - **`Unmatched SKUs/`** – Per‑day, per‑shift CSVs of unmatched SKUs moved out of step 4.
-- **`Missing Logos/`** / **`Missing Apparels/`** – Holding CSVs stripped before Step 6 naming.
+- **`Missing Logos/`** – Holding CSVs stripped before Step 6 naming.
+- **`Missing Apparels/`** – Report CSVs only; packing still continues for those rows.
 - **`Preflight Issues/`** – Preflight Issues app CSV output.
 - **`backups/versions/order-packing-list-generator/`** – Older versions of the main GUI app kept for reference.
 
@@ -71,7 +72,7 @@ Takes a **ShipStation CSV (Current View)** and, through eight scripted steps, pr
 ├── missing_run_app.py        ← Missing-run helper GUI/CLI
 ├── preflight_issues_app.py   ← Preflight Issues App (unmatched + missing images)
 ├── scripts/                  ← Steps 1–8, pipeline_runner, gui_theme, helpers
-├── config/                   ← gui_config.json, missing_run_config.json, preflight_issues_config.json
+├── (GUI JSON + Back Print)   ← database/order-packing-list-generator/
 ├── USAGE.md                  ← GUI usage (main, missing run, preflight issues)
 ├── (living docs)             ← ../docs/order-packing-list-generator/ (README, per-script notes)
 ├── Input/                    ← ShipStation CSV exports
@@ -80,7 +81,7 @@ Takes a **ShipStation CSV (Current View)** and, through eight scripted steps, pr
 ├── Missing/                  ← All Orders.csv, Missing Input.csv (missing run)
 ├── Unmatched SKUs/           ← Step-4 unmatched CSVs
 ├── Missing Logos/            ← missing-logo holding CSVs
-├── Missing Apparels/         ← missing-apparel holding CSVs
+├── Missing Apparels/         ← missing-apparel report CSVs (packing continues)
 ├── Preflight Issues/         ← Preflight Issues CSVs
 └── logs/                     ← PDF / image diagnostic logs
 ```

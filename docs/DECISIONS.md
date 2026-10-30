@@ -19,6 +19,7 @@ Where locked decisions live. **Do not copy** locks here; link to the owner. Chat
 | Shipping Reports / failures paths | Locked 2026-10-29: `Output/Shipping Label Generator/Reports/`; `Logs/Shipping Label Generator/Error and Failures/` — not under the Shipping app folder |
 | Purchase Order policy | `.cursor/rules/purchase-order-generator/` |
 | Shared brand logos | Locked 2026-10-29: `database/shared/brand_logos/` via `shared.paths.shared_brand_logos_dir` (PO packing slips now; Packing later when it owns all packing-list PDFs). App-local PO `assets/fonts` removed. Owner: `live-files.mdc` + `database/README.md` |
+| App GUI settings + PO config + shareable assets in database/ | Locked 2026-10-29: Packing GUI JSON + `Back Print.jpg` under `database/order-packing-list-generator/`; Queue `queue_app_settings.json` + `Color Bar.png` under `database/production-design-queue-manager/`; PO `config.py` + `gui_settings.json` under `database/purchase-order-generator/`. Machine JSON/`config.py` gitignored; Back Print + Color Bar tracked. Owner: live-files rules + `database/README.md` |
 | Proven joins + approval + pipeline map | Parent [`AGENTS.md`](../AGENTS.md) |
 | Architecture (200-line, layers, boundaries) | `.cursor/rules/global/architecture.mdc`; [`ARCHITECTURE.md`](ARCHITECTURE.md) |
 | SharedInbox handoff | `.cursor/rules/global/shared-inbox.mdc` |

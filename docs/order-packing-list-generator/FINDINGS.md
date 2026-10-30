@@ -7,4 +7,5 @@
 - DTF Des may remap Item-SKU via `Data/New SKU Database.csv`.
 - Image folders for PDFs: Apparel, Normal Logo/Design, Customise Single/Double (pipeline indexes top-level only).
 - **Missing logos (locked 2026-09-17):** strip after Step 5, **before** Step 6 process/item naming. Lookup still expands qty and applies custom `base` / `base-1` stems so merge siblings and second units are not missed. Naming the keepers after the drop means packing-list PIN has no holes. Do not move the filter back after Step 6. The missing-logo CSV is a **holding file** — no Item numbers. Reprint = main packing app **from Step 1**.
+- **Missing apparels (locked 2026-10-30):** same dry-run detection and Missing Apparels CSV report, but rows are **not** stripped — naming / Excel / PDFs still run. Unlike Missing Logos, this is not a hold-and-repack queue.
 - Issue resolutions: `.cursor/issue-log.md`.

@@ -1,4 +1,4 @@
-"""After Step 5, before Step 6 naming: drop missing logo/apparel rows (and merge siblings)."""
+"""After Step 5, before Step 6 naming: drop missing-logo rows; report missing apparel."""
 
 from __future__ import annotations
 
@@ -44,9 +44,10 @@ def filter_step6_csvs_for_missing_logos(
     log: Optional[Callable[[str], None]] = None,
 ) -> tuple[list[Path], Optional[Path], Optional[Path], int]:
     """
-    Dry-run logo/apparel lookup on each CSV (Step 5 before naming); exclude
-    missing rows and merge siblings. Writes ``missing_logo_orders_{token}.csv``
-    and ``missing_apparel_orders_{token}.csv`` when non-empty (holding files).
+    Dry-run logo/apparel lookup on each CSV (Step 5 before naming). Exclude
+    missing-logo rows and merge siblings; missing apparel is reported only
+    (rows still pack). Writes ``missing_logo_orders_{token}.csv`` (holding)
+    and ``missing_apparel_orders_{token}.csv`` (report) when non-empty.
 
     Returns (kept_csvs, missing_logo_csv_or_none, missing_apparel_csv_or_none,
     excluded_row_count). Skips when neither logo nor apparel folders are set.
@@ -115,20 +116,20 @@ def filter_step6_csvs_for_missing_logos(
         )
         logo_ex = expand_issue_mask_to_merge_groups(work, missing_logo_flags)
         apparel_ex = expand_issue_mask_to_merge_groups(work, missing_apparel_flags)
-        exclude_work = logo_ex | apparel_ex
+        exclude_work = logo_ex  # apparel reports only; packing continues
         n_exclude = int(exclude_work.sum())
+        raw_logo = int(missing_logo_flags.sum())
+        raw_apparel = int(missing_apparel_flags.sum())
+        logo_siblings += max(0, int(logo_ex.sum()) - raw_logo)
+        apparel_siblings += max(0, int(apparel_ex.sum()) - raw_apparel)
+        drop_cols = [c for c in (_ORIG_IDX,) if c in work.columns]
+        if int(logo_ex.sum()):
+            logo_frames.append(work.loc[logo_ex].drop(columns=drop_cols, errors="ignore"))
+        if int(apparel_ex.sum()):
+            apparel_frames.append(
+                work.loc[apparel_ex].drop(columns=drop_cols, errors="ignore")
+            )
         if n_exclude:
-            raw_logo = int(missing_logo_flags.sum())
-            raw_apparel = int(missing_apparel_flags.sum())
-            logo_siblings += max(0, int(logo_ex.sum()) - raw_logo)
-            apparel_siblings += max(0, int(apparel_ex.sum()) - raw_apparel)
-            drop_cols = [c for c in (_ORIG_IDX,) if c in work.columns]
-            if int(logo_ex.sum()):
-                logo_frames.append(work.loc[logo_ex].drop(columns=drop_cols, errors="ignore"))
-            if int(apparel_ex.sum()):
-                apparel_frames.append(
-                    work.loc[apparel_ex].drop(columns=drop_cols, errors="ignore")
-                )
             dropped = set(int(v) for v in work.loc[exclude_work, _ORIG_IDX].tolist())
             total_excluded += n_exclude
             keep_mask = [i not in dropped for i in range(len(df))]
@@ -140,17 +141,22 @@ def filter_step6_csvs_for_missing_logos(
                     pass
                 _emit(
                     f"  Missing-image filter: {csv_path.name} — excluded all "
-                    f"{n_exclude} row(s); file removed."
+                    f"{n_exclude} missing-logo row(s); file removed."
                 )
             else:
                 kept.to_csv(csv_path, index=False, encoding="utf-8")
                 kept_csvs.append(csv_path)
                 _emit(
                     f"  Missing-image filter: {csv_path.name} — excluded {n_exclude} "
-                    f"row(s), kept {len(kept)}."
+                    f"missing-logo row(s), kept {len(kept)}."
                 )
         else:
             kept_csvs.append(csv_path)
+            if raw_apparel:
+                _emit(
+                    f"  Missing-image filter: {csv_path.name} — "
+                    f"{raw_apparel} missing-apparel row(s) reported; packing continues."
+                )
 
     missing_logo_path = write_sideline_csv(
         logo_frames,

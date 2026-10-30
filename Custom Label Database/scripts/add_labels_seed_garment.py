@@ -129,29 +129,56 @@ def _extras_gildan(
     return peer, extras
 
 
+def _yes_shirt_candidates(stripped: str) -> list[str]:
+    """Peer lookup keys for -Yes shirts (xz7- / M-T-DARCE → plain garment)."""
+    out: list[str] = [stripped]
+    low = stripped.casefold()
+    # Design prefixes left alone on Custom Label; peer is the garment without them.
+    for pref in ("xz7-", "xz8-", "x97-", "x94-"):
+        if low.startswith(pref):
+            out.append(stripped[len(pref) :])
+            break
+    # M-T-DARCE-L peers as T-DARCE-L when warehouse M-T row missing.
+    if re.match(r"^M-T-", stripped, re.I):
+        out.append(stripped.split("-", 1)[1])  # drop leading M-
+    aliased = _alias_shirt_colour_label(stripped)
+    if aliased.casefold() != low:
+        out.append(aliased)
+    return out
+
+
 def _extras_yes_shirt(
     lab: str, peers: dict[str, dict[str, str]]
 ) -> tuple[dict[str, str] | None, dict[str, str]]:
     stripped = lab.rsplit("-", 1)[0]
     extras: dict[str, str] = {}
-    peer = peers.get(stripped.casefold())
+    peer: dict[str, str] | None = None
+    for cand in _yes_shirt_candidates(stripped):
+        peer = peers.get(cand.casefold())
+        if peer:
+            break
     if not peer:
         aliased = _alias_shirt_colour_label(stripped)
-        peer = peers.get(aliased.casefold())
-        if not peer:
-            parts = aliased.split("-")
-            family = "-".join(parts[:-1]).casefold() + "-" if len(parts) >= 2 else ""
-            for key, row in peers.items():
-                if family and key.startswith(family):
-                    peer = row
-                    if clean(row.get("Print Positions")) == "Front Center":
-                        break
-                elif key == aliased.casefold() or key.startswith(aliased.casefold() + "-"):
-                    peer = row
-                    if clean(row.get("Print Positions")) == "Front Center":
-                        break
-            if peer and len(parts) >= 2:
-                sz = map_sr_size(parts[-1]) or parts[-1]
-                if sz:
-                    extras["Size"] = sz
+        parts = aliased.split("-")
+        # Prefer plain garment without design prefix (xz7-M-T-WHI-L → M-T-WHI-L).
+        core = aliased
+        for pref in ("xz7-", "xz8-", "x97-", "x94-"):
+            if core.casefold().startswith(pref):
+                core = core[len(pref) :]
+                parts = core.split("-")
+                break
+        family = "-".join(parts[:-1]).casefold() + "-" if len(parts) >= 2 else ""
+        for key, row in peers.items():
+            if family and key.startswith(family):
+                peer = row
+                if clean(row.get("Print Positions")) == "Front Center":
+                    break
+            elif key == core.casefold() or key.startswith(core.casefold() + "-"):
+                peer = row
+                if clean(row.get("Print Positions")) == "Front Center":
+                    break
+        if peer and len(parts) >= 2:
+            sz = map_sr_size(parts[-1]) or parts[-1]
+            if sz:
+                extras["Size"] = sz
     return peer, extras

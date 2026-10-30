@@ -22,4 +22,5 @@ App DB in `database/purchase-order-generator/` (stock only). Plain / Packs / BTC
 | GUI `product_images_dir` in `database/purchase-order-generator/gui_settings.json` | Required Product Images folder (Browse; no assets fallback) |
 | `Output/Purchase Order Generator/` | Run outputs |
 | `config/ShipStation/.env` | ShipStation `REAL_API_*` |
-| `Purchase Order Generator/config.py` | FTP/stock settings (never commit) |
+| `database/purchase-order-generator/config.py` | FTP/stock settings (never commit; template: app `config_example.py`) |
+| `database/purchase-order-generator/gui_settings.json` | GUI Browse remember-last (gitignored) |

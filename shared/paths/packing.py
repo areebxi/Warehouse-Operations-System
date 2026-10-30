@@ -69,11 +69,16 @@ def packing_preflight_dir(from_path: object | None = None) -> Path:
 
 
 def packing_config_dir(from_path: object | None = None) -> Path:
-    return packing_app_dir(from_path) / "config"
+    """GUI JSON + Back Print live under ``database/order-packing-list-generator/``."""
+    return packing_data_dir(from_path)
 
 
 def packing_gui_config_path(from_path: object | None = None) -> Path:
     return packing_config_dir(from_path) / "gui_config.json"
+
+
+def packing_back_print_path(from_path: object | None = None) -> Path:
+    return packing_config_dir(from_path) / "Back Print.jpg"
 
 __all__ = [
     "packing_app_dir",
@@ -92,4 +97,5 @@ __all__ = [
     "packing_preflight_dir",
     "packing_config_dir",
     "packing_gui_config_path",
+    "packing_back_print_path",
 ]
