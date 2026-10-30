@@ -12,5 +12,6 @@ globs: "runtime/SharedInbox/**"
 - Skip Batches (Configuration Workbook sheet): matching batch digits skip queue PNGs; inbox file still moves to `Processed/`.
 - Headless save also copies PNGs to the configured DTF Queues folder when set.
 - Path helper: `shared.paths.shared_inbox_dtf_des_root()`.
+- Git: `runtime/**` ignored; nested `README.md` tracked (see `runtime/SharedInbox/DTF Des/README.md`). Date/shift xlsx stay local.
 - Do not delete live inbox files while packing or the watcher may be writing.
 - Shipping does not auto-read this folder yet.

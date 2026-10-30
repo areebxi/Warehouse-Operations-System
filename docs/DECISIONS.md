@@ -22,7 +22,7 @@ Where locked decisions live. **Do not copy** locks here; link to the owner. Chat
 | App GUI settings + PO config + shareable assets in database/ | Locked 2026-10-29: Packing GUI JSON + `Back Print.jpg` under `database/order-packing-list-generator/`; Queue `queue_app_settings.json` + `Color Bar.png` under `database/production-design-queue-manager/`; PO `config.py` + `gui_settings.json` under `database/purchase-order-generator/`. Machine JSON/`config.py` gitignored; Back Print + Color Bar tracked. Owner: live-files rules + `database/README.md` |
 | Proven joins + approval + pipeline map | Parent [`AGENTS.md`](../AGENTS.md) |
 | Architecture (200-line, layers, boundaries) | `.cursor/rules/global/architecture.mdc`; [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| SharedInbox handoff | `.cursor/rules/global/shared-inbox.mdc` |
+| SharedInbox handoff | `.cursor/rules/global/shared-inbox.mdc`. Locked 2026-10-30: track `runtime/SharedInbox/DTF Des/README.md` (and other nested runtime READMEs); date/shift tray files stay gitignored. |
 | ShipStation shared client | `.cursor/rules/global/shipstation.mdc`; `shared/shipstation/`; secrets `config/ShipStation/` |
 | Single warehouse `.env` | Locked 2026-10-28: only `config/ShipStation/.env` (template `config/ShipStation/.env.example`). No app-local `.env` / `.env.example` under Shipping or elsewhere. One root `.gitignore` only (no nested app `.gitignore`). |
 | SKU match | `.cursor/rules/global/cl-sku-match.mdc`; `shared/cl_sku_match.py` (case-sensitive entire-cell; locked 2026-10-27) |
