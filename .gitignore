@@ -1,29 +1,26 @@
-# --- Secrets / machine config (never commit live) ---
+# =============================================================================
+# Warehouse Operations System — single root .gitignore
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Secrets
+# -----------------------------------------------------------------------------
 .env
 .env.*
 !.env.example
 **/API KEY.txt
 **/api_key*.txt
 **/api-key*.txt
-
-# Shared ShipStation secrets
 config/ShipStation/.env
-
-# PO FTP config.py + GUI JSON live under database/ (ignored via database/**)
-# Keep tracked templates
 !config/**/.env.example
 !config/**/README.md
 !config/README.md
 !config/ShipStation/README.md
 !Purchase Order Generator/config_example.py
 
-# Sorter Plain/Packs index cache (regenerated on load)
-database/order-grouping-sorter/catalog_cache/
-
-# Local ShipStation / script JSON caches (regenerated)
-scripts/_cache/
-
-# --- Python / tooling ---
+# -----------------------------------------------------------------------------
+# Python / tooling
+# -----------------------------------------------------------------------------
 __pycache__/
 *.py[cod]
 *$py.class
@@ -39,7 +36,9 @@ env/
 dist/
 build/
 
-# --- OS / editor ---
+# -----------------------------------------------------------------------------
+# OS / editor
+# -----------------------------------------------------------------------------
 .DS_Store
 Thumbs.db
 Desktop.ini
@@ -48,49 +47,38 @@ Desktop.ini
 .vscode/
 *.code-workspace
 
-# --- Live databases (database/ at warehouse root) ---
+# -----------------------------------------------------------------------------
+# database/  (live DB files — machine-local; shareable exceptions below)
+# -----------------------------------------------------------------------------
 database/**
 !database/README.md
 !database/**/
 !database/**/README.md
 !database/order-grouping-sorter/taxonomy_picklists.csv
-# Shareable packing/queue assets (machine JSON + config.py stay ignored)
 !database/order-packing-list-generator/Back Print.jpg
 !database/production-design-queue-manager/Color Bar.png
+database/order-grouping-sorter/catalog_cache/
 
-# --- Demo Images Database (offline test placeholders) ---
-Demo Images Database/**
-!Demo Images Database/README.md
-!Demo Images Database/**/
-!Demo Images Database/**/*.png
-
-# --- Warehouse-root run Logs / Output (per-app subfolders) ---
-# Use trailing slash so the folders themselves are ignored (not only contents).
+# -----------------------------------------------------------------------------
+# Logs/  Output/  runtime/  (warehouse-root run I/O)
+# -----------------------------------------------------------------------------
 Logs/
 Output/
+runtime/**
+!runtime/README.md
+!runtime/**/README.md
 
-# Legacy app-local Logs/Output (pre-2026-10-28 migrate leftovers)
-Order Packing List Generator/Logs/
-# Legacy leftovers (live Output/Logs are warehouse-root)
-Order Packing List Generator/Output/
-Order Packing List Generator/output/
-Production Design Queue Manager/Logs/
-Production Design Queue Manager/logs/
-Production Design Queue Manager/Output/
-Production Design Queue Manager/output/
-Shipping Label Generator/Logs/
-Shipping Label Generator/Output/
-Order Grouping Sorter/Logs/
-Purchase Order Generator/output/
+# -----------------------------------------------------------------------------
+# scripts/  (shared caches)
+# -----------------------------------------------------------------------------
+scripts/_cache/
 
-# --- Order Grouping Sorter live I/O (DB: database/order-grouping-sorter/) ---
-Order Grouping Sorter/scripts/_tmp_*/
-
-# --- Packing app live I/O (DB in database/order-packing-list-generator/) ---
-# Track README.md only; ignore all other contents (date/shift CSVs, etc.)
+# -----------------------------------------------------------------------------
+# Order Packing List Generator/
+# Track README.md only under operator I/O folders. Missing Input/ stays tracked.
+# -----------------------------------------------------------------------------
 Order Packing List Generator/Input/*
 !Order Packing List Generator/Input/README.md
-# Missing Input/ stays tracked (header-only Missing Input.csv template)
 Order Packing List Generator/Missing Logos/*
 !Order Packing List Generator/Missing Logos/README.md
 Order Packing List Generator/Missing Apparels/*
@@ -99,52 +87,44 @@ Order Packing List Generator/Preflight Issues/*
 !Order Packing List Generator/Preflight Issues/README.md
 Order Packing List Generator/Unmatched SKUs/*
 !Order Packing List Generator/Unmatched SKUs/README.md
-# Legacy folder names (pre-2026-10-29 renames)
-Order Packing List Generator/Missing Logo Files/
-Order Packing List Generator/Unmatched SKU Files/
 
-# --- Queue app live I/O ---
+# -----------------------------------------------------------------------------
+# Production Design Queue Manager/
+# -----------------------------------------------------------------------------
 Production Design Queue Manager/Input/
-# Track README.md only; ignore runtime missing-print-size exports
 Production Design Queue Manager/Missing Print Sizes/*
 !Production Design Queue Manager/Missing Print Sizes/README.md
-# Legacy folder name (pre-2026-10-29 rename)
-Production Design Queue Manager/Missing Size Reference/
 
-# --- Shipping app live I/O ---
+# -----------------------------------------------------------------------------
+# Shipping Label Generator/
+# -----------------------------------------------------------------------------
 Shipping Label Generator/DTF Des Files/
 Shipping Label Generator/DTF Des Files - Processed/
 Shipping Label Generator/DTF Des Files -Processed/
-# Legacy leftovers (live Reports → Output/; Error and Failures → Logs/)
-Shipping Label Generator/Reports/
-Shipping Label Generator/Error and Failures/
-Shipping Label Generator/Logs/
-Shipping Label Generator/logs/
 Shipping Label Generator/**/*.log
-*.log
 
-# --- Shared runtime (SharedInbox) ---
-runtime/**
-!runtime/README.md
-!runtime/**/README.md
+# -----------------------------------------------------------------------------
+# Order Grouping Sorter/
+# -----------------------------------------------------------------------------
+Order Grouping Sorter/scripts/_tmp_*/
 
-# --- Old snapshot trees ---
-**/Versions/
-
-# --- Repo-root snapshots (data + old code). Keep the map and doc archives. ---
+# -----------------------------------------------------------------------------
+# backups/  Versions/  archives
+# -----------------------------------------------------------------------------
 backups/*
 !backups/README.md
 !backups/docs/
-
-# --- Large binary dumps ---
+**/Versions/
 *.zip
 *.7z
 *.rar
 *.tmp
 ~$*
+*.log
 
-# --- Local git hygiene (added on first PC link) ---
+# -----------------------------------------------------------------------------
+# Cursor / local debug dumps
+# -----------------------------------------------------------------------------
 **/.cursor/debug*.log
-# Agent debug dumps (repo root and any folder). Not app Logs/.
 /debug-*.log
 **/debug-*.log
