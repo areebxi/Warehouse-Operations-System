@@ -8,6 +8,9 @@ from typing import Dict, List, Optional
 
 from pipeline_generate_packing_list_pdf.images import find_image_impl
 from pipeline_generate_packing_list_pdf.image_lookup import probe_exact_image_impl
+from pipeline_generate_packing_list_pdf.image_lookup_stem import (
+    normalize_image_lookup_token,
+)
 from shared.demo_images import demo_fallback_path
 
 class _StemIndex:
@@ -96,6 +99,7 @@ def _make_find_exact(
 ):
     def _find(root_dir, base_name, stem_map, *, recursive: bool = False):
         if index is not None:
+            base_name = normalize_image_lookup_token(base_name or "")
             found = index.find_exact(base_name)
             if found is not None:
                 return found

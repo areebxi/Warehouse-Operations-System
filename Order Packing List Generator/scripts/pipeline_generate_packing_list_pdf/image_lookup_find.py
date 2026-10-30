@@ -10,6 +10,7 @@ from pipeline_generate_packing_list_pdf.image_lookup_stem import (
     _path_if_file,
     _remember_stem,
     find_image_in_dir_impl,
+    normalize_image_lookup_token,
     probe_exact_image_impl,
 )
 
@@ -23,6 +24,7 @@ def find_image_impl(
     """Return Path for base_name in root_dir, using stem_map if provided else directory search (recursive or top-level only)."""
     if not base_name:
         return None
+    base_name = normalize_image_lookup_token(base_name)
     if stem_map is not None:
         found = _path_if_file(stem_map.get(base_name))
         if found is not None:

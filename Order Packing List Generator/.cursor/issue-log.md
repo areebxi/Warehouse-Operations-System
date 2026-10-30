@@ -2,6 +2,12 @@
 
 Issues discussed with the AI agent, newest first.
 
+## 2026-10-30 16:31
+
+**Issue:** Process 2000 Missing Apparels reported Plain rows as missing even though files existed on `I:\…\01B-Packling List`.
+
+**Resolution:** Plain `Product_Image_URL` includes `.jpg`; lookup treated that as a stem and searched for `.jpg.jpg`. `normalize_image_lookup_token` now strips one trailing `.png`/`.jpg`/`.jpeg` before stem-map and probe lookup.
+
 ## 2026-10-13 09:40
 
 **Issue:** After the app opened, the pipeline stopped with `run_excel_steps() got an unexpected keyword argument 'make_design_queues'`, then `name 'copy_dtf_des_to_shared_inbox' is not defined`.

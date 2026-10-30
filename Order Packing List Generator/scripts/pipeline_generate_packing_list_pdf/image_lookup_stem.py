@@ -16,6 +16,14 @@ _IMAGE_EXTS = {".png", ".jpg", ".jpeg"}
 _MEMORY_STEM_MAPS: Dict[Tuple[str, bool], Dict[str, Path]] = {}
 
 
+def normalize_image_lookup_token(base_name: str) -> str:
+    """Strip one trailing .png/.jpg/.jpeg so Plain `prod_….jpg` matches stem maps."""
+    if not base_name:
+        return base_name
+    stem, ext = os.path.splitext(base_name)
+    return stem if ext.lower() in _IMAGE_EXTS else base_name
+
+
 def _demo_fallback(kind: str, token: str) -> Optional[Path]:
     try:
         from shared.demo_images import demo_fallback_path
@@ -61,6 +69,7 @@ def probe_exact_image_impl(root_dir: Optional[Path], base_name: str) -> Optional
             return None
     except OSError:
         return None
+    base_name = normalize_image_lookup_token(base_name)
     for ext in (".png", ".jpg", ".jpeg"):
         p = root_dir / f"{base_name}{ext}"
         try:
@@ -79,6 +88,7 @@ def find_image_in_dir_impl(
     Return first match or None."""
     if not base_name or not root_dir or not root_dir.is_dir():
         return None
+    base_name = normalize_image_lookup_token(base_name)
     # Non-recursive: probe exact filenames only (full glob of 100k+ Drive files hangs).
     if not recursive:
         return probe_exact_image_impl(root_dir, base_name)
