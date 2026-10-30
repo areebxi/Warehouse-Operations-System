@@ -60,10 +60,21 @@ database/**
 database/order-grouping-sorter/catalog_cache/
 
 # -----------------------------------------------------------------------------
-# Logs/  Output/  runtime/  (warehouse-root run I/O)
+# Logs/  (warehouse-root run logs — all contents ignored)
 # -----------------------------------------------------------------------------
 Logs/
-Output/
+
+# -----------------------------------------------------------------------------
+# Output/  (warehouse-root run outputs — README.md only tracked)
+# -----------------------------------------------------------------------------
+Output/**
+!Output/README.md
+!Output/**/
+!Output/**/README.md
+
+# -----------------------------------------------------------------------------
+# runtime/  (SharedInbox — README.md only tracked)
+# -----------------------------------------------------------------------------
 runtime/**
 !runtime/README.md
 !runtime/**/
